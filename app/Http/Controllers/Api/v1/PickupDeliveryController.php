@@ -677,10 +677,6 @@ class PickupDeliveryController extends BaseController{
                    $order_number = $order_place['data']->order_number??$order_place['data']['order_number'];
                    $device_token = UserDevice::whereUserId($user->id)->orderBy('id','desc')->value('device_token');
                    sendNotificationToCustomer($device_token,$order_number);
-
-                   if($request->has('email_status') && $request->email_status == 1) {
-                        $this->sendSuccessEmail($request,$order_place['data']);
-                   }
                }
 
                return  $order_place;
@@ -1112,72 +1108,6 @@ class PickupDeliveryController extends BaseController{
             $data['recurring_booking_time'] = @$order->recurring_booking_time??null;
             $data['data'] = $order;
             return $data;
-        }
-    }
-
-
-    public function sendSuccessEmail($request, $order, $vendor_id = '')
-    {
-        $user = Auth::user();
-
-        $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
-        $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from', 'admin_email')->where('id', '>', 0)->first();
-        $message = __('An otp has been sent to your email. Please check.');
-        $otp = mt_rand(100000, 999999);
-
-        if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
-            $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
-            if ($vendor_id == "") {
-                $sendto =  $user->email;
-            } else {
-                $vendor = Vendor::where('id', $vendor_id)->first();
-                if ($vendor) {
-                    $sendto =  $vendor->email;
-                }
-            }
-
-            $customerCurrency = ClientCurrency::join('currencies as cu', 'cu.id', 'client_currencies.currency_id')->where('client_currencies.currency_id', $user->currency)->first();
-            $currSymbol = $customerCurrency->symbol;
-            $client_name = 'Sales';
-            $mail_from = $data->mail_from;
-
-            try {
-                $email_template_content = '';
-                $email_template = EmailTemplate::where('id', 10)->first();
-                $address = UserAddress::where('id', $request->address_id)->first();
-                if ($email_template) {
-
-                    $email_template_content = $email_template->content;
-                    $orderLocations = OrderLocations::where('order_id',$order->id)->first();
-                    $locations = json_decode($orderLocations->tasks);
-                    $returnHTML = view('email.newPickupRideAddress')->with(['user'=>$user,'order' => $order,'locations' => $locations])->render();
-                    $email_template_content = str_ireplace("{description}",'', $email_template_content);
-                    $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
-                    $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
-                    $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
-                    if(!empty($address)){
-                        $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
-                    }
-                }
-                $email_data = [
-                    'code' => $otp,
-                    'link' => "link",
-                    'email' => $sendto,//"harbans.sayonakh@gmail.com",//  $sendto,//
-                    'mail_from' => $mail_from,
-                    'client_name' => $client_name,
-                    'logo' => $client->logo['original'],
-                    'subject' => $email_template->subject,
-                    'customer_name' => ucwords($user->name),
-                    'email_template_content' => $email_template_content,
-                    'cartData' => [],
-                    'user_address' => $address,
-                ];
-                // $res = $this->testOrderMail($email_data);
-                // dd($res);
-                dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
-                $notified = 1;
-            } catch (\Exception $e) {
-            }
         }
     }
 
@@ -2458,6 +2388,88 @@ class PickupDeliveryController extends BaseController{
         }
         catch (\Exception $e) {
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+        }
+    }
+
+    public function sendInvoiceEmail(Request $request) {
+        try {
+            $validator = Validator::make(request()->all(), [
+                'order_id' => 'required',
+            ]);
+            if($validator->fails()){
+                return $this->errorResponse($validator->messages(), 422);
+            }
+            $order = Order::find($request->order_id);
+            $this->sendSuccessEmail($request, $order);
+            return $this->successResponse($order, "Send successFully successfully", 200);
+        } catch(\Exception $e) {
+            return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+        }
+    }
+
+
+    public function sendSuccessEmail($request, $order, $vendor_id = '')
+    {
+        $user = Auth::user();
+
+        $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+        $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from', 'admin_email')->where('id', '>', 0)->first();
+        $message = __('An otp has been sent to your email. Please check.');
+        $otp = mt_rand(100000, 999999);
+
+        if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
+            $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
+            if ($vendor_id == "") {
+                $sendto =  $user->email;
+            } else {
+                $vendor = Vendor::where('id', $vendor_id)->first();
+                if ($vendor) {
+                    $sendto =  $vendor->email;
+                }
+            }
+
+            $customerCurrency = ClientCurrency::join('currencies as cu', 'cu.id', 'client_currencies.currency_id')->where('client_currencies.currency_id', $user->currency)->first();
+            $currSymbol = $customerCurrency->symbol;
+            $client_name = 'Sales';
+            $mail_from = $data->mail_from;
+
+            try {
+                $email_template_content = '';
+                $email_template = EmailTemplate::where('id', 10)->first();
+                $address = UserAddress::where('id', $request->address_id)->first();
+                if ($email_template) {
+
+                    $email_template_content = $email_template->content;
+                    $orderLocations = OrderLocations::where('order_id',$order->id)->first();
+                    $locations = json_decode($orderLocations->tasks);
+                    $returnHTML = view('email.newPickupRideAddress')->with(['user'=>$user,'order' => $order,'locations' => $locations])->render();
+                    $email_template_content = str_ireplace("{description}",'', $email_template_content);
+                    $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
+                    $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
+                    $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
+                    if(!empty($address)){
+                        $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
+                    }
+                }
+                $email_data = [
+                    'code' => $otp,
+                    'link' => "link",
+                    'email' => $sendto,//"harbans.sayonakh@gmail.com",//  $sendto,//
+                    'mail_from' => $mail_from,
+                    'client_name' => $client_name,
+                    'logo' => $client->logo['original'],
+                    'subject' => $email_template->subject,
+                    'customer_name' => ucwords($user->name),
+                    'email_template_content' => $email_template_content,
+                    'cartData' => [],
+                    'user_address' => $address,
+                ];
+                // $res = $this->testOrderMail($email_data);
+                // dd($res);
+                dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                $notified = 1;
+            } catch (\Exception $e) {
+            }
         }
     }
 
