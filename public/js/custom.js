@@ -1871,7 +1871,9 @@ $(document).ready(function () {
             });
             }
             //totalpay Ends
-             //The Thawani Pg  starts
+
+            
+//The Thawani Pg  starts
         function paymentViaThawanipg(address_id,payment_option_id,order)
         {
             let walletElement = $("input[name='wallet_amount']");

@@ -278,7 +278,9 @@ Route::group(['middleware' => ['domain']], function () {
      Route::get('/success-totalpay', 'Front\TotalpayController@paymentSuccessTotalpay');
 	//thawani Payment Gateway
 	Route::post('/pay-by-thawanipg', 'Front\ThawaniPaymentController@paybythawanipg')->name('pay-by-thawanipg');
-    Route::get('/after-payment', 'Front\ThawaniPaymentController@afterpayment')->name('after.payment');
+    Route::get('/after-payment/{transaction_id}', 'Front\ThawaniPaymentController@afterpayment')->name('after.payment');
+    // Route::post('/pay-by-thawanipg', 'Api\v1\ThawaniPaymentController@paybythawanipg')->name('pay-by-thawanipg');
+    // Route::get('/after-payment/{transaction_id}', 'Api\v1\ThawaniPaymentController@afterpayment')->name('after.payment');
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
 	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');
 
@@ -541,7 +543,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
 	Route::get('category-products/{cat_id}/{vendor_id}', 'Front\VendorController@vendorAllProducts')->name('products');
-	
+
 	Route::post('/updateCartSlot', 'Front\CartController@updateCartSlot')->name('updateCartSlot');
 
 	Route::post('/updateCartBookingSlot', 'Front\CartController@updateCartBookingSlot')->name('updateCartBookingSlot');
@@ -684,7 +686,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::post('update-product-replace', 'Front\ReturnOrderController@updateProductReplace')->name('update.order.replace');
 
 	});
-	
+
 	// Rental Extend Routes
 	Route::group(['prefix' => 'extend-durartion'], function () {
 		Route::get('get-order-vendor-product-duration-data-in-model', 'Front\ExtendOrderController@getOrderProductDurationDatainModel')->name('getOrderProductDurationDatainModel');

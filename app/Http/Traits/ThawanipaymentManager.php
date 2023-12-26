@@ -31,14 +31,15 @@ use App\Models\Cart;
 trait ThawanipaymentManager
 {
     public function getDetails(){
-        
+
         $payOption           = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'thawani')->where('status', 1)->first();
+       \Log::info( $payOption);
         $credentials         = json_decode($payOption->credentials);
         $thawani_Apikey      = $credentials->thawani_Apikey;
         $thawani_publishKey  = $credentials->thawani_publishKey;
         $primaryCurrency     = ClientCurrency::where('is_primary', '=', 1)->first();
         $currency            = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'OMR';
-       
+
         if(json_decode($payOption->test_mode) == 1){
           $checkoutUrl = "https://uatcheckout.thawani.om/api/v1/checkout/session";
           $payurl ="https://uatcheckout.thawani.om";
@@ -54,42 +55,76 @@ trait ThawanipaymentManager
             'currency' => $currency,
         ];
     }
-    public function orderNumber($request)
+    public static function orderNumber($request)
     {
+        try{
+                $time    = isset($request->transaction_id) ? $request->transaction_id : time();
+                $user_id = auth()->id();
+                $amount  = $request->amount?$request->amount:$request->amt;
 
-        $time   = '';
-        $amt    = $request->amt??$request->amount;
-
-        switch ($request->payment_from) {
-            case 'cart':
-                $request->amt = $amt;
-                $time = $request->order_number;
-                Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'cart','date'=>date('Y-m-d')]);
-            break;
-
-            case 'pickup_delivery':
-                //Payment::create(['user_id' => auth()->id(),'payment_from' => $request->device ?? 'web',]);
-            break;
-
-            case 'wallet':
-                $time = $request->transaction_id ?? 'W_' . time();
-                Payment::create([ 'amount' => 0,'transaction_id' => $time,'balance_transaction' => $amt,'type' => 'wallet','date' => date('Y-m-d')]);
-            break;
-
-            case 'tip':
-                $time = 'T_' . time() . '_' . $request->order_number;
-                Payment::create(['amount' => 0,'transaction_id' => $time,'balance_transaction' => $amt,'type' => 'tip','date' => date('Y-m-d')]);
-            break;
-
-            case 'subscription':
-                $time = 'S_' . time() . '_' . (!empty($request->subsid) ? $request->subsid : $request->subscription_id);
-                Payment::create(['amount' => 0,'transaction_id' => $time,'balance_transaction' => $amt,'type' => 'subscription','date' => date('Y-m-d')]);
-            break;
-        }
-
-        $request->request->add(['amt' => number_format($amt, 2)]);
-
-        return $time;
+                if(isset($request->action)){
+                    $request->request->add(['payment_from' => $request->action,'come_from'=>'app']);
+                }
+                if ($request->payment_from == 'cart') {
+                    $time = $request->order_number;
+                    Payment::create([
+                        'amount'              => $amount,
+                        'transaction_id'      => $time,
+                        'balance_transaction' => $amount,
+                        'type'                => 'cart',
+                        'date'                => date('Y-m-d'),
+                        'user_id'             => $user_id,
+                        'payment_from'        => $request->come_from ?? 'web',
+                    ]);
+                } elseif ($request->payment_from == 'wallet') {
+                    Payment::create([
+                        'amount'              => $amount,
+                        'transaction_id'      => $time,
+                        'balance_transaction' => $amount,
+                        'type'                => 'wallet',
+                        'date'                => date('Y-m-d'),
+                        'user_id'             => $user_id,
+                        'payment_from'        => $request->come_from ?? 'web',
+                    ]);
+                } elseif ($request->payment_from == 'subscription') {
+                    $time   = ($request->subscription_id ?$request->subscription_id : time()).'_'.time();
+                    $payment = Payment::create([
+                        'amount'               => $request->amount?$request->amount:$request->subscription_amount,
+                        'transaction_id'       => $time,
+                        'balance_transaction'  => round($amount, 2),
+                        'type'                 => 'subscription',
+                        'date'                 => date('Y-m-d'),
+                        'user_id'              => $user_id,
+                        'payment_from'         => $request->come_from ?? 'web',
+                    ]);
+                } elseif ($request->payment_from == 'tip') {
+                    $time = time();
+                    $res  =  Payment::create([
+                        'amount'              => 0,
+                        'transaction_id'      =>  $time,
+                        'balance_transaction' => $request->amount,
+                        'type'                => 'tip',
+                        'date'                => date('Y-m-d'),
+                        'user_id'             => $user_id,
+                        'payment_from'        => $request->come_from ?? 'web',
+                    ]);
+                } else if ($request->payment_from == 'pickup_delivery') {
+                    $time = $request->order_number;
+                    Payment::create([
+                        'amount'              => 0,
+                        'transaction_id'      => $time,
+                        'balance_transaction' => $request->amt,
+                        'type'                => 'pickup_delivery',
+                        'date'                => date('Y-m-d'),
+                        'user_id'             => $user_id,
+                        'payment_from'        => $request->come_from ?? 'web',
+                    ]);
+                }
+                return $time;
+           }
+            catch (\Exception $e) {
+            return $e->getMessage();
+           }
     }
     private static function response($code, $message, $response = null)
     {
