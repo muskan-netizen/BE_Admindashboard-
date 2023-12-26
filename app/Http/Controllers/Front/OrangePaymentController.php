@@ -73,12 +73,12 @@ class OrangePaymentController extends Controller
             "order_id" => $order_id,
             "amount" => $request->total_amount,
             "return_url" => route('success.orangepayment'),
-            "cancel_url" => url('cancel-orangepay'),
-            "notif_url" => url('success-orangepay'),
+            "cancel_url" => route('cancel.orangepayment'),
+            "notif_url" => route('success.orangepayment'),
             "lang" => "fr",
             "reference" => $order_id,
         ];
-        
+        \Log::info(['data'=>$data]);
         $formattedHeaders = [];
         foreach ($headers as $key => $value) {
             $formattedHeaders[] = $key . ': ' . $value;
