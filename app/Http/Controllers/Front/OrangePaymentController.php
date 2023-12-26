@@ -78,7 +78,7 @@ class OrangePaymentController extends Controller
             "lang" => "fr",
             "reference" => $order_id,
         ];
-        
+        \Log::info(['data'=>$data]);
         $formattedHeaders = [];
         foreach ($headers as $key => $value) {
             $formattedHeaders[] = $key . ': ' . $value;
