@@ -45,15 +45,18 @@ class ThawaniPaymentController extends Controller
                 $transaction_id = self::orderNumber($request);
                 $payment        = Payment::where('transaction_id', $transaction_id)->first();
                 $user           = auth()->user();
-                $amount         =intval($payment->balance_transaction);
+                $amount         = intval($payment->balance_transaction);
                 $sessionUrl     = $this->checkoutUrl;
                 $successUrl     = url('after-payment/'.$transaction_id);
-                $cancelurl      = url(isset($request->returnUrl) ? $request->returnUrl : $request->cancelUrl);
+                $cancelurl      = url(isset($request->returnUrl) ? $request->returnUrl : 'payment/gateway/returnResponse?status=0&gateway=thawani');
+
+
 
                 $response = Http::withHeaders(['Accept' => 'application/json','Content-Type' => 'application/json','thawani-api-key' => $this->thawani_Apikey,
                                              ])->post($sessionUrl, ['client_reference_id' => $user->id,'mode' => 'payment','products' => [[
-                                                'name' => 1,'quantity' => 1,'unit_amount' =>$amount*1000,],],
-                                                'success_url' => $successUrl,'cancel_url' =>  $cancelurl,'metadata' => ['Customer name' => $user->name,'order id' => $transaction_id,],]);
+                                                'name' => 1,'quantity' => 1,'unit_amount' =>$amount*1000,]],
+                                                'success_url' => $successUrl,'cancel_url' =>  $cancelurl,'metadata' => ['Customer name' => $user->name,'order id' => $transaction_id],]);
+
 
                 if ($response->successful()) {
                         $responseData = $response->json();
@@ -75,9 +78,8 @@ class ThawaniPaymentController extends Controller
     }
     public function afterpayment($domain='',$transaction_id){
 
-           // try{
+           try{
                 $transactionId = $transaction_id;
-                //$transactionId = $request['merchant_order_id'];
                 $payment       = Payment::where('transaction_id', $transactionId)->first();
                 if ($payment) {
                     $payment->viva_order_id     = $transactionId;
@@ -165,9 +167,9 @@ class ThawaniPaymentController extends Controller
                 else {
                     return redirect()->back();
                 }
-            // }catch (\Exception $e) {
-            //         return $e->getMessage();
-            // }
+            }catch (\Exception $e) {
+                    return $e->getMessage();
+            }
     }
 
 }

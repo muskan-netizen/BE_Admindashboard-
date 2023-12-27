@@ -170,8 +170,8 @@ trait ThawanipaymentManager
             $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
             $super_admin = User::where('is_superadmin', 1)->pluck('id');
             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
-            if ($request['environment'] == 'app') {
-                $returnUrl = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId . '&order=' . $order_number;
+            if ($request->action == 'app') {
+                $returnUrl = url('payment/gateway/returnResponse') . '/?gateway=thawani' . '&status=200&transaction_id=' . $transactionId . '&order=' . $order_number;
             } else {
                 $returnUrl = route('order.return.success');
             }
