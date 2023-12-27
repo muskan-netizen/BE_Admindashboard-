@@ -139,9 +139,9 @@ trait ApiResponser
 	protected function errorResponse($message = null, $code, $data = null)
 	{
 		$validCodes = range(100, 599);
-    
+
 		if (!is_int($code) || !in_array($code, $validCodes)) {
-			$code = 500; 	
+			$code = 500;
 		}
 		return response()->json([
 			'status' => 'Error',
@@ -150,7 +150,7 @@ trait ApiResponser
 			'code' => $code
 		], $code);
 	}
-	
+
 
 	protected function updateaverageRating($product_id, $message = null, $code = 200)
 	{
@@ -510,7 +510,8 @@ trait ApiResponser
             if($client_preference->sms_provider == 1)
             {
                 $client = new TwilioClient($sms_key, $sms_secret);
-                $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+              $var =   $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+              \Log::info(['var' => $var]);
             }elseif($client_preference->sms_provider == 2) //for mtalkz gateway
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
@@ -549,10 +550,13 @@ trait ApiResponser
     		}
 			else{
                 $client = new TwilioClient($sms_key, $sms_secret);
-                $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+                $var = $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+                \Log::info(['var' => $var]);
+
             }
         }
         catch(\Exception $e){
+            \Log::info(['err' => $e->getMessage()]);
             return '2';
         }
         return '1';
