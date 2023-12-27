@@ -32,7 +32,7 @@ class CategoryController extends BaseController
      */
     public function index()
     {
-     
+
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $celebrity_check = ClientPreference::first()->value('celebrity_check');
 
@@ -56,7 +56,7 @@ class CategoryController extends BaseController
         }
 
         $categories = Category::with('translation_one','type')->where('id', '>', '1')->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
-   
+
         if ($celebrity_check == 0)
             $categories = $categories->where('type_id', '!=', 5);   # if celebrity mod off .
 
@@ -65,7 +65,7 @@ class CategoryController extends BaseController
             $build = $this->buildTree($categories->toArray());;
             $tree = $this->printTree($build);
         }
-        $tags = Tag::with('primary')->get();
+        $tags = Tag::with('primary')->latest()->get();
         $facilties = Facilty::with('primary')->get();
         // $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
         //     ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
@@ -92,7 +92,7 @@ class CategoryController extends BaseController
         $category = new Category();
         $preference = ClientPreference::first();
         $type_service =  getCategoryTypesServices();
-       
+
         $type = Type::whereIn('service_type',$type_service)->orderBY('sequence', 'ASC')->get();
         // pr( $type);
         // switch($preference->business_type){
@@ -208,7 +208,7 @@ class CategoryController extends BaseController
             default:
             $type = Type::where('title', '!=', 'Pickup/Parent')->orderBY('sequence', 'ASC')->get();
         }
-        
+
 
      //   $get_multi_cat = CategoryTranslation::where('category_id',$id)->groupBy('language_id')->orderBY('updated_at','desc')->pluck('id');
 
@@ -218,7 +218,7 @@ class CategoryController extends BaseController
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
             ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
             ->where('client_languages.client_code', Auth::user()->code)
-            ->where('client_languages.is_active', 1)            
+            ->where('client_languages.is_active', 1)
             ->orderBy('client_languages.is_primary', 'desc')->get();
         $existlangs = $langIds = array();
         foreach ($langs as $key => $value) {
@@ -276,7 +276,7 @@ class CategoryController extends BaseController
      */
     public function update(Request $request, $domain = '', $id)
     {
-       
+
         $rules = array(
             'slug' => 'required|string|max:30|unique:categories,slug,' . $id,
             'cat_lang.name' => 'required|string|max:60',
@@ -295,7 +295,7 @@ class CategoryController extends BaseController
             if (!empty($languageId)) {
                 // $languageId = $request->cat_lang['language_id'];
                 $trans = Category_translation::where('category_id', $save)->where('language_id', $languageId)->latest()->first();
-               
+
                 if (!$trans) {
                     $trans = new Category_translation();
                     $trans->category_id = $save;
@@ -420,11 +420,11 @@ class CategoryController extends BaseController
 
             // category role
             $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
-            
+
             if($getAdditionalPreference['is_price_by_role'] == 1){
                 if($request->has('role')){
                     $roles = $request->role;
-                    
+
                     $role_array = [];
                     foreach($roles as $key => $role){
                         array_push($role_array, $key);
@@ -437,7 +437,7 @@ class CategoryController extends BaseController
                         $category_role->role_id = $key;
                         $category_role->save();
                     }
-                    
+
                     // delete those role which are not there in array
                     CategoryRole::where('category_id', $cate->id)->whereNotIn('role_id', $role_array)->delete();
                 }
@@ -576,16 +576,16 @@ class CategoryController extends BaseController
                 $attributes = $attributes->where('user_id', Auth::id())->get();
             }
         }
-        
+
         return view('backend.attributes.manageAttribute')->with(['attributes' => $attributes]);
     }
-    
+
     public function getAddAttributeForm(Request $request)
     {
         $langs = ClientLanguage::with('language')->select('language_id', 'is_primary', 'is_active')
         ->where('is_active', 1)
         ->orderBy('is_primary', 'desc')->get();
-        
+
         $attributeType = AttributeType::select('id', 'title')
         ->get()
         ->pluck('title', 'id')
@@ -594,7 +594,7 @@ class CategoryController extends BaseController
         $returnHTML = view('backend.attributes.add-attribute')->with(['languages' => $langs, 'attributeType' => $attributeType, 'fieldType' => $fieldType])->render();
         return response()->json(array('success' => true, 'html' => $returnHTML));
     }
-    
+
     public function getEditAttributeForm($domain = '', $id)
     {
         if(
@@ -606,7 +606,7 @@ class CategoryController extends BaseController
                 $variant = AdditionalAttribute::select('id', 'title', 'type_id', 'position', 'service_type', 'field_type')
                 ->with('translation', 'option.translation')
                 ->where('id', $id)->firstOrFail();
-                
+
                 $langs = ClientLanguage::with(['language', 'variantTrans' => function($query) use ($id) {
                     $query->where('variant_id', $id);
                 }])
@@ -614,7 +614,7 @@ class CategoryController extends BaseController
                 ->where('is_active', 1)
                 ->orderBy('is_primary', 'desc')->get();
                 $submitUrl = route('manage.attribute.update', $id);
-                
+
                 $attributeType = AttributeType::select('id', 'title')
                 ->get()
                 ->pluck('title', 'id')
@@ -627,7 +627,7 @@ class CategoryController extends BaseController
             return response()->json(array('success' => false));
         }
     }
-    
+
     public function storeAttributeForm(Request $request)
     {
         if(
@@ -660,15 +660,15 @@ class CategoryController extends BaseController
                         $varTrans->slug = Str::slug($request->title[$key], "_");
                         $varTrans->save();
                     }
-                    
+
                     foreach ($request->hexacode as $key => $value) {
-                        
+
                         $varOpt = new AdditionalAttributeOption();
                         $varOpt->title = $request->opt_color[0][$key];
                         $varOpt->additional_attribute_id = $variant->id;
                         $varOpt->hexcode = ($value == '') ? '' : $value;
                         $varOpt->save();
-                        
+
                         foreach($request->language_id as $k => $v) {
                             $data[] = [
                                 'title' => $request->opt_color[$k][$key],
@@ -686,7 +686,7 @@ class CategoryController extends BaseController
             return redirect()->back()->with(array('error_delete' => 'Attribute not added !'));
         }
     }
-    
+
     public function updateAttributeForm(Request $request, $domain = '', $id)
     {
         if(
@@ -704,9 +704,9 @@ class CategoryController extends BaseController
                 $variant->service_type = $request->service_type;
                 $variant->is_required = $request->is_required;
                 $variant->save();
-                
+
                 foreach ($request->language_id as $key => $value) {
-                    
+
                     $varTrans = AdditionalAttributeTranslation::where('language_id', $value)->where('additional_attribute_id', $variant->id)->first();
                     if(!$varTrans){
                         $varTrans = new AdditionalAttributeTranslation();
@@ -717,40 +717,40 @@ class CategoryController extends BaseController
                     $varTrans->slug = str::slug($request->title[$key], "_");
                     $varTrans->save();
                 }
-                
+
                 $exist_options = [];
                 foreach ($request->option_id as $key => $value) {
-                    
+
                     $curLangId = $request->language_id[0];
-                    
+
                     if(!empty($value)){
                         $varOpt = AdditionalAttributeOption::where('id', $value)->first();
-                        
+
                         if(!$varOpt){
                             $varOpt = new AdditionalAttributeOption();
                             $varOpt->additional_attribute_id = $variant->id;
                         }
-                        
+
                         $varOpt->title = $request->opt_title[$curLangId][$key];
                         $varOpt->hexcode = ($request->hexacode[$key] == '') ? '' : $request->hexacode[$key];
                         $varOpt->save();
                         $exist_options[$key] = $varOpt->id;
                     }else{
-                        
+
                         $varOpt = new AdditionalAttributeOption();
                         $varOpt->additional_attribute_id = $variant->id;
                         $varOpt->title = $request->opt_title[$curLangId][$key];
                         $varOpt->hexcode = ($request->hexacode[$key] == '') ? '' : $request->hexacode[$key];
                         $varOpt->save();
                         $exist_options[$key] = $varOpt->id;
-                        
+
                     }
                 }
-                
+
                 foreach($request->opt_id as $lid => $options) {
-                    
+
                     foreach($options as $key => $value) {
-                        
+
                         if(!empty($value)){
                             $varOptTrans = AdditionalAttributeOptionTranslation::where('language_id', $lid)->where('attribute_option_id', $value)->first();
                             if(!$varOptTrans){
@@ -760,7 +760,7 @@ class CategoryController extends BaseController
                             }
                             $varOptTrans->title = $request->opt_title[$lid][$key];
                             $varOptTrans->save();
-                            
+
                         }else{
                             $varOptTrans = new AdditionalAttributeOptionTranslation();
                             $varOptTrans->additional_attribute_option_id =$exist_options[$key];
@@ -777,7 +777,7 @@ class CategoryController extends BaseController
             return redirect()->back()->with('error_delete', 'Attribute not updated successfully!');
         }
     }
-    
+
     public function destroyAttribute($domain = '', $id)
     {
         if(checkTableExists('additional_attributes')) {
