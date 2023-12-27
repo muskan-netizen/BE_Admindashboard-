@@ -510,8 +510,7 @@ trait ApiResponser
             if($client_preference->sms_provider == 1)
             {
                 $client = new TwilioClient($sms_key, $sms_secret);
-              $var =   $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
-              \Log::info(['var' => $var]);
+                $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
             }elseif($client_preference->sms_provider == 2) //for mtalkz gateway
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
@@ -550,9 +549,7 @@ trait ApiResponser
     		}
 			else{
                 $client = new TwilioClient($sms_key, $sms_secret);
-                $var = $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
-                \Log::info(['var' => $var]);
-
+                $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
             }
         }
         catch(\Exception $e){
