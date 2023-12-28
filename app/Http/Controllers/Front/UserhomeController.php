@@ -168,12 +168,10 @@ class UserhomeController extends FrontController
                  $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
 
                 $response = $client->post($endpoint);
-                \Log::info('response1');
-                \Log::info([$response]);
 
                 $response = json_decode($response->getBody(), true);
                 \Log::info('response2');
-                \Log::info([$response]);
+                \Log::info([$response['data']]);
 
                 return json_encode($response['data'], true);
             }
