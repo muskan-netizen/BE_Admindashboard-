@@ -986,8 +986,7 @@ class OrderController extends BaseController
             $roles = [
                 'or_vend_prod_id'   => 'required',
                 'or_prod_old_price' => 'required',
-                'product_price'   => 'required',
-                'update_price_reason' => 'required|string'
+                'product_price'   => 'required'
             ];
             $validator = Validator::make($request->all(), $roles);
             if ($validator->fails()) {
