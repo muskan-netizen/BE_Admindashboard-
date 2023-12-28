@@ -123,6 +123,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                             <thead>
                                 <tr>
                                     <!-- <th>{{ __('Order ID') }}</th> -->
+                                    <th>{{ __('Order Number') }}</th>
                                     <th>{{ __('Date & Time') }}</th>
                                     <th>{{ __('Customer Name') }}</th>
                                     <th>{{ __('Vendor') }}</th>
@@ -270,7 +271,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                           }
                         },
                         columns: [
-                         
+                            {data: 'order_number', name: 'order_number',orderable: false, searchable: false},
                             {data: 'created_date', name: 'name',orderable: false, searchable: false},
                             {data: 'user_name', name: 'Customer Name',orderable: false, searchable: false},
                             {data: 'vendor_name', name: 'vendor_name', orderable: false, searchable: false},
