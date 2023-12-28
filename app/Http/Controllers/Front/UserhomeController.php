@@ -173,7 +173,7 @@ class UserhomeController extends FrontController
                 \Log::info('response2');
                 \Log::info([$response['data']]);
 
-                return json_encode($response['data'], true);
+                return json_encode($response['data']);
             }
 
         } catch (\Exception $e) {
@@ -276,6 +276,9 @@ class UserhomeController extends FrontController
                     $showTag = implode(',', $tag);
                     $client = Client::with('country')->first();
                     $docs = $this->driverDocuments();
+                    \Log::info('docs');
+                    \Log::info([$docs]);
+                    \Log::info([$docs['documents']]);
                     $driver_registration_documents = [];
                     if(is_array($docs) && count($docs)>0){
                         $driverDocs = json_decode($docs, true);
