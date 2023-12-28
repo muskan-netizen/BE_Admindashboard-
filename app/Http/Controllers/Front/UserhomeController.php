@@ -278,16 +278,16 @@ class UserhomeController extends FrontController
                     $docs = $this->driverDocuments();
                     \Log::info('docs');
                     \Log::info($docs);
-                    \Log::info([$docs->documents]);
+                    // \Log::info([$docs->documents]);
                     $driver_registration_documents = [];
-                    if(is_array($docs) && count($docs)>0){
+                    // if(is_array($docs) && count($docs)>0){
                         $driverDocs = json_decode($docs, true);
                         $driver_registration_documents = $driverDocs->documents;
                         foreach ($driverDocs->documents as $key => $doc) {
                             $name = str_replace(" ", "_", $doc->name);
                             $doc->slug = $name;
                         }
-                    }
+                    // }
                 $teams = @$driverDocs->all_teams??[];
                 $tags = @$driverDocs->agent_tags??[];
                 return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents','client', 'teams', 'tags'));
