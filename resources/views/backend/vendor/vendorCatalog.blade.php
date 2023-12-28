@@ -703,7 +703,7 @@
                                                         </ul>
                                                     </td>
                                                 @endif
-                                                <td> <a href="{{ route('product/import-error',['id' => $csv->id]) }}">{{ __('Download Logs') }}</a> </td>
+                                                <td> <a href="{{ route('productImport.error',['id' => $csv->id]) }}">{{ __('Download Logs') }}</a> </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
