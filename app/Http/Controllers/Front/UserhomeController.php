@@ -283,7 +283,7 @@ class UserhomeController extends FrontController
                         $driverDocs = json_decode($docs, true);
 
                         $driver_registration_documents = $driverDocs['documents'];
-                        foreach ($driverDocs as $key => $doc) {
+                        foreach ($driver_registration_documents as $key => $doc) {
                             $name = str_replace(" ", "_", $doc['name']);
                             $doc->slug = $name;
                         }
