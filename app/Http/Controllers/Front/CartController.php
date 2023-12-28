@@ -2066,7 +2066,8 @@ class CartController extends FrontController
      */
     public function getCartData($domain = '', Request $request)
     {
-
+        try
+        {
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'order_edit_before_hours', 'is_gift_card', 'is_token_currency_enable', 'is_service_product_price_from_dispatch', 'token_currency', 'advance_booking_amount', 'advance_booking_amount_percentage', 'is_file_cart_instructions', 'is_service_price_selection', 'is_rental_weekly_monthly_price']);
 
         $wishListCount = 0;
@@ -2123,7 +2124,14 @@ class CartController extends FrontController
 
         }
         $address_id = $request->has("address_id") ? $request->address_id : (  @$cart->address_id ?? '') ;
-        
+        if (isset( $address_id) && !empty( $address_id) && !empty($user)) {
+           // $address_id $address_id = $request->address_id;
+            $address = UserAddress::where('user_id', $user->id)->update(['is_primary' => 0]);
+            $address = UserAddress::where('user_id', $user->id)->where('id', $address_id)->update(['is_primary' => 1]);
+        }else if($user){
+            $address_id = UserAddress::where('user_id', $user->id)->where('is_primary', 1)->value('id')??null;
+            // $address_id = $address->id??null;
+        }
 
         if (isset($cart->editingOrder) && !empty($cart->editingOrder)) {
             $schedule_date_delivery_edit = Carbon::parse($cart->editingOrder->scheduled_date_time)->timezone($timezone)->format('Y-m-d H:i:s');
@@ -2232,6 +2240,11 @@ class CartController extends FrontController
         // till here
         return response()->json(['loggedIn' => Auth::check() ? 'true' : 'false', 'status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html, 'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail, 'mycart' => $mycartView ?? '', 'cart_error_message' => $error_message, 'wishListCount' => $wishListCount]); //'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
 
+    }catch(\Exception $e)
+    {
+        \Log::info($e->getLine().'--'.$e->getMessage());
+        return response()->json([]);
+    }
     }
 
 
