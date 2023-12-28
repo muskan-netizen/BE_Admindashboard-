@@ -164,18 +164,17 @@ class UserhomeController extends FrontController
             } else{
 
                 $url = $dispatch_domain->delivery_service_key_url;
-                \Log::info('[$dispatch_domain]');
-                \Log::info([$dispatch_domain]);
                 $endpoint =$url . "/api/send-documents";
-                \Log::info($endpoint);
-
                  $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
 
                 $response = $client->post($endpoint);
-                \Log::info('response');
-                \Log::info([$response]);
+                \Log::info('response1');
+                \Log::info($response);
 
                 $response = json_decode($response->getBody(), true);
+                \Log::info('response2');
+                \Log::info($response);
+
                 return json_encode($response['data'], true);
             }
 
@@ -278,16 +277,16 @@ class UserhomeController extends FrontController
                 $tag = [];
                     $showTag = implode(',', $tag);
                     $client = Client::with('country')->first();
-                    // pr( $this->driverDocuments());
-                    $driver_registration_documents = [];
-                    if(is_array($this->driverDocuments()) && count($this->driverDocuments())>0){
-                        $driverDocs = json_decode($this->driverDocuments(), true);
+                    $docs = $this->driverDocuments();
+                    // $driver_registration_documents = [];
+                    // if(is_array($docs) && count($docs)>0){
+                        $driverDocs = json_decode($docs, true);
                         $driver_registration_documents = $driverDocs->documents;
                         foreach ($driverDocs->documents as $key => $doc) {
                             $name = str_replace(" ", "_", $doc->name);
                             $doc->slug = $name;
                         }
-                    }
+                    // }
                 $teams = @$driverDocs->all_teams??[];
                 $tags = @$driverDocs->agent_tags??[];
                 return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents','client', 'teams', 'tags'));
