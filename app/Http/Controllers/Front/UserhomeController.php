@@ -276,13 +276,14 @@ class UserhomeController extends FrontController
                     if (!is_array($driverDocs)) {
                         // Handle the case where $driverDocs is not an array (perhaps log an error or take appropriate action)
                         $driverDocs = [];
-                    }
-                    // Now $driverDocs is always an array, and you can proceed with your foreach loop
-                    $driver_registration_documents = $driverDocs['documents'];
-                    
-                    foreach ($driverDocs['documents'] as $key => $doc) {
-                        $name = str_replace(" ", "_", $doc['name']);
-                        $doc['slug'] = $name;
+                    }else{
+                        // Now $driverDocs is always an array, and you can proceed with your foreach loop
+                        $driver_registration_documents = $driverDocs['documents'];
+                        
+                        foreach ($driverDocs['documents'] as $key => $doc) {
+                            $name = str_replace(" ", "_", $doc['name']);
+                            $doc['slug'] = $name;
+                        }
                     }
                 $teams = $driverDocs->all_teams;
                 $tags = $driverDocs->agent_tags;
