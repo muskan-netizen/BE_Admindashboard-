@@ -273,6 +273,7 @@ class UserhomeController extends FrontController
                     $driverDocs = $this->driverDocuments();
                     // Decode the JSON string
                     $driverDocs = json_decode($driverDocs, true); // Set the second parameter to true for an associative array
+                    $driver_registration_documents = [];
                     if (!is_array($driverDocs)) {
                         // Handle the case where $driverDocs is not an array (perhaps log an error or take appropriate action)
                         $driverDocs = [];
