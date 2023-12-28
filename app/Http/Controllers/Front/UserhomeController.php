@@ -152,7 +152,7 @@ class UserhomeController extends FrontController
 
                 $response = $client->post($endpoint);
                 $response = json_decode($response->getBody(), true);
-                return json_encode($response['data']);
+                return json_encode($response['data'],true);
             } elseif($dispatch_domain->business_type == 'laundry'){
                     $url = $dispatch_domain->laundry_service_key_url;
                     $endpoint =$url . "/api/send-documents";
@@ -160,7 +160,7 @@ class UserhomeController extends FrontController
 
                     $response = $client->post($endpoint);
                     $response = json_decode($response->getBody(), true);
-                    return json_encode($response['data']);
+                    return json_encode($response['data'],true);
             } else{
 
                 $url = $dispatch_domain->delivery_service_key_url;
@@ -169,7 +169,7 @@ class UserhomeController extends FrontController
 
                 $response = $client->post($endpoint);
                 $response = json_decode($response->getBody(), true);
-                return json_encode($response['data']);
+                return json_encode($response['data'], true);
             }
 
         } catch (\Exception $e) {
@@ -270,24 +270,18 @@ class UserhomeController extends FrontController
                     $showTag = implode(',', $tag);
                     $client = Client::with('country')->first();
                     // pr( $this->driverDocuments());
-                    $driverDocs = $this->driverDocuments();
-                    // Decode the JSON string
-                    $driverDocs = json_decode($driverDocs, true); // Set the second parameter to true for an associative array
                     $driver_registration_documents = [];
-                    if (!is_array($driverDocs)) {
-                        // Handle the case where $driverDocs is not an array (perhaps log an error or take appropriate action)
-                        $driverDocs = [];
-                    }else{
-                        // Now $driverDocs is always an array, and you can proceed with your foreach loop
-                        $driver_registration_documents = $driverDocs['documents'];
-                        
-                        foreach ($driverDocs['documents'] as $key => $doc) {
-                            $name = str_replace(" ", "_", $doc['name']);
-                            $doc['slug'] = $name;
+                    \Log::info([$this->driverDocuments()]);
+                    if(is_array($this->driverDocuments()) && count($this->driverDocuments())>0){
+                        $driverDocs = json_decode($this->driverDocuments(), true);
+                        $driver_registration_documents = $driverDocs->documents;
+                        foreach ($driverDocs->documents as $key => $doc) {
+                            $name = str_replace(" ", "_", $doc->name);
+                            $doc->slug = $name;
                         }
                     }
-                $teams = $driverDocs->all_teams;
-                $tags = $driverDocs->agent_tags;
+                $teams = @$driverDocs->all_teams??[];
+                $tags = @$driverDocs->agent_tags??[];
                 return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents','client', 'teams', 'tags'));
         }
     }
