@@ -167,6 +167,8 @@ class UserhomeController extends FrontController
                 \Log::info('[$dispatch_domain]');
                 \Log::info([$dispatch_domain]);
                 $endpoint =$url . "/api/send-documents";
+                \Log::info($endpoint);
+
                  $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
 
                 $response = $client->post($endpoint);
