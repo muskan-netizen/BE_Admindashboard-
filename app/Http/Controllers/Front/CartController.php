@@ -2122,13 +2122,14 @@ class CartController extends FrontController
        
       
         }
-        $address_id = $request->has("address_id") ? $request->address_id : (@$cart->address_id ?? '');
-
-        if (isset($address_id) && !empty($address_id)) {
-            // $address_id $address_id = $request->address_id;
-
+        $address_id = $request->has("address_id") ? $request->address_id : (  @$cart->address_id ?? '') ;
+        if (isset( $address_id) && !empty( $address_id)) {
+           // $address_id $address_id = $request->address_id;
             $address = UserAddress::where('user_id', $user->id)->update(['is_primary' => 0]);
             $address = UserAddress::where('user_id', $user->id)->where('id', $address_id)->update(['is_primary' => 1]);
+        }else{
+            $address = UserAddress::where('user_id', $user->id)->where('is_primary', 1)->first();
+            $address_id = $address->id;
         }
 
         if (isset($cart->editingOrder) && !empty($cart->editingOrder)) {
