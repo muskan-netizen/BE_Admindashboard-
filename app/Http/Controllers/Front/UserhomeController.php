@@ -283,7 +283,7 @@ class UserhomeController extends FrontController
                         $driverDocs = json_decode($docs, true);
 
                         \Log::info('docs decode');
-                    \Log::info($docs);
+                    \Log::info($driverDocs);
 
                         $driver_registration_documents = $driverDocs->documents;
                         foreach ($driverDocs->documents as $key => $doc) {
