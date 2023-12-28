@@ -280,7 +280,6 @@ class UserhomeController extends FrontController
                     $client = Client::with('country')->first();
                     // pr( $this->driverDocuments());
                     $driver_registration_documents = [];
-                    \Log::info([$this->driverDocuments()]);
                     if(is_array($this->driverDocuments()) && count($this->driverDocuments())>0){
                         $driverDocs = json_decode($this->driverDocuments(), true);
                         $driver_registration_documents = $driverDocs->documents;
