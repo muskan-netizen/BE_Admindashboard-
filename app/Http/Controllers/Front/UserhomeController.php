@@ -175,8 +175,10 @@ class UserhomeController extends FrontController
         } catch (\Exception $e) {
             $data = [];
             $data['status'] = 400;
-            $data['message'] =  $e->getMessage();
-            return $data;
+            $data['message'] =  $e->getMessage().'--'.$e->getLine();
+            \Log::info('catch error');
+            \Log::info([$data]);
+            return [];
         }
     }
 
