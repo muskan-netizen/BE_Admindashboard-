@@ -276,12 +276,15 @@ class UserhomeController extends FrontController
                     $showTag = implode(',', $tag);
                     $client = Client::with('country')->first();
                     $docs = $this->driverDocuments();
-                    \Log::info('docs');
-                    \Log::info($docs);
+                    
                     // \Log::info([$docs->documents]);
                     $driver_registration_documents = [];
                     // if(is_array($docs) && count($docs)>0){
                         $driverDocs = json_decode($docs, true);
+
+                        \Log::info('docs decode');
+                    \Log::info($docs);
+
                         $driver_registration_documents = $driverDocs->documents;
                         foreach ($driverDocs->documents as $key => $doc) {
                             $name = str_replace(" ", "_", $doc->name);
