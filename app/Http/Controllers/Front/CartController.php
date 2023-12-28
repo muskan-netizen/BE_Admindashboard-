@@ -2123,14 +2123,7 @@ class CartController extends FrontController
 
         }
         $address_id = $request->has("address_id") ? $request->address_id : (  @$cart->address_id ?? '') ;
-        if (isset( $address_id) && !empty( $address_id)) {
-           // $address_id $address_id = $request->address_id;
-            $address = UserAddress::where('user_id', $user->id)->update(['is_primary' => 0]);
-            $address = UserAddress::where('user_id', $user->id)->where('id', $address_id)->update(['is_primary' => 1]);
-        }else{
-            $address_id = UserAddress::where('user_id', $user->id)->where('is_primary', 1)->value('id')??null;
-            // $address_id = $address->id??null;
-        }
+        
 
         if (isset($cart->editingOrder) && !empty($cart->editingOrder)) {
             $schedule_date_delivery_edit = Carbon::parse($cart->editingOrder->scheduled_date_time)->timezone($timezone)->format('Y-m-d H:i:s');
