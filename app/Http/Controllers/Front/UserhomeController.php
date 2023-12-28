@@ -285,7 +285,7 @@ class UserhomeController extends FrontController
                         $driver_registration_documents = $driverDocs['documents'];
                         foreach ($driver_registration_documents as $key => $doc) {
                             $name = str_replace(" ", "_", $doc['name']);
-                            $doc->slug = $name;
+                            // $doc->slug = $name;
                         }
                     // }
                 $teams = @$driverDocs->all_teams??[];
