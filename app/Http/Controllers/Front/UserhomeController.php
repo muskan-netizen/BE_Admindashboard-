@@ -170,8 +170,8 @@ class UserhomeController extends FrontController
                 $response = $client->post($endpoint);
 
                 $response = json_decode($response->getBody(), true);
-                \Log::info('response2');
-                \Log::info([$response['data']]);
+                // \Log::info('response2');
+                // \Log::info(json_encode($response));
 
                 return json_encode($response['data']);
             }
@@ -272,25 +272,36 @@ class UserhomeController extends FrontController
                 return view('frontend.extrapageNew', compact('page_detail','templetes','VendorCategory','builds','navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms','privacy'));
 
         }else {
-                $tag = [];
-                    $showTag = implode(',', $tag);
-                    $client = Client::with('country')->first();
-                    $docs = $this->driverDocuments();
-                    // \Log::info('docs');
-                    // \Log::info($docs);
-                    // \Log::info([$docs->documents]);
-                    $driver_registration_documents = [];
-                    if(is_array($docs) && count($docs)>0){
-                        $driverDocs = json_decode($docs, true);
-                        $driver_registration_documents = $driverDocs->documents;
-                        foreach ($driverDocs->documents as $key => $doc) {
+            $tag = [];
+            $showTag = implode(',', $tag);
+            $client = Client::with('country')->first();
+            $docs = $this->driverDocuments();
+
+            $driver_registration_documents = [];
+
+            // Check if $docs is a non-empty string
+            if (isset($docs) && is_string($docs) && !empty($docs)) {
+                // Decode the JSON string as an object
+                $driverDocs = json_decode($docs);
+
+                // Check if 'documents' property exists in the decoded object
+                if (isset($driverDocs->documents) && is_array($driverDocs->documents)) {
+                    $driver_registration_documents = $driverDocs->documents;
+
+                    // Loop through each document
+                    foreach ($driver_registration_documents as $key => $doc) {
+                        // Check if $doc is an object and has 'name' property
+                        if (is_object($doc) && isset($doc->name)) {
                             $name = str_replace(" ", "_", $doc->name);
                             $doc->slug = $name;
                         }
                     }
-                $teams = @$driverDocs->all_teams??[];
-                $tags = @$driverDocs->agent_tags??[];
-                return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents','client', 'teams', 'tags'));
+                }
+            }
+
+            $teams = @$driverDocs->all_teams??[];
+            $tags = @$driverDocs->agent_tags??[];
+            return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents','client', 'teams', 'tags'));
         }
     }
 
