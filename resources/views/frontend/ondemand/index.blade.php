@@ -15,6 +15,7 @@ if(isset($product)){
     ];
 }
 @endphp
+
 @extends('layouts.store',  $meta_data)
 @section('content')
 @php

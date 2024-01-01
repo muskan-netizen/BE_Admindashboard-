@@ -20,6 +20,7 @@ class AlterClientPreferencesAddColumnMapKeyForIosApp extends Migration
             }
         });
     }
+
     /**
      * Reverse the migrations.
      *

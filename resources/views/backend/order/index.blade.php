@@ -616,7 +616,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             }else if(status_option_id == 4){
                  title = "{{__('Processing Order')}}";
             }else if(status_option_id == 5){
-                 title = "{{__('Out of delivery')}}";
+                 title = "{{__('Out for delivery')}}";
             }else{
                  title = "{{__('Complete the delivery?')}}";
             }

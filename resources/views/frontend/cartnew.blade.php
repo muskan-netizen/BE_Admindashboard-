@@ -397,7 +397,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                             <input class="form-control manual_promocode_input" name="name" type="text" placeholder="{{ __('Enter a promocode')}}" >
                             <button class="btn btn-solid apply_promo_code_btn" data-vendor_id="" data-cart_id=""
                             data-coupon_id="" data-amount="" style="display:none">Apply</button>
-                            
+
                         </div>
                         <span class="invalid-feedback manual_promocode" role="alert">
                         </span>
@@ -1179,6 +1179,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
+    var pyment_totalpay_url= "{{ route('make.payment') }}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
     var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";

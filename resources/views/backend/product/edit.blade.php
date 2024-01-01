@@ -406,17 +406,17 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
                     {{-- Input Filed of price based on roles (START) --}}
                     @if($product->has_variant == 0)
-                        @if (isset($getAdditionalPreference['is_price_by_role']))
-                            @if($getAdditionalPreference['is_price_by_role'] == '1')
+                        {{-- @if (isset($getAdditionalPreference['is_price_by_role'])) --}}
+                            {{-- @if($getAdditionalPreference['is_price_by_role'] == '1') --}}
                                 <div class="row mb-2">
                                     @if (isset($roles))
                                         @foreach ($roles as $key => $_role)
-                                            @if( $_role['role'] === 'Corporate_user')
+                                            {{-- @if( $_role['role'] === 'Corporate_user') --}}
                                                 <div class="col-12">
 
                                                     <div class="field_wrapper">
                                                         @foreach ($product->productVariantByRoles as $role)
-                                                            @if($role->role_id == 3)
+                                                            {{-- @if($role->role_id == 3) --}}
                                                                 <div class="row corporate-row">
                                                                     <div class="col-md-5">
                                                                         <div class="form-group">
@@ -431,7 +431,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                                                         <a href="javascript:void(0);" class="remove_button" title="Remove field"><i class="mdi mdi-minus-circle mr-1"></i></a>
                                                                     </div>
                                                                 </div>
-                                                            @endif
+                                                            {{-- @endif --}}
                                                         @endforeach
                                                         <div class="row corporate-row">
                                                             <div class="col-md-5">
@@ -451,18 +451,18 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                                         </div>
                                                     </div>
                                                 </div>
-                                            @else
+                                            {{-- @else
                                                 <div class="col-4 mb-2">
                                                     {!! Form::label('title', $_role['role'].' '. __('Price'), ['class' => 'control-label']) !!}
                                                     <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKey(event)" placeholder="0" name="role_price[{{$_role['id']}}]" value="{{ isset($product->productVariantByRoles[$key]) ? (decimal_format($product->productVariantByRoles[$key]->amount) ?? 0.00) : 0.00 }}">
                                                     <input type="hidden" class="form-control" min="0" name="role_id[{{lcfirst($_role['role'])}}]" value="{{$_role['id']}}">
                                                 </div>
-                                            @endif
+                                            @endif --}}
                                         @endforeach
                                     @endif
                                 </div>
-                            @endif
-                        @endif
+                            {{-- @endif
+                        @endif --}}
                     @endif
                     {{-- Input Filed of price based on roles (END) --}}
 
@@ -1400,28 +1400,51 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     </div>
                     @endif
                     @endif
+                    @if (isset($getAdditionalPreference['is_product_measurement_in_cm_kg']) && $getAdditionalPreference['is_product_measurement_in_cm_kg'] == 1)
+                        <div class="row mt-2 mb-2 physicalDiv" style="{{ ($product->is_physical == 1) ? '' : '' }}">
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Length (In Centimeter)',['class' => 'control-label']) !!}
+                                {!! Form::text('length', $product->length,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '10.0']) !!}
+                            </div>
 
-                    <div class="row mt-2 mb-2 physicalDiv" style="{{ ($product->is_physical == 1) ? '' : '' }}">
-                        <div class="col-sm-4">
-                            {!! Form::label('title', 'Length (In Inches)',['class' => 'control-label']) !!}
-                            {!! Form::text('length', $product->length,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '10.0']) !!}
-                        </div>
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Width (In Centimeter)',['class' => 'control-label']) !!}
+                                {!! Form::text('breadth', $product->breadth,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '12.0']) !!}
+                            </div>
 
-                        <div class="col-sm-4">
-                            {!! Form::label('title', 'Width (In Inches)',['class' => 'control-label']) !!}
-                            {!! Form::text('breadth', $product->breadth,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '12.0']) !!}
-                        </div>
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Height (In Centimeter)',['class' => 'control-label']) !!}
+                                {!! Form::text('height', $product->height,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '8.0']) !!}
+                            </div>
 
-                        <div class="col-sm-4">
-                            {!! Form::label('title', 'Height (In Inches)',['class' => 'control-label']) !!}
-                            {!! Form::text('height', $product->height,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '8.0']) !!}
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Weight (In Kg)',['class' => 'control-label']) !!}
+                                {!! Form::text('weight', $product->weight,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '15.0']) !!}
+                            </div>
                         </div>
+                    @else
+                        <div class="row mt-2 mb-2 physicalDiv" style="{{ ($product->is_physical == 1) ? '' : '' }}">
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Length (In Inches)',['class' => 'control-label']) !!}
+                                {!! Form::text('length', $product->length,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '10.0']) !!}
+                            </div>
 
-                        <div class="col-sm-4">
-                            {!! Form::label('title', 'Weight (In Pounds)',['class' => 'control-label']) !!}
-                            {!! Form::text('weight', $product->weight,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '15.0']) !!}
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Width (In Inches)',['class' => 'control-label']) !!}
+                                {!! Form::text('breadth', $product->breadth,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '12.0']) !!}
+                            </div>
+
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Height (In Inches)',['class' => 'control-label']) !!}
+                                {!! Form::text('height', $product->height,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '8.0']) !!}
+                            </div>
+
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Weight (In Pounds)',['class' => 'control-label']) !!}
+                                {!! Form::text('weight', $product->weight,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '15.0']) !!}
+                            </div>
                         </div>
-                    </div>
+                    @endif
 
                     <!-- <div class="row mb-2">
                         {!! Form::label('title', 'Physical',['class' => 'control-label col-sm-2']) !!}
