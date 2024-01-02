@@ -20,10 +20,12 @@ class PermissionMiddleware
     public function handle($request, Closure $next, $permission = null, $guard = null)
     {
 
-        $checkPermissionEnable = @getAdditionalPreference(['is_role_and_permission_enable'])['is_role_and_permission_enable'];
+                $checkPermissionEnable = @getAdditionalPreference(['is_role_and_permission_enable'])['is_role_and_permission_enable'];
                 if($checkPermissionEnable)
                 {
+                        $guard = $guard ?? config('auth.defaults.guard');
                         $user = auth()->user();
+                        \Log::info(['guard' => $guard]);
                         $authGuard = app('auth')->guard($guard);
                         $permissionArray = $this->permissionUser($user);
                         \Log::info(['permissions' => $permissionArray]);
@@ -49,7 +51,7 @@ class PermissionMiddleware
 
                         foreach ($permissions as $permission) {
                             \Log::info($authGuard->user()->can($permission));
-                            if ($authGuard->user()->can($permission)) {
+                            if ($authGuard->user()->checkPermissionTo($permission, $guard)) {
                                 return $next($request);
                             }
                         }
