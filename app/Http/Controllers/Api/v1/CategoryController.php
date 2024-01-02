@@ -185,7 +185,6 @@ class CategoryController extends BaseController
             $latitude = !empty($request->latitude) ? $request->latitude : $preferences->Default_latitude;
             $longitude = !empty($request->longitude) ? $request->longitude : $preferences->Default_longitude;
             $vendor_ids = Vendor::byVendorSubscriptionRule($preferences)->where('status', 1);
-            // pr($vendor_ids);
             $vendor_ids =  $vendor_ids->pluck('id')->toArray();
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $products = Product::has('vendor')->with([
