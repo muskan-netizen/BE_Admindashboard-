@@ -18,6 +18,7 @@ class NomenclatureController extends BaseController
      */
     public function store(Request $request)
     {
+         
         NomenClature::updateOrCreate(['label' => 'vendors'], ['label' => 'vendors']);
         NomenClature::updateOrCreate(['label' => 'sellers'], ['label' => 'sellers']);
         NomenClature::updateOrCreate(['label' => 'Loyalty Cards'], ['label' => 'Loyalty Cards']);

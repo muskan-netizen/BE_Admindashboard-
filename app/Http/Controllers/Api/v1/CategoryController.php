@@ -87,7 +87,6 @@ class CategoryController extends BaseController
         $user = Auth::user();
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area','subscription_mode')->where('id', '>', 0)->first();
 
-
         if ($type == 'vendor' && $product_list == 'false') {
          
             $vendor_ids = [];
@@ -144,7 +143,7 @@ class CategoryController extends BaseController
                $vendor->vendorOffer = $vendor->vendor_promo->max('amount');
                $vendor->vendorNoOfRatings = $this->vendorNoOfRatings($vendor->products);
                 unset($vendor->products);
-                //$vendor = $this->getLineOfSightDistanceAndTime($vendor, $preferences);
+                $vendor = $this->getLineOfSightDistanceAndTime($vendor, $preferences);
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4 ) ? 1 : 0;
                 $vendor->is_show_products_with_category = ($vendor->vendor_templete_id == 5) ? 1 : 0;
                 $vendorCategories = VendorCategory::with(['category.translation' => function($q) use($langId){
@@ -183,8 +182,10 @@ class CategoryController extends BaseController
             }
             return $vendorData;
         } elseif ($type == 'vendor' && $product_list == 'true') {
+            $latitude = !empty($request->latitude) ? $request->latitude : $preferences->Default_latitude;
+            $longitude = !empty($request->longitude) ? $request->longitude : $preferences->Default_longitude;
             $vendor_ids = Vendor::byVendorSubscriptionRule($preferences)->where('status', 1);
-           
+            // pr($vendor_ids);
             $vendor_ids =  $vendor_ids->pluck('id')->toArray();
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $products = Product::has('vendor')->with([
@@ -241,6 +242,21 @@ class CategoryController extends BaseController
                         $product->variant =  $product;
                     }
                 }
+            }
+            $vendorDistance[] = [];
+            if (!empty($products)) {
+                 foreach ($products as $key => $product) {
+                    if(empty($vendorDistance[$product->vendor_id])){
+                        $vendorDistance[$product->vendor->id] = $this->getVendorDistanceWithTime($latitude, $longitude, $product->vendor, $preferences, $request->type);
+                    }
+                        if($vendorDistance[$product->vendor_id])
+                        {
+                            $product->lineOfSightDistance =$vendorDistance[$product->vendor_id]->lineOfSightDistance??0;
+                            $product->timeofLineOfSightDistance =$vendorDistance[$product->vendor_id]->timeofLineOfSightDistance??0;
+                        }
+                    
+                }
+
             }
             return $products;
         } elseif ($type == 'pickup/delivery') {
