@@ -381,13 +381,15 @@ class PaymentOptionController extends BaseController
             $password = (isset($creds_arr->password)) ? $creds_arr->password : '';
             $signature = (isset($creds_arr->signature)) ? $creds_arr->signature : '';
             $testmode = (isset($paypal_creds->test_mode) && ($paypal_creds->test_mode == '1')) ? true : false;
+            $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+            $currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
             $this->gateway = Omnipay::create('PayPal_Express');
             $this->gateway->setUsername($username);
             $this->gateway->setPassword($password);
             $this->gateway->setSignature($signature);
             $this->gateway->setTestMode($testmode); //set it to 'false' when go live
             $response = $this->gateway->purchase([
-                'currency' => 'USD',
+                'currency' => $currency, //'USD',
                 'amount' => $this->getDollarCompareAmount($request->amount),
                 'cancelUrl' => url($request->serverUrl . $request->cancelUrl),
                 'returnUrl' => url($request->serverUrl . $request->returnUrl . '?amount=' . $request->amount),
