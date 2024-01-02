@@ -24,10 +24,7 @@ class PermissionMiddleware
                 if($checkPermissionEnable)
                 {
                         $user = auth()->user();
-                        \Log::info(['guard' => $guard]);
                         $authGuard = app('auth')->guard($guard);
-                        \Log::info(['auth- guard' => $authGuard]);
-
                         $permissionArray = $this->permissionUser($user);
                         \Log::info(['permissions' => $permissionArray]);
                         $page = $request->route()->action['controller'];
