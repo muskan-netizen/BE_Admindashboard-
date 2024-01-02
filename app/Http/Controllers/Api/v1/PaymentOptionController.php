@@ -375,7 +375,7 @@ class PaymentOptionController extends BaseController
     public function postPaymentVia_paypal(Request $request)
     {
         try {
-            $paypal_creds = PaymentOption::select('credentials')->where('code', 'paypal')->where('status', 1)->first();
+            $paypal_creds = PaymentOption::select('credentials','test_mode')->where('code', 'paypal')->where('status', 1)->first();
             $creds_arr = json_decode($paypal_creds->credentials);
             $username = (isset($creds_arr->username)) ? $creds_arr->username : '';
             $password = (isset($creds_arr->password)) ? $creds_arr->password : '';
