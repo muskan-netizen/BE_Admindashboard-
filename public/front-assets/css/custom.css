@@ -5716,7 +5716,7 @@ body.dark .top-banner-wrapper p {
     width: calc(100% - 20px) !important
 }
 .al_body_template_nine .inner_spacing{
-    min-height: 115px;
+    min-height: inherit;
 }
 
 .displayProducts .product-box {
