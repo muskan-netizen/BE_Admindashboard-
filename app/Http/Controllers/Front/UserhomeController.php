@@ -164,19 +164,16 @@ class UserhomeController extends FrontController
             } else{
 
                 $url = $dispatch_domain->delivery_service_key_url;
-                \Log::info('[$dispatch_domain]');
-                \Log::info([$dispatch_domain]);
                 $endpoint =$url . "/api/send-documents";
-                \Log::info($endpoint);
-
                  $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
 
                 $response = $client->post($endpoint);
-                \Log::info('response');
-                \Log::info([$response]);
 
                 $response = json_decode($response->getBody(), true);
-                return json_encode($response['data'], true);
+                // \Log::info('response2');
+                // \Log::info(json_encode($response));
+
+                return json_encode($response['data']);
             }
 
         } catch (\Exception $e) {
@@ -275,23 +272,36 @@ class UserhomeController extends FrontController
                 return view('frontend.extrapageNew', compact('page_detail','templetes','VendorCategory','builds','navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms','privacy'));
 
         }else {
-                $tag = [];
-                    $showTag = implode(',', $tag);
-                    $client = Client::with('country')->first();
-                    // pr( $this->driverDocuments());
-                    $driver_registration_documents = [];
-                    \Log::info([$this->driverDocuments()]);
-                    if(is_array($this->driverDocuments()) && count($this->driverDocuments())>0){
-                        $driverDocs = json_decode($this->driverDocuments(), true);
-                        $driver_registration_documents = $driverDocs->documents;
-                        foreach ($driverDocs->documents as $key => $doc) {
+            $tag = [];
+            $showTag = implode(',', $tag);
+            $client = Client::with('country')->first();
+            $docs = $this->driverDocuments();
+
+            $driver_registration_documents = [];
+
+            // Check if $docs is a non-empty string
+            if (isset($docs) && is_string($docs) && !empty($docs)) {
+                // Decode the JSON string as an object
+                $driverDocs = json_decode($docs);
+
+                // Check if 'documents' property exists in the decoded object
+                if (isset($driverDocs->documents) && is_array($driverDocs->documents)) {
+                    $driver_registration_documents = $driverDocs->documents;
+
+                    // Loop through each document
+                    foreach ($driver_registration_documents as $key => $doc) {
+                        // Check if $doc is an object and has 'name' property
+                        if (is_object($doc) && isset($doc->name)) {
                             $name = str_replace(" ", "_", $doc->name);
                             $doc->slug = $name;
                         }
                     }
-                $teams = @$driverDocs->all_teams??[];
-                $tags = @$driverDocs->agent_tags??[];
-                return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents','client', 'teams', 'tags'));
+                }
+            }
+
+            $teams = @$driverDocs->all_teams??[];
+            $tags = @$driverDocs->agent_tags??[];
+            return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents','client', 'teams', 'tags'));
         }
     }
 
