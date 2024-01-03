@@ -25,17 +25,14 @@ class PermissionMiddleware
                 {
                         $guard = $guard ?? config('auth.defaults.guard');
                         $user = auth()->user();
-                        \Log::info(['guard' => $guard]);
                         $authGuard = app('auth')->guard($guard);
                         $permissionArray = $this->permissionUser($user);
-                        \Log::info(['permissions' => $permissionArray]);
                         $page = $request->route()->action['controller'];
                         $check = explode('\\',$page);
                         $cnt = count($check);
                         $pageUrl = $check[$cnt-1];
                         $check = explode('@',$pageUrl);
                         $page = $check[0];
-                        \Log::info($page);
                         $permissions = [];
                         if(isset($permissionArray[$page]) && count($permissionArray[$page])>0)
                         {
@@ -47,11 +44,10 @@ class PermissionMiddleware
 
                             throw UnauthorizedException::forPermissions($permissions);
                         }
-                        \Log::info(['permissions-new' => $permissions]);
 
                         foreach ($permissions as $permission) {
-                            \Log::info($authGuard->user()->can($permission));
-                            if ($authGuard->user()->checkPermissionTo($permission, $guard)) {
+                            if ($authGuard->user()->can($permission)) {
+
                                 return $next($request);
                             }
                         }
