@@ -831,7 +831,14 @@
 									$video_extensions = ['mp4', 'avi', 'mov', 'wmv']; // list of video extensions
 								@endphp
 								@if(in_array($extension, $image_extensions))
-									<img alt="" title="" class="blur-up lazyload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" height="300">	
+									@php
+										if(!empty($homePageData['banners']['url_'.optional($homePageLabel->translations->first())->cab_booking_layout_id])){
+											$url = $homePageData['banners']['url_'.optional($homePageLabel->translations->first())->cab_booking_layout_id];
+										}else{
+											$url = 'javascript:void(0)';
+										}
+									@endphp
+									<a href="{{$url}}"><img alt="" title="" class="blur-up lazyload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" height="300"></a>	
 								@elseif (in_array($extension, $video_extensions))
 									<video id="video1" width="100%" controls autoplay muted>
 										<source src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" type="video/mp4">
