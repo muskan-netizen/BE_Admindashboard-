@@ -464,8 +464,6 @@ class UserhomeController extends FrontController
 
     public function index(Request $request, $domain='')
     {
-
-        
        // pr(Session::get('onDemandPricingSelected'));
         try {
 
@@ -543,7 +541,7 @@ class UserhomeController extends FrontController
             $enable_layout             = clone $CabBookingLayout;
             $enable_layout = $enable_layout->orderBy('order_by','asc')->pluck('slug')->toArray();
             $homePageData = $this->postHomePageData($request, $set_template, $enable_layout, $additionalPreference);
-
+            
             $home_page_labels = $home_page_labels->map(function($da) use ($homePageData, $navCategories) {
                 if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' ){
                     $da[$da->slug] = $homePageData[$da->slug] ?? '';
@@ -833,10 +831,12 @@ class UserhomeController extends FrontController
 
         if (in_array('banner', $enable_layout)) {  # if enable banner section in
             $cab_booking_layouts = CabBookingLayout::with('banner_image')->where('slug','banner')->get();
-            
+            // dd($cab_booking_layouts);
             foreach($cab_booking_layouts as $bkey => $bval){
-                if(count($bval->banner_image) > 0)
-                $banners[$bval->banner_image[0]->cab_booking_layout_id] = $bval->banner_image[0]->banner_image_url;
+                if(count($bval->banner_image) > 0){
+                    $banners[$bval->banner_image[0]->cab_booking_layout_id] = $bval->banner_image[0]->banner_image_url;
+                    $banners['url_'.$bval->banner_image[0]->cab_booking_layout_id] = $bval->banner_image[0]->banner_url;
+                }
             }
         } 
         
