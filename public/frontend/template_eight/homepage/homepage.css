@@ -277,7 +277,7 @@ top: 62% !important;
     z-index: 9;
 }
 .al_body_template_eight .popular-brands .al_custom_categories .category-block {
-    min-height: 150px;
+    min-height: 184px;
 }
 .al_body_template_eight .popular-brands .al_custom_categories .category-block .brand-img h6 {
     font-size: 16px;
@@ -991,8 +991,7 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
     /*border-radius: 10px 10px;*/
     border-radius: 0;
     overflow: hidden;
-    height: 150px;
-    padding-top: 10px !important;
+    height: 164px;
 }
 .al_body_template_eight .alNewSliderTopBrand .brand-img{
     height: 100%;
@@ -1018,7 +1017,7 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
 }
 .al_body_template_eight .p2p-full-width .alNewSliderTopBrand.render_brands .logo_brand .brand-img img.blur-up.brand-logo.lazyloaded {
     min-width: 100%;
-    min-height: 230px !important;
+    /* min-height: 270px !important; */
     object-fit: cover;margin:0px;
 }
 .al_body_template_eight .custom_filtter select {
