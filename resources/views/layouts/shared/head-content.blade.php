@@ -145,7 +145,7 @@ if($theme && !empty($theme->map_key)){
 <link href="{{asset('assets/libs/spinner/spinner.css')}}" rel="stylesheet">
 
 <style>
-	:root {		
+	:root {
 		--dashboard_color: <?= ($client_preference_detail) ? $client_preference_detail->dashboard_theme_color : '#4c4c4c' ?>;
 	}
 </style>

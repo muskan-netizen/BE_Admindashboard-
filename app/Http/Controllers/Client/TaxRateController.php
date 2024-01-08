@@ -102,9 +102,7 @@ class TaxRateController extends BaseController{
         $taxRate = TaxRate::findOrFail($id);
         $taxRate->identifier = $request->identifier;
        // $taxRate->is_zip = $request->postal_type;
-        $taxRate->zip_code = ($request->postal_type == 1) ? $request->postal_code : '';
-        $taxRate->zip_from = ($request->postal_type == 2) ? $request->postal_code_start : '';
-        $taxRate->zip_to = ($request->postal_type == 2) ? $request->postal_code_end : '';
+       $taxRate->zip_code = $request->postal_code;
         $taxRate->state = $request->state;
         $taxRate->country = $request->country;
         $taxRate->tax_rate = $request->tax_rate;

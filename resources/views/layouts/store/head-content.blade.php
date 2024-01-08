@@ -4,6 +4,14 @@
 <link defer type="text/css" rel="stylesheet" media="all" href="{{asset('front-assets/css/color1-style.css')}}">
 
 
+@if(@getAdditionalPreference(['enable_pwa'])['enable_pwa'] == 1)
+	<!-- PWA  -->
+<meta name="theme-color" content="#6777ef"/>
+<link rel="apple-touch-icon" href="{{ asset('logo.PNG') }}">
+
+
+<link rel="manifest" href="{{ url('/manifest')}}">
+@endif
 @if(Route::currentRouteName() != "userHome")
 
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/common.css')}}">

@@ -36,6 +36,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::any('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
 	Route::any('webhook/ship-rocket', 'ShiprocketController@shiprocketWebhook')->name('webshiprocket');
 	Route::any('webhook/dunzo', 'DunzoController@dunzoWebhook')->name('dunzoWebhook');
+	Route::any('webhook/d4bdunzo','D4BDunzoController@d4bdunzoWebhook')->name('d4bdunzoWebhook');
 	Route::any('webhook/ahoy', 'AhoyController@ahoyWebhook')->name('ahoyWebhook');
 	Route::any('webhook/roadie', [RoadieController::class, 'roadieWebhook'])->name('roadieWebhook');
 	Route::get('webhook/user_rating', 'Front\UserRatingController@userRatingWebhook')->name('user_rating_webhook');
@@ -96,6 +97,7 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//lalMoves Test Route
 	Route::match(['get', 'post'], 'order/lalamoves/quotation', 'Front\LalaMovesController@quotation')->name('order.lalamoves.quotation');
+	Route::match(['get','post'],'order/d4bdunzo/quotation','Front\D4BDunzoController@quotation')->name('order.d4bdunzo.quotation');
 
 	Route::match(['get', 'post'], 'order/lalamoves/place-order', 'Front\LalaMovesController@placeOrder')->name('order.lalamoves.place_order');
 
@@ -428,7 +430,8 @@ Route::group(['middleware' => ['domain']], function () {
 	]);
 	Route::get('/autocomplete-search', 'Front\SearchController@postAutocompleteSearch')->name('autocomplete');
 	Route::get('/search-all/{keyword}', 'Front\SearchController@showSearchResults')->name('showSearchResults');
-	 Route::get('/', 'Front\UserhomeController@index')->name('userHome');
+	Route::get('/', 'Front\UserhomeController@index')->name('userHome');
+
 	// Route::get('/', 'Front\YachtController@yacht')->name('userHome');
 	Route::any('products-searchResults', 'Front\YachtController@productsSearchResult')->name('productSearch');
 	Route::get('/setSessionIndex', 'Front\UserhomeController@setSessionIndex')->name('setSessionIndex');

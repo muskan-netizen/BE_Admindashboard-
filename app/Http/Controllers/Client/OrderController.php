@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Client\BaseController;
+use App\Http\Controllers\D4BDunzoController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
@@ -70,7 +71,7 @@ class OrderController extends BaseController
         $return_requests = $return_requests->count();
 
         $return_form_requests = OrderProductDispatchReturnRoute::where('dispatcher_status_option_id', 4);
-        
+
         $returnFormRequestCount = $return_form_requests->count();
 
         // cancel order requests
@@ -101,15 +102,15 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38]) // 1 for cod ,38 for offline manual by harbans
                     ->orWhere(function($q3) {
-                        
-                        
+
+
                             $q3->where('is_postpay', 1) // 1 for order is post pay.
                                ->whereNotIn('payment_option_id', [1, 38]);
-                        
+
                     });
             });
         });
-        
+
         $pending_order_count = $pending_order_count->between($this->from_date, $this->to_date)->count();
 
 
@@ -134,7 +135,7 @@ class OrderController extends BaseController
                 ->orWhere(function($q3) {
                         $q3->where('is_postpay', 1) // 1 for order is post pay.
                             ->whereNotIn('payment_option_id', [1, 38]);
-                    
+
                 });
             });
         });
@@ -160,11 +161,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    
-                    
+
+
                         $q3->where('is_postpay', 1) // 1 for order is post pay.
                             ->whereNotIn('payment_option_id', [1, 38]);
-                    
+
                 });
             });
         });
@@ -179,7 +180,7 @@ class OrderController extends BaseController
         }
         $vendors = $vendors->get();
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
-       
+
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
         $accounting = ThirdPartyAccounting::where('status', 1)->get();
@@ -206,7 +207,7 @@ class OrderController extends BaseController
 
     public function postOrderFilter(Request $request, $domain = '')
     {
-      
+
         $response = [];
         $user = Auth::user();
         $preferences = ClientPreference::first();
@@ -223,11 +224,11 @@ class OrderController extends BaseController
         },'vendors.products.translation' => function ($q) use ($langId) {
             $q->where('language_id',$langId);
         },'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
-        
-        
+
+
         $orders = $orders->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail']);
-        
-        
+
+
 
         if ($user->is_superadmin == 0) {
             $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) use ($user) {
@@ -240,11 +241,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    
-                    
+
+
                         $q3->where('is_postpay', 1) // 1 for order is post pay
                             ->whereNotIn('payment_option_id', [1, 38]);
-                    
+
                 });
             });
         })->orderBy('id', 'asc');
@@ -257,10 +258,10 @@ class OrderController extends BaseController
         if (!empty($request->get('date_filter'))) {
             $date_date_filter = explode(' to ', $request->get('date_filter'));
             $to_date = (!empty($date_date_filter[1])) ? $date_date_filter[1] : $date_date_filter[0];
-            $from_date = date("Y-m-d", strtotime($date_date_filter[0]));  
-            $to_date = date("Y-m-d", strtotime($to_date));  
+            $from_date = date("Y-m-d", strtotime($date_date_filter[0]));
+            $to_date = date("Y-m-d", strtotime($to_date));
             $orders->between($from_date . " 00:00:00", $to_date . " 23:59:59");
-            
+
 
             //order_count
             $order_count->between($from_date . " 00:00:00", $to_date . " 23:59:59");
@@ -276,10 +277,10 @@ class OrderController extends BaseController
                 $query->where('vendor_id', $request->get('vendor_id'));
             });
         }
-        
+
         $HasGiftCard = 1;
         $orders  = $orders->with(['giftCard']);
-        
+
         //Search by keyword
         if (!empty($request->search_keyword)) {
             $order_count->whereHas('address', function ($query) use ($request) {
@@ -373,7 +374,7 @@ class OrderController extends BaseController
                 case 'rental_pending_delivery':
                     $order_status_options = [1,6];
                     $orders = $orders->with(['vendors' => function ($query) use ($order_status_options, $user) {
-                        
+
                         if ($user->is_superadmin == 0) {
                             $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
                                 $query1->where('user_id', $user->id);
@@ -392,7 +393,7 @@ class OrderController extends BaseController
                 case 'rental_running_product':
                     $order_status_options = [6];
                     $orders = $orders->with(['vendors' => function ($query) use ($user) {
-                        
+
                         if ($user->is_superadmin == 0) {
                             $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
                                 $query1->where('user_id', $user->id);
@@ -411,7 +412,7 @@ class OrderController extends BaseController
                 case 'rental_pending_return':
                     $order_status_options = [6];
                     $orders = $orders->with(['vendors' => function ($query) use ($order_status_options, $user) {
-                        
+
                         if ($user->is_superadmin == 0) {
                             $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
                                 $query1->where('user_id', $user->id);
@@ -465,11 +466,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                     ->orWhere(function($q3) {
-                        
-                        
+
+
                             $q3->where('is_postpay', 1)
                                 ->whereNotIn('payment_option_id', [1, 38]);
-                        
+
                     });
             });
         });
@@ -511,7 +512,7 @@ class OrderController extends BaseController
                 $response[$vendorTypeOrders] = $$vendorTypeOrders;
             }
         }
-        
+
         if ($lux_id > 0) {
             $orders = $orders->where('luxury_option_id', $lux_id);
         }
@@ -581,7 +582,7 @@ class OrderController extends BaseController
             }else{
                 $order->total_other_taxes_amount = $order->taxable_amount;
             }
-            
+
             foreach ($order->vendors as $vendor) {
                 $vendor->isAlert = false;
                 $vendor->alertMessage = "";
@@ -593,7 +594,7 @@ class OrderController extends BaseController
                 if(isset($vendor) && !empty($vendor->vendor_id) && @$vendor->exchanged_to_order){
                     $vendor->exchanged_to_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_to_order->order_id, @$vendor->exchanged_to_order->vendor_id]);
                 }
-                
+
                 if(isset($vendor) && !empty($vendor->vendor_id && @$vendor->exchanged_of_order)){
                     $vendor->exchanged_of_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_of_order->order_id, @$vendor->exchanged_of_order->vendor_id]);
                 }
@@ -606,7 +607,7 @@ class OrderController extends BaseController
                 if($vendor->products->count() == 0){
                     $orders->forget($key);
                 }
-                
+
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
                     $security_amount += $product->security_amount;
@@ -656,7 +657,7 @@ class OrderController extends BaseController
         $admincurrency = ClientCurrency::getAdminCurrencySymbol();
 
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
-    
+
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
         $response['orders'] = $orders;
@@ -681,11 +682,11 @@ class OrderController extends BaseController
         $clientData = ClientData::first();
 
         if(!empty($response2['next_page_url'])){
-           // $nextPageUrl = str_replace("/order","/orders/filter",$response2['next_page_url']); 
+           // $nextPageUrl = str_replace("/order","/orders/filter",$response2['next_page_url']);
             $url_components = parse_url($response2['next_page_url']);
             parse_str($url_components['query'], $params);
             $page_num = $params['page'];
-         
+
            // $page = $request->has('page') ? $request->page : 1;
             $nextPageUrl = route('orders.filter').'?page='.$page_num;
            // pr( $nextPageUrl);
@@ -740,7 +741,7 @@ class OrderController extends BaseController
 
     public function getOrderDetail($domain = '', $order_id, $vendor_id)
     {
-       
+
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         $vendor_order_status_option_ids = [];
@@ -755,9 +756,9 @@ class OrderController extends BaseController
             },
             'vendors.products' => function ($query) use ($vendor_id) {
                 $query->where('vendor_id', $vendor_id);
-                
+
                 $query->with('order_product_status');
-                
+
             },'vendors.products.translation' => function ($q) use ($langId) {
                 $q->where('language_id',$langId);
             },
@@ -801,15 +802,15 @@ class OrderController extends BaseController
         }
         $product_schedule_type = '';
 
- 
+
             if(!empty($order->total_other_taxes)){
                 $order->total_other_taxes_amount  =   (float) array_sum(explode(":", $order->total_other_taxes));
             }else{
                 $order->total_other_taxes_amount = $order->taxable_amount;
             }
-   
+
             $tax_amount  = round($order->total_other_taxes_amount,2);
-     
+
         foreach ($order->vendors as $key => $vendor) {
 
             if(isset($vendor) && !empty($vendor->vendor_id) && @$vendor->exchanged_to_order){
@@ -955,7 +956,7 @@ class OrderController extends BaseController
         if(!empty($order->recurring_booking_time)){
             $recurring_booking = OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number])->get();
         }
-          
+
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id,
             'order' => $order,
@@ -986,8 +987,7 @@ class OrderController extends BaseController
             $roles = [
                 'or_vend_prod_id'   => 'required',
                 'or_prod_old_price' => 'required',
-                'product_price'   => 'required',
-                'update_price_reason' => 'required|string'
+                'product_price'   => 'required'
             ];
             $validator = Validator::make($request->all(), $roles);
             if ($validator->fails()) {
@@ -1038,7 +1038,7 @@ class OrderController extends BaseController
      */
     public function changeStatus(Request $request, $domain = '')
     {
-       
+
         try {
         $orderPlaced = true;
         $orderPlacedNo = '';
@@ -1046,13 +1046,13 @@ class OrderController extends BaseController
         $orderVendorProductIds = $request->order_vendor_product_id??[];
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
-      
+
 
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
-          
+
             $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
-            
+
             if ($currentOrderStatus->order_status_option_id == 2 && $request->status_option_id == 2) { //$request->status_option_id == 3){
                 return response()->json(['status' => 'error', 'message' => __('Order has already been accepted!!!')]);
             }
@@ -1093,10 +1093,10 @@ class OrderController extends BaseController
                         $vendor_order_product_status->save();
                     }
                 }
-              
+
                 if ($request->status_option_id == 2) {
                     //Check Order delivery type
-                    
+
                     if ($orderData->shipping_delivery_type == 'D') {
                         //Create Shipping request for dispatcher
                         if($orderData->orderDetail->is_long_term ==1){
@@ -1107,7 +1107,7 @@ class OrderController extends BaseController
                             $order_dispatch = $this->checkIfIsProductRecurringLastMileon($request);
                         }
                         else{
-                         
+
                             $order_dispatch = $this->checkIfanyProductLastMileon($request);
                         }
                         if ($order_dispatch && $order_dispatch == 1){
@@ -1142,6 +1142,10 @@ class OrderController extends BaseController
                         if ($orderData && ($orderData->delivery_fee > 0.00 )) {
                             $orderPlaced = $this->placeOrderRequestRoadies($request, $orderData);
                         }
+                    }elseif($orderData->shipping_delivery_type =='D4'){
+                        if ($orderData && ($orderData->delivery_fee > 0.00 )) {
+                            $orderPlaced = $this->placeOrderRequestD4B($request);
+                        }
                     }
                     $orderData->accepted_by = Auth::user()->id;
                     $orderData->save();
@@ -1155,13 +1159,13 @@ class OrderController extends BaseController
                     //Create Shipping place order request for Lalamove when order in processing state
                     $orderPlaced = $this->placeOrderRequestlalamove($request);
                     $orderPlacedNo = $orderPlaced;
-                } 
-               
-              
+                }
+
+
                 if ($orderPlaced) {
 
                     $vendorOrderStatus = VendorOrderStatus::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
-                  
+
                     $vendor_order_status = new VendorOrderStatus();
                     $vendor_order_status->order_id = $request->order_id;
                     $vendor_order_status->vendor_id = $request->vendor_id;
@@ -1195,6 +1199,10 @@ class OrderController extends BaseController
                             //Create Shipping place order request for Ahoy
                             $ship = new AhoyController();
                             $order_ship = $ship->cancelOrderRequestAhoy($currentOrderStatus->web_hook_code);
+                        }elseif ($orderData->shipping_delivery_type == 'D4') {
+                            //Cancel Dunzo place order request for Dunzo
+                            $ship = new D4BDunzoController();
+                            $order_ship = $ship->cancelOrderRequestD4BDunzo($currentOrderStatus->web_hook_code,$currentOrderStatus->reject_reason);
                         }
 
                         // return amount to user wallet worked by harbans
@@ -1205,7 +1213,6 @@ class OrderController extends BaseController
                             }
                         ))->find($request->order_id);
 
-                       
                         // get vendor return amount from order
                         $return_response =  $this->GetVendorReturnAmount($request, $order);
                         // return amount to user wallet
@@ -1236,7 +1243,7 @@ class OrderController extends BaseController
                         // end amount to user wallet worked by harbans
                     }
                 }
-              
+
                 if ($request->status_option_id == 2) {
                     $this->ProductVariantStock($request->order_id, $request);
 
@@ -1245,7 +1252,7 @@ class OrderController extends BaseController
                       $this->makeInsertOrderMargApi($orderData->orderDetail);
                     }
                 }
-              
+
                 if ($currentOrderStatus->order_status_option_id == 2 && $request->status_option_id == 3) {
                     $this->ProductVariantStockIncreaseByOrderId($request->order_id);
                 }
@@ -1258,18 +1265,18 @@ class OrderController extends BaseController
                 $order_vendor->order_status_option_id = $request->status_option_id;
                 $order_vendor->reject_reason = $request->reject_reason;
                 $order_vendor->cancelled_by = $request->cancelled_by;
-              
+
                 $order_vendor->save();
                  OrderProduct::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id'=>$request->status_option_id]);
-              
+
                 DB::commit();
                 $newOrder = Order::select('id','user_id')->with(
                 'ordervendor')
                 ->where('id', $request->order_id)
                 ->first();
-            
+
                 $blockchain_route = ClientPreferenceAdditional::where('key_name','blockchain_route_formation')->first();
- 
+
                 if(isset($blockchain_route) && ($blockchain_route->key_value == 1))
                 {
                     @$this->updateBlockchainOrderDetail($newOrder);
@@ -1277,13 +1284,13 @@ class OrderController extends BaseController
                 }
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
                 $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
-            
+
                 $customer = User::find($orderData->user_id);
                 if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1){
                      $this->sendTrackingUrlSMS($orderData,$request->order_id);
                 }
 
-                
+
                 return response()->json([
                     'status' => 'success',
                     'created_date' => convertDateTimeInTimeZone($vendor_order_status->created_at, $timezone, 'l, F d, Y, H:i A'),
@@ -1299,7 +1306,7 @@ class OrderController extends BaseController
             ]);
         } catch (\Exception $e) {
             DB::rollback();
-          
+
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -1422,6 +1429,26 @@ class OrderController extends BaseController
             }
         }
         return false;
+    }
+
+    /// ******************  check If any D4b Mile on   ************************ ///////////////
+    public function placeOrderRequestD4B($request)
+    {
+        $ship = new D4BDunzoController();
+        //Create Shipping place order request for Shiprocket
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+        $order_d4dunzo = $ship->createOrderRequestD4BDunzo($checkOrder->user_id,$checkdeliveryFeeAdded);
+        }
+        if ($order_d4dunzo['state'] == 'created'){
+            $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+            ->update([
+                'web_hook_code' => $order_d4dunzo['task_id'],
+                ]);
+            return 1;
+        }
+        return 2;
     }
 
     public function placeOrderRequestShipEngine($request){
@@ -1570,7 +1597,7 @@ class OrderController extends BaseController
         $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
         $is_place_order_delivery_zero = $AdditionalPreference['is_place_order_delivery_zero'];
         $is_restricted = $checkdeliveryFeeAdded->is_restricted;
-     
+
         /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
         if ($luxury_option_id == 8) { // only for appointment type
             $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
@@ -1608,9 +1635,9 @@ class OrderController extends BaseController
                 }
             }
         }
-     
+
         if ($luxury_option_id == 6) { // only for on_demand type
-            
+
             $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
 
             if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false) {
@@ -1622,9 +1649,9 @@ class OrderController extends BaseController
                         'service_key_url'  => $dispatch_domain_OnDemand->dispacher_home_other_service_key_url,
                         'service_type'     => 'on_demand'
                     ];
-                 
+
                     if(( $prod->is_price_buy_driver ==1)  && ( $prod->product->category->categoryDetail->type_id == 8)){
-                       
+
                         $dispatch_domain['rejectable_order'] = 1;
                         $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
                         if ($order_dispatchs && $order_dispatchs == 1) {
@@ -1662,7 +1689,7 @@ class OrderController extends BaseController
                             'service_key_url'  => $dispatch_domain->delivery_service_key_url,
                             'service_type'     => 'rental'
                         ];
-                        
+
                         $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
                         if ($order_dispatchs && $order_dispatchs == 1) {
                             // $OnDemand = 1;
@@ -1680,7 +1707,7 @@ class OrderController extends BaseController
 
                 $order_dispatchs = $this->placeRequestToDispatch($request->order_id, $request->vendor_id, $dispatch_domain);
             }
-            
+
 
             if ($order_dispatchs && $order_dispatchs == 1)
                 return 1;
@@ -1713,11 +1740,11 @@ class OrderController extends BaseController
 
             foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
                 $isNotLongTerm = 1;
-                
+
                     if( $prod->product->is_long_term_service ==1 ){
                         $isNotLongTerm = 0;
                     }
-                
+
 
 
                 if (( $isNotLongTerm ==1 ) && $prod->product->category->categoryDetail->type_id == 9) {    ///////// if product from laundry
@@ -1755,7 +1782,7 @@ class OrderController extends BaseController
 
     public function checkIfIsProductRecurringLastMileon($request)
     {
-        
+
         $order_dispatchs        = 2;
         $checkdeliveryFeeAdded  = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $luxury_option_id       = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
@@ -1846,7 +1873,7 @@ class OrderController extends BaseController
                             'service_key_url'  => $dispatch_domain->delivery_service_key_url,
                             'service_type'     => 'rental'
                         ];
-                        
+
                         $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
                         if ($order_dispatchs && $order_dispatchs == 1) {
                             // $OnDemand = 1;
@@ -1856,7 +1883,7 @@ class OrderController extends BaseController
                 }
             }
         }
-        
+
         $dispatch_domain = $this->getDispatchDomain();
 
         if ($dispatch_domain && $dispatch_domain != false) {
@@ -1864,7 +1891,7 @@ class OrderController extends BaseController
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
                 $order_dispatchs = $this->placeRequestToDispatch($request->order_id, $request->vendor_id, $dispatch_domain);
             }
-            
+
             if ($order_dispatchs && $order_dispatchs == 1)
                 return 1;
         }
@@ -1877,11 +1904,11 @@ class OrderController extends BaseController
 
             foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
                 $isNotLongTerm = 1;
-                
+
                     if( $prod->product->is_long_term_service ==1 ){
                         $isNotLongTerm = 0;
                     }
-                
+
 
 
                 if (( $isNotLongTerm ==1 ) && $prod->product->category->categoryDetail->type_id == 9) {    ///////// if product from laundry
@@ -1929,11 +1956,11 @@ class OrderController extends BaseController
             $cus_address = UserAddress::find($order->address_id);
             $tasks = array();
             $getAdditionalPreference = getAdditionalPreference(['blockchain_route_formation','blockchain_api_domain','blockchain_address_id']);
-         
+
             $dynamic = uniqid($order->id . $vendor);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address','order_pre_time')->first();
             $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->first();
-            
+
             if ($order->payment_option_id == 1 && ($order->payable_amount >0)) {
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $orderVendorDetails->payable_amount - $order->loyalty_amount_saved - $order->wallet_amount_used;
@@ -2039,7 +2066,7 @@ class OrderController extends BaseController
                             $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                         }
                         $client = CP::orderBy('id', 'asc')->first();
-                        
+
                         $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -2174,7 +2201,7 @@ class OrderController extends BaseController
                 'payment_method' => $order->payment_method,
                 'order_pre_time'=>$vendor_details->order_pre_time
             ];
-           
+
             if ($orderVendorDetails->is_restricted == 1) {
                 $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
                 $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
@@ -2192,7 +2219,7 @@ class OrderController extends BaseController
                         'blockchain_address_id' => $getAdditionalPreference['blockchain_address_id']
                     ]
                 ]);
-           
+
             }
             else{
             $client = new Client([
@@ -2202,7 +2229,7 @@ class OrderController extends BaseController
                     'content-type' => 'application/json'
                 ]
             ]);
-            }        
+            }
              $url = $dispatch_domain->delivery_service_key_url;
             // dd($url);
             $res = $client->post(
@@ -2242,7 +2269,7 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
             } else {
-                
+
                     if($order->is_postpay==1 && $order->payment_status == 0)
                     {
                         $cash_to_be_collected = 'Yes';
@@ -2251,7 +2278,7 @@ class OrderController extends BaseController
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
                     }
-                
+
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
@@ -2374,7 +2401,7 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
             } else {
-                
+
                     if($order->is_postpay==1 && $order->payment_status == 0)
                     {
                         $cash_to_be_collected = 'Yes';
@@ -2383,7 +2410,7 @@ class OrderController extends BaseController
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
                     }
-                
+
             }
 
 
@@ -2626,7 +2653,7 @@ class OrderController extends BaseController
                 });
             }
             $orders_list = $orders_list->whereIn('type', [1,3]); // 1 = return , 2 = exchange
-            
+
             if (!empty($request->search_keyword)) {
                 $orders_list->whereHas('order', function ($query)  use ($request) {
                     $query->whereHas('address', function ($q) use ($request) {
@@ -2813,13 +2840,13 @@ class OrderController extends BaseController
                 $returns = OrderProductDispatchReturnRoute::where('id', $request->id)->update(['dispatcher_status_option_id' => 6]);
                 $update_return_status = OrderReturnRequest::where('order_vendor_product_id', $request->order_vendor_product_id)->update(['status' => 'Completed']);
             }
-            
+
             if (isset($returns)) {
                 $security_amount = $return->orderProduct->security_amount;
                 if($request->damage > 0){
                     $security_amount = $security_amount - $request->damage;
                 }
-               
+
                 $user = User::find($return->order->user_id);
                 $wallet = $user->wallet;
                 $order_product = OrderProduct::find($return->order_vendor_product_id);
@@ -2850,7 +2877,7 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                
+
                     if($order->is_postpay==1 && $order->payment_status == 0)
                     {
                         $cash_to_be_collected = 'Yes';
@@ -2859,7 +2886,7 @@ class OrderController extends BaseController
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
                     }
-                
+
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
@@ -3036,7 +3063,7 @@ class OrderController extends BaseController
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                         'click_action' => '',
                         "android_channel_id" => "default-channel-id",
-                        "redirect_type" => $redirect_URL['type'] 
+                        "redirect_type" => $redirect_URL['type']
                     ],
                     "data" => [
                         'title' => $notification_content->subject,
@@ -3045,7 +3072,7 @@ class OrderController extends BaseController
                         "order_id" =>$orderData->id,
                         "vendor_id" =>$orderData->ordervendor->vendor_id ?? '',
                         "order_status" =>$order_status_id,
-                        "redirect_type" => $redirect_URL['type'] 
+                        "redirect_type" => $redirect_URL['type']
                     ],
                     "priority" => "high"
                 ];
@@ -3339,7 +3366,7 @@ class OrderController extends BaseController
     }
 
     public function addExtraPrepTimeToOrder(Request $request){
-      
+
         $response    = $this->addBufferTime($request);
         if($response['status']=='success'){
             $order = Order::find($response ['order_id']);
@@ -3352,20 +3379,20 @@ class OrderController extends BaseController
             return response()->json([
                 'status' => 'error',
                 'message' => 'Some Thing Went Wrong.',
-              
+
             ], 200);
         }
-        
-        
+
+
 
     }
- 
+
     public function getBlockchainOrderDetail(Request $request)
     {
 
-        
 
-        
+
+
         $api_domain = ClientPreferenceAdditional::where('key_name', 'blockchain_api_domain')->first();
         $from_id = ClientPreferenceAdditional::where('key_name', 'blockchain_address_id')->first();
         $client = ClientData::first();
@@ -3374,35 +3401,35 @@ class OrderController extends BaseController
             "address_f" => $from_id->key_value ?? '',
             "address_short_code" => $client->code,
         ];
-        
+
         $headers = [
             'Content-Type' => 'application/json',
         ];
-        
+
         $order_detail = [];
         if (isset($api_domain)) {
             $apiUrl = $api_domain->key_value . '/fetchOrderDetails';
             $response = '';
-            
-            
-            $response = Http::withHeaders($headers)->post($apiUrl,$data);           
-           
+
+
+            $response = Http::withHeaders($headers)->post($apiUrl,$data);
+
             $responseData = $response->json();
             $data = $responseData['orderData'][0];
             $order_detail = json_decode($data['orderDetail'],true);
-           
+
         }
-        
+
         $orderDetail = array_values($order_detail); // Get the values with numeric keys
-      
+
         if (array_key_exists('24', $orderDetail)) {
             $newValue = $orderDetail['24'];
             $orderDetail = $newValue['ordervendor'];
         }
-      
-     
-       
+
+
+
         return view('backend.order.blockchain-order-data',compact(['data','orderDetail']) );
     }
-    
+
 }

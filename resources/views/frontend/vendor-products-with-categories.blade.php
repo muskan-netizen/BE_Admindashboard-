@@ -666,9 +666,9 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
         <div class="cart-sub-total d-flex align-items-center justify-content-between">
             <span>{{ __('Total') }}</span>
             <% if(cart_details.is_token_enable == 1) { %>
-                <span class="alPriceValue"><i class='fa fa-money' aria-hidden='true'></i> <%= (cart_details.total_payable_amount * cart_details.tokenAmount) %></span>
+                <span class="alPriceValue"><i class='fa fa-money' aria-hidden='true'></i> <%= Helper.formatPrice((cart_details.total_payable_amount * cart_details.tokenAmount)) %></span>
                 <% }else{ %>
-                <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_payable_amount %></span>
+                <span>{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.total_payable_amount) %></span>
                 <% } %>
         </div>
         <a class="checkout-btn text-center d-block" href="{{ route('showCart') }}">{{ __('Checkout') }}</a>

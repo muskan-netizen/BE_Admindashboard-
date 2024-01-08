@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ChangeMailHostInClientPreferencesTable extends Migration
+class AddBannerUrlToCabBookingLayoutBannersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class ChangeMailHostInClientPreferencesTable extends Migration
      */
     public function up()
     {
-        Schema::table('client_preferences', function (Blueprint $table) {
-            $table->string('mail_host', 50)->nullable()->change();
+        Schema::table('cab_booking_layout_banners', function (Blueprint $table) {
+            $table->string('banner_url')->after('banner_image_url')->nullable();
         });
     }
 
@@ -25,8 +25,8 @@ class ChangeMailHostInClientPreferencesTable extends Migration
      */
     public function down()
     {
-        Schema::table('client_preferences', function (Blueprint $table) {
-            $table->string('mail_host',30)->nullable()->change();
+        Schema::table('cab_booking_layout_banners', function (Blueprint $table) {
+            $table->dropColumn('banner_url');
         });
     }
 }
