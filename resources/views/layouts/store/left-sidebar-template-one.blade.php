@@ -1156,7 +1156,7 @@ c-13 -26 -36 -53 -58 -66 l-37 -23 -1465 0 -1465 0 -37 23 c-22 13 -45 40 -58
                                         @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='homeTest'))
                                         <div class="nav-cate-img" > <img class="blur blurload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" src="{{$cate['icon']['image_fit']}}20/20{{$cate['icon']['image_path']}}" alt=""> </div>
                                         @endif
-                                        <div class="" style="overflow: hidden; max-width:60px;">
+                                        <div class="categories_menu" style="overflow: hidden; max-width:60px;">
                                             {{-- <span class="slide_text">{{$cate['name']}}</span> --}}
                                             @if(strlen($cate['name']) > 15)
                                             <marquee behavior="scroll" direction="left" scrollamount="3">
