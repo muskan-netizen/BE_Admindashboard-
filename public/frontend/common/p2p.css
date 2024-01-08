@@ -321,7 +321,7 @@ body.al_body_template_nine.p2p-module .common-banner {
 
 body.al_body_template_nine.p2p-module section.section-b-space.ratio_asos.al_vendor_product_page .common-banner img {
     object-fit: cover;
-    min-height: 450px;
+    min-height: inherit;
 }
 
 body.al_body_template_nine.p2p-module .ratio_asos .top-banner-wrapper .top-banner-content h4 {
@@ -904,6 +904,8 @@ body.al_body_template_nine.p2p-module .alPageSearchView .product-box .front a {
 
 body.al_body_template_nine.p2p-module .alPageSearchView .img-wrapper {
     margin-top: 0 !important;
+    max-height: 200px;
+    min-height: 200px;
 }
 
 body.al_body_template_nine.p2p-module li.onhover-dropdown.quick-links.quick-links {

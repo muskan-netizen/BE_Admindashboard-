@@ -4,6 +4,7 @@
  .al_body_template_three,a,b,body,div,h1,h2,h3,h4,h5,h6,html,label,p,section,span,strong{
     /* font-family:var(--alBodyTemplateThreeFont)!important */
     font-family:'Raleway', sans-serif!important;
+    font-family:var(--alBodyTemplateThreeFont)!important;
 }
     body,html{scroll-behavior:smooth
     }
@@ -472,7 +473,7 @@ body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect  a span{
     padding: 5  px 0;
 }
 .main-menu {
-    padding: 10px 0;
+    padding: 10px 0 0;
 }
 .main-menu  .logo{
     width: 100%;

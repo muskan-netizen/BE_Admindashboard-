@@ -269,7 +269,7 @@
                                         <div class="product_img_grid">
                                             <div class="product-img">
                                                 <div class="product-img w-auto  ">
-                                                    <input type="checkbox" name="checked_cart_product" class="checked-cart-product" id="checked_cart_product" value="{{$vendor_product->id}}" {{ $vendor_product->is_cart_checked ? 'checked' : '' }} >
+                                                    <input type="checkbox" name="checked_cart_product" class="checked-cart-product" id="checked_cart_product" value="{{$vendor_product->id}}" {{ @$vendor_product->is_cart_checked ? 'checked' : '' }} >
                                                     <i class="fa fa-spinner fa-pulse d-none" id="fa_spinner_{{$vendor_product->id}}" aria-hidden="true" style="color: var(--theme-deafult)"></i>
                                                 </div>
                                             </div>

@@ -225,8 +225,7 @@ class CartController extends FrontController
             $request->merge([
                 "addonoptID" => $addonsoptAr[$product->id]
             ]);
-            // //\Log::info($request->addonID);
-            // //\Log::info($request->addonoptID);
+           
 
             $result = $this->postAddToCart($request);
             // echo $result;
@@ -359,11 +358,12 @@ class CartController extends FrontController
             if ($productDetail->is_long_term_service != 1) {
                 /** if product type is not equal to on demand and appointment
                  **/
+                $message= 'Only '.$productDetail->variant[0]->quantity.' is available for this product';
 
-                if ((!in_array($productDetail->category->categoryDetail->type_id, [8, 12])) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0)) {
-                    if (!empty($already_added_product_in_cart)) {
-                        if (($productDetail->variant[0]->quantity + $order_edit_qty) <= $already_added_product_in_cart->quantity) {
-                            return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your carts')]);
+                if( ( !in_array($productDetail->category->categoryDetail->type_id,[8,12])) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0)){
+                    if(!empty($already_added_product_in_cart)){
+                        if(($productDetail->variant[0]->quantity + $order_edit_qty) <= $already_added_product_in_cart->quantity){
+                            return response()->json(['status' => 'error', 'message' =>$message]);
                         }
                         if (($productDetail->variant[0]->quantity + $order_edit_qty) <= ($already_added_product_in_cart->quantity + $request->quantity)) {
                             $request->quantity = $productDetail->variant[0]->quantity + $order_edit_qty - $already_added_product_in_cart->quantity;
@@ -378,7 +378,6 @@ class CartController extends FrontController
                 }
             }
 
-            ////\Log::info($request->addon_id);
 
             $addonSets = $addon_ids = $addon_options = array();
 
@@ -389,16 +388,12 @@ class CartController extends FrontController
             if ($request->has('addonoptID')) {
                 $addon_options = $request->addonoptID;
             }
-            // //\Log::info($addonSets);
             foreach ($addon_options as $key => $opt) {
                 if (isset($addon_ids[$key])) {
                     $addonSets[$addon_ids[$key]][] = $opt;
                 }
             }
 
-            // //\Log::info($addon_options);
-            // //\Log::info($addonSets);
-            // die;
 
             foreach ($addonSets as $key => $value) {
                 $addon = AddonSet::join('addon_set_translations as ast', 'ast.addon_id', 'addon_sets.id')
@@ -566,7 +561,6 @@ class CartController extends FrontController
 
             if ($isnew == 1) {
                 $cartProduct = CartProduct::create($cart_product_detail);
-                // //\Log::info(json_encode($cart_product_detail));11
 
                 if (!empty($addon_ids) && !empty($addon_options)) {
                     $saveAddons = array();
@@ -1430,7 +1424,6 @@ class CartController extends FrontController
                 $vendorData->discount_amount = decimal_format($discount_amount);
                 $vendorData->discount_percent = decimal_format($discount_percent);
                 $vendorData->taxable_amount = decimal_format($taxable_amount);
-                ////\Log::info($taxable_amount);
                 $vendorData->product_total_amount = decimal_format($payable_amount - $taxable_amount);
                 $vendorData->product_sub_total_amount = decimal_format($subtotal_amount);
                 $vendorData->isDeliverable = 1;
@@ -1951,10 +1944,10 @@ class CartController extends FrontController
                 $sel->groupBy('product_id');
             }
         ])->find($cartProduct->product_id);
-
-        if (($productDetail->category->categoryDetail->type_id != 8) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0)) {
-            if ($productDetail->variant[0]->quantity < $request->quantity) {
-                return response()->json(['status' => 'error', 'quantity' => $productDetail->variant[0]->quantity, 'message' => __('Maximum quantity already added in your cart')]);
+        $message= 'Only '.$productDetail->variant[0]->quantity.' is available for this product';
+        if( ($productDetail->category->categoryDetail->type_id != 8) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0) ){
+            if($productDetail->variant[0]->quantity < $request->quantity){
+                return response()->json(['status' => 'error', 'quantity' => $productDetail->variant[0]->quantity, 'message' => $message]);
             }
         }
 
@@ -2438,7 +2431,6 @@ class CartController extends FrontController
                     }
 
 
-                    // //\Log::info($vendorData->vendor->ahoy_location);
                     if (isset($vendorData->vendor->ahoy_location)) {
                         //getAhoy (Masa) Delivery fee changes code
                         $ahoy = new AhoyController();
@@ -3266,6 +3258,10 @@ class CartController extends FrontController
             if (!empty($recurringformPost->selectedCustomdates)) {
                 $daysCnt = count($recurringformPost->selectedCustomdates);
                 $selectedCustomdates = implode(',', $recurringformPost->selectedCustomdates);
+            }
+            if (!empty($recurringformPost->selected_custom_dates)) {
+                $daysCnt = count($recurringformPost->selected_custom_dates);
+                $selectedCustomdates = implode(',', $recurringformPost->selected_custom_dates);
             }
         } elseif ($recurringformPost->action == '6') {
             $startDate = $recurringformPost->startDate;

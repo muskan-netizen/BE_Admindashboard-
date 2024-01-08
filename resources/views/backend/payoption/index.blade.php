@@ -163,11 +163,14 @@ Options']) @section('css')
 				// mpesa-safari
 				$mpesasafari_consumer_key = (isset($creds->mpesasafari_consumer_key)) ? $creds->mpesasafari_consumer_key : '';
 				$mpesasafari_consumer_secret = (isset($creds->mpesasafari_consumer_secret)) ? $creds->mpesasafari_consumer_secret : '';
-				$mpesasafari_shortcode = (isset($creds->mpesasafari_shortcode)) ? $creds->mpesasafari_shortcode : '';                                                                                
+				$mpesasafari_shortcode = (isset($creds->mpesasafari_shortcode)) ? $creds->mpesasafari_shortcode : '';
 				$mpesasafari_webhook = (isset($creds->mpesasafari_webhook)) ? $creds->mpesasafari_webhook : '';
-				
+
                 $livee_merchant_key=(isset($creds->livee_merchant_key))?$creds->livee_merchant_key: '';
                   $livee_resource_key=(isset($creds->livee_resource_key))?$creds->livee_resource_key: '';
+                //Totalpay
+                $totalpay_MerchantId = (isset($creds->totalpay_MerchantId)) ? $creds->totalpay_MerchantId:'';
+				$totalpay_password = (isset($creds->totalpay_password)) ? $creds->totalpay_password:'';
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -1710,31 +1713,31 @@ Options']) @section('css')
                     </div>
                     @endif
 
-
+{{-- Name changes --}}
                     @if ( (strtolower($opt->code) == 'obo') )
                     <div class="mt-2" id="obo_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="obo_business_name" class="mr-3">{{ __("OBO BUSINESS NAME") }}</label>
+                                    <label for="obo_business_name" class="mr-3">{{ __("O'Pay BUSINESS NAME") }}</label>
                                     <input type="text" name="obo_business_name" id="obo_business_name" class="form-control" value="{{$obo_business_name}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="obo_client_id" class="mr-3">{{ __("OBO CLIENT ID") }}</label>
+                                    <label for="obo_client_id" class="mr-3">{{ __("O'Pay CLIENT ID") }}</label>
                                     <input type="number" name="obo_client_id" id="obo_client_id" class="form-control" value="{{$obo_client_id}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
 							 <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="obo_key_id" class="mr-3">{{ __("OBO CLIENT KEY") }}</label>
+                                    <label for="obo_key_id" class="mr-3">{{ __("O'Pay CLIENT KEY") }}</label>
                                     <input type="text" name="obo_key_id" id="obo_key_id" class="form-control" value="{{$obo_key_id}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="obo_market_place_id." class="mr-3">{{ __("OBO MARKET PLACE ID") }}</label>
+                                    <label for="obo_market_place_id." class="mr-3">{{ __("O'Pay MARKET PLACE ID") }}</label>
                                     <input type="text" name="obo_market_place_id" id="obo_market_place_id" class="form-control" value="{{$obo_market_place_id}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
@@ -1841,6 +1844,30 @@ Options']) @section('css')
                         </div>
                     </div>
                     @endif
+                    @if ( (strtolower($opt->code) == 'totalpay') )
+                    <div class="mt-2" id="totalpay_fields_wrapper" @if($opt->
+                        status != 1) style="display:none" @endif>
+                        <div class="row">
+                        <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="totalpay_MerchantId" class="mr-3">{{ __("Merchant ID") }}</label>
+                                    <input type="text" name="totalpay_MerchantId" id="totalpay_MerchantId"
+                                        class="form-control" value="{{$totalpay_MerchantId}}" @if($opt->status
+                                    == 1) required @endif>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="totalpay_password" class="mr-3">{{ __("Password") }}</label>
+                                    <input type="text" name="totalpay_password" id="totalpay_password"
+                                        class="form-control" value="{{$totalpay_password}}" @if($opt->status
+                                    == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
 
 

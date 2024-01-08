@@ -4098,7 +4098,7 @@ a.morelink.less {
 }
 .al_body_template_three .product-description_list.border-bottom {
     height: 100%;
-    max-height: 80px;
-    min-height: 80px;
+    max-height: inherit;
+    min-height: inherit;
     overflow: hidden;
 }
