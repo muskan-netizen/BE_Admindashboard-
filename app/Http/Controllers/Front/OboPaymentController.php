@@ -43,9 +43,6 @@ class OboPaymentController extends Controller
     {
         try {
             $tokenData =  $this->token();
-            \Log::info('$tokenData response');
-            \Log::info($tokenData);
-            \Log::info($tokenData['httpStatus']);
             if (isset($tokenData['httpStatus']) &&  $tokenData['httpStatus'] == "OK") {
                 $token = $tokenData['token'];
                 if (isset($token)) {
