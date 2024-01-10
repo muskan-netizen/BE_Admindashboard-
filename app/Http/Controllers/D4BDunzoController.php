@@ -23,41 +23,45 @@ class D4BDunzoController extends Controller
 
     public function quote($vendor_id)
     {
+
         try{
             $customer = User::find(Auth::id());
             $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
             if ($cus_address && $this->status==1){
                 $vendor_details = Vendor::find($vendor_id);
+
+            $locationData = [
+                'pickup_details' => [
+                    [
+                        'lat' => floatval($vendor_details->latitude),
+                        'lng' => floatval($vendor_details->longitude),
+                        'reference_id' => 'pickup-ref-abcd123'.strtotime(now()),
+                    ],
+                ],
+                'optimised_route' => true,
+                'drop_details' => [
+                    [
+                        'lat' =>  floatval($cus_address->latitude),
+                        'lng' => floatval($cus_address->longitude),
+                        'reference_id' => 'drop-ref1-abcd887'.strtotime(now()),
+                        // 'payment_data' => [
+                        //     'payment_method' => 'COD',
+                        //     'amount' => 101,
+                        // ],
+                    ]
+
+                        ],
+                'delivery_type' => 'SCHEDULED',
+                'schedule_time' => Carbon::now()->addMinutes($vendor_details->order_pre_time??10)->timestamp,
+                    ];
+                    \Log::info($locationData);
                 $response = Http::withHeaders([
                     'client-id' => $this->client_id,
                     'Authorization' => $this->token,
                     'Accept-Language' => 'en_US',
                     'Content-Type' => 'application/json',
-                ])->post($this->app_url.'/v2/quote', [
-                    'pickup_details' => [
-                        [
-                            'lat' => floatval($vendor_details->latitude),
-                            'lng' => floatval($vendor_details->longitude),
-                            'reference_id' => 'pickup-ref-abcd123'.strtotime(now()),
-                        ],
-                    ],
-                    'optimised_route' => true,
-                    'drop_details' => [
-                        [
-                            'lat' =>  floatval($cus_address->latitude),
-                            'lng' => floatval($cus_address->longitude),
-                            'reference_id' => 'drop-ref1-abcd887'.strtotime(now()),
-                            // 'payment_data' => [
-                            //     'payment_method' => 'COD',
-                            //     'amount' => 101,
-                            // ],
-                        ]
-
-                            ],
-                    'delivery_type' => 'SCHEDULED',
-                    'schedule_time' => Carbon::now()->addMinutes($vendor_details->order_pre_time??10)->timestamp,
-                ]);
-
+                ])->post($this->app_url.'/v2/quote', $locationData);
+                \Log::info($response->json());
                 if($response->successful()){
                     return $response->json();
                 }else{
