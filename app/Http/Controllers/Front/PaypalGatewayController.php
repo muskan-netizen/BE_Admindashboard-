@@ -52,16 +52,27 @@ class PaypalGatewayController extends FrontController
             if ($request->has('order_number')) {
                 $returnUrlParams = $returnUrlParams . '&ordernumber=' . $request->order_number;
             }
-            $response = $this->gateway->purchase([
-                'currency' => $this->currency, //'USD',
-                'amount' => $amount,
-                'cancelUrl' => url($request->cancelUrl),
-                'returnUrl' => url($request->returnUrl . $returnUrlParams),
-            ])->send();
+            if ($request->has('reload_route')) {
+                $pickupRoute = $request->reload_route;
+                $response = $this->gateway->purchase([
+                    'currency' => $this->currency, //'USD',
+                    'amount' => $amount,
+                    'cancelUrl' => url($request->cancelUrl),
+                    'returnUrl' => $pickupRoute,
+                ])->send();
+            }else{
+                $response = $this->gateway->purchase([
+                    'currency' => $this->currency, //'USD',
+                    'amount' => $amount,
+                    'cancelUrl' => url($request->cancelUrl),
+                    'returnUrl' => url($request->returnUrl . $returnUrlParams),
+                ])->send();
+            }
+
             if ($response->isSuccessful()) {
                 return $this->successResponse($response->getData());
-            } elseif ($response->isRedirect()) {
-                $this->failMail();
+            }
+            elseif ($response->isRedirect()) {
                 return $this->successResponse($response->getRedirectUrl());
             } else {
                 $this->failMail();
@@ -86,6 +97,7 @@ class PaypalGatewayController extends FrontController
                 'amount'                => $amount,
                 'payer_id'              => $request->PayerID,
                 'transactionReference'  => $request->token,
+                'currency' => $this->currency, //'USD',
             //     'cancelUrl' =>  url($request->cancelUrl),
             //     'returnUrl' => url($request->returnUrl . $returnUrlParams),
              ));
