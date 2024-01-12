@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Traits\{ValidatorTrait, ApiResponser, SquareInventoryManager,smsManager};
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
-use App\Models\{CaregoryKycDoc, Order, ProductVariant, OrderVendor, VendorOrderCancelReturnPayment, ClientPreference, ProductBooking, User, UserAddress, Vendor, OrderProduct, OrderProductDispatchRoute, VendorOrderProductDispatcherStatus, Product, OrderLongTermServices, VendorOrderStatus, VendorOrderDispatcherStatus, OrderLongTermServiceSchedule, UserDevice, SmsTemplate, Cart, ClientCurrency, LuxuryOption, CartProduct, CartAddon, CartCoupon, OrderProductPrescription, CartProductPrescription, UserVendor, VendorOrderProductStatus,NotificationTemplate};
+use App\Models\{CaregoryKycDoc, Order, ProductVariant, OrderVendor, VendorOrderCancelReturnPayment, ClientPreference, ProductBooking, User, UserAddress, Vendor, OrderProduct, OrderProductDispatchRoute, VendorOrderProductDispatcherStatus, Product, OrderLongTermServices, VendorOrderStatus, VendorOrderDispatcherStatus, OrderLongTermServiceSchedule, UserDevice, SmsTemplate, Cart, ClientCurrency, LuxuryOption, CartProduct, CartAddon, CartCoupon, OrderProductPrescription, CartProductPrescription, UserVendor, VendorOrderProductStatus,NotificationTemplate,EmailTemplate,OrderLocations};
 use Illuminate\Support\Facades\Redirect;
 
 trait OrderTrait
@@ -153,7 +153,7 @@ trait OrderTrait
     }
 
     public function inventryProductQuantityIncrease($order_id){
-   
+
         $order = Order::with(['vendors.products.pvariant'])->find($order_id);
         if( isset($order->vendors )){
             foreach ($order->vendors as $vendor) {
@@ -1135,7 +1135,7 @@ trait OrderTrait
         }
         $provider = $prefer['sms_provider'];
         $order    = Order::where('id',$order_id)->with('orderStatusVendor', 'ordervendor')->first();
-  
+
         if (isset($order->orderStatusVendor)) {
             $order_status = '';
             foreach ($order->orderStatusVendor as $key => $status) {
@@ -1158,7 +1158,7 @@ trait OrderTrait
         }
 
         $tracking_url = $order->ordervendor->dispatch_traking_url;
-        
+
         $tracking_url = get_tiny_url($tracking_url);
 
         $keyData = ['{user_name}' => $user['name'] ?? '', '{order_number}' => $order['order_number'] ?? '', '{track_url}' => $tracking_url ?? '', '{order_status}' => $order_status ?? ''];
@@ -1774,7 +1774,7 @@ trait OrderTrait
         ];
         sendFcmCurlRequest($data);
      }
-     
+
 
 
      public function saveOrderLongTermServiceSchedule($order,$productId)
@@ -1786,18 +1786,18 @@ trait OrderTrait
          }else{
              $timezone = $client_timezone->timezone ?? ( $user ? $user->timezone : 'Asia/Kolkata' );
          }
- 
+
          $user_timezone          =   $timezone;
          $recurring_booking_time =   convertDateTimeInTimeZone($order->recurring_booking_time, $user_timezone, 'H:i');
- 
+
              $RecurringServiceSchedule = array();
- 
+
                  // No Nee other action
                  if(@$order->recurring_booking_type){
                  $Recurring_quantity     = $order->quantity;
                  $recurring_day_data     = $order->recurring_day_data;
                  $recurring_day_data     = explode(",",$recurring_day_data);
- 
+
                  $ndate                  = convertDateTimeInClientTimeZone(Carbon::now());
                  $recurring_booking_time = convertDateTimeInTimeZone($order->recurring_booking_time, $user_timezone, 'H:i');
                  for ($x = 0; $x < count($recurring_day_data); $x++) {
@@ -1811,13 +1811,78 @@ trait OrderTrait
                      ];
                  }
              }
- 
+
              if (!empty($RecurringServiceSchedule)) {
                      OrderLongTermServiceSchedule::insert($RecurringServiceSchedule);
                  }
      }
- 
-     
+
+     public function sendPickupeliverySuccessEmail($request, $order, $vendor_id = '')
+     {
+         $user = Auth::user();
+
+         $client = CP::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+         $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from', 'admin_email')->where('id', '>', 0)->first();
+         $message = __('An otp has been sent to your email. Please check.');
+         $otp = mt_rand(100000, 999999);
+
+         if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
+             $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
+             if ($vendor_id == "") {
+                 $sendto =  $user->email;
+             } else {
+                 $vendor = Vendor::where('id', $vendor_id)->first();
+                 if ($vendor) {
+                     $sendto =  $vendor->email;
+                 }
+             }
+
+             $customerCurrency = ClientCurrency::join('currencies as cu', 'cu.id', 'client_currencies.currency_id')->where('client_currencies.currency_id', $user->currency)->first();
+             $currSymbol = $customerCurrency->symbol;
+             $client_name = 'Sales';
+             $mail_from = $data->mail_from;
+
+             try {
+                 $email_template_content = '';
+                 $email_template = EmailTemplate::where('id', 10)->first();
+                 $address = UserAddress::where('id', $request->address_id)->first();
+                 if ($email_template) {
+
+                     $email_template_content = $email_template->content;
+                     $orderLocations = OrderLocations::where('order_id',$order->id)->first();
+                     $locations = json_decode($orderLocations->tasks);
+                     $returnHTML = view('email.newPickupRideAddress')->with(['user'=>$user,'order' => $order,'locations' => $locations])->render();
+                     $email_template_content = str_ireplace("{description}",'', $email_template_content);
+                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
+                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
+                     $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
+                     if(!empty($address)){
+                         $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
+                     }
+                 }
+                 $email_data = [
+                     'code' => $otp,
+                     'link' => "link",
+                     'email' => $sendto,//"harbans.sayonakh@gmail.com",//  $sendto,//
+                     'mail_from' => $mail_from,
+                     'client_name' => $client_name,
+                     'logo' => $client->logo['original'],
+                     'subject' => $email_template->subject,
+                     'customer_name' => ucwords($user->name),
+                     'email_template_content' => $email_template_content,
+                     'cartData' => [],
+                     'user_address' => $address,
+                 ];
+                 // $res = $this->testOrderMail($email_data);
+                 // dd($res);
+                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                 $notified = 1;
+             } catch (\Exception $e) {
+             }
+         }
+     }
+
+
 
 
 

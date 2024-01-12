@@ -1544,3 +1544,18 @@ ul.header-dropdown.d-none.d-sm-inline li {
     to {opacity: 1;}
 }
 
+@media (max-width: 767px){
+    body.al_body_template_one section.cab-banner-area.alTaxiBannerStart {
+    padding: 5rem 0 !important;
+    }
+    body.al_body_template_one #content-wrap .site-header .navbar-brand {
+    text-align: center;
+    display: block;
+    width: 100% !Important;
+    }
+    body.al_body_template_one .cab-booking-header ul.onhover-show-div {
+    bottom: 0px !important;
+    right: 10px !important;
+    top: 35px !important;
+    }
+    }

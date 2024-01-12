@@ -158,6 +158,9 @@ class OrderController extends Controller{
                     return '';
                 }
             })
+            ->addColumn('order_number', function($vendor_orders) {
+                return '#'.$vendor_orders->orderDetail->order_number;
+            })
             ->addColumn('created_date', function($vendor_orders) use($timezone) {
                 return dateTimeInUserTimeZone($vendor_orders->created_at, $timezone);
             })

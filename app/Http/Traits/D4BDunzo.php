@@ -121,16 +121,11 @@ trait D4BDunzo{
 }
 
 
-public function createOrder($orderVendor,$vendor_details,$cus_address,$customer,$order)
+public function createOrder($orderVendor,$vendor_details,$cus_address,$customer,$order,$scheduledAt = null)
 {
     $this->configDetails();
-    $response_d4b_dunzo = Http::withHeaders([
-        'client-id' => $this->client_id,
-        'Authorization' => $this->token,
-        'Accept-Language' => 'en_US',
-        'Content-Type' => 'application/json',
-    ])
-    ->post(  $this->app_url.'/v2/tasks', [
+
+    $postdata = [
         'request_id' =>  $orderVendor->id.'-'.$orderVendor->order_id.'-'.$orderVendor->vendor_id.strtotime(now()),
         // 'reference_id' => '9357d296-c366-4409-872d-2e0898f27f80'.strtotime(now()),
         'pickup_details' => [
@@ -142,10 +137,10 @@ public function createOrder($orderVendor,$vendor_details,$cus_address,$customer,
                     'street_address_1' => $vendor_details->address,
                     // 'street_address_2' => 'LB Shastri nagar',
                     // 'landmark' => 'Iblur lake',
-                    'city' =>  $vendor_details->city,
-                    'state' => $vendor_details->state,
-                    'pincode' => $vendor_details->pincode,
-                    'country' =>  $vendor_details->country,
+                    // 'city' =>  $vendor_details->city??null,
+                    // 'state' => $vendor_details->state??null,
+                    // 'pincode' => $vendor_details->pincode??null,
+                    'country' =>  $vendor_details->country??null,
                     'lat' => (float) $vendor_details->latitude,
                     'lng' => (float) $vendor_details->longitude,
                     'contact_details' => [
@@ -166,12 +161,12 @@ public function createOrder($orderVendor,$vendor_details,$cus_address,$customer,
                     'street_address_1' => 'Suncity Apartments',
                     // 'street_address_2' => 'Bellandur',
                     // 'landmark' => 'Iblur lake',
-                    'city' =>  $cus_address->city ?? '',
-                    'state' => $cus_address->state ?? '',
-                    'pincode' => $cus_address->pincode  ?? '',
+                    // 'city' =>  $cus_address->city ?? null,
+                    // 'state' => $cus_address->state ?? null,
+                    // 'pincode' => $cus_address->pincode  ?? null,
                     'lat' => (float) $cus_address->latitude,
                     'lng' => (float) $cus_address->longitude,
-                    'country' =>$cus_address->country ?? '',
+                    'country' =>$cus_address->country ?? null,
                     'contact_details' => [
                         'name' => $customer->name,
                         'phone_number' => $customer->phone_number,
@@ -187,9 +182,22 @@ public function createOrder($orderVendor,$vendor_details,$cus_address,$customer,
             ]
         ],
         'payment_method' => 'DUNZO_CREDIT',
-        'delivery_type' => 'SCHEDULED',
-        'schedule_time' => Carbon::now()->addMinutes($vendor_details->order_pre_time??10)->timestamp,
-    ]);
+        'delivery_type' => (($scheduledAt)?'SCHEDULED':null),
+        'schedule_time' => (($scheduledAt)?$scheduledAt:null),
+    ];
+    // \Log::info($postdata);
+
+
+    $response_d4b_dunzo = Http::withHeaders([
+        'client-id' => $this->client_id,
+        'Authorization' => $this->token,
+        'Accept-Language' => 'en_US',
+        'Content-Type' => 'application/json',
+    ])
+    ->post($this->app_url.'/v2/tasks', $postdata);
+
+    \Log::info($response_d4b_dunzo->json());
+
     return $response_d4b_dunzo->json();
 }
 

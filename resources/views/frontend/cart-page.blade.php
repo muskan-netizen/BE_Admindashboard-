@@ -239,7 +239,7 @@
                                 @endif
                                 <div id="mov" style="display:none;">{{ $product->vendor->order_min_amount }}
                                 </div>
-                                @if ($product->isDeliverable != '' && $product->isDeliverable == 0)
+                                @if (isset($product->isDeliverable) && $product->isDeliverable == 0)
                                     <div class="col-12">
                                         <div class="text-danger">
                                             <i class="fa fa-exclamation-circle"></i>
@@ -841,7 +841,7 @@
                                         <div class="row mb-1 d-flex align-items-center">
                                             <div class="col-5 text-lg-right">
                                                 <label class="m-0 radio">
-                                                    {{ __('Fixed Fee') }} :</label>
+                                                    {{getNomenclatureName('Fixed Fee', true)}} :</label>
                                             </div>
                                             <div class="col-7">
                                                 @if ($additionalPreference['is_token_currency_enable'])

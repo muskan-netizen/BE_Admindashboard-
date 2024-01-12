@@ -207,9 +207,9 @@ class ProductVariant extends Model
             return Product::where('id', $this->product_id)->select('vendor_id')->first();
         });
 
-        $cacheKey = 'markup_price_'.$vendor;
+        $cacheKey = 'markup_price_'.$vendor->vendor_id;
         $checkMarkup = Cache::remember($cacheKey, 60, function () use($vendor) {
-            return Vendor::where('id',$vendor)->value('add_markup_price');
+            return Vendor::where('id', $vendor->vendor_id)->value('add_markup_price');
         });
 
         //if vendor price add with markup price
