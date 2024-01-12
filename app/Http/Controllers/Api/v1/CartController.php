@@ -1219,8 +1219,7 @@ class CartController extends BaseController
                                     $vendorAddons[$ck]['cart_product_id'] = $addons->cart_product_id;
                                     $vendorAddons[$ck]['multiplier'] = $clientCurrency->doller_compare;
                                     $ttAddon = $ttAddon + $opt_quantity_price;
-                                    // $order_sub_total = $order_sub_total + $opt_quantity_price + $prod->pvariant->price;
-                                    $order_sub_total = $order_sub_total + $opt_quantity_price ;
+                                    $order_sub_total = $order_sub_total + $opt_quantity_price + $prod->pvariant->price;
                                     $opt_quantity_price_new += $opt_quantity_price;
                                     $quantity_price = $quantity_price + $opt_quantity_price;
 
@@ -1233,7 +1232,7 @@ class CartController extends BaseController
                                             $coupon_product_discount = $coupon_product_discount + $opt_quantity_price;
                                     }
                                 }
-                                $order_sub_total = $order_sub_total + $prod->pvariant->price;
+
                             }else{
                                 $order_sub_total = round($order_sub_total  + $prod->pvariant->price*$prod->quantity,2);
                             }
