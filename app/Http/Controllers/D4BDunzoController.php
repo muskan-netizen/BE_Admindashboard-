@@ -55,7 +55,7 @@ class D4BDunzoController extends Controller
                 // 'schedule_time' => Carbon::now()->timestamp,
                     ];
 
-                // \Log::info($locationData);
+                \Log::info($locationData);
 
 
                 $response = Http::withHeaders([
@@ -64,6 +64,8 @@ class D4BDunzoController extends Controller
                     'Accept-Language' => 'en_US',
                     'Content-Type' => 'application/json',
                 ])->post($this->app_url.'/v2/quote', $locationData);
+                \Log::info($response->json());
+
                 if($response->successful()){
                     return $response->json();
                 }else{
