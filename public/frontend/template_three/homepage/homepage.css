@@ -774,7 +774,7 @@ article#page-container {
 }
 
 article#page-container section .vendors section {
-    padding: 18px 0px 0px 0px !important;
+    padding: 18px 0px !important;
     margin-bottom: 0!important
 }
 
@@ -991,3 +991,5 @@ body.al_body_template_three .al_box_third_template {
     object-fit: cover;
         padding: 0px;
     }
+
+
