@@ -2311,6 +2311,8 @@ class CartController extends FrontController
                 if ($skip_delivery_fees == true) {
                     // skip
                 } else if ($preferences->static_delivey_fee != 1) {
+
+
                     //pr( $getAdditionalPreference);
                     //Dispatcher Delivery changes and estimated delivery duration code
                     $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del, $dispatcher_tags);
@@ -2353,6 +2355,7 @@ class CartController extends FrontController
                     }
                     //End Kwik Delivery changes code
 
+
                     //Lalamove Delivery changes code
                     $lalamove = new LalaMovesController();
                     $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);
@@ -2375,8 +2378,9 @@ class CartController extends FrontController
                     }
 
                     $d4bdunzo = new D4BDunzoController();
-
+                    // dd($vendorData->vendor_id);
                     $deliver_d4bdunzo_data= $d4bdunzo->quote($vendorData->vendor_id);
+                    // dd($deliver_d4bdunzo_data);
                     if($deliver_d4bdunzo_data['estimated_price']>0)
                     {
                         $deliver_charge_d4bdunzo = decimal_format($deliver_d4bdunzo_data['estimated_price']);
