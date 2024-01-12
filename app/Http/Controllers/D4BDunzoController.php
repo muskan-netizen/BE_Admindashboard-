@@ -64,7 +64,6 @@ class D4BDunzoController extends Controller
                     'Accept-Language' => 'en_US',
                     'Content-Type' => 'application/json',
                 ])->post($this->app_url.'/v2/quote', $locationData);
-                \Log::info($response->json());
                 if($response->successful()){
                     return $response->json();
                 }else{
@@ -89,17 +88,13 @@ class D4BDunzoController extends Controller
             $time = date('H:i:s',strtotime($schTime));
             $scheduledAt = $date.'T'.$time;
             $schTime  = Carbon::parse($scheduledAt)->timestamp;
-            // \Log::info('sch time : '.$scheduledAt);
-            // \Log::info('sch time stamp : '.$schTime);
             $nowtime = Carbon::now()->addMinutes(35)->timestamp;
-            // \Log::info('nowtime stamp : '.$nowtime);
 
             if($schTime>$nowtime)
             {
-                $scheduledAt  = Carbon::parse($scheduledAt)->timestamp;
+                $scheduledAt  = $schTime;
             }
         }
-        // \Log::info($order);
 
         $cus_address = UserAddress::find($order->address_id);
         $orderProducts = OrderVendorProduct::where(['order_id'=>$orderVendor->order_id,'order_vendor_id'=>$orderVendor->id])->get();
