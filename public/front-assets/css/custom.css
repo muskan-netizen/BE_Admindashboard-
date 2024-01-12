@@ -2016,7 +2016,7 @@ h4#driver_name {
 }
 
 .dark section.royo-business .title-36 {
-    color: #000
+    color: #fff;
 }
 
 .dark .inner_spacing .productAddonSet {
@@ -2091,7 +2091,8 @@ h4#driver_name {
 .dark .category-list li:hover a,
 .dark .scrollspy-menu .active a {
     border-color: var(--theme-deafult);
-    background: linear-gradient(90deg, #554445 0, rgba(251, 246, 247, 0) 92.47%)
+    background: linear-gradient(90deg, #554445 0, rgb(18 15 16) 92.47%);
+    color: #fff !important;
 }
 
 .dark .product-bottom-bar .card-box {
