@@ -51,10 +51,13 @@ class D4BDunzoController extends Controller
                     ]
 
                         ],
-                'delivery_type' => 'SCHEDULED',
-                'schedule_time' => Carbon::now()->addMinutes($vendor_details->order_pre_time??10)->timestamp,
+                // 'delivery_type' => 'SCHEDULED',
+                // 'schedule_time' => Carbon::now()->timestamp,
                     ];
-                    \Log::info($locationData);
+
+                // \Log::info($locationData);
+
+
                 $response = Http::withHeaders([
                     'client-id' => $this->client_id,
                     'Authorization' => $this->token,
@@ -79,10 +82,29 @@ class D4BDunzoController extends Controller
         $customer = User::find($user_id);
         $vendor_details = Vendor::find($orderVendor->vendor_id);
 
+        $scheduledAt = null;
+        if(isset($order->scheduled_date_time) && $order->scheduled_date_time){
+            $schTime = convertDateTimeInClientTimeZone($order->scheduled_date_time);
+            $date = date('Y-m-d',strtotime($schTime));
+            $time = date('H:i:s',strtotime($schTime));
+            $scheduledAt = $date.'T'.$time;
+            $schTime  = Carbon::parse($scheduledAt)->timestamp;
+            // \Log::info('sch time : '.$scheduledAt);
+            // \Log::info('sch time stamp : '.$schTime);
+            $nowtime = Carbon::now()->addMinutes(35)->timestamp;
+            // \Log::info('nowtime stamp : '.$nowtime);
+
+            if($schTime>$nowtime)
+            {
+                $scheduledAt  = Carbon::parse($scheduledAt)->timestamp;
+            }
+        }
+        // \Log::info($order);
+
         $cus_address = UserAddress::find($order->address_id);
         $orderProducts = OrderVendorProduct::where(['order_id'=>$orderVendor->order_id,'order_vendor_id'=>$orderVendor->id])->get();
         // create order
-        return $this->createOrder($orderVendor,$vendor_details,$cus_address,$customer,$order);
+        return $this->createOrder($orderVendor,$vendor_details,$cus_address,$customer,$order,$scheduledAt);
     }
 
     public function d4bdunzoWebhook(Request $request)
