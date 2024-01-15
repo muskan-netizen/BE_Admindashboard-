@@ -1249,7 +1249,7 @@ class HomeController extends BaseController
                 if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
                     $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
                 } else {
-                    return $this->errorResponse('We are sorry for inconvenience. Please contact us later', 400);
+                    return $this->errorResponse('SMTP not configured.', 400);
                 }
                 $mail_from = $request->email;
                 $sendto = $client->contact_email ? $client->contact_email : $superAdmin->email;

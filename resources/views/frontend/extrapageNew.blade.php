@@ -160,18 +160,18 @@
                             <div class="al_vendor_signup col-md-12 p-3 mb-3">
                                 <div class="form-row">
                                     <div class="col-md-3 mb-2" id="account_nameInput">
-                                        <label for="accountname">{{__('Account Name')}}</label>
-                                        <input type="text" class="form-control" name="account_name" placeholder="Account Name" value="{{$user ? $user->name : ''}}" {{$user ? 'disabled' : ''}}>
+                                        <label for="accountname">{{getNomenclatureName('Account Name', true)}}</label>
+                                        <input type="text" class="form-control" name="account_name" placeholder="{{getNomenclatureName('Account Name', true) .' '. __('Account Name')}}" value="{{$user ? $user->name : ''}}" {{$user ? 'disabled' : ''}}>
                                         <span class="invalid-feedback" id="account_name_error"><strong></strong></span>
                                     </div>
                                     <div class="col-md-3 mb-2" id="bank_nameInput">
-                                        <label for="bankname">{{__('Bank Name')}}</label>
-                                        <input type="text" class="form-control" name="bank_name" placeholder="Bank Name" value="{{$user ? $user->title : ''}}" placeholder="">
+                                        <label for="bankname">{{getNomenclatureName('Bank Name', true)}}</label>
+                                        <input type="text" class="form-control" name="bank_name" placeholder="{{getNomenclatureName('Bank Name', true) .' '. __('Account Name')}}" value="{{$user ? $user->title : ''}}" placeholder="">
                                         <span class="invalid-feedback" id="title_error"><strong></strong></span>
                                     </div>
                                     <div class="col-md-3 mb-2" id="account_numberInput">
-                                        <label for="accountnumber">{{__('Account Number')}}</label>
-                                        <input type="text" class="form-control" name="account_number" placeholder="Account Number" value="{{$user ? $user->title : ''}}" placeholder="">
+                                        <label for="accountnumber">{{getNomenclatureName('Bank Name', true)}}</label>
+                                        <input type="text" class="form-control" name="account_number" placeholder="{{getNomenclatureName('Bank Name', true) .' '. __('Account Number')}}" value="{{$user ? $user->title : ''}}" placeholder="">
                                         <span class="invalid-feedback" id="account_number_error"><strong></strong></span>
                                     </div>
                                     <div class="col-md-3 mb-2" id="ifsc_codeInput">
