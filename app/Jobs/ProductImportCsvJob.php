@@ -28,21 +28,23 @@ class ProductImportCsvJob implements ShouldQueue
     {
         $this->vendor_id = $vendor_id;
         $this->csv_product_import_id = $csv_product_import_id;
-
         $code = Client::orderBy('id', 'asc')->value('code');
         $this->folderName = '/' . $code . '/prods';
         $this->data = $rows;
     }
 
-     public function handle()
-      {
+    public function handle(){
         try {
             $i = 0;
             $error = array();
             $variant_exist = 0;
             try {
+                DB::beginTransaction();
+                $client_lang = ClientLanguage::where('is_primary', 1)->first();
+                if (! $client_lang) {
+                    $client_lang = ClientLanguage::where('is_active', 1)->first();
+                }
                 foreach ( $this->data as $row) {
-                   // dd($row[4]);
                     $checker = 0;
                     if (isset($row[0]) && $row[0] != "SKU") { // data of excel check
 
@@ -50,10 +52,12 @@ class ProductImportCsvJob implements ShouldQueue
                             $error[] = "Row " . $i . " : SKU  is empty";
                             $checker = 1;
                         }
-                        if (Product::where('sku', $row[0])->exists()) { // if sku or handle is empty
-                            $error[] = "Row " . $i . " : Product with this sku already exist";
-                            $checker = 1;
-                        }
+                        // if (Product::where('sku', $row[0])->exists()) { // if sku or handle is empty
+                        //     $pro = Product::where('sku', $row[0])->first();
+                        //     \Log::info($pro);
+                        //     $error[] = "Row " . $i . " : Product with this sku already exist";
+                        //     $checker = 1;
+                        // }
                         // if ($row[3] == "") { //check if published is empty
                         // $error[] = "Row " . $i . " : Please mark published either true or false";
                         // $checker = 1;
@@ -225,32 +229,27 @@ class ProductImportCsvJob implements ShouldQueue
                         if ($checker == 0) {
                             $da = $row;
                             if(count($da) > 4){
-                                // array_map("utf8_encode", $da);
                                 $da[2] = str_replace("", "’", $da[2]);
-                            //    \Log::info("sku query " . $da[0]);
-                              //  \Log::info(Product::where('sku', $da[0])->exists());
-                                
                                 if (! Product::where('sku', $da[0])->exists()) {
                                     $brand_id = null;
                                     $tax_category_id = null;
-                                    
+
                                     if (isset($da[18]) && $da[18] != "") {
                                         $brand = Brand::where('title', "LIKE", $da[18])->first();
                                         if ($brand) {
                                             $brand_id = $brand->id;
                                         }
                                     }
-                                    
+
                                     if (isset($da[19]) &&$da[19] != "") {
-                                        
                                         $tax_category = TaxCategory::where('title', "LIKE", $da[19])->first();
                                         if ($tax_category) {
                                             $tax_category_id = $tax_category->id;
                                         }
                                     }
-                                    
+
                                     $category = $da[4];
-                                    
+
                                     $category = VendorCategory::with('category.translation')->whereHas('category.translation', function ($q) use ($category) {
                                         $q->select('category_translations.name')
                                         ->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')
@@ -260,26 +259,7 @@ class ProductImportCsvJob implements ShouldQueue
                                     })
                                     ->where('vendor_id', $this->vendor_id)
                                     ->first();
-                                    
-//                                     \Log::info(json_encode([
-//                                         'type_id' => 1,
-//                                         'sku' => $da[0],
-//                                         'is_featured' => 0,
-//                                         'is_physical' => 0,
-//                                         'has_inventory' => 0,
-//                                         'url_slug' => $da[0],
-//                                         'brand_id' => $brand_id,
-//                                         'requires_shipping' => 0,
-//                                         'Requires_last_mile' => 0,
-//                                         'sell_when_out_of_stock' => 0,
-//                                         'vendor_id' => $this->vendor_id,
-//                                         'category_id' => $category->category_id,
-//                                         'tax_category_id' => $tax_category_id,
-//                                         'title' => ($da[1] == "") ? "" : $da[1],
-//                                         'is_live' => ($da[3] == 'TRUE') ? 1 : 0,
-//                                         'body_html' => ($da[2] == "") ? "" : $da[2]
-//                                     ]));
-                                    
+
                                     $product = Product::insertGetId([
                                         'type_id' => 1,
                                         'sku' => $da[0],
@@ -310,15 +290,15 @@ class ProductImportCsvJob implements ShouldQueue
                                             }
                                         }
                                     }
-                                    
+
                                     // insertion into product category
                                     $cat = [
                                         'product_id' => $product,
                                         'Category_id' => $category->category_id
                                     ];
-                                    
+
                                     ProductCategory::insert($cat);
-                                    
+
                                     if (isset($da[24]) && $da[24] != "") {
                                         // $delete = ProductTag::where('product_id', $product)->delete();
                                         foreach (explode(',', $da[24]) as $titleKey => $tagtitle) {
@@ -330,7 +310,7 @@ class ProductImportCsvJob implements ShouldQueue
                                                 ->where('tag_translations.name', 'LIKE', $tagtitle);
                                             })
                                             ->first();
-                                            
+
                                             if ($vendorTagtitle) {
                                                 $tagSetArray = [
                                                     'product_id' => $product,
@@ -340,14 +320,12 @@ class ProductImportCsvJob implements ShouldQueue
                                             }
                                         }
                                     }
-                                    
-                                    $client_lang = ClientLanguage::where('is_primary', 1)->first();
-                                    if (! $client_lang) {
-                                        $client_lang = ClientLanguage::where('is_active', 1)->first();
-                                    }
-                                    
-                                    // insertion into product translations
-                                    $datatrans[] = [
+
+                                    // Insert into Product Translation
+                                    ProductTranslation::updateOrcreate([
+                                        'product_id' => $product,
+                                        'language_id' =>  $client_lang->language_id
+                                    ],[
                                         'title' => ($da[1] == "") ? "" : $da[1],
                                         'body_html' => ($da[2] == "") ? "" : $da[2],
                                         'meta_title' => '',
@@ -355,10 +333,8 @@ class ProductImportCsvJob implements ShouldQueue
                                         'meta_description' => '',
                                         'product_id' => $product,
                                         'language_id' => $client_lang->language_id
-                                    ];
-                                    
-                                    ProductTranslation::insert($datatrans);
-                                    
+                                    ]);
+
                                     if ($da[5] != "" || $da[7] != "" || $da[9] != "") {
                                         $product_hasvariant = Product::where('id', $product)->first();
                                         $product_hasvariant->has_variant = 1;
@@ -402,7 +378,7 @@ class ProductImportCsvJob implements ShouldQueue
                                                 $proVariantSet->save();
                                             }
                                         }
-                                        
+
                                         if ($da[7] != "") {
                                             // $variant = Variant::where('title', $da[7])->first();
                                             $variant = Variant::whereHas('category.translation_one', function ($query) use ($da) {
@@ -425,7 +401,7 @@ class ProductImportCsvJob implements ShouldQueue
                                                 $proVariantSet->save();
                                             }
                                         }
-                                        
+
                                         if ($da[9] != "") {
                                             // $variant = Variant::where('title', $da[9])->first();
                                             $variant = Variant::whereHas('category.translation_one', function ($query) use ($da) {
@@ -449,7 +425,6 @@ class ProductImportCsvJob implements ShouldQueue
                                             }
                                         }
                                     } else {
-                                      //  \Log::info("sku old " . $da[0]);
                                         $proVariant = new ProductVariant();
                                         $proVariant->sku = $da[0];
                                         $proVariant->product_id = $product;
@@ -459,6 +434,7 @@ class ProductImportCsvJob implements ShouldQueue
                                         $proVariant->compare_at_price = $da[22] ?? "";
                                         $proVariant->save();
                                     }
+
                                     // images
                                     if (! empty($da[16])) {
                                         foreach (explode(',', $da[16]) as $file_key => $file) {
@@ -476,29 +452,28 @@ class ProductImportCsvJob implements ShouldQueue
                                     }
                                 } else {
                                     $product_id = Product::where('sku', $da[0])->first();
-                                    
+
                                     // update product
-                                    
                                     $brand_id = null;
                                     $tax_category_id = null;
-                                    
+
                                     if ($da[18] != "") {
                                         $brand = Brand::where('title', "LIKE", $da[18])->first();
                                         if ($brand) {
                                             $brand_id = $brand->id;
                                         }
                                     }
-                                    
+
                                     if ($da[19] != "") {
-                                        
+
                                         $tax_category = TaxCategory::where('title', "LIKE", $da[19])->first();
                                         if ($tax_category) {
                                             $tax_category_id = $tax_category->id;
                                         }
                                     }
-                                    
+
                                     $category = $da[4];
-                                    
+
                                     $category = VendorCategory::with('category.translation')->whereHas('category.translation', function ($q) use ($category) {
                                         $q->select('category_translations.name')
                                         ->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')
@@ -508,8 +483,7 @@ class ProductImportCsvJob implements ShouldQueue
                                     })
                                     ->where('vendor_id', $this->vendor_id)
                                     ->first();
-                                  //  \Log::info("new new ");
-                                    if (empty($category)) {}
+
                                     Product::where('id', $product_id->id)->update([
                                         'type_id' => 1,
                                         'sku' => $da[0],
@@ -528,7 +502,18 @@ class ProductImportCsvJob implements ShouldQueue
                                         'is_live' => ($da[3] == 'TRUE') ? 1 : 0,
                                         'body_html' => ($da[2] == "") ? "" : $da[2]
                                     ]);
-                                    
+                                    ProductTranslation::updateOrcreate([
+                                        'product_id' => $product_id->id,
+                                        'language_id' =>  $client_lang->language_id
+                                    ],[
+                                        'title' => ($da[1] == "") ? "" : $da[1],
+                                        'body_html' => ($da[2] == "") ? "" : $da[2],
+                                        'meta_title' => '',
+                                        'meta_keyword' => '',
+                                        'meta_description' => '',
+                                        'product_id' => $product_id->id,
+                                        'language_id' => $client_lang->language_id
+                                    ]);
                                     $delete = ProductAddon::where('product_id', $product_id->id)->delete();
                                     $delete = ProductTag::where('product_id', $product_id->id)->delete();
                                     if (isset($da[23]) && $da[23] != "") {
@@ -553,7 +538,7 @@ class ProductImportCsvJob implements ShouldQueue
                                                 ->where('tag_translations.name', 'LIKE', $tagtitle);
                                             })
                                             ->first();
-                                            
+
                                             if ($vendorTagtitle) {
                                                 $tagSetArray = [
                                                     'product_id' => $product_id->id,
@@ -605,7 +590,7 @@ class ProductImportCsvJob implements ShouldQueue
                                                 $proVariantSet->save();
                                             }
                                         }
-                                        
+
                                         if ($da[7] != "") {
                                             $variant = Variant::whereHas('category.translation_one', function ($query) use ($da) {
                                                 $query->where('name', $da[4]);
@@ -627,7 +612,7 @@ class ProductImportCsvJob implements ShouldQueue
                                                 $proVariantSet->save();
                                             }
                                         }
-                                        
+
                                         if ($da[9] != "") {
                                             $variant = Variant::whereHas('category.translation_one', function ($query) use ($da) {
                                                 $query->where('name', $da[4]);
@@ -662,11 +647,13 @@ class ProductImportCsvJob implements ShouldQueue
                             }
                         }
                     }
-
                     $i ++;
                 }
+                DB::commit();
             } catch (\Exception $ex) {
+                DB::rollback();
                 $error[] = "Other: " . $ex->getMessage();
+                \Log::info($ex->getMessage().$ex->getLine());
             }
             $vendor_csv = CsvProductImport::where('vendor_id', $this->vendor_id)->where('id', $this->csv_product_import_id)->first();
             if (! empty($error)) {
@@ -678,7 +665,9 @@ class ProductImportCsvJob implements ShouldQueue
             $vendor_csv->save();
             return 1;
         } catch (\Exception $ex) {
+            DB::rollback();
             $error[] = "Other: " . $ex->getMessage();
+            \Log::info($ex->getMessage().$ex->getLine());
         }
     }
 
