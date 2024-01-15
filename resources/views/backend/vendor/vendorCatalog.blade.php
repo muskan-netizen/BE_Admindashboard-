@@ -673,7 +673,7 @@
                                         <tr>
                                             <th>#</th>
                                             <th>{{ __('File Name') }}</th>
-                                            <th colspan="2">{{ __('Status') }}</th>
+                                            <th>{{ __('Status') }}</th>
                                             <th>{{ __('Link') }}</th>
                                         </tr>
                                     </thead>
@@ -685,25 +685,29 @@
                                                 <td> {{ $csv->name }}</td>
                                                 @if ($csv->status == 1)
                                                     <td>{{ __('Pending') }}</td>
-                                                    <td></td>
                                                 @elseif($csv->status == 2)
                                                     <td>{{ __('Success') }}</td>
-                                                    <td></td>
                                                 @else
                                                     <td>{{ __('Errors') }}</td>
-                                                    <td class="position-relative text-center alTooltipHover">
+                                                    {{-- <td class="position-relative text-center alTooltipHover">
                                                         <i class="mdi mdi-exclamation-thick"></i>
                                                         <ul class="tooltip_error d-none">
-                                                            <?php $error_csv = json_decode($csv->error); ?>
+
                                                             @foreach ($error_csv as $err)
                                                                 <li>
                                                                     {{ $err }}
                                                                 </li>
                                                             @endforeach
                                                         </ul>
-                                                    </td>
+                                                    </td> --}}
                                                 @endif
-                                                <td> <a href="{{ route('productImport.error',['id' => $csv->id]) }}">{{ __('Download Logs') }}</a> </td>
+                                                @if(isset($csv->error))
+                                                    <td>
+                                                       <a href="{{ route('productImport.error',['id' => $csv->id]) }}">{{ __('Download Logs') }}</a>
+                                                    </td>
+                                                @else
+                                                    <td>{{ "--" }}</td>
+                                                @endif
                                             </tr>
                                         @endforeach
                                     </tbody>
