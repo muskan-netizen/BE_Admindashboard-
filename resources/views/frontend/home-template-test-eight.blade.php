@@ -656,13 +656,13 @@
 		<section class="main-pro-slider p2p-full-width suppliers-section container mb-4" id="homepage_recently_viewed">
 
 			<div class="row">
-				<div class="col-md-2 mt-5 view text-center">
+				<div class="col-lg-2 col-md-3 mt-5 view text-center">
 					<div class=" top-heading mt-4 pt-5">
 						<h2 class="h2-heading">{{$homePageLabel->slug=='recently_viewed' ? __('Recently')." ".getNomenclatureName('Viewed', true) : __($homePageLabel->title)}}</h2>
 						<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>
 					</div>
 				</div>
-				<div class="col-md-10 p-0 mb-4">
+				<div class="col-lg-10 col-md-9 p-0 mb-4">
 					<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 						@foreach ($homePageData[$homePageLabel->slug] as $product )
 						@include('frontend.home_page_8.recently_viewed')
