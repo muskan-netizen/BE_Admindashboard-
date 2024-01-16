@@ -4,7 +4,7 @@
 //$total_amount = $order->payable_amount+$order->total_other_taxes_amount;
 $total_amount = $order->payable_amount;
 $total_bid_discount = @$order->bid_discount;
-$total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges+$order->rental_protection_amount+$order->booking_option_price;
+$total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges+$order->rental_protection_amount+$order->booking_option_price  + $order->tip_amount;
 $additional_price=0;
 $vendor_total_discount = 0;
 $serviceType =  Session::get('vendorType');

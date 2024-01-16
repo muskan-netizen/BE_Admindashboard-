@@ -185,7 +185,7 @@ public function createOrder($orderVendor,$vendor_details,$cus_address,$customer,
         'delivery_type' => (($scheduledAt)?'SCHEDULED':null),
         'schedule_time' => (($scheduledAt)?$scheduledAt:null),
     ];
-    // \Log::info($postdata);
+    \Log::info($postdata);
 
 
     $response_d4b_dunzo = Http::withHeaders([
