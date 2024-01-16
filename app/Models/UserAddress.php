@@ -23,4 +23,8 @@ class UserAddress extends Model
     {
         return $this->hasOne('App\Models\CarImages')->select('id' ,'image'); ;
     }
+
+    public function getFullAddressAttribute(){
+        return (($this->address)?$this->address:$this->house_number.', '.$this->city.', '.$this->state);
+    }
 }
