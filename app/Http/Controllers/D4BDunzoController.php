@@ -23,40 +23,48 @@ class D4BDunzoController extends Controller
 
     public function quote($vendor_id)
     {
+
         try{
             $customer = User::find(Auth::id());
             $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
             if ($cus_address && $this->status==1){
                 $vendor_details = Vendor::find($vendor_id);
+
+            $locationData = [
+                'pickup_details' => [
+                    [
+                        'lat' => floatval($vendor_details->latitude),
+                        'lng' => floatval($vendor_details->longitude),
+                        'reference_id' => 'pickup-ref-abcd123'.strtotime(now()),
+                    ],
+                ],
+                'optimised_route' => true,
+                'drop_details' => [
+                    [
+                        'lat' =>  floatval($cus_address->latitude),
+                        'lng' => floatval($cus_address->longitude),
+                        'reference_id' => 'drop-ref1-abcd887'.strtotime(now()),
+                        // 'payment_data' => [
+                        //     'payment_method' => 'COD',
+                        //     'amount' => 101,
+                        // ],
+                    ]
+
+                        ],
+                // 'delivery_type' => 'SCHEDULED',
+                // 'schedule_time' => Carbon::now()->timestamp,
+                    ];
+
+                \Log::info($locationData);
+
+
                 $response = Http::withHeaders([
                     'client-id' => $this->client_id,
                     'Authorization' => $this->token,
                     'Accept-Language' => 'en_US',
                     'Content-Type' => 'application/json',
-                ])->post($this->app_url.'/v2/quote', [
-                    'pickup_details' => [
-                        [
-                            'lat' => floatval($vendor_details->latitude),
-                            'lng' => floatval($vendor_details->longitude),
-                            'reference_id' => 'pickup-ref-abcd123'.strtotime(now()),
-                        ],
-                    ],
-                    'optimised_route' => true,
-                    'drop_details' => [
-                        [
-                            'lat' =>  floatval($cus_address->latitude),
-                            'lng' => floatval($cus_address->longitude),
-                            'reference_id' => 'drop-ref1-abcd887'.strtotime(now()),
-                            // 'payment_data' => [
-                            //     'payment_method' => 'COD',
-                            //     'amount' => 101,
-                            // ],
-                        ]
-
-                            ],
-                    'delivery_type' => 'SCHEDULED',
-                    'schedule_time' => Carbon::now()->addMinutes($vendor_details->order_pre_time??10)->timestamp,
-                ]);
+                ])->post($this->app_url.'/v2/quote', $locationData);
+                \Log::info($response->json());
 
                 if($response->successful()){
                     return $response->json();
@@ -75,10 +83,25 @@ class D4BDunzoController extends Controller
         $customer = User::find($user_id);
         $vendor_details = Vendor::find($orderVendor->vendor_id);
 
+        $scheduledAt = null;
+        if(isset($order->scheduled_date_time) && $order->scheduled_date_time){
+            $schTime = convertDateTimeInClientTimeZone($order->scheduled_date_time);
+            $date = date('Y-m-d',strtotime($schTime));
+            $time = date('H:i:s',strtotime($schTime));
+            $scheduledAt = $date.'T'.$time;
+            $schTime  = Carbon::parse($scheduledAt)->timestamp;
+            $nowtime = Carbon::now()->addMinutes(35)->timestamp;
+
+            if($schTime>$nowtime)
+            {
+                $scheduledAt  = $schTime;
+            }
+        }
+
         $cus_address = UserAddress::find($order->address_id);
         $orderProducts = OrderVendorProduct::where(['order_id'=>$orderVendor->order_id,'order_vendor_id'=>$orderVendor->id])->get();
         // create order
-        return $this->createOrder($orderVendor,$vendor_details,$cus_address,$customer,$order);
+        return $this->createOrder($orderVendor,$vendor_details,$cus_address,$customer,$order,$scheduledAt);
     }
 
     public function d4bdunzoWebhook(Request $request)

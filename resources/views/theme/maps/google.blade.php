@@ -9,7 +9,7 @@
 @section('content')
     <!-- Start Content-->
     <div class="container-fluid">
-        
+
         <!-- start page title -->
         <div class="row">
             <div class="col-12">
@@ -24,9 +24,9 @@
                     <h4 class="page-title">Google Maps</h4>
                 </div>
             </div>
-        </div>     
+        </div>
         <!-- end page title -->
-        
+
         <div class="row">
             <div class="col-lg-6">
                 <div class="card-box">
@@ -120,13 +120,12 @@
                 </div> <!-- end card-box-->
             </div> <!-- end col-->
         </div> <!-- end row-->
-        
-    </div> <!-- container -->    
+
+    </div> <!-- container -->
 @endsection
 
 @section('script')
     <!-- google maps api -->
-    <script src="https://maps.google.com/maps/api/js?key=AIzaSyB85kLYYOmuAhBUPd7odVmL6gnQsSGWU-4"></script>
 
     <!-- Plugins js-->
     <script src="{{asset('assets/libs/gmaps/gmaps.min.js')}}"></script>

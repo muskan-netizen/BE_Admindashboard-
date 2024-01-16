@@ -128,7 +128,7 @@
             <div class="col-lg-8 col-xl-9">
                 <div class="">
                 @include('backend.vendor.topbar-tabs')
-                    
+
                     <div class="row mt-4">
                         <div class="col-12">
                             <div class="card widget-inline">
@@ -673,7 +673,7 @@
                                         <tr>
                                             <th>#</th>
                                             <th>{{ __('File Name') }}</th>
-                                            <th colspan="2">{{ __('Status') }}</th>
+                                            <th>{{ __('Status') }}</th>
                                             <th>{{ __('Link') }}</th>
                                         </tr>
                                     </thead>
@@ -685,25 +685,29 @@
                                                 <td> {{ $csv->name }}</td>
                                                 @if ($csv->status == 1)
                                                     <td>{{ __('Pending') }}</td>
-                                                    <td></td>
                                                 @elseif($csv->status == 2)
                                                     <td>{{ __('Success') }}</td>
-                                                    <td></td>
                                                 @else
                                                     <td>{{ __('Errors') }}</td>
-                                                    <td class="position-relative text-center alTooltipHover">
+                                                    {{-- <td class="position-relative text-center alTooltipHover">
                                                         <i class="mdi mdi-exclamation-thick"></i>
-                                                        <ul class="tooltip_error">
-                                                            <?php $error_csv = json_decode($csv->error); ?>
+                                                        <ul class="tooltip_error d-none">
+
                                                             @foreach ($error_csv as $err)
                                                                 <li>
                                                                     {{ $err }}
                                                                 </li>
                                                             @endforeach
                                                         </ul>
-                                                    </td>
+                                                    </td> --}}
                                                 @endif
-                                                <td> <a href="{{ $csv->storage_url }}">{{ __('Download') }}</a> </td>
+                                                @if(isset($csv->error))
+                                                    <td>
+                                                       <a href="{{ route('productImport.error',['id' => $csv->id]) }}">{{ __('Download Logs') }}</a>
+                                                    </td>
+                                                @else
+                                                    <td>{{ "--" }}</td>
+                                                @endif
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -1196,10 +1200,10 @@
             }
             // var charCode = String.fromCharCode(event.which || event.keyCode);
             // if (!regexp.test(charCode)) {
-           
+
             //     return false;
             // }
-           
+
             // var n1 = $('#sku').val();
             // $('#url_slug').val(n1+charCode)
 
@@ -1603,7 +1607,7 @@
         });
     }
     $('.exportProductPdf').click(function(){
-            
+
             $('.buttons-pdf').click();
 });
     </script>

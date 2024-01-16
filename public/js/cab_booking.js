@@ -363,7 +363,7 @@ $(document).ready(function () {
         var destination_location_latitudes = $('input[name="destination_location_latitude[]"]').map(function(){return this.value;}).get();
         var destination_location_longitudes = $('input[name="destination_location_longitude[]"]').map(function(){return this.value;}).get();
         var addons = $('.addon-opt').map(function() {return this.getAttribute('data-id')}).get();
-        
+
         $(pickup_location_latitudes).each(function(index, latitude) {
             var sample_array = {};
             sample_array.barcode = null;
@@ -433,9 +433,9 @@ $(document).ready(function () {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
                 if(response.status == '200'){
-            
+
                     if(is_cab_pooling == 4 )
-                    {   
+                    {
                         alert(response.message);
                         window.location.href = response.redirect;
                     }
@@ -453,8 +453,27 @@ $(document).ready(function () {
                         // setInterval(function(){
                         //     getDriverDetails(response.data.dispatch_traking_url)
                         // },3000);
-                    }
-                    else if(payment_option_id == 4){
+                    }else if(payment_option_id == 3){
+                        let payment_form = "pickup_delivery";
+                        $.ajax({
+                            type: "POST",
+                            dataType: 'json',
+                            url: payment_paypal_url,
+                            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: totalamount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,stripe_token: stripe_token , payment_form : payment_form,reload_route: reload_route,ordernumber:order_number },
+                            success: function(resp) {
+                                if (resp.status == 'Success') {
+                                    window.location.replace(resp.data);
+                                } else {
+                                    alert(resp.message);
+                                }
+                            },
+                            error: function(error) {
+                                $('#show_error_of_booking').html(response.message);
+
+                                var response = $.parseJSON(error.responseText);
+                            }
+                    });
+                } else if(payment_option_id == 4){
                         var stripe_token = $('#stripe_token').val();
                         let payment_form = "pickup_delivery";
 
@@ -555,7 +574,7 @@ $(document).ready(function () {
             success_error_alert('error', 'Schedule date time is required', ".cart_response");
             return false;
         }
-        
+
         var orderResponse = '';
 
         $.ajax({
@@ -592,7 +611,7 @@ $(document).ready(function () {
         });
         return orderResponse;
     }
-    
+
     function paymentViaStripe(stripe_token, order_id, payment_option_id,) {
         let total_amount = 0;
         let tip = 0;
@@ -969,7 +988,7 @@ $(document).ready(function () {
         if(product_id === undefined){
             alert("Please choose one "+category_name+" to process next");
         }else{
-            
+
             let rider_type = $('input[name="is_for_friend"]:checked').val();
             if(rider_type == 1 || rider_type == "1")
             {
@@ -996,7 +1015,7 @@ $(document).ready(function () {
             initialCountry: initial_country_code,
         });
     });
-    
+
     $(document).delegate('.iti__country','click', function() {
         var code = $(this).attr('data-country-code');
         $('#countryData').val(code);
@@ -1008,7 +1027,7 @@ $(document).ready(function () {
     $(document).on('click','.add_share_rider_submit_button',function(){
         var form = document.getElementById('add_rider_form');
         var formData = new FormData(form);
-        $.ajaxSetup({   
+        $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
             }
@@ -1027,7 +1046,7 @@ $(document).ready(function () {
                     $("#rider_section_user").html(share_rider_template({riders: response.riders})).show();
                     $("#rider_section_user").show();
                     $("#rider_section").hide();
-                
+
                 $('#alAddRiderSecModal').modal('hide');
                 form.reset();
             },
@@ -1059,11 +1078,11 @@ $(document).ready(function () {
             processData: false,
             success: function(response) {
                 let rider_template = _.template($('#rider_template').html());
-                
+
                 var is_cab_pooling = $('input[name="is_cab_pooling_radio"]:checked').val();
                 $("#rider_section").html(rider_template({riders: response.riders})).show();
-                
-                
+
+
                 $('#alAddRiderSecModal').modal('hide');
                 form.reset();
             },
@@ -1203,7 +1222,7 @@ $(document).ready(function () {
                         $("#search_product_main_div ").html('<p class="text-center my-3">'+ no_result_message +'</p>').show();
                         $("#search_product_rider_main_div ").html('<p class="text-center my-3">'+ no_result_message +'</p>');
                     }
-                    
+
                 }
             },
             complete:function(data){
@@ -1352,7 +1371,7 @@ $(document).ready(function () {
 
     function getProductDetail(category_id)
     {
-       
+
         $("#selected_category_id").val(category_id);
         $.ajax({
             type: "POST",
@@ -1399,7 +1418,7 @@ $(document).ready(function () {
 
         const urlParams = new URLSearchParams(window.location.search);
         const yacht_id = urlParams.get('yacht_id');
-         
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -1584,7 +1603,7 @@ $(document).ready(function () {
     $(document).on("click",".scheduled-ride-rec",function() {
         $('.location-list').attr("style", "display: none !important");
         $('.scheduled-ride-list').attr("style", "display: block !important");
-       
+
         $('.now-option').attr("style", "display: none !important");
         $('.recurring-option').attr("style", "display: block !important");
 
@@ -1619,7 +1638,7 @@ $(document).ready(function () {
     };
 
     $(document).on("click","#check-schedule-date-time-rec",function() {
-    
+
         $('.cab-detail-box').attr("style", "display: block !important");
         $('.scheduled-ride-list').attr("style", "display: none !important");
 
@@ -1913,7 +1932,7 @@ $(document).ready(function () {
       var input = document.getElementById('pickup_location');
       var input2 = document.getElementById('destination_location');
       var input3 = document.getElementById('pickup_hourly_location');
-      
+
       if(input){
         var autocomplete = new google.maps.places.Autocomplete(input);
         var autocomplete2 = new google.maps.places.Autocomplete(input2);
@@ -1996,7 +2015,7 @@ $(document).ready(function () {
             }
 
         });
-      
+
       }
     }
 
@@ -2491,7 +2510,7 @@ $(document).on("click",".btn-price-up-down",function(){
 });
 
 $(document).on("click",".share_ride_btn",function(){
-    $('#rider_section_user').toggle();    
+    $('#rider_section_user').toggle();
 });
 
 

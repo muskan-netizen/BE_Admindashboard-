@@ -1219,7 +1219,9 @@ class CartController extends BaseController
                                     $vendorAddons[$ck]['cart_product_id'] = $addons->cart_product_id;
                                     $vendorAddons[$ck]['multiplier'] = $clientCurrency->doller_compare;
                                     $ttAddon = $ttAddon + $opt_quantity_price;
-                                    $order_sub_total = $order_sub_total + $opt_quantity_price + $prod->pvariant->price;
+                                    // $order_sub_total = $order_sub_total + $opt_quantity_price + $prod->pvariant->price;
+                                    $order_sub_total = $order_sub_total + $opt_quantity_price ;
+
                                     $opt_quantity_price_new += $opt_quantity_price;
                                     $quantity_price = $quantity_price + $opt_quantity_price;
 
@@ -1232,7 +1234,7 @@ class CartController extends BaseController
                                             $coupon_product_discount = $coupon_product_discount + $opt_quantity_price;
                                     }
                                 }
-
+                                $order_sub_total = $order_sub_total + $prod->pvariant->price;
                             }else{
                                 $order_sub_total = round($order_sub_total  + $prod->pvariant->price*$prod->quantity,2);
                             }
@@ -1247,7 +1249,8 @@ class CartController extends BaseController
 
                             // Check if is_cart_checked is 1 then add $quantity_price in payable amount
                             if($prod->is_cart_checked == 1){
-                                $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
+                                // $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
+                                $payable_amount = $payable_amount  + $quantity_container_charges;
 
                             }
 
@@ -1833,7 +1836,8 @@ class CartController extends BaseController
             $loyalty_amount_saved = $temp_total_paying;
             $cart->total_payable_amount = 0.00;
         } else {
-            $cart->total_payable_amount = $order_sub_total+($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
+            // $cart->total_payable_amount = $order_sub_total+($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
+            $cart->total_payable_amount = $order_sub_total+($cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
         }
 
         /* if($total_taxable_amount>0){

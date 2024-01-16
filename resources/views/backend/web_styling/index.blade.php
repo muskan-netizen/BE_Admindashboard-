@@ -554,6 +554,10 @@
                                 <a class="action-icon " userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
                                     <input required type="file" accept="video/*,image/*,.pdf,.doc" data-plugins="dropify" name="banner_image[{{$home_page_label->id}}][check]" class="dropify" data-default-file="" >
                                 </a>
+                                
+                                <div class="col pl-1">
+                                    <input required type="url" name="banner_url[{{$home_page_label->id}}]" class="dropify form-control" placeholder="Enter Url" value="@if(isset($home_page_label->banner_image[0]['banner_url']) && !empty($home_page_label->banner_image[0]['banner_url'])) {{$home_page_label->banner_image[0]['banner_url']}} @endif">
+                                </div>
                                 @endif
                                 @if($home_page_label->slug == 'dynamic_page')
                                 <input type="checkbox" name="for_no_product_found_html[{{$key}}]" {{$home_page_label->for_no_product_found_html == 1 ? 'checked' : ''}} >{{__('For No Records')}}

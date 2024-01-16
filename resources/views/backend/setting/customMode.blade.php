@@ -835,6 +835,20 @@
 
 <div class="col-md-4 ">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_freelance_on_homepage" class="mr-2 mb-0">{{ __('Enable Freelancer Location in Homepage') }}<small
+                class="d-block pr-5">{{ __('Enable Freelancer Location in Homepage.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_freelance_on_homepage"
+                id="is_freelance_on_homepage_switch" class="form-control checkbox_change"
+                data-className="is_freelance_on_homepage" data-color="#43bee1"
+                @if (@$getAdditionalPreference['is_freelance_on_homepage']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_freelance_on_homepage'] == 1) value="1" @else value="0" @endif
+            name="is_freelance_on_homepage" id="is_freelance_on_homepage" />
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_enable_compare_product" class="mr-2 mb-0">Bulk Order Product<small class="d-block pr-5">Enable Bulk Order Product Recomended For ECommerce.</small></label>
         <span> <input type="checkbox" data-plugin="switchery" name="is_corporate_user" id="is_corporate_user_switch" class="form-control checkbox_change" data-classname="is_corporate_user" data-color="#43bee1"   @if (@$getAdditionalPreference['is_corporate_user']) checked='checked' @endif ></span>
         <input type="hidden" @if (@$getAdditionalPreference['is_corporate_user'] == 1) value="1" @else value="0" @endif name="is_corporate_user" id="is_corporate_user">

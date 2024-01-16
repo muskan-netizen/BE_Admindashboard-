@@ -1721,6 +1721,11 @@ Options']) @section('css')
                     @endif
 
 {{-- Name changes --}}
+					@if ( (strtolower($opt->code) == 'obo') )
+						@php
+							$gateway="O'Pay";
+						@endphp
+					@endif
                     @if ( (strtolower($opt->code) == 'obo') )
 					@php
 						$gateway="O'Pay";
@@ -1747,7 +1752,7 @@ Options']) @section('css')
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="obo_market_place_id." class="mr-3">{{$gateway}}{{ __(" MARKET PLACE ID") }}</label>
+                                    <label for="obo_market_place_id." class="mr-3">{{$gateway}}{{ __("MARKET PLACE ID") }}</label>
                                     <input type="text" name="obo_market_place_id" id="obo_market_place_id" class="form-control" value="{{$obo_market_place_id}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>

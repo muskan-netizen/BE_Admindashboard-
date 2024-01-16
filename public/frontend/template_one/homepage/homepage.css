@@ -5749,5 +5749,8 @@ body.dark .slick-slider .d-flex.align-items-center.justify-content-between.al_cl
     font-weight: 600;
     font-size: 10px;
  }
-
+ body.al_body_template_one .categories_menu {
+    max-width: 100% !important;
+    overflow: initial !important;
+}
  /*-------end here---*/

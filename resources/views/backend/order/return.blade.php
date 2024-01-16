@@ -16,7 +16,7 @@ $timezone = Auth::user()->timezone;
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box mt-2 alReturnRequestsTitle d-md-flex align-items-center justify-content-between">
-                    <h4 class="page-title">{{__('Return Requests')}}</h4>
+                    <h4 class="page-title"><button onclick="window.location='{{ route('order.index') }}'" class="back-button" style="border: none"><i class="fa fa-arrow-left" aria-hidden="true"></i></button> {{__('Return Requests')}}</h4>
                     <div class="float-right">
                         <div class="row ">
                             <div class="col-sm-4 mb-1">

@@ -12,7 +12,7 @@ class PaymentMethod extends Model
     public function getimageUrlAttribute($value){
         $values = array();
         $image_path = '';
-        $staticImage = ['visa','discover','american-express','master','mobile-money'];
+        $staticImage = ['visa','discover','american-express','master','mobile-money','mtn','airtel-money','airteltigo','mtn-mobile','vodafone'];
         if ( in_array($this->slug, $staticImage) ) {
             $image_path = asset('assets/images/cards/'.$this->slug.'.png');
         }else{

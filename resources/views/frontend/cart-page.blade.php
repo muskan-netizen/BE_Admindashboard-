@@ -239,7 +239,7 @@
                                 @endif
                                 <div id="mov" style="display:none;">{{ $product->vendor->order_min_amount }}
                                 </div>
-                                @if ($product->isDeliverable != '' && $product->isDeliverable == 0)
+                                @if (isset($product->isDeliverable) && $product->isDeliverable == 0)
                                     <div class="col-12">
                                         <div class="text-danger">
                                             <i class="fa fa-exclamation-circle"></i>
@@ -841,7 +841,7 @@
                                         <div class="row mb-1 d-flex align-items-center">
                                             <div class="col-5 text-lg-right">
                                                 <label class="m-0 radio">
-                                                    {{ __('Fixed Fee') }} :</label>
+                                                    {{getNomenclatureName('Fixed Fee', true)}} :</label>
                                             </div>
                                             <div class="col-7">
                                                 @if ($additionalPreference['is_token_currency_enable'])
@@ -1530,11 +1530,13 @@
                                         <input type="hidden" name="cart_tip_amount" id="cart_tip_amount"
                                             value="{{ decimal_format($cart_details->tip_5_percent) }}">
                                         <input type="hidden" name="cart_total_payable_amount "
-                                            value="{{ decimal_format($cart_details->total_payable_amount  ?? 0) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes) }}">
+                                            value="{{ decimal_format($cart_details->product_total_amount  ?? 0) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes) }}">
                                     @else
                                         <p class="total_amt m-0" id="cart_total_payable_amount"
                                             data-cart_id="{{ $cart_details->id }}">
-                                            {{ Session::get('currencySymbol') }}{{ decimal_format($cart_details->total_payable_amount  ?? 0 - $cart_details->bid_total_discount + $other_taxes) }}
+                                         
+                                            {{ Session::get('currencySymbol') }}{{ decimal_format($product->product_total_amount + $product->vendor->fixed_fee_amount ?? 0 - $cart_details->bid_total_discount + $other_taxes) }}
+                                           
                                         </p>
 
                                         <input type="hidden" name="cart_tip_amount" id="cart_tip_amount"

@@ -1876,3 +1876,25 @@ line-height: normal;
         font-size: 14px ;
     }
 }
+
+
+/*----------mova css------------*/
+
+.al_body_template_three .biggest{
+    background: #6d4ccf !important;
+}
+.al_body_template_three .downloadApp h3{color:#fff !important;}
+.al_body_template_three .downloadApp .item .list h4 {
+    font-size: 18px;
+    color: #fff;
+}
+.al_body_template_three .choose_us {
+    background: #6d4ccf;
+}
+.al_body_template_three .choose_us .heading h5 {
+    color: #fff;
+    margin-bottom: 22px;
+}
+.al_body_template_three section.downloadApp {
+    background: #6d4ccf !important;
+}
