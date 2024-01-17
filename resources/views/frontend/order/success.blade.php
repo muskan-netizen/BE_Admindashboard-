@@ -4,10 +4,20 @@
 //$total_amount = $order->payable_amount+$order->total_other_taxes_amount;
 $total_amount = $order->payable_amount;
 $total_bid_discount = @$order->bid_discount;
-$total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges+$order->rental_protection_amount+$order->booking_option_price  + $order->tip_amount;
+$serviceType =  Session::get('vendorType');
+
+if($serviceType == 'rental')
+{
+
+    $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges+$order->rental_protection_amount+$order->booking_option_price;
+}else{
+
+    $total = $order->taxable_amount+$order->total_service_fee+$order->fixed_fee_amount+$order->total_container_charges+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount;
+}
+
 $additional_price=0;
 $vendor_total_discount = 0;
-$serviceType =  Session::get('vendorType');
+
 $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
 $timezone = Auth::user()->timezone;
 $order_is_long_term = $order->is_long_term;
@@ -96,7 +106,7 @@ $order_is_long_term = $order->is_long_term;
                                                     <div>
                                                         @if($serviceType=='rental')
                                                             <h4>{{__('Duration')}}</h4>
-                                                            @php  
+                                                            @php
                                                             if($serviceType == 'rental'){
                                                                 $dura = getHoursMinutes($product->total_booking_time);
                                                             }elseif($productCategory == 'yacht'){
@@ -175,15 +185,15 @@ $order_is_long_term = $order->is_long_term;
                                                 @include('frontend.order.longTermDetails')
                                             @endif
                                         </div>
-                                    
+
                                     @endforeach {{--  End vendor Products loop --}}
 
                                     @if(@$total_bid_discount && $total_bid_discount>0)
                                         <div class="col-12 offset-6 border-top pt-1 mt-1">
-                                            <div class="row mr-0">  
+                                            <div class="row mr-0">
                                                 <div class="col-md-3">
                                                     {{__('Bid Discount')}}
-                                                </div> 
+                                                </div>
                                                 <div class="col-md-3 text-right"><b style="color:#000">
                                                     {{Session::get('currencySymbol')}}{{decimal_format(($total_bid_discount) * @$clientCurrency->doller_compare)}}
                                                 </b></div>
@@ -216,20 +226,20 @@ $order_is_long_term = $order->is_long_term;
                                             {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->total_delivery_fee * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->total_delivery_fee * @$clientCurrency->doller_compare)}}@endif</span></li>
                                     @endif
                                     @if($order->total_discount > 0)
-                                    	@php 
+                                    	@php
                                     		$total -= (decimal_format($order->total_discount * @$clientCurrency->doller_compare));
-                                    	
+
                                     	@endphp
                                         <li>{{__('Total Discount')}} <span> - @if( $additionalPreference["is_token_currency_enable"])
                                             {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->total_discount * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->total_discount * @$clientCurrency->doller_compare)}}@endif</span></li>
                                     @endif
 
                                     @if($order->taxable_amount > 0 || $order->total_other_taxes_amount> 0 )
-                                    @php 
+                                    @php
                                     $total += decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare);
                                     @endphp
 				                         <li>{{__('Tax')}} <span>@if( $additionalPreference["is_token_currency_enable"])
-                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->taxable_amount * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->taxable_amount * @$clientCurrency->doller_compare)}}@endif</span></li>
+                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->taxable_amount * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->taxable_amount * @$clientCurrency->doller_compare + $order->total_other_taxes_amount)}}@endif</span></li>
                                    @endif
 
                                     @if($order->luxury_option_id == 4)
@@ -247,8 +257,8 @@ $order_is_long_term = $order->is_long_term;
                                     @if($product->slot_id != '' && $product->delivery_date != '' && $product->slot_price != '')
 
                                         <li>{{__('Slot Delivery Fees')}} <span>{{Session::get('currencySymbol')}} {{$order->slot_delivery_fees??'0'}}</span></li>
-                                        
-                                    @endif  
+
+                                    @endif
 
                                     @if($order->subscription_discount > 0)
                                         <li>{{__('Subscription Discount')}} <span> - @if( $additionalPreference["is_token_currency_enable"])
@@ -271,7 +281,7 @@ $order_is_long_term = $order->is_long_term;
                                     @endif
                                         {{-- <li>{{__('Total')}}<span>@if( $additionalPreference["is_token_currency_enable"])
                                             {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format(($total+$additional_price) * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format(($total+$additional_price) * @$clientCurrency->doller_compare)}}@endif</span></li> --}}
-      
+
 
                         </ul>
                     </div>
@@ -313,11 +323,11 @@ $order_is_long_term = $order->is_long_term;
                                     @endif
                                 </ul>
                                 <ul class="order-detail row">
-                                    
+
                                     <li class="col-12 col-md-4"><span>{{__('Order Total')}}:</span><span>@if( $additionalPreference["is_token_currency_enable"])
-                                    
-                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($total + $additional_price))}}@else{{Session::get('currencySymbol').decimal_format($total + $additional_price)}}@endif                                    
-                                       
+
+                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($total + $additional_price))}}@else{{Session::get('currencySymbol').decimal_format($total + $additional_price)}}@endif
+
                                         @if($order->payment_option_id != 1 && $order->payment_status!=1 && $order->is_postpay==1)
                                         <span style="color:var(--theme-deafult);">Unpaid</span>
                                         @endif
