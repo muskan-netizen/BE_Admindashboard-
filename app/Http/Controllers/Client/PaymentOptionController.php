@@ -824,7 +824,19 @@ class PaymentOptionController extends BaseController
                                         'totalpay_MerchantId' => $request->totalpay_MerchantId,
                                         'totalpay_password' => $request->totalpay_password,
                                     ));
-                                    break;
+                        break;
+                        case 'thawani':
+                                    $validatedData = $request->validate([
+                                    'thawani_Apikey' => 'required',
+                                    'thawani_publishKey' => 'required',
+                                    
+                                    
+                                    ]);
+                                    $json_creds = json_encode(array(
+                                    'thawani_Apikey' => $request->thawani_Apikey,
+                                    'thawani_publishKey' => $request->thawani_publishKey,
+                                    ));
+                        break;
                     }
                 }
             }

@@ -171,6 +171,10 @@ Options']) @section('css')
                 //Totalpay
                 $totalpay_MerchantId = (isset($creds->totalpay_MerchantId)) ? $creds->totalpay_MerchantId:'';
 				$totalpay_password = (isset($creds->totalpay_password)) ? $creds->totalpay_password:'';
+				//thawani payment Gateway
+				$thawani_Apikey=(isset($creds->thawani_Apikey))?$creds->thawani_Apikey: '';
+				$thawani_publishKey=(isset($creds->thawani_publishKey))?$creds->thawani_publishKey: '';
+				
 				if(strtolower($opt->code) == 'obo') {
 					$opt->title = "O'Pay";
 				}
@@ -1856,29 +1860,50 @@ Options']) @section('css')
                     </div>
                     @endif
                     @if ( (strtolower($opt->code) == 'totalpay') )
-                    <div class="mt-2" id="totalpay_fields_wrapper" @if($opt->
-                        status != 1) style="display:none" @endif>
-                        <div class="row">
-                        <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="totalpay_MerchantId" class="mr-3">{{ __("Merchant ID") }}</label>
-                                    <input type="text" name="totalpay_MerchantId" id="totalpay_MerchantId"
-                                        class="form-control" value="{{$totalpay_MerchantId}}" @if($opt->status
-                                    == 1) required @endif>
-                                </div>
-                            </div>
+						<div class="mt-2" id="totalpay_fields_wrapper" @if($opt->
+							status != 1) style="display:none" @endif>
+							<div class="row">
+							<div class="col-12">
+									<div class="form-group mb-2">
+										<label for="totalpay_MerchantId" class="mr-3">{{ __("Merchant ID") }}</label>
+										<input type="text" name="totalpay_MerchantId" id="totalpay_MerchantId"
+											class="form-control" value="{{$totalpay_MerchantId}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+								</div>
 
-                            <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="totalpay_password" class="mr-3">{{ __("Password") }}</label>
-                                    <input type="text" name="totalpay_password" id="totalpay_password"
-                                        class="form-control" value="{{$totalpay_password}}" @if($opt->status
-                                    == 1) required @endif>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endif
+								<div class="col-12">
+									<div class="form-group mb-2">
+										<label for="totalpay_password" class="mr-3">{{ __("Password") }}</label>
+										<input type="text" name="totalpay_password" id="totalpay_password"
+											class="form-control" value="{{$totalpay_password}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+								</div>
+							</div>
+						</div>
+                    @endif
+					@if ((strtolower($opt->code) == 'thawani') )
+							<div class="mt-2" id="thawani_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+								<div class="row">
+									<div class="col-12">
+										<div class="form-group mb-2">
+											<label for="thawani_Apikey" class="mr-3">{{ __("Secret Key") }}</label>
+												<input type="password" name="thawani_Apikey" id="thawani_Apikey" class="form-control" value="{{$thawani_Apikey}}" @if($opt->status == 1) required @endif>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-12">
+										<div class="form-group mb-2">
+											<label for="thawani_publishKey" class="mr-3">{{ __("Publishable Key") }}</label>
+												<input type="password" name="thawani_publishKey" id="thawani_publishKey" class="form-control" value="{{$thawani_publishKey}}" @if($opt->status == 1) required @endif>
+										</div>
+									</div>
+								</div>
+								
+							</div>
+					@endif
 
 
 
