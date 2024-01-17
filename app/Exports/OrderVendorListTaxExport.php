@@ -217,8 +217,8 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 ($order_vendors->orderDetail && $order_vendors->orderDetail->paymentOption) ? $order_vendors->orderDetail->paymentOption->title : '',
                 $order_vendors->order_status,
                 $order_vendors->orderDetail->shipping_delivery_type == 'L' ?'Lalamove' :'Dispatcher',
-                $order_vendors->orderDetail ? ($order_vendors->orderDetail->address)? $order_vendors->orderDetail->address->house_number.','.$order_vendors->orderDetail->address->city.', '.$order_vendors->orderDetail->address->state : '' : '',
                 $order_vendors->vendor ? $order_vendors->vendor->address ?? '' : '',
+                $order_vendors->orderDetail ? (($order_vendors->orderDetail->address)?$order_vendors->orderDetail->address->fullAddress : '') : '',
             ];
         }else{
             return [
@@ -247,7 +247,8 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                ($order_vendors->orderDetail && $order_vendors->orderDetail->paymentOption)? $order_vendors->orderDetail->paymentOption->title : '',
                 $order_vendors->order_status,
                 $order_vendors->orderDetail->shipping_delivery_type == 'L' ?'Lalamove' :'Dispatcher',
-                $order_vendors->orderDetail ? ($order_vendors->orderDetail->address)? $order_vendors->orderDetail->address->house_number.','.$order_vendors->orderDetail->address->city.', '.$order_vendors->orderDetail->address->state : '' : '',
+                $order_vendors->vendor ? $order_vendors->vendor->address ?? '' : '',
+                $order_vendors->orderDetail ? (($order_vendors->orderDetail->address)?$order_vendors->orderDetail->address->fullAddress : '') : '',
             ];
 
         }

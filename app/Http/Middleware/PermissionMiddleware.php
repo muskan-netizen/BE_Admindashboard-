@@ -19,7 +19,7 @@ class PermissionMiddleware
      */
     public function handle($request, Closure $next, $permission = null, $guard = null)
     {
-
+                // permission middleware
                 $checkPermissionEnable = @getAdditionalPreference(['is_role_and_permission_enable'])['is_role_and_permission_enable'];
                 if($checkPermissionEnable)
                 {
@@ -41,13 +41,11 @@ class PermissionMiddleware
                             if(@$user->is_superadmin || @$user->is_admin){
                                 return $next($request);
                             }
-
                             throw UnauthorizedException::forPermissions($permissions);
                         }
 
                         foreach ($permissions as $permission) {
                             if ($authGuard->user()->can($permission)) {
-
                                 return $next($request);
                             }
                         }
