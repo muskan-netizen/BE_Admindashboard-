@@ -1126,7 +1126,6 @@ class CartController extends BaseController
                         $item_count = $item_count + $prod->quantity;
 
                         // Check if is_cart_checked is 1 then add $vendor_products_total_amount
-
                         if($prod->is_cart_checked == 1){
                             $proSum = $proSum + $quantity_price + $quantity_container_charges;
 
