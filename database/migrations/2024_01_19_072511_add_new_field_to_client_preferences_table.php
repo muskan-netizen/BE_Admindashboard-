@@ -14,7 +14,7 @@ class AddNewFieldToClientPreferencesTable extends Migration
     public function up()
     {
         Schema::table('client_preferences', function (Blueprint $table) {
-            $table->string('fire_base_type', 20)->default('FB')->nullable();
+            $table->string('fire_base_type', 10)->default('FB')->nullable();
         });
     }
 
