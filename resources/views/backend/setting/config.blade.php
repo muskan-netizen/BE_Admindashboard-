@@ -1161,7 +1161,7 @@
                         <div class="col-md-6">
                              <select class="form-control col-6" name="fire_base_type">
                             <option value="FB" >Fire Base</option>
-                            <option value="AF" {{$preference->fire_base_type == "AF" ? 'selected' : ''}}>App Flyer</option>
+                            <option value="AF" {{getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'] == "AF" ? 'selected' : ''}}>App Flyer</option>
                             </select>
                         </div>
 
