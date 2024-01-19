@@ -87,6 +87,14 @@ class P2PController extends BaseController
     { 
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area')->where('id', '>', 0)->first();
 
+        if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+            $latitude = ($request->latitude) ? $request->latitude : $preferences->Default_latitude;
+            $longitude = ($request->longitude) ? $request->longitude : $preferences->Default_longitude;
+            $servicearea = $this->getServiceArea($request->latitude, $request->longitude, $mod_type);
+      
+        }
+       
+     
         if ($type == 'vendor' && $product_list == 'false') {
            
             $user = Auth::user();
@@ -268,13 +276,55 @@ class P2PController extends BaseController
                 );
             }
             return $category_details;
-        } elseif ($type == 'product' || $type == 'appointment' || $type == 'on demand service' || strtolower($type) == 'laundry' || $type = 'rental service') {
+        } elseif ($type == 'product' || $type == 'appointment' || $type == 'on demand service' || strtolower($type) == 'laundry' || $type == 'rental service' || $type == 'p2p') {
            
             $vendor_ids = Vendor::where('status', 1)->pluck('id')->toArray();
-
-            $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
-            $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
+           
+            if (!empty($request->latitude) && !empty($request->longitude)) {
+            
+                $latitude = $request->latitude;
+                $longitude = $request->longitude ;
+               
+                $categoryTypes = getServiceTypesCategory($request->type);
+                   
+               
+                $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+                    $q->whereIn('type_id',$categoryTypes);
+                })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','id as is_vendor_closed' ,'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($request->type, 1);
+               
+                if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                   
+                    $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+                    $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+                    $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+                    //3961 for miles and 6371 for kilometers
+                    $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                    $vendorData = $vendorData->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
+                            cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
+                            sin( radians(' . $latitude . ') ) *
+                            sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating');
+                            
+                    $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $request->type);
+                    $Service_area = $this->getServiceArea($latitude, $longitude, $request->type);
+              
+                    $vendorData = $vendorData->whereIn('id', $ses_vendors);
+                    //if($venderFilternear && ($venderFilternear == 1) ){
+                        //->orderBy('vendorToUserDistance', 'ASC')
+                        $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
+                    //}
+                }
                 
+                $vendorIds  = $vendorData->where('status', 1)->pluck('id');
+            }else{
+                $vendorIds = UserVendor::where('user_id', $userid)->pluck('vendor_id')->toArray();
+
+            }
+            
+          
+            
+            $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency ?? 1)->first();
+            $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
+            $now = Carbon::now();
             $products = Product::has('vendor')->with(['ProductAttribute',
                 'category.categoryDetail', 'media.image',
                 'translation' => function ($q) use ($langId) {
@@ -290,8 +340,24 @@ class P2PController extends BaseController
                 }, 'inwishlist' => function ($qry) use ($userid) {
                     $qry->where('user_id', $userid);
                 }
-            ])->where('products.category_id', $category_id)
+            ])->where(function($q)use($now, $vendorIds,$type){
+                if ($type != 'p2p') {
+                $q->whereHas('product_availability', function ($q) use ($now, $vendorIds) {
+                    // $q->where(function($qq) use ($now, $vendorIds){
+                    //     $qq->where('date_time', '>', $now);
+                    //     $qq->where('not_available', 0);
+                    // });
+                    $q->orWhereIn('vendor_id', $vendorIds);
+                });
+                }
+            })->where('products.category_id', $category_id)
                 ->where('products.is_live', 1); 
+
+            if(!empty($vendorIds))
+            {
+
+                $products = $products->whereIn('vendor_id',$vendorIds);
+            }
                
             if( clientPrefrenceModuleStatus('p2p_check') && $request->has('attributes') && count($request['attributes']) > 0) {
 
@@ -300,13 +366,11 @@ class P2PController extends BaseController
                 
                 $products = $products->whereHas('ProductAttribute', function($q) use($attributes){
                     foreach($attributes as $key=>$attribute){
-                        foreach($attribute['options'] as $option){
-                        $q->where('attribute_id', $attribute['attribute_id'])->where('attribute_option_id' , $option);
+                        foreach($attribute['options'] as $key=>$option){
+                            $q->where('attribute_id', $attribute['attribute_id'])->where('attribute_option_id' , $option)->orWhere('key_value', $option);
+                        }
                     }
-                }
-                   
                 });
-
             }
 
        
@@ -384,10 +448,6 @@ class P2PController extends BaseController
             return $arr;
         }
     }
-    
-    
-    
-    
 
     public function getP2pCategories()
     {
