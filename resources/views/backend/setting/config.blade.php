@@ -1155,7 +1155,16 @@
                         <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
                     </div>
                     <p class="sub-header">{{ __('View and update your Firebase Keys') }}</p>
+
+
                     <div class="row">
+                        <div class="col-md-6">
+                             <select class="form-control col-6" name="fire_base_type">
+                            <option value="FB" >Fire Base</option>
+                            <option value="AF" {{$preference->fire_base_type == "AF" ? 'selected' : ''}}>App Flyer</option>
+                            </select>
+                        </div>
+
                         <div class="col-md-6">
                             <div class="form-group mb-2">
                                 <label for="fcm_server_key">{{ __('Server Key') }}</label>
