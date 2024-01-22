@@ -174,21 +174,22 @@ class ProductImportCsvJob implements ShouldQueue
                             if (isset($row[11]) && $row[11] == "") {
                                 $error[] = "Row " . $i . " : Variant Sku is empty";
                                 $checker = 1;
-                            } else {
-                                $proVariant = ProductVariant::where('sku', $row[11])->first();
-                                if ($proVariant) {
-                                    $error[] = "Row " . $i . " : Variant Sku already exist";
-                                    $checker = 1;
-                                }
                             }
+                            // else {
+                            //     $proVariant = ProductVariant::where('sku', $row[11])->first();
+                            //     if ($proVariant) {
+                            //         $error[] = "Row " . $i . " : Variant Sku already exist";
+                            //         $checker = 1;
+                            //     }
+                            // }
                         }
-                        if (isset($row[11]) && $row[11] != "") {
+                       /* if (isset($row[11]) && $row[11] != "") {
                             $proVariant = ProductVariant::where('sku', $row[11])->first();
                             if ($proVariant) {
                                 $error[] = "Row " . $i . " : Variant Sku already exist";
                                 $checker = 1;
                             }
-                        }
+                        }*/
 
                         if (isset($row[19]) && $row[19] != "") {
                             $tax_category = TaxCategory::where('title', "LIKE", $row[19])->first();
@@ -340,14 +341,14 @@ class ProductImportCsvJob implements ShouldQueue
                                         $product_hasvariant->has_variant = 1;
                                         $product_hasvariant->save();
                                         // inserting product variant
-                                        if ($da[7] != "") {
+                                        if ($da[11] != "") {
                                             $proVariant = ProductVariant::updateOrcreate([
-                                                'sku' => $da[7],
-                                                'title' => $da[7],
+                                                'sku' => $da[11],
+                                                'title' => $da[11],
                                                 'product_id' => $product
                                             ], [
-                                                'sku' => $da[7],
-                                                'title' => $da[7],
+                                                'sku' => $da[11],
+                                                'title' => $da[11],
                                                 'product_id' => $product,
                                                 'quantity' => (! empty($da[13])) ? $da[13] : 0,
                                                 'price' => $da[12],
@@ -372,7 +373,7 @@ class ProductImportCsvJob implements ShouldQueue
                                                 // inserting product variant sets
                                                 $proVariantSet = new ProductVariantSet();
                                                 $proVariantSet->product_id = $product;
-                                                $proVariantSet->product_variant_id = $proVariant;
+                                                $proVariantSet->product_variant_id = $proVariant->id;
                                                 $proVariantSet->variant_type_id = $variant->id;
                                                 $proVariantSet->variant_option_id = $variant_optionn->id;
                                                 $proVariantSet->save();
@@ -395,7 +396,7 @@ class ProductImportCsvJob implements ShouldQueue
                                                 // inserting product variant sets
                                                 $proVariantSet = new ProductVariantSet();
                                                 $proVariantSet->product_id = $product;
-                                                $proVariantSet->product_variant_id = $proVariant;
+                                                $proVariantSet->product_variant_id = $proVariant->id;
                                                 $proVariantSet->variant_type_id = $variant->id;
                                                 $proVariantSet->variant_option_id = $variant_optionn->id;
                                                 $proVariantSet->save();
@@ -418,7 +419,7 @@ class ProductImportCsvJob implements ShouldQueue
                                                 // inserting product variant sets
                                                 $proVariantSet = new ProductVariantSet();
                                                 $proVariantSet->product_id = $product;
-                                                $proVariantSet->product_variant_id = $proVariant;
+                                                $proVariantSet->product_variant_id = $proVariant->id;
                                                 $proVariantSet->variant_type_id = $variant->id;
                                                 $proVariantSet->variant_option_id = $variant_optionn->id;
                                                 $proVariantSet->save();
@@ -553,14 +554,14 @@ class ProductImportCsvJob implements ShouldQueue
                                         $product_hasvariant->has_variant = 1;
                                         $product_hasvariant->save();
                                         // inserting product variant
-                                        if ($da[7] != "") {
+                                        if ($da[11] != "") {
                                             $proVariant = ProductVariant::updateOrcreate([
-                                                'sku' => $da[7],
-                                                'title' => $da[7],
+                                                'sku' => $da[11],
+                                                'title' => $da[11],
                                                 'product_id' => $product_id->id
                                             ], [
-                                                'sku' => $da[7],
-                                                'title' => $da[7],
+                                                'sku' => $da[11],
+                                                'title' => $da[11],
                                                 'product_id' => $product_id->id,
                                                 'quantity' => (! empty($da[13])) ? $da[13] : 0,
                                                 'price' => $da[12],
@@ -584,7 +585,7 @@ class ProductImportCsvJob implements ShouldQueue
                                                 // inserting product variant sets
                                                 $proVariantSet = new ProductVariantSet();
                                                 $proVariantSet->product_id = $product_id->id;
-                                                $proVariantSet->product_variant_id = $proVariant;
+                                                $proVariantSet->product_variant_id = $proVariant->id;
                                                 $proVariantSet->variant_type_id = $variant->id;
                                                 $proVariantSet->variant_option_id = $variant_optionn->id;
                                                 $proVariantSet->save();
@@ -606,7 +607,7 @@ class ProductImportCsvJob implements ShouldQueue
                                                 // inserting product variant sets
                                                 $proVariantSet = new ProductVariantSet();
                                                 $proVariantSet->product_id = $product_id->id;
-                                                $proVariantSet->product_variant_id = $proVariant;
+                                                $proVariantSet->product_variant_id = $proVariant->id;
                                                 $proVariantSet->variant_type_id = $variant->id;
                                                 $proVariantSet->variant_option_id = $variant_optionn->id;
                                                 $proVariantSet->save();
@@ -628,7 +629,7 @@ class ProductImportCsvJob implements ShouldQueue
                                                 // inserting product variant sets
                                                 $proVariantSet = new ProductVariantSet();
                                                 $proVariantSet->product_id = $product_id->id;
-                                                $proVariantSet->product_variant_id = $proVariant;
+                                                $proVariantSet->product_variant_id = $proVariant->id;
                                                 $proVariantSet->variant_type_id = $variant->id;
                                                 $proVariantSet->variant_option_id = $variant_optionn->id;
                                                 $proVariantSet->save();
