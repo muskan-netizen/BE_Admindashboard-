@@ -1828,22 +1828,33 @@ class CartController extends BaseController
             // }
             // $cart->wallet = $this->getWallet($cart->user_id, $clientCurrency->doller_compare, $currency);
         }
-
+        
         if ($loyalty_amount_saved  > $temp_total_paying) {
-            $loyalty_amount_saved = $temp_total_paying;
-            $cart->total_payable_amount = 0.00;
+            // check if the temp_total_paying is greater than 0, not in negative
+            if($temp_total_paying < 0 ) {
+                $total_payable_amount_without_discount = $order_sub_total+($total_paying  + $cart->total_tax);
+                $checkAmount = $total_payable_amount_without_discount + ($temp_total_paying);
+
+                if($checkAmount > 0 ) {
+                    $cart->total_payable_amount = $order_sub_total+($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
+                } else {  
+                    $cart->total_payable_amount = 0.00;
+                }
+                
+            } else {
+                $loyalty_amount_saved = $temp_total_paying;
+                $cart->total_payable_amount = $order_sub_total+($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
+            }
         } else {
             $cart->total_payable_amount = $order_sub_total+($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
         }
+
 
         /* if($total_taxable_amount>0){
             $cart->total_payable_amount = $cart->total_payable_amount +$total_taxable_amount;
         } */
 
-
         // add other taxes amount as well in total payable amount.
-
-
 
         if($cart->other_taxes>0){
             $cart->total_payable_amount = $cart->total_payable_amount + $cart->other_taxes;
