@@ -286,9 +286,9 @@ trait CartManagerV2{
         $language = $obj['language'];
         $requestType = $obj['requestType'];
         //pr($obj);
-    
+
         $processorProduct = [];
-        
+
         $this->configV2($obj);
         $address = [];
         $category_array = [];
@@ -312,7 +312,7 @@ trait CartManagerV2{
         $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency','is_price_by_role','is_service_product_price_from_dispatch','agent_commison', 'service_amount_percentage', 'agent_commison_amount_percentage']);
         $client_timezone = DB::table('clients')->first('timezone');
         $user_timezone = $client_timezone->timezone ?? 'Asia/Kolkata';
-        
+
         $giftCardUsed = 0;
         $giftCardAmount = 0;
         $security_amount = 0.00;
@@ -383,15 +383,15 @@ trait CartManagerV2{
             'vendorProducts.product.rentalProtections.rentalProtection',
             'vendorProducts.product.ProductAttribute.attributeOption'
         ]);
-        
+
        // $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id','delivery_date','slot_price','slot_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
         // dd($cartData);
-       //Get All Taxes    
+       //Get All Taxes
 
 
 
         $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id','recurring_booking_type','recurring_week_day','recurring_week_type','recurring_day_data','recurring_booking_time','delivery_date', 'slot_price', 'slot_id','dispatch_agent_id', 'is_cart_checked')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
- 
+
 
 
        //Get All Taxes
@@ -416,12 +416,12 @@ trait CartManagerV2{
         }
         $total_payable_amount = $total_subscription_discount_admin = $total_subscription_discount_vendor = $total_subscription_discount_delivery = $total_discount_amount = $total_discount_percent = $total_taxable_amount = $deliver_charges_lalmove = $total_fixed_fee_amount = 0.00;
         /* If cart have data then getting total and other variable set */
-      
-        
+
+
         if ($cartData) {
             $addon_price=0;
             $cart_dinein_table_id = NULL;
-          
+
             $vendor_details = [];
             $delivery_status = 1;
             $is_vendor_closed = 0;
@@ -457,7 +457,7 @@ trait CartManagerV2{
             $container_charges_tax = 0;
             $processorProduct     = array();
 
-          
+
 
             // if(!empty($user)){
             //     $client_timezone = DB::table('clients')->first('timezone');
@@ -488,9 +488,9 @@ trait CartManagerV2{
                 // }else{
                 //     $vendorData->scheduled_date_time = date('Y-m-d',strtotime($vendorData->scheduled_date_time)) ;
                 // }
-               
+
                 $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery',"60",0,'',$cart_id);
-              
+
                 $slots = (object)$slotsRes['slots'];
                 // this variable for get slot from dispatc
                 $slotsdate = $slotsRes['date'];
@@ -503,8 +503,8 @@ trait CartManagerV2{
                 if($cartData->count() > 1 || in_array($action,['appointment','on_demand']) ){
                     $vendorData->selected_slot = $vendorData->schedule_slot;
                 }
-              
-             
+
+
                 $vendorData->slotsdate = $slotsdate;
                 $vendorData->slots = $slots;
                 $vendorData->slotsCnt =  $slotcount;
@@ -521,7 +521,7 @@ trait CartManagerV2{
 
                 /* Getting vendor details */
                 if($action != 'delivery') {
-            
+
                     $vendor_details['vendor_address'] = $vendorData->vendor->select('id','latitude','longitude','address')->where('id', $vendorData->vendor_id)->first();
                     if($action == 'dine_in') {
                         $vendor_tables = VendorDineinTable::where('vendor_id', $vendorData->vendor_id)->with('category')->get();
@@ -559,7 +559,7 @@ trait CartManagerV2{
                 }
                 $cart_product_ids = [];
                 $vendor_discount_amount = 0;
-                
+
                 $deliver_fee_charges = 0;
                 $total_fixed_fee_tax = 0;
                 // $total_service_fee = 0;
@@ -572,7 +572,7 @@ trait CartManagerV2{
 
                 $security_amount = 0.00;
                 $if_previousdeliveryfee_added = 0;
-                
+
                 $deliveryfeeOnCoupon = 0;
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
                     $prod->product->ServicePeriods = [];
@@ -702,7 +702,7 @@ trait CartManagerV2{
                                 $price_in_currency = $prod->pvariant->month_price;
                             }
                         }
-                        
+
                         $container_charges_in_currency = $prod->pvariant->container_charges??0;
 
                         //Check product promo code is valid for this product
@@ -725,7 +725,7 @@ trait CartManagerV2{
                             $container_charges_in_doller_compare = $container_charges_in_currency * $doller_compare;
                         }
                         $quantity_price = $price_in_doller_compare * $prod->quantity;
-                        
+
                     // Recurring Booking Enabled
                     // if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
                     //     if(checkColumnExists('cart_products','recurring_booking_type')){
@@ -763,17 +763,17 @@ trait CartManagerV2{
                     if(@$quantity_role_price['quantity_price'] != 0 ) {
                             $quantity_price = $quantity_role_price['quantity_price'];
                     } else {
-                        $quantity_price = $price_in_doller_compare * $prod->quantity;    
+                        $quantity_price = $price_in_doller_compare * $prod->quantity;
                     }
                     $quantity_price =  (($quantity_price)*($prod->recurring_date_count));
-                   
+
                     $total_container_charges = $container_charges_in_currency * $prod->quantity;
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
                     if($prod->is_cart_checked == 1){
                         $sub_total+=$quantity_price + $quantity_container_charges;
                     }
                     $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
-                   
+
                     $total_quantity += $prod->quantity;
                     $prod->pvariant->price = decimal_format($price_in_currency);
 
@@ -792,13 +792,13 @@ trait CartManagerV2{
                     $prod->quantity_container_charges = decimal_format($quantity_container_charges);
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
                     $prod->quantity_role_price = $quantity_role_price;
-                    
+
                     if (($prod->pvariant->month_price ?? 0) > 0 && ($prod->pvariant->week_price ?? 0) > 0) {
                         $payable_amount = $payable_amount + $prod->additional_increments_hrs_min/(60*24) * $price_in_currency;
                     }else{
                         $payable_amount = $payable_amount + $prod->additional_price + $quantity_price + $quantity_container_charges;
                     }
-                    
+
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
                     if(
@@ -812,14 +812,14 @@ trait CartManagerV2{
                     /* Getting Add On info */
                     // if($requestType == 2){
                     //    $this->apiVariantData($prod);
-                        
+
                     // }
-                   
+
                         if($prod->addon->isNotEmpty()){
                             foreach ($prod->addon as $ck => $addons) {
                                 if($requestType == 2){
                                     $this->apiVendorAddons($addons,$ck,$prod);
-                                    
+
                                 }
 
                                 if(isset($addons->option)){
@@ -861,7 +861,7 @@ trait CartManagerV2{
                                     $coupon_apply_price+=$opt_price_in_currency;
                                     $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $prod->quantity);
                                     $addons->option->price_in_cart = $addons->option->price;
-                                    
+
                                     // Recurring Booking Enabled
                                     /*if(checkColumnExists('cart_products','recurring_booking_type')){
                                         if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
@@ -966,14 +966,14 @@ trait CartManagerV2{
                                 }
                             }
                         }
-                        
-                      
-                        
+
+
+
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
                     /* Getting taxes info */
                         $select = '';
                         $taxData = array();
-                      
+
                         if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                             foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                                 $rate = $tax_value->tax_rate;
@@ -1058,7 +1058,7 @@ trait CartManagerV2{
                                 $lastMileDate['tags'] = $prod->product->LongTermProduct->first()->tags;
                                 $NumberOfroutes = $prod->LongTermProducts ? $prod->LongTermProducts->quantity : 1;
                             }
-                            
+
                             //pr($NumberOfroutes);
                            // if ((!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1))  ) {
                             if($checkLastMile ==1){
@@ -1144,7 +1144,7 @@ trait CartManagerV2{
                 }
                 $prod->schedule_slot_name = $prod->schedule_slot;
                 if(  $is_service_product_price_from_dispatch == 1){
-                  
+
                     $selected_dispatcher_time = Carbon::parse($prod->scheduled_date_time, 'UTC')->setTimezone( $user_timezone)->format('Y-m-d');
                     $scheduled_date_time = Carbon::parse($prod->scheduled_date_time)->format('Y-m-d');
                     $nowDate             = Carbon::now()->format('Y-m-d');
@@ -1152,16 +1152,16 @@ trait CartManagerV2{
                         $delivery_status_message  = __('Scheduled Date Time Invalid!');
                         $delivery_status = 0;
                     }
-                    
+
                     if($prod->schedule_slot!=''){
                         $D_slot =    explode('-', $prod->schedule_slot);
                         $start_time =  $nowDate.' ' .( @$D_slot[0] ?? '00:00');
                         $end_time   =   $nowDate.' ' .(@$D_slot[1] ?? '01:00');
-                       
+
                         $prod->schedule_slot_name =  date('h:i A',strtotime($start_time)).' - '.date('h:i A', strtotime($end_time));
                     }
-                      
-                   
+
+
                     $prod->selected_dispatcher_time =$selected_dispatcher_time;
                 }
                 $vendorData->delivery_status_message = $delivery_status_message;
@@ -1195,7 +1195,7 @@ trait CartManagerV2{
                 }
 
                 $rental_price = 0;
-               
+
                 if (@$prod->start_date_time && @$prod->end_date_time) {
                     $start_date_time  = new Carbon($prod->start_date_time);
                     $end_date_time  = new Carbon($prod->end_date_time);
@@ -1211,10 +1211,10 @@ trait CartManagerV2{
                     }
                     $prod->price = $rental_price;
                     $rental_price = $rental_price * $prod->days;
-                } 
+                }
 
-                 
-              
+
+
 
                     $product = Product::with([
                         'variant' => function ($sel) {
@@ -1242,11 +1242,11 @@ trait CartManagerV2{
                     if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
                         $payable_amount = $payable_amount + decimal_format($prod->slot_price);
                     }
-                    
+
                     // Add Delivery Slot Price In total amount
 
                     if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
-                        $delivery_slot_amount += decimal_format($prod->slot_price);                        
+                        $delivery_slot_amount += decimal_format($prod->slot_price);
                     }
                 }
                 if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
@@ -1279,7 +1279,7 @@ trait CartManagerV2{
                             if (isset($vendorData->coupon->promo->minimum_spend)) {
                                 $minimum_spend = $vendorData->coupon->promo->minimum_spend * $doller_compare;
                                 }
-                            
+
                             $maximum_spend = 0;
                             if (isset($vendorData->coupon->promo->maximum_spend)) {
                                 $maximum_spend = $vendorData->coupon->promo->maximum_spend * $doller_compare;
@@ -1303,7 +1303,7 @@ trait CartManagerV2{
                                 }
                             }
                             else{
-                                
+
                                 $cart->coupon()->delete();
                                 $vendorData->coupon()->delete();
                                 unset($vendorData->coupon);
@@ -1322,7 +1322,7 @@ trait CartManagerV2{
                         }
                     }
                 }
-                
+
                 $promoCodeController = new PromoCodeController();
                 $promoCodeRequest = new Request();
                 $promoCodeRequest->setMethod('POST');
@@ -1344,7 +1344,7 @@ trait CartManagerV2{
                     $subscription_discount_delivery = $subscription_discount_arr['delivery_discount'];
                 }
 
-                
+
                 // add total delivery fee
                 if($vendorData->vendor->delivery_charges_tax_id)
                 $total_deliver_charges +=  $deliveryfee_ifnot_discounted;
@@ -1354,9 +1354,9 @@ trait CartManagerV2{
 
 
 
-                $subtotal_amount = $payable_amount;
-                
                 $payable_amount = $payable_amount + $deliveryfee_ifnot_discounted + $security_amount;
+                $subtotal_amount = $payable_amount;
+
 
 
                 //vendor service fee fixed/percent
@@ -1381,7 +1381,7 @@ trait CartManagerV2{
 
                     $rental_price = $rental_price + $total_service_fee;
                 }
-                
+
                 $vendorData->coupon_amount_used = decimal_format($coupon_amount_used);
                 $vendorData->service_fee_percentage_amount = decimal_format($vendor_service_fee_percentage_amount);
                 $vendorData->fixed_service_charge_amount = decimal_format($vendor_fixed_service_charge_amount);
@@ -1399,7 +1399,6 @@ trait CartManagerV2{
                 $vendorData->bid_vendor_discount = decimal_format($bid_vendor_discount);
 
                 $bid_total_discount += $vendorData->bid_vendor_discount;
-
 
                 $vendorData->product_sub_total_amount = decimal_format($subtotal_amount);
                 $vendorData->isDeliverable = 1;
@@ -1706,14 +1705,14 @@ trait CartManagerV2{
             $cart->is_long_term_service = $is_long_term_service ;
 
 
-         
+
 
             if(@$rental_price && (FacadesSession::get('vendorType') == "p2p"))
 
             {
-              
+
                 $cart->total_payable_amount = $rental_price ?? 0;
-            } 
+            }
 
 
             elseif(FacadesSession::get('vendorType') == "p2p")
@@ -1722,7 +1721,7 @@ trait CartManagerV2{
 
             }
             else {
-                
+
                 if ($cart->other_taxes > 0) {
                     $cart->total_payable_amount = $cart->total_payable_amount + $cart->other_taxes;
                 }
@@ -1730,8 +1729,8 @@ trait CartManagerV2{
                     $cart->total_payable_amount = $cart->total_payable_amount + $cart->total_fixed_fee_amount;
                 }
             }
-  
-           
+
+
             if(!$this->additionalPreferences->is_tax_price_inclusive){
                 $cartTotalPay = decimal_format($total_payable_amount);
                // pr( $cartTotalPay);
@@ -1742,12 +1741,12 @@ trait CartManagerV2{
                     $giftCardUsed  = @$calCulateGiftCard['used_GiftCardAmount'];
                 }
                 //end  gift card calculation
-          
-            
+
+
                 if((!@$rental_price) && (FacadesSession::get('vendorType') != "p2p"))
 
                 {
- 
+
                     $cart->total_payable_amount +=  $cartTotalPay ;
                 }
             }else{
@@ -1768,7 +1767,7 @@ trait CartManagerV2{
             }
 
             $cart->delivery_slot_amount = $delivery_slot_amount;
-            
+
             // $cart->total_payable_amount = decimal_format($total_payable_amount);
             //$cart->delivery_charges = decimal_format($deliveryCharges);
             //$cart->total_payable_amount = decimal_format($total_payable_amount);
@@ -1792,22 +1791,22 @@ trait CartManagerV2{
             if($requestType == 1){
                 $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $this->user_allAddresses??[], 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'processorProduct' => $processorProduct, 'preferences' => $preferences])->render();
             }
-                   
-         
+
+
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
             $cart->scheduled_date_time = $myDate;
             $cart->giftCardUsedAmount = $giftCardUsed;
             $cart->security_amount = $security_amount;
 
-          
+
             if($additionalPreference['agent_commison'] == 1){
-            
+
                 $cart->agent_commison = $cart->total_payable_amount * $additionalPreference['agent_commison_amount_percentage']/100;
                 $cart->total_payable_amount  = $cart->total_payable_amount  ;
             }
-  
-           
+
+
 
             if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
                 if($cart->pickupSlotsCnt==0){
@@ -1845,8 +1844,8 @@ trait CartManagerV2{
             }
 
 
-           
-           
+
+
             $cart->pickup_delay_date =  $pickup_delay_date??0;
             $cart->dropoff_delay_date =  $dropoff_delay_date??0;
             $cart->delivery_type =  $code??'D';
@@ -1856,15 +1855,16 @@ trait CartManagerV2{
                 $cart->sub_total = @$rental_price;
             }else
             {
-                $sub_total = $sub_total??0 ;
+                $sub_total = $subtotal_amount ?? $sub_total;
+
                 $cart->sub_total =  $sub_total - $cart->bid_total_discount;
             }
             $cart->sub_total_inc_tax =  decimal_format($cart->sub_total + $total_taxable_amount);
             $cart->is_token =  $additionalPreference['is_token_currency_enable'] ? 1 : 0;
             $cart->token_value = $additionalPreference['token_currency'] ?? 0;
             $cart->products = $cartData->toArray();
-            
-          
+
+
             if (taxJarEnable() && count($cart->products)) {
                 $cart->total_taxable_amount = $this->taxRateEstimate($cart);
                 $cart->total_payable_amount += $cart->total_taxable_amount;
@@ -1908,7 +1908,7 @@ trait CartManagerV2{
         $amount = 0;
         $quantity = 0;
         if(getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1 && !empty($productVariantByRoles))  {
-           
+
             foreach($productVariantByRoles->reverse() as $inn_key => $inn_val) {
                 // if($inn_val->role_id == Auth::user()->role_id ) {
                     if($quantity < $inn_val->quantity && $inn_val->quantity <= $prodQuantity) {
@@ -1923,7 +1923,7 @@ trait CartManagerV2{
         return [
             'quantity_price' => $quantity_price,
             'amount' => $amount
-        ]; 
+        ];
     }
 
     function appNewParameter($prod,$total_price){
@@ -1965,10 +1965,10 @@ trait CartManagerV2{
             $this->variantsData['coupon_applied'] = 0;
             $this->variantsData['quantity_price'] = $total_price;
             $this->variantsData['quantity_container_charges'] = 0;
-            
+
         }
 
-      
+
         $prod->variants = $this->variantsData;
         $prod->product_addons = $this->vendorAddons;
         $prod->variant_options = $this->variant_options;
@@ -1976,7 +1976,7 @@ trait CartManagerV2{
     }
 
     function apiVendorAddons($addons,$ck, $prod){
-     
+
         $opt_quantity_price = 0;
         $opt_price_in_currency = $addons->option ? $addons->option->price : 0;
         $addon_option=AddonOption::where(['addon_id'=>$addons->addon_id,'id'=>$addons->option_id]);
@@ -2003,5 +2003,5 @@ trait CartManagerV2{
         //$order_sub_total = $order_sub_total + $opt_quantity_price;
     }
 
-   
+
 }
