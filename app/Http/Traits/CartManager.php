@@ -186,7 +186,7 @@ trait cartManager{
     $loyalty_amount_saved = 0;
     $loyalty_points_used = 0;
     $redeem_points_per_primary_currency = '';
-    $loyalty_card = LoyaltyCard::where('status', '=', '1')->first();
+    $loyalty_card = LoyaltyCard::where('status', '=', '0')->first();
     if ($loyalty_card) {
         $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
     }
