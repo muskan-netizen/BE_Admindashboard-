@@ -2003,6 +2003,32 @@ article#page-container section .vendors section h2.h2-heading{margin-bottom: 20p
 /*----------------mobile view----------*/
 
 @media(max-width:767px) {
+    .vender-logo.deals-product.product-card-box.position-relative.text-center.al_custom_vendors_sec .suppliers-img-outer.position-relative {
+        min-height: inherit !important;
+    }
+    article#page-container section .vendors section a {
+        padding-bottom: 10px;
+        display: inline-block;
+    }
+    .categories_sliderEight div {
+        margin: 0;
+    }
+    .al_body_template_eight .popular-brands .al_custom_categories .category-block {
+        min-height: inherit;
+    }
+    article#page-container section .vendors section a {
+        padding-bottom: 0;
+    }
+    .al_body_template_eight .brand-img {
+        height: inherit;
+    }
+    .product-m.slick-slider .slick-slide>div {
+        margin: 0 5px !important;
+    }
+    .al_body_template_eight .al_custom_brand .slick-slide {
+        margin: 0 10px 0 0;
+    }
+
     .al_body_template_eight .product-description_list p span.product_discription {
         width: 60%;
     }
@@ -2113,6 +2139,7 @@ article#page-container section .vendors section h2.h2-heading{margin-bottom: 20p
         margin-top: 0;
         display: inline-block;
     }
+    .al_body_template_eight article#page-container section .vendors section h2.h2-heading{width: 100%}
     .al_body_template_eight section#homepage_recently_viewed h2.h2-heading {
         padding: 30px 0;
     }

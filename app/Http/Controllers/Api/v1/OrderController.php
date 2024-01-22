@@ -549,7 +549,7 @@ class OrderController extends BaseController
                             }
 
 
-                            $taxable_amount += $product_taxable_amount;
+                            // $taxable_amount += $product_taxable_amount;
                             $vendor_taxable_amount +=  decimal_format($taxable_amount);
                             //$total_amount += ($vendor_cart_product->quantity * $variant->price) + ($vendor_cart_product->quantity * $variant->container_charges);
                             $variant_price = $variant->price;
@@ -872,7 +872,6 @@ class OrderController extends BaseController
 
                         $actual_amount = $vendor_payable_amount;
 
-
                         if ($vendor_cart_product->coupon && !empty($vendor_cart_product->coupon->promo)) {
                             $coupon_id = $vendor_cart_product->coupon->promo->id;
 
@@ -923,6 +922,7 @@ class OrderController extends BaseController
                             $vendor_payable_amount += $service_fee_percentage_amount;
                             $payable_amount += $service_fee_percentage_amount;
                         }
+                        \Log::info('vendor_payable_amount1--'.$vendor_payable_amount);
 
                         if ($vendor_cart_product->vendor->fixed_service_charge > 0) {
                             // $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100; // wrong percentage_amount
@@ -940,7 +940,6 @@ class OrderController extends BaseController
                         $total_delivery_fee += $delivery_fee;
                         $vendor_payable_amount += $delivery_fee;
                         $vendor_payable_amount += $vendor_taxable_amount;
-
 
                         // check if is_tax_price_inclusive is on than no tax
                         if (! $additionalPreferences->is_tax_price_inclusive) {

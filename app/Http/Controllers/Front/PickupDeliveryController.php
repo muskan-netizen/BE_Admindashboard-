@@ -732,9 +732,6 @@ class PickupDeliveryController extends FrontController{
                 }
 
                 $response = json_decode($res->getBody(), true);
-                //pr($response);
-                \Log::info('response');
-                \Log::info($response);
                 if($response && $response['message'] == 'success'){
                     return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?((!empty($product) && $product->is_toll_tax == 1)?$response['toll_fee']:0.00):0.00, 'distance' => isset($response['total_distance']) ? $response['total_distance'] : 0, 'duration' => isset($response['total_duration']) ? $response['total_duration'] :0, 'min_delivery_fee' => isset($response['total_minimum']) ? $response['total_minimum'] : 0);
                 }else{

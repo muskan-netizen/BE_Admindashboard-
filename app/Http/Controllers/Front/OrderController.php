@@ -1794,7 +1794,6 @@ class OrderController extends FrontController
 
 
 
-        // dd($request->other_taxes_string);
         // $stock = $this->ProductVariantStock('18');
 
         // dd($request->all());

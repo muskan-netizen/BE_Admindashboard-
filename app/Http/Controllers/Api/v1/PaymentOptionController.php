@@ -19,7 +19,7 @@ use App\Http\Controllers\Front\{MpesaController,TotalpayController};
 use App\Http\Controllers\Front\MvodafoneController;
 use App\Http\Controllers\Front\NmiPaymentController;
 use App\Http\Controllers\Front\OboPaymentController;
-use App\Http\Controllers\Front\PayphoneController;
+use App\Http\Controllers\Front\{PayphoneController,ThawaniPaymentController};
 use App\Http\Controllers\Front\PowerTransPaymentController;
 use App\Http\Controllers\Front\PesapalPaymentController;
 use App\Http\Controllers\Front\SkipCashController;
@@ -75,6 +75,8 @@ class PaymentOptionController extends BaseController
                     $option->title = __("livees");
                 }elseif($option->code == 'totalpay') {
                     $option->title = __('Total Pay');
+                }elseif($option->code == 'thawani') {
+                    $option->title = __('Thawani Payment');
                 }
                 $option->title = __($option->title);
             }
@@ -370,6 +372,13 @@ class PaymentOptionController extends BaseController
         $gateway = new PlugnpayGatewayController();
 
         return $gateway->PlugPayPurchase($request);
+    }
+    public function postPaymentVia_thawani(Request $request)
+    {
+
+        $gateway = new ThawaniPaymentController();
+
+        return $gateway->paybythawanipg($request);
     }
 
     public function postPaymentVia_paypal(Request $request)

@@ -9,12 +9,11 @@ class CsvProductImport extends Model
 {
     use HasFactory;
     protected $appends = ['storage_url'];
-   public function getStorageUrlAttribute($value){
+    /*public function getStorageUrlAttribute($value){
         return Storage::url('csv_products/'.$this->name);
-    }
-
-   /* public function getStorageUrlAttribute($value){
-        return storage_path('app/public/csv_products/') .$this->name;
     }*/
-    
+
+    public function getStorageUrlAttribute($value){
+        return storage_path('app/public/csv_products/') .$this->name;
+    }
 }
