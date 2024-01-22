@@ -116,8 +116,7 @@
         "platform-check": false,
         "allow-plugins": {
             "symfony/thanks": true,
-            "php-http/discovery": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "php-http/discovery": true
         }
     },
     "extra": {
