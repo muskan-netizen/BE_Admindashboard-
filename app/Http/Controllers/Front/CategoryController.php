@@ -412,8 +412,7 @@ class CategoryController extends FrontController{
 
     public function listData($langId, $category_id, $type = '',$vendorIds = array(),$is_max = false){
 
-        Session::put('cus_paginate', 50);
-        $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 50;
+        $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
         $vendorType = Session::get('vendorType');
 
         if(strtolower($type) == 'vendor'){
