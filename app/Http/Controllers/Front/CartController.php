@@ -163,7 +163,7 @@ class CartController extends FrontController
 
 
 
-          
+
 
         if ($action == "car_rental") {
             return view('frontend.yacht.summary', compact('public_key_yoco', 'cart', 'client_detail', 'data', 'ageVerify', 'terms', 'privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data, $nomenclatureProductOrderForm, $client_preference_detail, $client_detail);
@@ -1686,6 +1686,8 @@ class CartController extends FrontController
             $cart->new_gross_amount = decimal_format($total_payable_amount + $total_discount_amount);
             $cart->total_payable_amount = decimal_format($total_payable_amount);
             $cart->delivery_charges = decimal_format($deliveryCharges);
+
+
             $cart->all_vendor_deliver_charges = decimal_format($all_vendor_deliver_charges);
             $cart->all_vendor_markup_charges = decimal_format($all_vendor_markup_charges);
             $cart->total_discount_amount = decimal_format($total_discount_amount);
@@ -2178,7 +2180,6 @@ class CartController extends FrontController
             $cart_details = $this->getCartsNewV2($obj, $request);
         }
 
-        // pr($cart_details);
 
         $client_preference_detail = ClientPreference::first();
         $client_preference_detail  = $this->hideSecretKeys($client_preference_detail);

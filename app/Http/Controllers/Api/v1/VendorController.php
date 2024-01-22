@@ -52,7 +52,7 @@ class VendorController extends BaseController{
     }
 
     public function productsByVendor(Request $request, $vid = 0){
-        
+
         try {
             if($vid == 0){
                 return response()->json(['error' => 'No record found.'], 404);
@@ -426,9 +426,9 @@ class VendorController extends BaseController{
 
         // Set order limit - By Ovi
         $vendor->same_day_delivery   = ($request->has('same_day_delivery') && $request->same_day_delivery == 'on') ? 1 : 0;
-        
+
         $vendor->next_day_delivery   = ($request->has('next_day_delivery') && $request->next_day_delivery == 'on') ? 1 : 0;
-        
+
         $vendor->hyper_local_delivery = ($request->has('hyper_local_delivery') && $request->hyper_local_delivery == 'on') ? 1 : 0;
 
 
@@ -2164,8 +2164,8 @@ class VendorController extends BaseController{
         $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
 
         $type = $request->has('type') ? $request->type : 'delivery';
-        $vendorData = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
-  
+        $vendorData = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','delivery_fee_minimum','delivery_fee_maximum')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
+
 
         $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
 

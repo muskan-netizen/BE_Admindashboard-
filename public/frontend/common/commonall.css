@@ -1772,6 +1772,9 @@ section#our_vendor_main_div .render_full_best_sellers {padding: 20px 0 !importan
 }
 
 @media (max-width:1200px){
+    .al_body_template_eight .slick-slider .product-card-box .img-outer-box.position-relative img{
+        object-fit: scale-down;
+    }
     .vendor-design_new .vender-icon img {
         width: 80px!important;
         height: 80px!important;
