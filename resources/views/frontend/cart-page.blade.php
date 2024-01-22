@@ -252,9 +252,8 @@
                         </div>
 
                         <div class="col-12 cart-heading mt-2 px-0">
-                            <h5 class="my-1"><b>{{ $product->vendor ? @$product->vendor->name : '' }}</b></h5>
-                            <input type="hidden" name="category_name" id="category_name"
-                                value="{{ $product->vendor ? @$product->vendor->name : '' }}" />
+                            <h5 class="my-1"><b>{{ $product->vendor ? @$product->vendor->name : '' }}({{$product->vendor ? @$product->vendor->phone_no : ""}})</b></h5>
+                            <input type="hidden" name="category_name" id="category_name" value="{{ $product->vendor ? @$product->vendor->name : '' }}" />
                         </div>
 
 

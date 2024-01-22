@@ -20,7 +20,7 @@ trait ProductActionTrait{
     {
         try
         {
-            $vendors = Vendor::select('id')->where('status', 1)->where($type, 1);
+            $vendors = Vendor::select('id')->where('is_online', 1)->where('status', 1)->where($type, 1);
 
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
 
