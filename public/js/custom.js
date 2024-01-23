@@ -6349,3 +6349,6 @@ $('.category_responsive').slick({
     const initReadMore = new readMore();
     initReadMore.bootstrap();
 }
+
+
+AOS.init({disable: 'mobile'});
