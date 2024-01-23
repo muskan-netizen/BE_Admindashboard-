@@ -316,7 +316,8 @@ class P2PController extends BaseController
                 
                 $vendorIds  = $vendorData->where('status', 1)->pluck('id');
             }else{
-                $vendorIds = UserVendor::where('user_id', $userid)->pluck('vendor_id')->toArray();
+                // $vendorIds = UserVendor::where('user_id', $userid)->pluck('vendor_id')->toArray();
+                $vendorIds = $vendor_ids;
 
             }
             
