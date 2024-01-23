@@ -1132,9 +1132,6 @@ class AuthController extends BaseController
 
             if(preg_match($phone_regex, $username))
             {
-                // remove the zero from the starting of the number
-                $username = ltrim($username, '0');
-
                 $validator = Validator::make($request->all(), [
                     'username'  => 'required',
                     'dialCode'  => 'required',
@@ -1381,7 +1378,6 @@ class AuthController extends BaseController
             $username = $request->username;
             $dialCode = $request->dialCode;
             $phone_number = preg_replace('/\D+/', '', $username);
-            $phone_number = ltrim($phone_number,'0');
             $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
             // if (!$user) {
             //     $errors['error'] = __('Your phone number is not registered');
