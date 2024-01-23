@@ -2253,18 +2253,6 @@ class VendorController extends BaseController{
                 });
                 $listData =  array_values($vendor_categories->toArray());
             }else{
-                // $vendorCategories = VendorCategory::with(['category.translation' => function($q) use($langId){
-                //     $q->where('category_translations.language_id', $langId);
-                // }])->where('vendor_id', $vendor->id)->where('status', 1)->get();
-                // foreach($vendorCategories as $key => $category){
-                //     if($category->category){
-                //         $categoriesList = $categoriesList . ($category->category->translation->first()->name ?? '');
-                //         if( $key !=  $vendorCategories->count()-1 ){
-                //             $categoriesList = $categoriesList . ', ';
-                //         }
-                //     }
-                // }
-
                 $vendorCategories = VendorCategory::select(\DB::raw("group_concat(`category_translations`.`name`) as categoriesList"))
                 ->join('category_translations', 'category_translations.category_id', '=', 'vendor_categories.category_id')
                 ->where('vendor_id', $vendor->id)->where('status', 1)->where('category_translations.language_id',$langId)->groupBy('vendor_categories.vendor_id')->first();
