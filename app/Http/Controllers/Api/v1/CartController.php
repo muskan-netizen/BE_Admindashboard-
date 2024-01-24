@@ -1870,7 +1870,7 @@ class CartController extends BaseController
             $cart->total_payable_amount = $rental_price;
         }
 
-
+        $cart->total_payable_amount = $cart->total_delivery_fee + $cart->total_payable_amount;
         $wallet_amount_used = 0;
         if (isset($user)) {
             if ($user->balanceFloat > 0) {
@@ -1943,6 +1943,8 @@ class CartController extends BaseController
         if(@$rental_price > 0){
             $cart->total_payable_amount = $rental_price;
         }
+        $total_payable_amount_calc_tip = $cart->total_payable_amount - $total_taxable_amount - $cart->total_tax + $cart->wallet_amount_used;
+
         $cart->tip = array(
             ['label' => '5%', 'value' => decimal_format(0.05 * $total_payable_amount_calc_tip)],
             ['label' => '10%', 'value' => decimal_format(0.1 * $total_payable_amount_calc_tip)],

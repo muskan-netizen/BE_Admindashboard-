@@ -408,12 +408,13 @@ trait CartManagerV2{
         $user_subscription = null;
         if($user){
           //Get earn and used loyalty amount
-        //   $loyaltyCheck = $this->getOrderLoyalityAmountV2($user);
-        //   $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
+          $loyaltyCheck = $this->getOrderLoyalityAmount($user);
+          $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
           //d Get user subscription
           $user_subscription = $this->userSubscriptionV2($user->id);
           $cart->scheduled_date_time = convertDateTimeInTimeZone($cart->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i');
         }
+        
         $total_payable_amount = $total_subscription_discount_admin = $total_subscription_discount_vendor = $total_subscription_discount_delivery = $total_discount_amount = $total_discount_percent = $total_taxable_amount = $deliver_charges_lalmove = $total_fixed_fee_amount = 0.00;
         /* If cart have data then getting total and other variable set */
 
@@ -1066,9 +1067,10 @@ trait CartManagerV2{
                             //pr($NumberOfroutes);
                            // if ((!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1))  ) {
                             if($checkLastMile ==1){
+                               
+
                                 $deliveriesNew = new CartController();
                                 $deliveries = $deliveriesNew->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del, $lastMileDate['tags'],$NumberOfroutes);
-
 
                                 if (isset($deliveries[0])) {
                                     if (count($deliveries)>1) {
@@ -1096,7 +1098,7 @@ trait CartManagerV2{
                                         }
                                     }
                                     $select .= '</select>';
-
+                                   
                                     if($code) {
                                         $new = array_filter($deliveries, function ($var) use ($code) {
                                             return ($var['code'] == $code);
@@ -1199,6 +1201,7 @@ trait CartManagerV2{
                 }
 
                 $rental_price = 0;
+                if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
 
                 if (@$prod->start_date_time && @$prod->end_date_time) {
                     $start_date_time  = new Carbon($prod->start_date_time);
@@ -1216,8 +1219,7 @@ trait CartManagerV2{
                     $prod->price = $rental_price;
                     $rental_price = $rental_price * $prod->days;
                 }
-
-
+            }
 
 
                     $product = Product::with([
@@ -1530,14 +1532,16 @@ trait CartManagerV2{
             $cart->total_subscription_discount = decimal_format(($total_subscription_discount_admin + $total_subscription_discount_vendor + $total_subscription_discount_delivery)??0);
 
             // $total_payable_amount = $total_payable_amount - $total_discount_amount;
-            // if ($loyalty_amount_saved > 0) {
-            //     if ($loyalty_amount_saved > $total_payable_amount) {
-            //         $loyalty_amount_saved =  $total_payable_amount;
-            //     }
-            //     $total_payable_amount = $total_payable_amount - $loyalty_amount_saved;
-            // }
+            if ($loyalty_amount_saved > 0) {
+                if ($loyalty_amount_saved > $total_payable_amount) {
+                    $loyalty_amount_saved =  $total_payable_amount;
+                }
+                $total_payable_amount = $total_payable_amount - $loyalty_amount_saved;
+            }
             $wallet_amount_available = 0;
             $wallet_amount_used = 0;
+       
+
             if($user){
 
                 if($user->balanceFloat > 0){
@@ -1564,10 +1568,10 @@ trait CartManagerV2{
                     }
                 }
             }
+         
             $cart->wallet_amount_used = decimal_format($wallet_amount_used);
 
-
-
+          
             $scheduled = (object)array(
                 'scheduled_date_time'=>(($cart->scheduled_slot)?date('Y-m-d',strtotime($cart->scheduled_date_time)):$cart->scheduled_date_time),'slot'=>$cart->scheduled_slot,
             );
@@ -1708,10 +1712,6 @@ trait CartManagerV2{
             $cart->new_gross_amount = decimal_format($total_payable_amount + $total_discount_amount);
             $cart->is_long_term_service = $is_long_term_service ;
 
-
-
-
-
             if(@$rental_price && (FacadesSession::get('vendorType') == "p2p"))
 
             {
@@ -1736,13 +1736,11 @@ trait CartManagerV2{
                 }
             }
 
-
-
             if(!$this->additionalPreferences->is_tax_price_inclusive){
                 $cartTotalPay = decimal_format($total_payable_amount);
-               // pr( $cartTotalPay);
+                // pr( $cartTotalPay);
                 // gift card calculation
-
+                
                 if($giftCardAmount >0 && $cartTotalPay >0){
                     $calCulateGiftCard = $this->calCulateGiftCard($cartTotalPay,$giftCardAmount);
                     $cartTotalPay  = @$calCulateGiftCard['totalPaybel'];
@@ -1774,7 +1772,7 @@ trait CartManagerV2{
                 }
                 $cart->payy = decimal_format(($total_payable_amount - $total_taxable_amount - $other_taxes) + $cart->other_taxes);
             }
-
+           
             $cart->delivery_slot_amount = $delivery_slot_amount;
 
             // $cart->total_payable_amount = decimal_format($total_payable_amount);
@@ -1785,11 +1783,8 @@ trait CartManagerV2{
             $cart->total_markup_charges = decimal_format($total_markup_charges);
             $cart->total_discount_amount = decimal_format($total_discount_amount);
             $cart->total_taxable_amount = decimal_format($total_taxable_amount);
-
-            $total_payable_amount_calc_tip = $total_payable_amount - $total_taxable_amount;
-            $cart->tip_5_percent = decimal_format(0.05 * $total_payable_amount_calc_tip);
-            $cart->tip_10_percent = decimal_format(0.10 * $total_payable_amount_calc_tip);
-            $cart->tip_15_percent = decimal_format(0.15 * $total_payable_amount_calc_tip);
+       
+            
             $cart->total_container_charges = decimal_format($total_container_charges);
             $cart->wallet_amount_available = decimal_format($wallet_amount_available);
             $cart->taxRates=$taxRates;
@@ -1879,6 +1874,11 @@ trait CartManagerV2{
                 $cart->other_taxes_string = $other_taxes_string.',taxjar_fee:'.$cart->total_taxable_amount;
             }
         }
+    
+            $total_payable_amount_calc_tip = $cart->total_payable_amount - $total_taxable_amount - $other_taxes + $cart->wallet_amount_used ;
+            $cart->tip_5_percent = decimal_format(0.05 * $total_payable_amount_calc_tip);
+            $cart->tip_10_percent = decimal_format(0.10 * $total_payable_amount_calc_tip);
+            $cart->tip_15_percent = decimal_format(0.15 * $total_payable_amount_calc_tip);
         return $cart;
     }
 

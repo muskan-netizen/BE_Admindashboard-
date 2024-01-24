@@ -764,10 +764,7 @@
                             @endforeach
 
                             {{-- End Product Detail Loop --}}
-                            {{-- @php
-                //dd($product->is_promo_code_available);
-                @endphp
-                --}}
+                 
                             <div class="row my-2">
                                 @if (!$cart_details->guest_user)
                                     <div class="col-lg-6">
@@ -1373,12 +1370,12 @@
                                     </div>
                                     <div class="col-6 text-right" id="wallet_amount_used"> - @if ($additionalPreference['is_token_currency_enable'])
                                             {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}
-                                            {{ getInToken(decimal_format($cart_details->wallet_amount_used + $other_taxes)) }}
-                                            @else{{ Session::get('currencySymbol') . decimal_format($cart_details->wallet_amount_used + $other_taxes) }}
+                                            {{ getInToken(decimal_format($cart_details->wallet_amount_used )) }}
+                                            @else{{ Session::get('currencySymbol') . decimal_format($cart_details->wallet_amount_used ) }}
                                         @endif
                                     </div>
                                     <div class="col-6 text-right" id="wallet_amount_used_fixed" style="display:none">
-                                        {{ $cart_details->wallet_amount_used + $other_taxes }}</div>
+                                        {{ $cart_details->wallet_amount_used }}</div>
                                     <div class="col-6 text-right" id="wallet_amount_available" style="display:none">
                                         {{ $cart_details->wallet_amount_available }}</div>
                                     <div class="col-6 text-right" id="token_currency" style="display:none">
@@ -1530,12 +1527,12 @@
                                         <input type="hidden" name="cart_tip_amount" id="cart_tip_amount"
                                             value="{{ decimal_format($cart_details->tip_5_percent) }}">
                                         <input type="hidden" name="cart_total_payable_amount "
-                                            value="{{ decimal_format($cart_details->product_total_amount  ?? 0) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes) }}">
+                                            value="{{ decimal_format($cart_details->product_total_amount  ?? 0) + decimal_format($cart_details->tip_5_percent)  }}">
                                     @else
                                         <p class="total_amt m-0" id="cart_total_payable_amount"
                                             data-cart_id="{{ $cart_details->id }}">
 
-                                            {{ Session::get('currencySymbol') }}{{ decimal_format($product->product_total_amount + $product->vendor->fixed_fee_amount ?? 0 - $cart_details->bid_total_discount + $other_taxes) }}
+                                            {{ Session::get('currencySymbol') }}
 
                                         </p>
 
@@ -1544,13 +1541,13 @@
                                         <input type="hidden" name="cart_total_payable_amount"
                                             value="{{ $additionalPreference['is_token_currency_enable']
                                                 ? ''
-                                                : decimal_format($cart_details->total_payable_amount  ?? 0) + decimal_format($other_taxes) }}">
+                                                : decimal_format($cart_details->total_payable_amount  ?? 0)  }}">
                                     @endif
                                     <div>
                                         <input type="hidden" name="cart_payable_amount_original"
                                             id="cart_payable_amount_original"
                                             data-curr="{{ Session::get('currencySymbol') }}"
-                                            value="{{ decimal_format($cart_details->total_payable_amount  ?? 0 - $cart_details->bid_total_discount) + decimal_format($other_taxes) }}">
+                                            value="{{ decimal_format($cart_details->total_payable_amount  ?? 0 - $cart_details->bid_total_discount)  }}">
                                     </div>
 
 
