@@ -167,6 +167,14 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/mobbex/notify', 'Front\MobbexGatewayController@mobbexNotify')->name('payment.mobbexNotify');
 
 
+	//icici payment routes
+	Route::post('payment/gateway/icici', 'Front\IciciPaymentController@payByIcici')->name('payment.payByIcici');
+	Route::post('payment/webhook/icici', 'Front\IciciPaymentController@successPage')->name('payment.icici.success');
+	Route::post('payment/success/icici', 'Front\IciciPaymentController@successPage')->name('payment.icici.success');
+	Route::post('payment/icici-transection-status', 'Front\IciciPaymentController@iciciTransectionStatus')->name('payment.iciciTransectionStatus');
+	Route::post('payment/icici-success', 'Front\IciciPaymentController@iciciTransectionStatus')->name('transection.icici.success');
+
+
 	//Skip Cash
 
 	Route::post('payment/skipcash', 'Front\SkipCashController@showSkipCashPage')->name('payment.skipcash');

@@ -63,7 +63,7 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '47', 'path' => 'khalti/khalti', 'code' => 'khalti', 'title' => 'Khalti', 'off_site' => '1', 'status' => '0'),
         array('id' => '48', 'path' => '', 'code' => 'mtn_momo', 'title' => 'Mtn Momo', 'off_site' => '1', 'status' => '0'),
         array('id' => '49', 'path' => '', 'code' => 'plugnpay', 'title' => 'plugnpay', 'off_site' => '1', 'status' => '0'),
-	    array('id' => '50', 'path' => '', 'code' => 'azul', 'title' => 'Azulpay', 'off_site' => '1', 'status' => '0'),
+	      array('id' => '50', 'path' => '', 'code' => 'azul', 'title' => 'Azulpay', 'off_site' => '1', 'status' => '0'),
         array('id' => '51', 'path' => '', 'code' => 'payway', 'title' => 'Payway', 'off_site' => '1', 'status' => '0'),
         array('id' => '52', 'path' => '', 'code' => 'skip_cash', 'title' => 'SkpCash', 'off_site' => '1', 'status' => '0'),
         array('id' => '53', 'path' => '', 'code' => 'nmi', 'title' => 'Nmi', 'off_site' => '1', 'status' => '0'),
@@ -76,7 +76,8 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '60', 'path' => '', 'code' => 'PayViaCompany', 'title' => 'Pay Via Company', 'off_site' => '1', 'status' => '0'),
         array('id' => '62', 'path' => '', 'code' => 'mpesasafari', 'title' => 'Mpesa Safari', 'off_site' => '1', 'status' => '0'),
         array('id' => '65', 'path' => '', 'code' => 'totalpay', 'title' => 'TotalPay', 'off_site' => '1', 'status' => '0'),
-        array('id' => '67', 'path' => '', 'code' => 'thawani', 'title' => 'Thawani', 'off_site' => '1', 'status' => '0')
+        array('id' => '67', 'path' => '', 'code' => 'thawani', 'title' => 'Thawani', 'off_site' => '1', 'status' => '0'),
+        array('id' => '68', 'path' => '', 'code' => 'icici', 'title' => 'Icici Upi', 'off_site' => '1', 'status' => '0'),
       );
       
 
