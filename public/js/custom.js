@@ -290,6 +290,7 @@ $(document).ready(function () {
     let queryString = window.location.search;
     let path = window.location.pathname;
     let urlParams = new URLSearchParams(queryString);
+    alert(urlParams);
     if ((urlParams.has('PayerID')) && (urlParams.has('token'))) {
         $('.spinner-overlay').show();
         let tipAmount = 0;
@@ -1735,10 +1736,12 @@ $(document).ready(function () {
         } else if (walletElement.length > 0) {
             total_amount = walletElement.val();
         }
+        
         ajaxData.amount = total_amount;
         ajaxData.returnUrl = path;
         ajaxData.cancelUrl = path;
-
+        console.log('ajaxData');
+        console.log(payment_paypal_url);
         if (typeof tip_for_past_order !== 'undefined') {
             if (tip_for_past_order != undefined && tip_for_past_order == 1) {
                 let order_number = $("#order_number").val();
@@ -1746,13 +1749,17 @@ $(document).ready(function () {
                 order_number = order_number;
             }
         }
-
+ 
+        
         $.ajax({
             type: "POST",
             dataType: 'json',
             url: payment_paypal_url,
             data: ajaxData,
             success: function (response) {
+                console.log('response');
+                console.log(response);
+                alert('dd');
                 if (response.status == "Success") {
                     window.location.href = response.data;
                 } else {
@@ -5971,6 +5978,7 @@ $(document).ready(function () {
 
     function walletPaymentOPtions(payment_option_id)
     {
+         
         switch (payment_option_id) {
             case 3:
                     paymentViaPaypal('', payment_option_id);

@@ -43,7 +43,7 @@ class PaypalGatewayController extends FrontController
 
     public function paypalPurchase(Request $request)
     {
-        // \Log::info(['paypalPurchase' => $request->all()]);
+        \Log::info(['paypalPurchase' => $request->all()]);
         try {
             $amount = $this->getDollarCompareAmount($request->amount);
             $returnUrlParams = '?amount=' . $amount;
