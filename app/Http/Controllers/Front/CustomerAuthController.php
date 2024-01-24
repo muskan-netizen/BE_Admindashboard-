@@ -34,7 +34,7 @@ use Log;
 use App\Http\Traits\ProductActionTrait;
 use App\Observers\OrderObserver;
 use App\Observers\UserObserver;
-
+use Illuminate\Validation\Rule;
 class CustomerAuthController extends FrontController
 {
     use ApiResponser;
@@ -253,7 +253,12 @@ class CustomerAuthController extends FrontController
 
                 if(!empty($req->phone_number) && isset($preferences) && ($preferences->verify_phone == 0)){
                     $validator = $req->validate([
-                        'phone_number' => 'string|min:7|max:15|unique:users'
+                        'phone_number' => ['string','min:7','max:15',
+                        Rule::unique('users')->where(function ($query)  use ($req){
+                            return $query->where('phone_number', $req->phone_number)
+                            ->where('dial_code', $req->dialCode);
+                        })],
+                        'dialCode' => 'required',
                     ]);
                 }
             }
