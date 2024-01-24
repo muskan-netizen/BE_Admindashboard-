@@ -1418,7 +1418,7 @@ $(document).ready(function () {
 
         const urlParams = new URLSearchParams(window.location.search);
         const yacht_id = urlParams.get('yacht_id');
-
+        alert(get_product_detail+'/'+product_id);
         $.ajax({
             type: "POST",
             dataType: 'json',
