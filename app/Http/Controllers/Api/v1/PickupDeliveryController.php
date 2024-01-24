@@ -179,6 +179,12 @@ class PickupDeliveryController extends BaseController{
                         $product->tags_price = decimal_format($product->tags_price);
                         $product->toll_fee   = decimal_format($product->toll_fee);
                     }
+
+                    $temp_total_paying = $product->tags_price  + $product->toll_fee + $product->service_charge_amount;
+
+                    if($loyalty_amount_saved > $temp_total_paying) {
+                        $loyalty_amount_saved = $temp_total_paying;
+                    }
                     $product->total_tags_price = $product->tags_price + $product->toll_fee + $product->service_charge_amount- $loyalty_amount_saved??0.00;
                     foreach ($product->variant as $k => $v) {
                         $product->variant[$k]->price = $product->tags_price;
@@ -1002,7 +1008,7 @@ class PickupDeliveryController extends BaseController{
 
 
                 $order->total_amount = $total_amount;
-                $order->total_discount = $total_discount;
+                // $order->total_discount = $total_discount;
                 $order->taxable_amount = $taxable_amount;
                 if ($loyalty_amount_saved > 0) {
                     if ($payable_amount < $loyalty_amount_saved) {
@@ -1047,7 +1053,16 @@ class PickupDeliveryController extends BaseController{
                         }
                     }
                 }else{
-                    $order->payable_amount = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved + $total_toll_amount + $total_service_fee;
+                    // when the discount is greater than the total payable amount
+                    $tempAmount = $delivery_fee+$payable_amount+$total_toll_amount+$total_service_fee;
+                    if($total_discount > $tempAmount) {
+                        $order->payable_amount = 0;
+                        $order->total_discount = $tempAmount;
+                    } else {
+                        $order->payable_amount = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved + $total_toll_amount + $total_service_fee;
+                        $order->total_discount = $total_discount;
+                    }
+
                 }
 
                 // $order->payable_amount = $request->remaing_amount;
@@ -1190,14 +1205,17 @@ class PickupDeliveryController extends BaseController{
                 if ($request->payment_option_id == 1 && $order->payable_amount >0) {
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount - $order->wallet_amount_used;
+                    
                 } else {
                     if(checkColumnExists('orders', 'is_postpay'))
                     {
                         $cash_to_be_collected = 'Yes';
                         $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount - $order->wallet_amount_used;
+                        
                     }else{
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
+                        
                     }
                 }
 
@@ -1242,6 +1260,7 @@ class PickupDeliveryController extends BaseController{
                 if(isset($request->bid_task_type) && ($request->bid_task_type == 'bid_ride_request'))
                 {
                     $payable_amount  = $request->amount;
+                    
                 }
                 $postdata =  [
                             'notify_all' => $request->send_to_all ?1: 0,
@@ -1847,11 +1866,17 @@ class PickupDeliveryController extends BaseController{
             $vendor_payable_amount +=$order_vendor->service_fee_percentage_amount;
 
             $order_vendor->subtotal_amount = $actual_amount;
-            $order_vendor->payable_amount = $vendor_payable_amount;
+            // check if the actual amount is shorter than discount amount
+            if($vendor_discount_amount > $actual_amount) {
+                $order_vendor->discount_amount= $actual_amount;
+                $order_vendor->payable_amount = 0;
+            } else {
+                $order_vendor->payable_amount = $vendor_payable_amount;
+                $order_vendor->discount_amount= $vendor_discount_amount;
+            }
+            
             $order_vendor->taxable_amount = $vendor_taxable_amount;
-            $order_vendor->discount_amount= $vendor_discount_amount;
             $order_vendor->toll_amount = (isset($request->tollamount))?$request->tollamount:0.00;
-
             $vendor_info = Vendor::where('id', $vendor_id)->first();
             if ($vendor_info) {
                 if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {

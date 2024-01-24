@@ -1832,25 +1832,18 @@ class CartController extends BaseController
             // $cart->wallet = $this->getWallet($cart->user_id, $clientCurrency->doller_compare, $currency);
         }
         
-        if ($loyalty_amount_saved  > $temp_total_paying) {
-            // check if the temp_total_paying is greater than 0, not in negative
-            if($temp_total_paying < 0 ) {
-                $temp_total_payable_amount = $order_sub_total+($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
-
-                if($temp_total_payable_amount > 0 ) {
-                    $cart->total_payable_amount = $order_sub_total+($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
-                } else {  
-                    $cart->total_payable_amount = 0.00;
-                }
-                
-            } else {
+        if ($loyalty_amount_saved  >= $temp_total_paying) {
+            if($temp_total_paying > 0) {
                 $loyalty_amount_saved = $temp_total_paying;
-                $cart->total_payable_amount = $order_sub_total+($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
+            } else {
+                $loyalty_amount_saved = 0;
             }
+            $cart->total_payable_amount = 0.00;
         } else {
-            // $cart->total_payable_amount = $order_sub_total+($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
-            $cart->total_payable_amount = $order_sub_total+($cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
+            $cart->total_payable_amount = ($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
         }
+
+        
 
 
         /* if($total_taxable_amount>0){
