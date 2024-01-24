@@ -379,7 +379,7 @@ class IciciPaymentController extends Controller
         return redirect()->route('user.orders');
     }
 
-    public function iciciTransectionStatus(Request $request)
+    public function iciciTransactionStatus(Request $request)
     {
         return $this->iciciTransactionStatusApi($request);
     }

@@ -171,8 +171,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/gateway/icici', 'Front\IciciPaymentController@payByIcici')->name('payment.payByIcici');
 	Route::post('payment/webhook/icici', 'Front\IciciPaymentController@successPage')->name('payment.icici.success');
 	Route::post('payment/success/icici', 'Front\IciciPaymentController@successPage')->name('payment.icici.success');
-	Route::post('payment/icici-transection-status', 'Front\IciciPaymentController@iciciTransectionStatus')->name('payment.iciciTransectionStatus');
-	Route::post('payment/icici-success', 'Front\IciciPaymentController@iciciTransectionStatus')->name('transection.icici.success');
+	Route::post('payment/icici-transection-status', 'Front\IciciPaymentController@iciciTransactionStatus')->name('payment.iciciTransactionStatus');
+	Route::post('payment/icici-success', 'Front\IciciPaymentController@iciciTransactionStatus')->name('transaction.icici.success');
 
 
 	//Skip Cash
