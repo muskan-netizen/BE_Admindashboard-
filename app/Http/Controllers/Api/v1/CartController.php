@@ -676,13 +676,9 @@ class CartController extends BaseController
         return response()->json(['message' => __('Empty cart successfully.')]);
     }
 
-
-
-    /**         *      Cart  Date      *          */
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
-
-         try{
+        try{
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
         $total_service_fee_tax = 0;
@@ -839,19 +835,19 @@ class CartController extends BaseController
 
             foreach ($cartData as $ven_key => $vendorData) {
 
-            $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user_timezone);
-            $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime));
-            $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery',"60",0,'',$cartID);
+                $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user_timezone);
+                $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime));
+                $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery',"60",0,'',$cartID);
 
-            $slots = (array)$slotsRes['slots'];
-            // this variable for get slot from dispatc
-            $slotsdate = $slotsRes['date'];
-            $slotcount =count((array)$slots);
+                $slots = (array)$slotsRes['slots'];
+                // this variable for get slot from dispatc
+                $slotsdate = $slotsRes['date'];
+                $slotcount =count((array)$slots);
 
-            $vendorData->slotsdate = $slotsdate;
-            $vendorData->slots = $slots;
-            $vendorData->slotsCnt =  $slotcount;
-            // $vendorData->delay_date = date('Y-m-d');
+                $vendorData->slotsdate = $slotsdate;
+                $vendorData->slots = $slots;
+                $vendorData->slotsCnt =  $slotcount;
+                // $vendorData->delay_date = date('Y-m-d');
 
 
                 $opt_quantity_price_new = 0.00;
@@ -897,7 +893,7 @@ class CartController extends BaseController
                     }
                 }
 
-                if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+                if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && !empty($latitude) && !empty($longitude)) {
                     if (!empty($latitude) && !empty($longitude)) {
                         if(($preferences->slots_with_service_area == 1) && ($vendorData->vendor->show_slot == 0)){
                             $serviceArea = $vendorData->vendor->where(function($query) use ($latitude, $longitude) {
@@ -1344,8 +1340,8 @@ class CartController extends BaseController
                                     }
 
                                     if(isset($vendorTotalDeliveryFee) && !empty($vendorTotalDeliveryFee)){
-                                            $dtype = explode('_',$code);
-                                            CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $vendorTotalDeliveryFee, 'delivery_duration' => $deliveryDuration,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
+                                        $dtype = explode('_',$code);
+                                        CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $vendorTotalDeliveryFee, 'delivery_duration' => $deliveryDuration,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
                                     }
 
 
@@ -1504,13 +1500,13 @@ class CartController extends BaseController
                 }
                 $vendor_service_fee_percentage_amount = 0;
                 if($vendorData->vendor->service_fee_percent > 0){
-                     $amount_for_service = $opt_quantity_price_new + $vendor_products_total_amount;
+                    $amount_for_service = $opt_quantity_price_new + $only_products_amount;
                     $vendor_service_fee_percentage_amount = (($amount_for_service) * $vendorData->vendor->service_fee_percent) / 100 ;
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                 }
-                if($vendorData->vendor->service_charge_amount > 0){
 
-                     $amount_for_service = $opt_quantity_price_new + $vendor_products_total_amount;
+                if($vendorData->vendor->service_charge_amount > 0){
+                     $amount_for_service = $opt_quantity_price_new + $only_products_amount;
                      $vendor_service_fee_percentage_amount = $vendorData->vendor->service_charge_amount;
                      $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                  }
@@ -1599,8 +1595,8 @@ class CartController extends BaseController
 
 
             //All other tax calculations
-         if(!empty($taxRates)){
-            $delivery_charges_tax_rate = 0;
+            if(!empty($taxRates)){
+                $delivery_charges_tax_rate = 0;
             if($vendorData->vendor->delivery_charges_tax_id!=null){
                 if(isset($taxRates[$vendorData->vendor->delivery_charges_tax_id])){
                     $delivery_charges_tax_rate=$taxRates[$vendorData->vendor->delivery_charges_tax_id]['tax_rate'];
@@ -1794,7 +1790,6 @@ class CartController extends BaseController
             ['label' => 'Container fee tax', 'value' => decimal_format($container_charges_tax)],
             ['label' => "Total ".@$taxData[0]['identifier']." amount", 'value' => decimal_format($total_taxable_amount)]
         );
-
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);
         $cart->total_markup_charges = decimal_format($total_markup_charges);
@@ -1805,7 +1800,6 @@ class CartController extends BaseController
         $cart->total_delivery_fee = $totalDeliveryCharges;
         $cart->total_fixed_fee_amount = $total_fixed_fee_amount;
         $cart->gross_paybale_amount = $order_sub_total;
-
 
         $cart->total_addon_price = $total_addon_price;
         $cart->total_discount_amount = $total_disc_amount * $clientCurrency->doller_compare;
@@ -1851,7 +1845,13 @@ class CartController extends BaseController
         if(@$rental_price){
             $cart->total_payable_amount = $rental_price;
         }
+        if(!empty($total_service_fee)){
+            $cart->total_payable_amount  += $total_service_fee;
+        }
 
+        if(!empty($totalDeliveryCharges)){
+            $cart->total_payable_amount  += $totalDeliveryCharges;
+        }
 
         $wallet_amount_used = 0;
         if (isset($user)) {
@@ -1931,12 +1931,9 @@ class CartController extends BaseController
             ['label' => '15%', 'value' => decimal_format(0.15 * $total_payable_amount_calc_tip)]
         );
         return $cart;
-
-
-     }catch(\Exception $ex)
-     {
+        }catch(\Exception $ex){
             return [];
-     }
+        }
     }
 
     public function uploadPrescriptions(Request $request){
