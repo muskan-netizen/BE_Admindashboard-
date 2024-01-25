@@ -291,7 +291,6 @@ trait CartManagerV2{
                     if (isset($vendorData->coupon->promo->maximum_spend)) {
                         $maximum_spend = $vendorData->coupon->promo->maximum_spend * $doller_compare;
                     }
-                    $vendorData->vendorProducts;
                     if( ($minimum_spend <= $allProductsSum ) && ($maximum_spend >= $allProductsSum))
                     {
                             if ($vendorData->coupon->promo->promo_type_id == 2) {

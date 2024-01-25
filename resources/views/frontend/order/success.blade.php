@@ -10,10 +10,10 @@ $serviceType =  Session::get('vendorType');
 if($serviceType == 'rental')
 {
 
-    $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges+$order->rental_protection_amount+$order->booking_option_price;
+    $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges+$order->rental_protection_amount+$order->booking_option_price - $order->wallet_amount_used;
 }else{
 
-    $total = $order->taxable_amount+$order->total_service_fee+$order->fixed_fee_amount+$order->total_container_charges+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount;
+    $total = $order->taxable_amount+$order->total_service_fee+$order->fixed_fee_amount+$order->total_container_charges+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount - $order->wallet_amount_used;
 }
 
 $additional_price=0;
@@ -269,7 +269,7 @@ $order_is_long_term = $order->is_long_term;
                                     @endif
                                     @if($order->wallet_amount_used > 0)
                                         <li>{{$additionalPreference ['is_token_currency_enable'] ? __('Used Token') : __('Wallet Amount')}} <span> @if( $additionalPreference["is_token_currency_enable"])
-                                            {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)}}@endif</span></li>
+                                            - {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)) }}@else - {{Session::get('currencySymbol').decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)}}@endif</span></li>
                                     @endif
                                     @if($order->gift_card_amount > 0)
                                         <li>{{__('Gift Card Amount')}} <span> {{Session::get('currencySymbol')}}{{decimal_format($order->gift_card_amount * @$clientCurrency->doller_compare)}}</span></li>

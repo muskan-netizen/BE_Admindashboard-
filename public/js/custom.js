@@ -3058,7 +3058,7 @@ $(document).ready(function () {
         var amount_elem = $("#cart_payable_amount_original");
         var currency = amount_elem.attr('data-curr');
         var amount_payable =initialize_values(amount_elem.val());
-        console.log('w551--'+amount_payable);
+        console.log('w551--'+gross_amount);
 
         var payable_amount=0;
 
@@ -3077,16 +3077,16 @@ $(document).ready(function () {
         }
         if(wallet_amount_available>0){
             if(wallet_amount_available >= wallet_amount_used_fixed+tip){
-                console.log('w1--'+amount_payable);
+                console.log('w1--'+gross_amount);
 
                 /* Paid amount is less then available wallet amount*/
                 $("#wallet_amount_used").text(" - "+currency+ " "+(token_currency*(wallet_amount_used_fixed+(tip/token_currency))).toFixed(parseInt(digit_count)));
             }else{
-                console.log('w2--'+amount_payable);
+                console.log('w2--'+gross_amount );
 
                 /* Paid amount is greater then available wallet amount*/
                 $("#wallet_amount_used").text(" - "+currency+ " "+wallet_amount_available.toFixed(parseInt(digit_count)));
-                payable_amount=((amount_payable + tip) - wallet_amount_available);
+                payable_amount=((gross_amount + tip + total_taxable_amount) - wallet_amount_available);
                 // payable_amount=((amount_payable + tip)  - (total_subscription_discount+wallet_amount_available+loyalty_amount));
 
                 $("#cart_total_payable_amount").html( currency +   payable_amount.toFixed(parseInt(digit_count)));
