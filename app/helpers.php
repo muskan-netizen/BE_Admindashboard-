@@ -385,7 +385,8 @@ if (!function_exists('getNomenclatureName')) {
         if ($result) {
             $searchTerm = $result->translations->count() != 0 ? $result->translations->first()->name : ucfirst($searchTerm);
         }
-        return $plural ? $searchTerm : rtrim($searchTerm, 's');
+        // return $plural ? $searchTerm : rtrim($searchTerm, 's');
+        return $searchTerm;
     }
 }
 
