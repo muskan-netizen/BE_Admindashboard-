@@ -1243,7 +1243,8 @@ class CartController extends BaseController
 
                             // Check if is_cart_checked is 1 then add $quantity_price in payable amount
                             if($prod->is_cart_checked == 1){
-                                $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
+                                // $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
+                                $payable_amount = $payable_amount + $quantity_container_charges;
 
                             }
 
