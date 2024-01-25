@@ -33,7 +33,7 @@ class VerifyCsrfToken extends Middleware
         'payment/webhook/stripe_ideal',
         /** routes for edit order **/
         'edit-order/*',
-        'payment/webhook/*',
+        'payment/*',
         
         'payment/paytab/return',
         'payment/paytab/callback',
