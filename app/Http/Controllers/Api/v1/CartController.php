@@ -679,7 +679,7 @@ class CartController extends BaseController
 
 
     /**         *      Cart  Date      *          */
-    public function getCart($cart, $langId = '1', $currency = '63', $type = 'delivery',$code = 'D')
+    public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
 
 
