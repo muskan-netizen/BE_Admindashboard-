@@ -4,7 +4,8 @@
     let queryString = window.location.search;
     let path = window.location.pathname;
     let urlParams = new URLSearchParams(queryString);
-    alert(urlParams);
+    // alert('ca booking js');
+   
    });
    $.ajaxSetup({
     headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
@@ -473,6 +474,8 @@ $(document).ready(function () {
                             data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: totalamount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,stripe_token: stripe_token , payment_form : payment_form,reload_route: reload_route,ordernumber:order_number },
                             success: function(resp) {
                                 if (resp.status == 'Success') {
+                                    alert('redirect');
+                                    alert(resp.data);
                                     window.location.replace(resp.data);
                                 } else {
                                     alert(resp.message);

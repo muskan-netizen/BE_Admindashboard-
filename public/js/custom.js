@@ -290,6 +290,7 @@ $(document).ready(function () {
     let queryString = window.location.search;
     let path = window.location.pathname;
     let urlParams = new URLSearchParams(queryString);
+    alert('urlParams');
     alert(urlParams);
     if ((urlParams.has('PayerID')) && (urlParams.has('token'))) {
         $('.spinner-overlay').show();
@@ -301,7 +302,7 @@ $(document).ready(function () {
         if (urlParams.has('ordernumber')) {
             order_number = urlParams.get('ordernumber');
         }
-
+        alert(urlParams.get('amount'));
         paymentSuccessViaPaypal(urlParams.get('amount'), urlParams.get('token'), urlParams.get('PayerID'), path, tipAmount, order_number);
     }
 
@@ -1740,8 +1741,7 @@ $(document).ready(function () {
         ajaxData.amount = total_amount;
         ajaxData.returnUrl = path;
         ajaxData.cancelUrl = path;
-        console.log('ajaxData');
-        console.log(payment_paypal_url);
+        
         if (typeof tip_for_past_order !== 'undefined') {
             if (tip_for_past_order != undefined && tip_for_past_order == 1) {
                 let order_number = $("#order_number").val();
@@ -1757,9 +1757,9 @@ $(document).ready(function () {
             url: payment_paypal_url,
             data: ajaxData,
             success: function (response) {
-                console.log('response');
-                console.log(response);
+               
                 alert('dd');
+                alert(response.data);
                 if (response.status == "Success") {
                     window.location.href = response.data;
                 } else {
@@ -1932,6 +1932,7 @@ $(document).ready(function () {
         }
          //Thawani Pg Ends Here Ends
     function paymentSuccessViaPaypal(amount, token, payer_id, path, tip = 0, order_number = 0) {
+        alert('paymentSuccessViaPaypal');
         let address_id = 0;
         if (path.indexOf("cart") !== -1) {
             // $('#order_placed_btn').trigger('click');
@@ -1947,6 +1948,7 @@ $(document).ready(function () {
             // $('#wallet_topup_form #radio-paypal').prop("checked", true);
             $("#topup_wallet_btn, .topup_wallet_confirm").attr("disabled", true);
         }
+        alert(token);
         $.ajax({
             type: "GET",
             dataType: 'json',

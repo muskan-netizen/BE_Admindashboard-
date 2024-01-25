@@ -64,6 +64,7 @@
                         // placeOrder(addressID, 3, response.data);
                     }
                     else if(action = "wallet"){
+                        console.log(response.data);
                         creditWallet(amount, 3, response.data);
                     }
                 }else{
