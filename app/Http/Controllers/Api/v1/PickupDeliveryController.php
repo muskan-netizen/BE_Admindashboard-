@@ -1189,10 +1189,7 @@ class PickupDeliveryController extends BaseController{
     // place Request To Dispatch
     public function placeRequestToDispatch($request,$order,$vendor){
         try {
-            log::info('details');
-            log::info($request);
-            log::info($order);
-            log::info($vendor);
+            
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             $customer = Auth::user();
             $wallet = $customer->wallet;
@@ -1270,7 +1267,6 @@ class PickupDeliveryController extends BaseController{
                 {
                     $payable_amount  = $request->amount;
                 }
-                log::info($payable_amount);
                 $postdata =  [
                             'notify_all' => $request->send_to_all ?1: 0,
                             'order_number' =>  $order->order_number,
