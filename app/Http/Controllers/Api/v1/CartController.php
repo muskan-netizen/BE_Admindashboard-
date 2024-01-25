@@ -676,13 +676,9 @@ class CartController extends BaseController
         return response()->json(['message' => __('Empty cart successfully.')]);
     }
 
-
-
-    /**         *      Cart  Date      *          */
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
-
-
+        try{
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
         $total_service_fee_tax = 0;
@@ -1935,6 +1931,9 @@ class CartController extends BaseController
             ['label' => '15%', 'value' => decimal_format(0.15 * $total_payable_amount_calc_tip)]
         );
         return $cart;
+        }catch(\Exception $ex){
+            return [];
+        }
     }
 
     public function uploadPrescriptions(Request $request){
