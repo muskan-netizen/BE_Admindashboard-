@@ -86,7 +86,7 @@ class PaymentOptionController extends BaseController
 
     public function postPayment(Request $request, $gateway = '')
     {
-        \Log::info(['request url' => $request->all()]);
+        // \Log::info(['request url' => $request->all()]);
         if (!empty($gateway)) {
             $code = $request->header('code');
             $client = Client::where('code', $code)->first();
@@ -398,9 +398,9 @@ class PaymentOptionController extends BaseController
             $this->gateway->setPassword($password);
             $this->gateway->setSignature($signature);
             $this->gateway->setTestMode($testmode); //set it to 'false' when go live
-            \Log::info(['server url' =>$request->serverUrl]);
-            \Log::info(['return url' =>$request->returnUrl]);
-            \Log::info(['cancel url' =>$request->cancelUrl]);
+            // \Log::info(['server url' =>$request->serverUrl]);
+            // \Log::info(['return url' =>$request->returnUrl]);
+            // \Log::info(['cancel url' =>$request->cancelUrl]);
             $response = $this->gateway->purchase([
                 'currency' => $currency, //'USD',
                 'amount' => $this->getDollarCompareAmount($request->amount),

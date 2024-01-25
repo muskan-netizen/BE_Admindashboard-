@@ -49,7 +49,7 @@ class WalletController extends FrontController
     public function creditWallet(Request $request, $domain = '')
     {
 
-        \Log::info('success');
+        \Log::info('creditWallet');
         if( (isset($request->user_id)) && (!empty($request->user_id)) ){
             $user = User::find($request->user_id);
         }elseif( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
@@ -87,7 +87,7 @@ class WalletController extends FrontController
                 $response['transactions'] = $transactions;
                 $message = 'Wallet has been credited successfully';
                 Session::put('success', $message);
-                \Log::info('success1');
+                // \Log::info('success1');
                 return $this->successResponse($response, $message, 200);
             }
             else{
