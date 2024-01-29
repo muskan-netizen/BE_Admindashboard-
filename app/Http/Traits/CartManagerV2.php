@@ -1296,7 +1296,6 @@ trait CartManagerV2{
                 vendorData->vendorProducts Products loop End
             *
             */
-            \Log::info('sub_total_vendor--'.$sub_total_vendor);
             $sub_total = $sub_total_vendor;
 
                         // if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
