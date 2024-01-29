@@ -2261,14 +2261,13 @@ class OrderController extends FrontController
                     $variant_price = $variant->price;
                     if($luxury_option->id == 9 && @$variant->month_price){
                         $schedule_days = $vendor_cart_product->additional_increments_hrs_min / 24;
-                            if($schedule_days >= 7 && $schedule_days < 30){
-
-                                $variant_price = $variant->week_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
-                            }elseif($schedule_days >= 30){
-                                $variant_price = $variant->month_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
-                            }else{
-                                $variant_price = $variant->price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
-                            }
+                        if($schedule_days >= 7 && $schedule_days < 30){
+                            $variant_price = $variant->week_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                        }elseif($schedule_days >= 30){
+                            $variant_price = $variant->month_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                        }else{
+                            $variant_price = $variant->price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                        }
 
                     }
 

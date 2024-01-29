@@ -1806,9 +1806,6 @@ class CartController extends BaseController
         $cart->tax_details = $tax_details;
         $cart->total_taxable_amount = decimal_format($total_taxable_amount);
         $cart->total_delivery_fee = $totalDeliveryCharges;
-        if($delivery_status == 0){
-            $cart->total_delivery_fee = 0;
-        }
         $cart->total_fixed_fee_amount = $total_fixed_fee_amount;
         $cart->gross_paybale_amount = $order_sub_total;
 
