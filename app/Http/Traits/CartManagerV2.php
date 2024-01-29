@@ -998,7 +998,6 @@ trait CartManagerV2{
 
                                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
 
-
                                     /* Calulating product taxes info */
                                     $select = '';
                                     $taxData = array();
@@ -1026,6 +1025,8 @@ trait CartManagerV2{
                                             $taxable_amount = $taxable_amount + $product_tax;
                                             $sub_total_vendor += $quantity_price;
                                         }
+                                    }else{
+                                        $sub_total_vendor += $quantity_price;
                                     }
 
                                     //At this stage we calculate product price after promo discount and after add tax amount in sub_total variable.
@@ -1295,6 +1296,7 @@ trait CartManagerV2{
                 vendorData->vendorProducts Products loop End
             *
             */
+            \Log::info('sub_total_vendor--'.$sub_total_vendor);
             $sub_total = $sub_total_vendor;
 
                         // if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
