@@ -1591,16 +1591,10 @@ class CartController extends BaseController
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
                 $total_disc_amount = $total_disc_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;
-
-
-                \Log::info('first--'.$vendorData->vendor->is_vendor_closed);
-
-
                 $vendorData->vendor->is_vendor_closed = $is_vendor_closed;
                 if (!empty($vendorData->coupon->promo)) {
                     unset($vendorData->coupon->promo);
                 }
-                \Log::info('first2--'.$vendorData->vendor->is_vendor_closed);
                
 
                 // if (in_array(1, $subscription_features)) {
@@ -1616,27 +1610,21 @@ class CartController extends BaseController
                 if($is_service_product_price_from_dispatch !=1){ // no need to check slot and web styling
                     if (($vendorData->vendor->show_slot == 0)  ) {
                         if (($vendorData->vendor->slotDate->isEmpty()) && ($vendorData->vendor->slot->isEmpty())) {
-                \Log::info('first3--'.$vendorData->vendor->is_vendor_closed);
-
                             $vendorData->vendor->is_vendor_closed = 1;
                             if ($delivery_status != 0) {
                                 $delivery_status = 0;
                             }
                         } else {
-                \Log::info('first4--'.$vendorData->vendor->is_vendor_closed);
-
                             $vendorData->vendor->is_vendor_closed = 0;
                         }
                     }
-                    $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-                    if(isset($set_template)  && $set_template->template_id != 9){
-                        if($vendorData->vendor->$action == 0){
-                \Log::info('first5--'.$vendorData->vendor->is_vendor_closed);
-
-                            $vendorData->is_vendor_closed = 1;
-                            $delivery_status = 0;
-                        }
-                    }
+                    // $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+                    // if(isset($set_template)  && $set_template->template_id != 9){
+                    //     if($vendorData->vendor->$action == 0){
+                    //         $vendorData->is_vendor_closed = 1;
+                    //         $delivery_status = 0;
+                    //     }
+                    // }
                 }
                 $order_sub_total = $order_sub_total + $vendor_products_total_amount;
 
