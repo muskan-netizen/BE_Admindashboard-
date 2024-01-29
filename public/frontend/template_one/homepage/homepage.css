@@ -5057,12 +5057,53 @@ body.dark .slick-slider .d-flex.align-items-center.justify-content-between.al_cl
         height: auto;
         padding: 15px 0;
     }
+    body.al_body_template_one .alFullMapForm {
+        margin-left:0 !important;
+    }
+    .booking-experienceNew{height:100vh;}
+    body .cab-booking #map_canvas, body .cab-booking #booking-map {
+        height: 100vh !important;
+    }
 }
 
 @media(max-width:767px) {
     .al_body_template_one .home-slider-wrapper .banner-img-outer img {
         max-height: inherit;
         height: auto;
+    }
+    article.taxi_about h3 {
+        font-size: 20px !important;
+    }
+    article.taxi_about ul li .text h4 {
+        font-size: 15px;
+    }
+    article.taxi_about ul li .text p {
+        font-size: 14px;
+    }
+    article.taxi_about ul li .text {
+        padding-left: 10px;
+    }
+    article.taxi_inner .inner_text p {
+        font-size: 14px;
+        font-weight: normal;
+    }
+    .service-box .service-caption a{visibility: visible !important;opacity:1 !important;}
+    article.taxi_feature {
+        padding: 0rem 0 1rem !important;
+    }
+    body.al_body_template_one .alFullMapForm {
+        top: 100px;
+        margin-left:0 !important;
+    }
+    body.al_body_template_one ul.header-dropdown.d-flex.align-items-center.justify-content-md-end.justify-content-center{text-align:center;}
+    .service-box .icon-outer span{z-index:9 !important;}
+    .tj-book-services .tj-heading-style h3{font-size:24px !important;}
+    body article.taxi_inner .inner_text h3 {
+        font-size: 22px !important;
+        line-height: 30px;
+    }
+    body.al_body_template_one .cab-banner-area .col-md-8.col-lg-5.col-xl-4 {
+        padding: 0 !important;
     }
     .al_body_template_one .step-indicator {
         margin-top: 0;

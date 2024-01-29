@@ -106,6 +106,8 @@ class D4BDunzoController extends Controller
 
     public function d4bdunzoWebhook(Request $request)
     {
+        Webhook::create(['tracking_order_id'=>'2222','response'=>$request->getContent()]);
+
         try {
             $jsonData = json_decode($request->getContent());
             $taskId = $jsonData->task_id;
@@ -164,7 +166,8 @@ class D4BDunzoController extends Controller
             return response([], 200);
         } catch (\Exception $e) {
             // Handle exceptions here
-            return response(['error' => $e->getMessage()], 500);
+            \Log::info('webhook error --'.$e->getMessage().$e->getLine());
+            return response([],200);
         }
     }
 

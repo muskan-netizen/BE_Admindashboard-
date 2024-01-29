@@ -57,11 +57,11 @@ ul li {margin: 0 0 10px;color: #6c757d;}
             </div>
         </div>
         <div class="row my-md-3 mt-5 pt-4">
-            <div class="col-lg-3">
+            <div class="col-lg-3 col-md-3">
                 <div class="account-sidebar"><a class="popup-btn">my account</a></div>
                 @include('layouts.store/profile-sidebar')
             </div>
-            <div class="col-lg-9">
+            <div class="col-lg-9 col-md-9">
                 <div class="dashboard-right">
                     <div class="dashboard">
                         <div class="page-title">
