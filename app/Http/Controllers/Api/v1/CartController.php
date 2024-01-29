@@ -1483,6 +1483,25 @@ class CartController extends BaseController
                         $taxable_amount -= $discount;
                     }*/
                 }
+                $vendorData->isDeliverable = 1;
+                if (isset($serviceArea)) {
+                    if ($serviceArea->isEmpty()) {
+                        $vendorData->isDeliverable = 0;
+                        $delivery_status = 0;
+                        $deliver_charge = 0;
+                        $vendorTotalDeliveryFee = 0;
+                        $vendorData->delivery_types = '';
+                    }
+                }
+
+                if (!isset($serviceArea)) {
+                    $vendorData->isDeliverable = 0;
+                    $delivery_status = 0;
+                    $deliver_charge = 0;
+                    $vendorTotalDeliveryFee = 0;
+                    $vendorData->delivery_types = '';
+                }
+
                 $payable_amount = $payable_amount + $vendorTotalDeliveryFee ;
 
                 $deliver_charge = $vendorTotalDeliveryFee * $clientCurrency->doller_compare;
@@ -1516,16 +1535,12 @@ class CartController extends BaseController
                     $rental_price = $rental_price + $total_service_fee ;
                 }
 
-
-
-
                 $vendorData->service_fee_percentage_amount = number_format($vendor_service_fee_percentage_amount, 2, '.', '');
                 $vendorData->vendor_gross_total = $payable_amount;
                 $vendorData->discount_amount = $discount_amount;
                 $vendorData->discount_percent = $discount_percent;
                 $vendorData->taxable_amount = decimal_format($taxable_amount);
                 $vendorData->payable_amount = $payable_amount - $discount_amount;
-                $vendorData->isDeliverable = 1;
                 $total_paying = $total_paying + $payable_amount ;
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
                 $total_disc_amount = $total_disc_amount + $discount_amount;
@@ -1539,12 +1554,6 @@ class CartController extends BaseController
                 //     $subscription_discount = $subscription_discount + $deliver_charge;
                 // }
                 // $total_subscription_discount = $total_subscription_discount + $subscription_discount;
-                if (isset($serviceArea)) {
-                    if ($serviceArea->isEmpty()) {
-                        $vendorData->isDeliverable = 0;
-                        $delivery_status = 0;
-                    }
-                }
                 if($is_service_product_price_from_dispatch !=1){ // no need to check slot and web styling
                     if (($vendorData->vendor->show_slot == 0)  ) {
                         if (($vendorData->vendor->slotDate->isEmpty()) && ($vendorData->vendor->slot->isEmpty())) {
@@ -1796,7 +1805,6 @@ class CartController extends BaseController
         $cart->total_tax = decimal_format($total_fixed_fee_tax + $total_service_fee_tax + $deliver_fee_charges_tax + $total_markup_fee_tax + $container_charges_tax + $total_taxable_amount);
         $cart->tax_details = $tax_details;
         $cart->total_taxable_amount = decimal_format($total_taxable_amount);
-
         $cart->total_delivery_fee = $totalDeliveryCharges;
         $cart->total_fixed_fee_amount = $total_fixed_fee_amount;
         $cart->gross_paybale_amount = $order_sub_total;
