@@ -1107,9 +1107,6 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                     options.push($(this).val());
                 }
             });
-            // console.log(variants);
-            // console.log(options);
-            // return 0;
             ajaxCall = $.ajax({
                 type: "post",
                 dataType: "json",
