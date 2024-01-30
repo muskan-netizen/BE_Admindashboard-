@@ -392,6 +392,7 @@ class AuthController extends BaseController
         $user->phone_token_valid_till = $sendTime;
         $user->email_token_valid_till = $sendTime;
         $user->timezone = $client_timezone;
+        
         if ($signReq->hasFile('image')) {
             $file = $signReq->file('image');
             $user->image = Storage::disk('s3')->put($this->folderName, $file,'public');
@@ -553,9 +554,11 @@ class AuthController extends BaseController
                     }
                 }
             }
+            
             $checkSystemUser = $this->checkCookies($user->id);
             $response['status'] = 'Success';
             $response['name'] = $user->name;
+            $response['source'] = $user->image;
             $response['id'] = $user->id;
             $response['auth_token'] =  $token;
             $response['email'] = $user->email;
