@@ -401,6 +401,7 @@ class PaymentOptionController extends BaseController
             // \Log::info(['server url' =>$request->serverUrl]);
             // \Log::info(['return url' =>$request->returnUrl]);
             // \Log::info(['cancel url' =>$request->cancelUrl]);
+            // \Log::info(['return url' =>url($request->serverUrl . $request->returnUrl . '?amount=' . $request->amount)]);
             $response = $this->gateway->purchase([
                 'currency' => $currency, //'USD',
                 'amount' => $this->getDollarCompareAmount($request->amount),

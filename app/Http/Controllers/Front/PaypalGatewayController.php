@@ -44,6 +44,7 @@ class PaypalGatewayController extends FrontController
     public function paypalPurchase(Request $request)
     {
         \Log::info(['paypalPurchase' => $request->all()]);
+        \Log::info(['paypalPurchase amount' => $request->amount]);
         try {
             $amount = $this->getDollarCompareAmount($request->amount);
             $returnUrlParams = '?amount=' . $amount;
@@ -103,8 +104,8 @@ class PaypalGatewayController extends FrontController
             //     'cancelUrl' =>  url($request->cancelUrl),
             //     'returnUrl' => url($request->returnUrl . $returnUrlParams),
              ));
-             \Log::info(['transaction info' => $transaction]);
             $response = $transaction->send();
+            // \Log::info(['tranaction response' =>  $response]);
             if ($response->isSuccessful()) {
                 // $this->successMail();
                 return $this->successResponse($response->getTransactionReference());

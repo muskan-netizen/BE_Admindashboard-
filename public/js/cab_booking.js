@@ -430,7 +430,7 @@ $(document).ready(function () {
             alert('Select recurring details');
             return false;
         }
-        alert('payment_option_id');
+        alert(cab_booking_create_order);
         alert(payment_option_id);
         $.ajax({
             type: "POST",
@@ -465,8 +465,7 @@ $(document).ready(function () {
 
                     }else if(payment_option_id == 3){
                        alert(payment_paypal_url);
-                       
-                        let payment_form = "pickup_delivery";
+                       let payment_form = "pickup_delivery";
                         $.ajax({
                             type: "POST",
                             dataType: 'json',
