@@ -81,6 +81,8 @@
 
 @endphp
 
+
+
 @if ($cart_details->totalQuantity <= 0)
     <div class="container">
         <div class="row mt-2 mb-4 mb-lg-5">
@@ -239,14 +241,7 @@
                                 @endif
                                 <div id="mov" style="display:none;">{{ $product->vendor->order_min_amount }}
                                 </div>
-                                @if ($product->isDeliverable != '' && $product->isDeliverable == 0)
-                                    <div class="col-12">
-                                        <div class="text-danger">
-                                            <i class="fa fa-exclamation-circle"></i>
-                                            {{ __('Products for this vendor are not deliverable at your area. Please change address or remove product.') }}
-                                        </div>
-                                    </div>
-                                @endif
+                           
 
                             </div>
                         </div>
