@@ -17,15 +17,15 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\{ApiResponser, CartManager, KwikApi, BiddingCartTrait, CartManagerV2};
 use App\Http\Controllers\Client\ShippoController;
+use App\Http\Controllers\Client\BorzoeDeliveryController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController,D4BDunzoController};
 use App\Models\{AddonSet, BookingOption, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot, ProductFaq, CaregoryKycDoc, CartBookingOption, CartRentalProtection, VerificationOption, VendorSlotDate, TaxRate, Page, WebStylingOption, ProductDeliveryFeeByRole, ProductRentalProtection, RentalProtection};
 use Http\Message\Cookie;
-
-
+use App\Http\Traits\Borzoe;
 class CartController extends FrontController
 {
 
-    use ApiResponser, CartManager, KwikApi, BiddingCartTrait, CartManagerV2;
+    use ApiResponser, CartManager, KwikApi, BiddingCartTrait, CartManagerV2, Borzoe;
 
 
 
@@ -108,7 +108,6 @@ class CartController extends FrontController
             $vendorId = $cartData[0]->vendor_id;
             $vendorWeeklySlotDay = VendorSlot::select('start_time', 'end_time', 'day')->join('slot_days', 'slot_days.slot_id', '=', 'vendor_slots.id')->where(['vendor_slots.vendor_id' => $vendorId])->get()->toArray();
         }
-
         $data = array(
             'navCategories' => $navCategories,
             'cartData' => $cartData,
@@ -1219,8 +1218,10 @@ class CartController extends FrontController
                             $deliver_charges_lalmove = 0;
                             $deliveryCharges = 0;
                             $code = (($code) ? $code : $cart->shipping_delivery_type);
+                            $prod->product->Requires_last_mile = 1;
                             if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
                                 $deliveries = $this->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del);
+                               dd($deliveries);
                                 if (isset($deliveries[0])) {
                                     $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                                     if (count($deliveries) > 1) {
@@ -2290,7 +2291,6 @@ class CartController extends FrontController
 
     public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del = '', $dispatcher_tags = '', $totalRoute = '1')
     {
-        // dd($address);
         $option = array();
         $delivery_count = 0;
         try {
@@ -2300,7 +2300,6 @@ class CartController extends FrontController
 
                 $getAdditionalPreference = getAdditionalPreference(['is_free_delivery_by_roles']);
                 $skip_delivery_fees = false;
-
                 if ($getAdditionalPreference['is_free_delivery_by_roles'] == 1) {
                     $product_id = $vendorData->vendorProducts[0]['product_id'];
                     $result = ProductDeliveryFeeByRole::where('product_id', $product_id)->where('role_id', Auth::user()->role_id)
@@ -2313,8 +2312,29 @@ class CartController extends FrontController
                     // skip
                 } else if ($preferences->static_delivey_fee != 1) {
 
+                    //Borzoe Delivery changes code
+                    $borzoe = new BorzoeDeliveryController();
+                    $borzoe_deliver_fee = $this->borzoeDelivery($vendorData->vendor_id);
+                    $deliverFee = json_decode($borzoe_deliver_fee);
+                    $borzoe_deliver_fee = $deliverFee->order->payment_amount;
+                    if ($borzoe_deliver_fee > 0) {
+                        $borzoe_deliver_fee = decimal_format($borzoe_deliver_fee);
+                        $optionBorzoeApi[] = array(
+                            'type' => 'B',
+                            'courier_name' => __('Borzoe'),
+                            'rate' => $borzoe_deliver_fee,
 
-                    //pr( $getAdditionalPreference);
+                            'courier_company_id' => 0,
+                            'etd' => 0,
+                            'etd_hours' => 0,
+                            'duration' => 0,
+                            'estimated_delivery_days' => 0,
+                            'code' => 'B_0'
+                        );
+                        $option = array_merge($option, $optionBorzoeApi);
+                    }
+                    //End Borzoe Delivery changes code
+
                     //Dispatcher Delivery changes and estimated delivery duration code
                     $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del, $dispatcher_tags);
                     if (!empty($deliver_response_array[0])) {
@@ -2355,7 +2375,6 @@ class CartController extends FrontController
                         $option = array_merge($option, $optionKwikApi);
                     }
                     //End Kwik Delivery changes code
-
 
                     //Lalamove Delivery changes code
                     $lalamove = new LalaMovesController();

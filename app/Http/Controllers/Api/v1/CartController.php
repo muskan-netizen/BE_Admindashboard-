@@ -24,7 +24,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\D4BDunzoController;
-
+use App\Http\Traits\Borzoe;
 use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, CartProductPrescription, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, BookingOption, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, CartBookingOption, CartRentalProtection, VerificationOption, TaxRate,VendorMinAmount, WebStylingOption, ProcessorProduct,OrderFiles, ProductBookingOption, ProductRentalProtection, RentalProtection};
 
 use GuzzleHttp\Client as GCLIENT;
@@ -34,7 +34,7 @@ use App\Models\Client;
 
 class CartController extends BaseController
 {
-    use ApiResponser,ProductTrait,CartManager,DispatcherSlot;
+    use ApiResponser,ProductTrait,CartManager,DispatcherSlot, Borzoe;
 
     private $field_status = 2;
 
@@ -681,16 +681,16 @@ class CartController extends BaseController
 
     public function productPriceAfterVendorDiscount($vendorData,$product_discount_amount,$doller_compare,$cart)
     {
-        $allProductsSum = $vendorData->vendorProducts->sum(function ($product) 
+        $allProductsSum = $vendorData->vendorProducts->sum(function ($product)
         {
             return $product->pvariant->price * $product->quantity;
         });
 
         $PromoDelete = 0;
-        if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) 
+        if (isset($vendorData->coupon) && !empty($vendorData->coupon) )
         {
 
-            if ( $PromoDelete !=1) 
+            if ( $PromoDelete !=1)
             {
 
                     $minimum_spend = 0;
@@ -718,7 +718,7 @@ class CartController extends BaseController
                         unset($vendorData->coupon);
                         return  0;
                     }
-            } 
+            }
         }
 
         return $vendor_discount_amount??0;
@@ -886,8 +886,7 @@ class CartController extends BaseController
             $delivery_slot_amount = 0;
 
             foreach ($cartData as $ven_key => $vendorData) {
-
-            $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user_timezone);
+                   $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user_timezone);
             $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime));
             $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery',"60",0,'',$cartID);
 
@@ -1329,7 +1328,7 @@ class CartController extends BaseController
                                 }
                             }
                             $prod->taxdata = $taxData;
-                          
+
                             // if($prod->product->)
                             if ( (in_array($action,['delivery','on_demand']) )  && ( $is_service_product_price_from_dispatch !=1 )) {
 
@@ -1350,8 +1349,12 @@ class CartController extends BaseController
                                     $NumberOfroutes = $prod->LongTermProducts ? $prod->LongTermProducts->quantity : 1;
                                 }
 
-                            if ($checkLastMile ) 
+
+                            if ($checkLastMile )
                             {
+
+
+
                                     $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount,$address, $product_tags,$NumberOfroutes);
                                     $deliveryDuration = 0;
                                     if(isset($deliveries[0]))
@@ -1543,7 +1546,7 @@ class CartController extends BaseController
                         $taxable_amount -= $discount;
                     }*/
                 }
-                
+
                 $payable_amount = $payable_amount + $vendorTotalDeliveryFee ;
 
                 $deliver_charge = $vendorTotalDeliveryFee * $clientCurrency->doller_compare;
@@ -1595,7 +1598,7 @@ class CartController extends BaseController
                 if (!empty($vendorData->coupon->promo)) {
                     unset($vendorData->coupon->promo);
                 }
-               
+
 
                 // if (in_array(1, $subscription_features)) {
                 //     $subscription_discount = $subscription_discount + $deliver_charge;
@@ -1883,7 +1886,7 @@ class CartController extends BaseController
             // }
             // $cart->wallet = $this->getWallet($cart->user_id, $clientCurrency->doller_compare, $currency);
         }
-        
+
         if ($loyalty_amount_saved  >= $temp_total_paying) {
             if($temp_total_paying > 0) {
                 $loyalty_amount_saved = $temp_total_paying;
@@ -1892,7 +1895,7 @@ class CartController extends BaseController
             }
             $cart->total_payable_amount = 0.00;
         } else {
-       
+
             $cart->total_payable_amount = ($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
 
         }
@@ -2351,6 +2354,29 @@ class CartController extends BaseController
 
         if($preferences->static_delivey_fee != 1)
         {
+
+            //Borzoe Delivery changes code
+            $borzoe = new BorzoeDeliveryController();
+            $borzoe_deliver_fee = $this->borzoeDelivery($vendorData->vendor_id);
+            $deliverFee = json_decode($borzoe_deliver_fee);
+            $borzoe_deliver_fee = $deliverFee->order->payment_amount;
+            if ($borzoe_deliver_fee > 0) {
+                $borzoe_deliver_fee = decimal_format($borzoe_deliver_fee);
+                $optionBorzoeApi[] = array(
+                    'type' => 'B',
+                    'courier_name' => __('Borzoe'),
+                    'rate' => $borzoe_deliver_fee,
+
+                    'courier_company_id' => 0,
+                    'etd' => 0,
+                    'etd_hours' => 0,
+                    'duration' => 0,
+                    'estimated_delivery_days' => 0,
+                    'code' => 'B_0'
+                );
+                $option = array_merge($option, $optionBorzoeApi);
+            }
+            //End Borzoe Delivery changes code
             //Dispatcher Delivery changes code
             $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $dispatcher_tags);
             if (!empty($deliver_response_array[0])){

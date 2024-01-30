@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Client\BaseController;
+use App\Http\Controllers\Client\BorzoeDeliveryController;
 use App\Http\Controllers\D4BDunzoController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
@@ -32,8 +33,12 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use App\Models\{LoyaltyCard,VendorMargConfig, VendorOrderCancelReturnPayment};
 use App\Http\Controllers\Front\ShipEngineController;
+use App\Http\Traits\Borzoe;
+
 class OrderController extends BaseController
 {
+    use Borzoe;
+
     private $folderName = '/order/reports';
 
     use ApiResponser,OrderTrait,MargTrait,OrderBlockchain,TaxJarTrait{
@@ -1038,7 +1043,6 @@ class OrderController extends BaseController
      */
     public function changeStatus(Request $request, $domain = '')
     {
-
         try {
         $orderPlaced = true;
         $orderPlacedNo = '';
@@ -1047,12 +1051,9 @@ class OrderController extends BaseController
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
 
-
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
-
             $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
-
             if ($currentOrderStatus->order_status_option_id == 2 && $request->status_option_id == 2) { //$request->status_option_id == 3){
                 return response()->json(['status' => 'error', 'message' => __('Order has already been accepted!!!')]);
             }
@@ -1068,6 +1069,7 @@ class OrderController extends BaseController
 
 
                 $orderData = OrderVendor::with(['vendor', 'products.product', 'orderDetail'])->where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
+
                 if(@$orderData->exchanged_of_order){
                     $return = OrderReturnRequest::where('order_id', $orderData->exchanged_of_order->order_id)->first();
                     if (@$return && $request->status_option_id == 2) { //accept exchange
@@ -1096,7 +1098,6 @@ class OrderController extends BaseController
 
                 if ($request->status_option_id == 2) {
                     //Check Order delivery type
-
                     if ($orderData->shipping_delivery_type == 'D') {
                         //Create Shipping request for dispatcher
                         if($orderData->orderDetail->is_long_term ==1){
@@ -1118,7 +1119,8 @@ class OrderController extends BaseController
                     } elseif ($orderData->shipping_delivery_type == 'L') {
                         //Create Shipping place order request for Lalamove
                         //$orderPlaced = $this->placeOrderRequestlalamove($request);
-
+                    } elseif ($orderData->shipping_delivery_type == 'B') {
+                        $orderPlaced = $this->placeOrderRequestBorzoeApi($request);
                     } elseif ($orderData->shipping_delivery_type == 'K') {
                         //Create Shipping place order request for Kwik
                         $orderPlaced = $this->placeOrderRequestKwikApi($request);
@@ -1174,7 +1176,6 @@ class OrderController extends BaseController
                     //$vendor_order_status->order_vendor_id = $vendorOrderStatus->order_vendor_id;
                     $vendor_order_status->order_status_option_id = $request->status_option_id;
                     $vendor_order_status->save();
-
                     if ($request->status_option_id == 3) {
                         if ($orderData->shipping_delivery_type == 'D' && !empty($currentOrderStatus->dispatch_traking_url)) {
                             $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
@@ -1183,6 +1184,10 @@ class OrderController extends BaseController
                             //Cancel Shipping place order request for Lalamove
                             $lala = new LalaMovesController();
                             $order_lalamove = $lala->cancelOrderRequestlalamove($currentOrderStatus->web_hook_code);
+                        } elseif ($orderData->shipping_delivery_type == 'B') {
+                            //Cancel Shipping place order request for Borzoe
+                            $borzoe = new BorzoeDeliveryController();
+                            $order_lalamove = $this->cancleOrderToBorzoApi($request->vendor_id, $request->order_id);
                         }elseif ($orderData->shipping_delivery_type == 'K') {
                             //Cancel Shipping place order request for KwikApi
                             $lala = new QuickApiController();
@@ -1468,6 +1473,28 @@ class OrderController extends BaseController
                     ]);
                 return 1;
             }
+        }
+        return false;
+    }
+
+    public function placeOrderRequestBorzoeApi($request)
+    {
+        $borzoe = new BorzoeDeliveryController();
+        //Create Shipping place order request for KwikApi
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+            $order_ship = $this->placeOrderToBorzoApi($request->vendor_id, $request->order_id);
+        }
+        $orderDetails = json_decode($order_ship);
+        if ($order_ship) {
+            $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'borzoe_order_id' => $orderDetails->order->order_id,
+                    'borzoe_order_name'=> $orderDetails->order->order_name,
+                    'dispatch_traking_url' => $orderDetails->order->points[0]->tracking_url,
+                ]);
+            return 1;
         }
         return false;
     }

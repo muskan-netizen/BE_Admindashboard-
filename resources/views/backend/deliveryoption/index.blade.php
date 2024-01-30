@@ -1188,7 +1188,86 @@
 
           <!-- End Kwik Api -->
 
-          <!--- shipEngineOption Code -->
+
+          <!----------       Borzoe Code             -->
+
+            @if($borzoOption)
+                <div class="col-md-6 mb-3">
+                    <form method="POST" id="payment_option_form" action="{{route('borzoe.updateAll')}}" class="h-100">
+                        @csrf
+                        @method('POST')
+                        <div class="card-box h-100">
+                            <input type="hidden" name="method_id" id="{{$borzoOption->id}}" value="{{$borzoOption->id}}">
+                            <input type="hidden" name="method_name" id="{{$borzoOption->code}}" value="{{$borzoOption->code}}">
+
+                            <?php
+                                $creds = json_decode($borzoOption->credentials);
+                                $api_key = (isset($creds->api_key)) ? $creds->api_key : '';
+                                $service_code = (isset($creds->service_code)) ? $creds->service_code : '';
+                            ?>
+
+                            <div class="row">
+                                <div class="col-md-12 d-flex justify-content-between align-items-center">
+                                    <h3 class="mb-1"><span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$borzoOption->code.'.png')}}" alt=""></span>  {{$borzoOption->title}}</h3>
+                                    <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
+                                        <label for="" class="mr-3">{{ __("Enable") }}</label>
+                                        <input type="checkbox" data-id="{{$borzoOption->id}}" data-title="{{$borzoOption->code}}" data-plugin="switchery" name="active" class="chk_box all_select" data-color="#43bee1" @if($borzoOption->status == 1) checked @endif>
+                                    </div>
+                                </div>
+                                @if ( (strtolower($borzoOption->code) == 'borzo'))
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 switchery-demo d-flex justify-content-between align-items-center">
+                                            <label for="" class="mr-3 ">{{ __('Sandbox') }}</label>
+                                            <input type="checkbox" data-id="{{$borzoOption->id}}" data-title="{{$borzoOption->code}}" data-plugin="switchery" name="sandbox" class="chk_box" data-color="#43bee1" @if($borzoOption->test_mode == 1) checked @endif>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                            @if ( (strtolower($borzoOption->code) == 'borzo') )
+                                <div id="borzo_fields_wrapper" @if($borzoOption->status != 1) style="display:none" @endif>
+                                    <hr>
+
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group mb-0">
+                                                <label for="api_key" class="mr-3">{{ __("Api Token") }}</label>
+                                                <input type="text" name="api_key" id="api_key" class="form-control" value="{{$api_key}}" @if($borzoOption->status == 1) required @endif autofill="off">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group mb-0">
+                                                <label for="callback_token" class="mr-3">{{ __("Callback Token") }}</label>
+                                                <input type="text" name="callback_token" id="callback_token" class="form-control" value="{{$service_code}}" @if($borzoOption->status == 1) required @endif autofill="off">
+                                            </div>
+                                        </div>
+                                        {{-- <div class="col-sm-6">
+                                            <div class="form-group mb-0">
+                                                <label for="carrier_ids" class="mr-3">{{ __("Carrier Id") }}</label>
+                                                <input type="text" name="carrier_ids" id="carrier_ids" class="form-control" value="{{$carrier_ids}}" @if($borzoOption->status == 1) required @endif autofill="off">
+                                            </div>
+                                        </div> --}}
+                                    </div>
+
+                                    <div class="col-md-12 mt-3 p-0">
+
+                                    <hr/>
+                                    </div>
+
+                                </div>
+                            @endif
+                        </div>
+                    </form>
+                </div>
+            @endif
+
+        <!---  End Borzoe Code   -->
+
+          <!--- deliveryoptionOption Code -->
 
           @if($shipEngineOption)
             <div class="col-md-6 mb-3">
@@ -1216,7 +1295,6 @@
                                 <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
                             </div>
                         </div>
-
                         <div class="row">
                             <div class="col-6">
                                 <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
@@ -1340,6 +1418,7 @@
          //console.log(id);
         var title = $(this).data('title');
         var code = title.toLowerCase();
+        console.log("code", code);
         if ($(this).is(":checked")) {
             $("#" + code + "_fields_wrapper").show();
             $("#" + code + "_fields_wrapper").find('input').attr('required', true);

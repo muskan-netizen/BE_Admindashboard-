@@ -1530,7 +1530,7 @@
                                         <input type="hidden" name="cart_total_payable_amount "
                                             value="{{ decimal_format($cart_details->product_total_amount  ?? 0) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes) }}">
                                     @else
-                                    
+
                                         <p class="total_amt m-0" id="cart_total_payable_amount"
                                             data-cart_id="{{ $cart_details->id }}">
 
