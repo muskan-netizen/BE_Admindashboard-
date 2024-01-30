@@ -3,16 +3,17 @@
 @php
 //$total_amount = $order->payable_amount+$order->total_other_taxes_amount;
 $total_amount = $order->payable_amount;
+// dd($total);
 $total_bid_discount = @$order->bid_discount;
 $serviceType =  Session::get('vendorType');
 
 if($serviceType == 'rental')
 {
 
-    $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges+$order->rental_protection_amount+$order->booking_option_price;
+    $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges+$order->rental_protection_amount+$order->booking_option_price - $order->wallet_amount_used;
 }else{
 
-    $total = $order->taxable_amount+$order->total_service_fee+$order->fixed_fee_amount+$order->total_container_charges+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount;
+    $total = $order->taxable_amount+$order->total_service_fee+$order->fixed_fee_amount+$order->total_container_charges+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount - $order->wallet_amount_used;
 }
 
 $additional_price=0;
@@ -205,7 +206,6 @@ $order_is_long_term = $order->is_long_term;
 
                             @endforeach {{--  End vendor loop --}}
 
-
                             <div class="total-sec row">
                                 <ul class="col-sm-6 offset-sm-6">
                                         <li>{{__('Sub Total')}} <span>@if( $additionalPreference["is_token_currency_enable"])
@@ -228,7 +228,6 @@ $order_is_long_term = $order->is_long_term;
                                     @if($order->total_discount > 0)
                                     	@php
                                     		$total -= (decimal_format($order->total_discount * @$clientCurrency->doller_compare));
-
                                     	@endphp
                                         <li>{{__('Total Discount')}} <span> - @if( $additionalPreference["is_token_currency_enable"])
                                             {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->total_discount * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->total_discount * @$clientCurrency->doller_compare)}}@endif</span></li>
@@ -236,10 +235,10 @@ $order_is_long_term = $order->is_long_term;
 
                                     @if($order->taxable_amount > 0 || $order->total_other_taxes_amount> 0 )
                                     @php
-                                    $total += decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare);
+                                    // $total += decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare);
+                                    // dd($total);
                                     @endphp
-				                         <li>{{__('Tax')}} <span>@if( $additionalPreference["is_token_currency_enable"])
-                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->taxable_amount * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->taxable_amount * @$clientCurrency->doller_compare + $order->total_other_taxes_amount)}}@endif</span></li>
+				                         <li>{{__('Tax')}} <span>{{Session::get('currencySymbol').decimal_format($order->total_other_taxes_amount)}}</span></li>
                                    @endif
 
                                     @if($order->luxury_option_id == 4)
@@ -270,7 +269,7 @@ $order_is_long_term = $order->is_long_term;
                                     @endif
                                     @if($order->wallet_amount_used > 0)
                                         <li>{{$additionalPreference ['is_token_currency_enable'] ? __('Used Token') : __('Wallet Amount')}} <span> @if( $additionalPreference["is_token_currency_enable"])
-                                            {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)}}@endif</span></li>
+                                            - {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)) }}@else - {{Session::get('currencySymbol').decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)}}@endif</span></li>
                                     @endif
                                     @if($order->gift_card_amount > 0)
                                         <li>{{__('Gift Card Amount')}} <span> {{Session::get('currencySymbol')}}{{decimal_format($order->gift_card_amount * @$clientCurrency->doller_compare)}}</span></li>
@@ -285,6 +284,7 @@ $order_is_long_term = $order->is_long_term;
 
                         </ul>
                     </div>
+
                     <div class="final-total">
                         @php
                             //$total = $order->taxable_amount+$order->total_service_fee+$order->fixed_fee_amount+$order->total_container_charges+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount
@@ -324,9 +324,13 @@ $order_is_long_term = $order->is_long_term;
                                 </ul>
                                 <ul class="order-detail row">
 
-                                    <li class="col-12 col-md-4"><span>{{__('Order Total')}}:</span><span>@if( $additionalPreference["is_token_currency_enable"])
+                                    <li class="col-12 col-md-4"><span>{{__('Order Total')}}:</span><span>
+                                        @if( $additionalPreference["is_token_currency_enable"])
 
-                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($total + $additional_price))}}@else{{Session::get('currencySymbol').decimal_format($total + $additional_price)}}@endif
+                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($total + $additional_price))}}
+                                        @else
+                                        {{Session::get('currencySymbol').decimal_format($total)}}
+                                        @endif
 
                                         @if($order->payment_option_id != 1 && $order->payment_status!=1 && $order->is_postpay==1)
                                         <span style="color:var(--theme-deafult);">Unpaid</span>
