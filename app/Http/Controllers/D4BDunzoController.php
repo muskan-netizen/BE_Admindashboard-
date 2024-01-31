@@ -117,7 +117,7 @@ class D4BDunzoController extends Controller
             $jsonData = json_decode($request->getContent());
             $taskId = $jsonData->task_id;
             $details =OrderVendor::where('web_hook_code',$taskId)->first();
-            $trackingStatus = $this->getTrackInfo($taskId);
+            // $trackingStatus = $this->getTrackInfo($taskId);
             switch ($jsonData->state) {
                 case 'queued':
                     VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'1']);
