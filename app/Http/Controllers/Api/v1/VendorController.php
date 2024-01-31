@@ -1716,6 +1716,10 @@ class VendorController extends BaseController{
 				return $this->errorResponse($validator->errors()->first(), 422);
 			}
             $vendordetail = Vendor::where('id',$request->vendor_id)->first();
+            if(isset($request->is_online)){
+                $vendordetail->is_online = $request->is_online == "1" ? 1 : 0;
+                $vendordetail->save();
+            }
             if($vendordetail)
             {
                 if($vendordetail->name=="" || $vendordetail->desc=="" || $vendordetail->logo=="" || $vendordetail->address=="" || $vendordetail->email=="" || $vendordetail->phone_no=="")
