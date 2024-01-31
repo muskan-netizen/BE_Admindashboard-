@@ -1895,9 +1895,7 @@ class CartController extends BaseController
             }
             $cart->total_payable_amount = 0.00;
         } else {
-       
             $cart->total_payable_amount = ($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
-
         }
 
         /* if($total_taxable_amount>0){
@@ -1916,7 +1914,6 @@ class CartController extends BaseController
             $cart->total_payable_amount = $rental_price;
         }
 
-        $cart->total_payable_amount = $cart->total_delivery_fee + $cart->total_payable_amount;
         $wallet_amount_used = 0;
         if (isset($user)) {
             if ($user->balanceFloat > 0) {
@@ -1985,11 +1982,10 @@ class CartController extends BaseController
             $cart->off_scheduling_at_cart =  $preferences->off_scheduling_at_cart;
         }
 
-        $total_payable_amount_calc_tip = $cart->total_payable_amount - $total_taxable_amount;
-
         if(@$rental_price > 0){
             $cart->total_payable_amount = $rental_price;
         }
+
         $total_payable_amount_calc_tip = $cart->total_payable_amount - $total_taxable_amount - $cart->total_tax + $cart->wallet_amount_used;
 
         $cart->tip = array(

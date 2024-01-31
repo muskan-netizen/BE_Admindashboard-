@@ -1242,22 +1242,24 @@ trait CartManagerV2{
                         }
 
                         $rental_price = 0;
+                        if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
 
-                        if (@$prod->start_date_time && @$prod->end_date_time) {
-                            $start_date_time  = new Carbon($prod->start_date_time);
-                            $end_date_time  = new Carbon($prod->end_date_time);
-                            $prod->days = $start_date_time->diff($end_date_time)->days + 1;
-                            $rental_price = $prod->pvariant ? $prod->pvariant->price : 0;
-                            if (isset($prod->pvariant->month_price) && !empty($prod->pvariant->month_price)  && isset($prod->pvariant->week_price)) {
+                            if (@$prod->start_date_time && @$prod->end_date_time) {
+                                $start_date_time  = new Carbon($prod->start_date_time);
+                                $end_date_time  = new Carbon($prod->end_date_time);
+                                $prod->days = $start_date_time->diff($end_date_time)->days + 1;
+                                $rental_price = $prod->pvariant ? $prod->pvariant->price : 0;
+                                if (isset($prod->pvariant->month_price) && !empty($prod->pvariant->month_price)  && isset($prod->pvariant->week_price)) {
 
-                                if ($prod->days >= 7 && $prod->days < 30) {
-                                    $rental_price = $prod->pvariant->week_price;
-                                } elseif ($prod->days >= 30) {
-                                    $rental_price = $prod->pvariant->month_price;
+                                    if ($prod->days >= 7 && $prod->days < 30) {
+                                        $rental_price = $prod->pvariant->week_price;
+                                    } elseif ($prod->days >= 30) {
+                                        $rental_price = $prod->pvariant->month_price;
+                                    }
                                 }
+                                $prod->price = $rental_price;
+                                $rental_price = $rental_price * $prod->days;
                             }
-                            $prod->price = $rental_price;
-                            $rental_price = $rental_price * $prod->days;
                         }
 
                         $product = Product::with([
@@ -1772,12 +1774,14 @@ trait CartManagerV2{
 
             {
 
+
                 $cart->total_payable_amount = $rental_price ?? 0;
             }
 
 
             elseif(FacadesSession::get('vendorType') == "p2p")
             {
+
                 $cart->total_payable_amount = decimal_format($total_payable_amount);
 
             }
@@ -1794,9 +1798,8 @@ trait CartManagerV2{
 
             if(!$this->additionalPreferences->is_tax_price_inclusive){
                 $cartTotalPay = decimal_format($total_payable_amount);
-                // pr( $cartTotalPay);
                 // gift card calculation
-                
+
                 if($giftCardAmount >0 && $cartTotalPay >0){
                     $calCulateGiftCard = $this->calCulateGiftCard($cartTotalPay,$giftCardAmount);
                     $cartTotalPay  = @$calCulateGiftCard['totalPaybel'];
@@ -1860,7 +1863,6 @@ trait CartManagerV2{
             $cart->giftCardUsedAmount = $giftCardUsed;
             $cart->security_amount = $security_amount;
 
-
             if($additionalPreference['agent_commison'] == 1){
 
                 $cart->agent_commison = $cart->total_payable_amount * $additionalPreference['agent_commison_amount_percentage']/100;
@@ -1923,7 +1925,6 @@ trait CartManagerV2{
             $cart->token_value = $additionalPreference['token_currency'] ?? 0;
             $cart->products = $cartData->toArray();
 
-
             if (taxJarEnable() && count($cart->products)) {
                 $cart->total_taxable_amount = $this->taxRateEstimate($cart);
                 $cart->total_payable_amount += $cart->total_taxable_amount;
@@ -1931,10 +1932,10 @@ trait CartManagerV2{
             }
         }
     
-            $total_payable_amount_calc_tip = $cart->total_payable_amount - $total_taxable_amount - $other_taxes + $cart->wallet_amount_used ;
-            $cart->tip_5_percent = decimal_format(0.05 * $total_payable_amount_calc_tip);
-            $cart->tip_10_percent = decimal_format(0.10 * $total_payable_amount_calc_tip);
-            $cart->tip_15_percent = decimal_format(0.15 * $total_payable_amount_calc_tip);
+        $total_payable_amount_calc_tip = $cart->total_payable_amount - $total_taxable_amount - $other_taxes + $cart->wallet_amount_used ;
+        $cart->tip_5_percent = decimal_format(0.05 * $total_payable_amount_calc_tip);
+        $cart->tip_10_percent = decimal_format(0.10 * $total_payable_amount_calc_tip);
+        $cart->tip_15_percent = decimal_format(0.15 * $total_payable_amount_calc_tip);
         return $cart;
     }
 
