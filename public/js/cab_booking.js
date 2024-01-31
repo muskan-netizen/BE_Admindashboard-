@@ -1433,6 +1433,7 @@ $(document).ready(function () {
                             let particular_driver_template = _.template($('#particular_driver_template').html());
                             $("#cab_detail_box").append(particular_driver_template(cabData)).show();
                         }else{
+                           
                             let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
                             $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
                         }
@@ -1462,6 +1463,7 @@ $(document).ready(function () {
 
                          $('#selected_rental_product').val(response.data.id);
                          $('#selected_vendor_id').val(response.data.vendor_id);
+                         $('.cab-detail-box #real_amount').text(response.data.original_tags_price);
 
                     }else{
                         $("#cab_detail_box ").html('<p class="text-center my-3">'+ no_result_message +'</p>').show();
