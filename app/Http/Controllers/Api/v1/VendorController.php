@@ -2957,10 +2957,4 @@ class VendorController extends BaseController{
         }
     }
 
-    public function changeVendorStaus(Request $request){
-        $vendor = Vendor::where('id', $request->id)->first();
-        $vendor->is_online = $vendor->is_online == 1 ? 0 : 1;
-        $vendor->save();
-    }
-
 }

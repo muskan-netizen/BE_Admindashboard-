@@ -1230,6 +1230,7 @@
                             </div>
                             @if ( (strtolower($borzoOption->code) == 'borzo') )
                                 <div id="borzo_fields_wrapper" @if($borzoOption->status != 1) style="display:none" @endif>
+                                    
                                     <hr>
 
                                     <div class="row">

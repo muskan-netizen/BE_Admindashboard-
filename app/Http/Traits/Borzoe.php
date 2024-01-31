@@ -10,29 +10,28 @@ use App\Models\{ShippingOption,User, UserAddress, Vendor, OrderVendor, Order};
 use Auth;
 trait Borzoe{
 
-
+    private $api_url;
+    private $api_key;
     public function brozoConfig()
     {
-        if (app()->environment('local')) {
+      
+        $shippingOption = ShippingOption::where('code', 'borzo')->first();
+        $cred = json_decode($shippingOption->credentials);
+        if ($shippingOption->test_mode) {
             $url = 'https://robotapitest-in.borzodelivery.com/api/business/1.4/';
         }else{
             $url = 'https://robot-in.borzodelivery.com/api/business/1.4/';
         }
-        $shippingOption = ShippingOption::where('code', 'borzo')->first();
-        $cred = json_decode($shippingOption->credentials);
-        $apiKey = $cred->api_key;
-        $data = [
-            'url' => $url,
-            'apiKey' => $apiKey
-        ];
-        return $data;
+        $this->api_url = $url;
+        $this->api_key = $cred->api_key;
     }
     public function borzoeDelivery($vendor_id){
         try {
+            $this->brozoConfig();
             $customer = User::find(Auth::id());
             $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
             $vendor_details = Vendor::find($vendor_id);
-            $url = $this->brozoConfig()['url'].'calculate-order';
+            $url = $this->api_url.'calculate-order';
 
             $data = [
                 'matter' => 'Documents',
@@ -55,7 +54,7 @@ trait Borzoe{
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-            curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-DV-Auth-Token: '.$this->brozoConfig()['apiKey'].'']);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-DV-Auth-Token: '.$this->api_key.'']);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $response = curl_exec($ch);
             curl_close($ch);
@@ -66,12 +65,13 @@ trait Borzoe{
     }
 
     public function placeOrderToBorzoApi($vendor_id, $order_id){
+        $this->brozoConfig();
         $order = Order::find($order_id);
         $customer = User::find(auth()->id());
         $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
         $amountPay = $order->ordervendor->where('vendor_id',$vendor_id)->value('payable_amount')??0;
         $vendor_details = Vendor::find($vendor_id);
-        $url = $this->brozoConfig()['url'].'create-order';
+        $url = $this->api_url.'create-order';
 
             $data = [
                 'matter' => 'Documents',
@@ -94,7 +94,7 @@ trait Borzoe{
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-            curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-DV-Auth-Token: '.$this->brozoConfig()['apiKey'].'']);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-DV-Auth-Token: '.$this->api_key.'']);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $response = curl_exec($ch);
             curl_close($ch);
@@ -102,9 +102,10 @@ trait Borzoe{
     }
 
     public function cancleOrderToBorzoApi($vendor_id, $order_id){
+        $this->brozoConfig();
         $order = Order::find($order_id);
         $borzo_order_id = OrderVendor::where('order_id', $order->id)->where('vendor_id', $vendor_id)->pluck('borzoe_order_id')->toArray();
-        $url = $this->brozoConfig()['url'].'cancel-order';
+        $url = $this->api_url.'cancel-order';
 
         $data = [
             'order_id' => $borzo_order_id[0]
@@ -113,7 +114,7 @@ trait Borzoe{
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-DV-Auth-Token: '.$this->brozoConfig()['apiKey'].'']);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-DV-Auth-Token: '.$this->api_key.'']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
         curl_close($ch);
@@ -124,6 +125,8 @@ trait Borzoe{
 
 	public function Webhook(Request $request)
     {
+        $this->brozoConfig();
+
 		//1-Created
 		//2-planned
 		//3-Pickup Scheduled/Generated

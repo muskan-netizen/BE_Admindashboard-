@@ -3851,7 +3851,7 @@ class OrderController extends BaseController
                             $order_lalamove = $lala->cancelOrderRequestKwikApi($request->order_id,$request->vendor_id);
                         }elseif ($orderData->shipping_delivery_type == 'B') {
                             //Cancel Shipping place order request for Borzoe
-                            $borzoe = new BorzoeDeliveryController();
+                            // $borzoe = new BorzoeDeliveryController();
                             $order_lalamove = $this->cancleOrderToBorzoApi($request->vendor_id, $request->order_id);
                         }elseif($orderData->shipping_delivery_type=='SR'){
                             //Cancel Shipping place order request for Shiprocket
@@ -5185,11 +5185,17 @@ class OrderController extends BaseController
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
-
+    
+    /**
+     * placeOrderRequestBorzoeApi
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function placeOrderRequestBorzoeApi($request)
     {
         $borzoe = new BorzoeDeliveryController();
-        //Create Shipping place order request for KwikApi
+        //Create Shipping place order request for Borzoe delivery
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
         if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
@@ -5197,11 +5203,11 @@ class OrderController extends BaseController
         }
         $orderDetails = json_decode($order_ship);
         if ($order_ship) {
-            $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+             OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
                 ->update([
                     'borzoe_order_id' => $orderDetails->order->order_id,
                     'borzoe_order_name'=> $orderDetails->order->order_name,
-                    'dispatch_traking_url' => $orderDetails->order->points[0]->tracking_url,
+                    'dispatch_traking_url' => $orderDetails->order->points[0]->tracking_url??null,
                 ]);
             return 1;
         }

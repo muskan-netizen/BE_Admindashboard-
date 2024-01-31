@@ -1186,7 +1186,7 @@ class OrderController extends BaseController
                             $order_lalamove = $lala->cancelOrderRequestlalamove($currentOrderStatus->web_hook_code);
                         } elseif ($orderData->shipping_delivery_type == 'B') {
                             //Cancel Shipping place order request for Borzoe
-                            $borzoe = new BorzoeDeliveryController();
+                            // $borzoe = new BorzoeDeliveryController();
                             $order_lalamove = $this->cancleOrderToBorzoApi($request->vendor_id, $request->order_id);
                         }elseif ($orderData->shipping_delivery_type == 'K') {
                             //Cancel Shipping place order request for KwikApi
