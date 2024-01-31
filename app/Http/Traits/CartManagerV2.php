@@ -1026,6 +1026,10 @@ trait CartManagerV2{
                                             $sub_total_vendor += $quantity_price;
                                         }
                                     }else{
+                                        //Find vendor Product Discount here
+                                        $productPriceAfterVendorDiscount  = $this->productPriceAfterVendorDiscount($vendorData,$quantity_price,$doller_compare,$cart);
+                                        $quantity_price = $quantity_price - $productPriceAfterVendorDiscount;
+                                        $promo_discount_amount += $productPriceAfterVendorDiscount;
                                         $sub_total_vendor += $quantity_price;
                                     }
 
@@ -1295,7 +1299,6 @@ trait CartManagerV2{
                 vendorData->vendorProducts Products loop End
             *
             */
-            \Log::info('sub_total_vendor--'.$sub_total_vendor);
             $sub_total = $sub_total_vendor;
 
                         // if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
