@@ -14,7 +14,7 @@ class AddFieldToVendorTable extends Migration
     public function up()
     {
         Schema::table('vendors', function (Blueprint $table) {
-            $table->integer('is_online')->nullable();
+            $table->tinyInteger('is_online')->default(1);
         });
     }
 

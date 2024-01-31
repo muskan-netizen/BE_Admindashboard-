@@ -218,6 +218,13 @@ class Vendor extends Model implements Auditable{
       return $query;
     }
 
+    public function scopeVendorOnline($query)
+    {
+        if(@getAdditionalPreference(['vendor_online_status'])['vendor_online_status'] == 1){
+          return $query->where('is_online', 1);
+        }
+    }
+
     public function orderProducts()
     {
       return $this->belongsToMany(Product::class,'order_vendor_products','vendor_id','product_id');
