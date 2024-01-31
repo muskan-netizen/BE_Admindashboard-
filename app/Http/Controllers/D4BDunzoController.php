@@ -130,6 +130,9 @@ class D4BDunzoController extends Controller
 				    VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'4']);
 				
 				    VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'3']);
+
+                    $details->dispatch_traking_url = $jsonData->tracking_url;
+                    $details->save();
                     break;
                 case 'started_for_delivery':
                     //Update in vendor status
@@ -177,11 +180,12 @@ class D4BDunzoController extends Controller
             'Content-Type' => 'application/json',
         ])
         ->get( $this->app_url.'/v1/tasks/'.$task_id.'/status');
-        \Log::info('[$traking_res->json()]');
-        \Log::info([$traking_res->json()]);
-
-        // You can then handle the traking_res as needed
-        return $traking_res->json();
+            $res = $traking_res->json();
+            if(property_exists($res,'tracking_url'))
+            {
+                return $res->tracking_url;
+            }
+        return null;
     }
 
 	public function getDistance($vendorId)
