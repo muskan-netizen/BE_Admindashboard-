@@ -1833,7 +1833,8 @@ class OrderController extends FrontController
     public function orderSave($request, $paymentStatus)
     {
 
-
+        \Log::info('orderSave');
+        \Log::info($request->all());
         try {
             $latitude = '';
             $longitude = '';
@@ -2869,9 +2870,9 @@ class OrderController extends FrontController
 
                 // check if is_tax_price_inclusive is on than no tax
                 if (! $additionalPreferences->is_tax_price_inclusive) {
-                    $new_vendor_taxable_amount = number_format((($actual_amount-$total_discount) * $rate) / 100, 2);
+                    $new_vendor_taxable_amount = number_format((($actual_amount-$vendor_discount_amount) * $rate) / 100, 2);
                 } else {
-                    $new_vendor_taxable_amount = number_format((($actual_amount-$total_discount) * $rate) / (100 + $rate), 2);
+                    $new_vendor_taxable_amount = number_format((($actual_amount-$vendor_discount_amount) * $rate) / (100 + $rate), 2);
                 }
 
                 $new_vendor_taxable_amount = str_replace(',', '', $new_vendor_taxable_amount);

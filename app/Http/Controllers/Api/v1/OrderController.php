@@ -922,7 +922,6 @@ class OrderController extends BaseController
                             $vendor_payable_amount += $service_fee_percentage_amount;
                             $payable_amount += $service_fee_percentage_amount;
                         }
-                        \Log::info('vendor_payable_amount1--'.$vendor_payable_amount);
 
                         if ($vendor_cart_product->vendor->fixed_service_charge > 0) {
                             // $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100; // wrong percentage_amount

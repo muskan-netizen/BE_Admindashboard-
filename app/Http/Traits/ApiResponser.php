@@ -504,8 +504,8 @@ trait ApiResponser
 
 	protected function sendSmsNew($provider, $sms_key, $sms_secret, $sms_from, $to, $body){
         try{
-            $body = $body['body']??'';
             $template_id = $body['template_id']??''; //sms Template_id
+            $body = $body['body']??'';
             $client_preference =  getClientPreferenceDetail();
             if($client_preference->sms_provider == 1)
             {
