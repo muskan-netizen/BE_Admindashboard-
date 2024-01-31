@@ -106,30 +106,51 @@ class D4BDunzoController extends Controller
 
     public function d4bdunzoWebhook(Request $request)
     {
-        Webhook::create(['tracking_order_id'=>'2222','response'=>$request->getContent()]);
+
+        // 1. runner_accepted  -- d,1
+        // 2. reached_for_pickup  -- d,2
+        // 3. pickup_complete  -- o,4 - d,3
+        // 4. started_for_delivery -- o,5 - d,4
+        // 5. delivered -- 6--5
 
         try {
             $jsonData = json_decode($request->getContent());
             $taskId = $jsonData->task_id;
             $details =OrderVendor::where('web_hook_code',$taskId)->first();
             $trackingStatus = $this->getTrackInfo($taskId);
-            $dispatcherStatusOptionId = null;
             switch ($jsonData->state) {
                 case 'queued':
-                    $dispatcherStatusOptionId = '1';
+                    VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'1']);
                     break;
-                case 'runner_accepted/reached_for_pickup':
-                    $dispatcherStatusOptionId = '2';
+                case 'runner_accepted':
+                    VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'2']);
                     break;
-                case 'pickup_complete/started_for_delivery/reached_for_delivery':
-                    $dispatcherStatusOptionId = '4';
+                case 'pickup_complete':
+                     //Update in vendor status
+				    VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'4']);
+				
+				    VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'3']);
+                    break;
+                case 'started_for_delivery':
+                    //Update in vendor status
+                    VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'5']);
+	
+                    VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'4']);
                     break;
                 case 'delivered':
-                    $dispatcherStatusOptionId = '6';
+                   
+                    //Update in vendor status
+                    VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'6']);
+        
+                    VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'5','type'=>'2']);
+
                     break;
                 case 'cancelled':
                 case 'location_cancelled':
-                    $dispatcherStatusOptionId = '3';
+                    //Update in vendor status
+                    VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'3']);
+        
+                    VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'6','type'=>'2']);
                     break;
                 // Add more cases as needed
                 // Default case if the state doesn't match any known values
@@ -137,36 +158,12 @@ class D4BDunzoController extends Controller
                     // Handle unknown state if necessary
             }
 
-            if ($dispatcherStatusOptionId !== null) {
-
-            //   VendorOrderStatus::where([
-            //         'order_id' => $details->order_id,
-            //         'vendor_id' => $details->vendor_id,
-
-            //     ])->update(['order_status_option_id'=>$dispatcherStatusOptionId]);
-                OrderVendor::where([
-                    'order_id' => $details->order_id,
-                    'vendor_id' => $details->vendor_id,
-
-
-                ])->update(['order_status_option_id'=>$dispatcherStatusOptionId]);
-
-                // dd(VendorOrderStatus::where([
-                //     'order_id' => $details->order_id,
-                //     'vendor_id' => $details->vendor_id,
-
-                // ])->first());
-                // VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>$dispatcherStatusOptionId]);
-                VendorOrderDispatcherStatus::create([
-                    'order_id' => $details->order_id,
-                    'vendor_id' => $details->vendor_id,
-                    'dispatcher_status_option_id' => $dispatcherStatusOptionId
-                ]);
-            }
+           
             return response([], 200);
         } catch (\Exception $e) {
             // Handle exceptions here
-            \Log::info('webhook error --'.$e->getMessage().$e->getLine());
+            \Log::info('webhook error dunzod4--'.$e->getMessage().$e->getLine());
+            Webhook::create(['tracking_order_id'=>'2222','response'=>$request->getContent()]);
             return response([],200);
         }
     }
@@ -180,6 +177,8 @@ class D4BDunzoController extends Controller
             'Content-Type' => 'application/json',
         ])
         ->get( $this->app_url.'/v1/tasks/'.$task_id.'/status');
+        \Log::info('[$traking_res->json()]');
+        \Log::info([$traking_res->json()]);
 
         // You can then handle the traking_res as needed
         return $traking_res->json();
