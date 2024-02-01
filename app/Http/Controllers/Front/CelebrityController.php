@@ -40,7 +40,7 @@ class CelebrityController extends FrontController
             $vendorIds = $vendors;
         }else{
             $vendorIds = array();
-            $vendorList = Vendor::select('id', 'name')->where('status', '!=', $this->field_status)->get();
+            $vendorList = Vendor::vendorOnline()->select('id', 'name')->where('status', '!=', $this->field_status)->get();
             if(!empty($vendorList)){
                 foreach ($vendorList as $key => $value) {
                     $vendorIds[] = $value->id;

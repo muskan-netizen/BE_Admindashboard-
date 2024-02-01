@@ -82,8 +82,8 @@
         border: 1px solid#eee;
         border-radius: 10px !important;
     }
-   
-  
+
+
 
 </style>
 @endsection
@@ -180,7 +180,7 @@ $timezone = Auth::user()->timezone;
                                 @endif
                                 @endif
                               @foreach ($order->vendors as $vendor)
-                                
+
                                 @if($vendor->vendor_id == $vendor_id)
                                 @if(isset($order->vendors) && isset($vendor->dispatch_traking_url) && $vendor->dispatch_traking_url!=null)
                                 <div class="col-lg-6">
@@ -311,8 +311,6 @@ $timezone = Auth::user()->timezone;
                                     </ul>
                                 </div>
 
-
-
                                 @if (isset($order->vendors) &&
                                 ($order->vendors->first()->dispatch_traking_url != null ||
                                 $order->vendors->first()->lalamove_tracking_url != null ||
@@ -333,7 +331,7 @@ $timezone = Auth::user()->timezone;
 
                                         $date = isset($dispatcher_status_option->vendorOrderDispatcherStatus) ? $dispatcher_status_option->vendorOrderDispatcherStatus->created_at : '';
                                         @endphp
-                                        <li class="{{ $class }} {{ $glow }}" data-status_option_id="{{ $dispatcher_status_option->id }}">
+                                        <li class="{{ @$class }} {{ @$glow }}" data-status_option_id="{{ $dispatcher_status_option->id }}">
                                             <h5 class="mt-0 mb-1">{{ $dispatcher_status_option->title }}</h5>
                                             <p class="text-muted" id="dispatch_text_muted_{{ $dispatcher_status_option->id }}">
                                                 @if ($date)
@@ -378,10 +376,10 @@ $timezone = Auth::user()->timezone;
 
                             {{ __("Exchange To") }}<a href="{{$order->vendors[0]->exchanged_to_order->vendor_detail_url }}"><span>#{{ $order->vendors[0]->exchanged_to_order->orderDetail->order_number }}</span></a>
                             @endIf
-                           
-                         
+
+
                             <button class=" badge badge-info border-0"  data-toggle="modal" data-target="#showDelayTimeModal">{{ __('Add Delay Time') }} <img src=""> </button>
- 
+
 
                             @if(@$order->vendors[0]->exchanged_of_order)
                             {{ __("Exchange Of") }}
@@ -417,11 +415,11 @@ $timezone = Auth::user()->timezone;
                                         <th>{{ __("Total") }}</th>
                                     </tr>
                                 </thead>
-                           
+
                                 @foreach ($order->vendors as $vendor)
-                                
+
                                 @if($vendor->vendor_id == $vendor_id)
-                                        
+
                                 <tbody>
                                     @php
                                     $sub_total = 0;
@@ -430,7 +428,7 @@ $timezone = Auth::user()->timezone;
                                     $storeRevenue = 0;
                                     $revenue = $vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount + $vendor->total_markup_price;
                                     @endphp
-                                 
+
                                     @foreach ($vendor->products as $product)
                                     @if ($product->order_id == $order->id)
                                     @php
@@ -859,7 +857,7 @@ $timezone = Auth::user()->timezone;
                     @endif
                     </tbody>
                     @endif
-                    
+
                     @endforeach
                     </table>
                 </div>
@@ -1094,7 +1092,7 @@ $timezone = Auth::user()->timezone;
                 @empty
                     <b>{{ __('No Allergic Item Found')}}</b><br>
                 @endforelse
-                
+
                 @if ($order->user->custom_allergic_items)
                     <h4 class="header-title mb-3 "> {{ __('Custom Allergic Items')}} </h4>
                     {{ $order->user->custom_allergic_items }}
@@ -1223,7 +1221,7 @@ $timezone = Auth::user()->timezone;
          <div class="modal-body mt-0 pt-0">
             <div class="form-group">
                <label for="message-text" class="col-form-label">Enter Time(in minutes):</label>
-               <input type="number" class="form-control" value="{{$vendor->extra_time}}" id="buffer_time">               
+               <input type="number" class="form-control" value="{{$vendor->extra_time}}" id="buffer_time">
             </div>
          </div>
          <div class="modal-footer pt-0">
@@ -1238,7 +1236,7 @@ $timezone = Auth::user()->timezone;
       </div>
    </div>
 </div>
-   
+
 <!-- product return modal -->
 <div class="modal fade return-order" id="return_order" tabindex="-1" aria-labelledby="return_orderLabel">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -1311,7 +1309,7 @@ $timezone = Auth::user()->timezone;
     </div>
 
 
-  
+
 
 
 
@@ -1325,7 +1323,7 @@ $timezone = Auth::user()->timezone;
 
 
 
-    
+
     <div id="blockchain_order_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="blockchain_order_modal_label" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
@@ -1353,8 +1351,8 @@ $timezone = Auth::user()->timezone;
           </div>
         </div>
       </div>
-      
-     
+
+
     <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
     <script>
         $('body').on('click', '.show-return-product-modal', function(event) {
@@ -1665,7 +1663,7 @@ $timezone = Auth::user()->timezone;
             }, 10);
         }
 
-     
+
 
 
         $(document).on('click', '.buffer_time_btn', function(e) {
@@ -1695,7 +1693,7 @@ $timezone = Auth::user()->timezone;
                                 $('#showDelayTimeModal').modal('hide');
                                 $.NotificationApp.send("Success", response.message, "top-right",
                                     "#5ba035", "success");
-                               
+
                             }else{
                                   $.NotificationApp.send("Error", response.message, "top-right",
                                     "#5ba035", "error");
