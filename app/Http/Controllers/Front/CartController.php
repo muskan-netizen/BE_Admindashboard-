@@ -1221,7 +1221,6 @@ class CartController extends FrontController
                             $prod->product->Requires_last_mile = 1;
                             if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
                                 $deliveries = $this->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del);
-                               dd($deliveries);
                                 if (isset($deliveries[0])) {
                                     $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                                     if (count($deliveries) > 1) {
