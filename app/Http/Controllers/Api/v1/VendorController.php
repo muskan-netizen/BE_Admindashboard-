@@ -2058,11 +2058,11 @@ class VendorController extends BaseController{
             // $orders = OrderVendor::where('user_id', $user->id)->orderBy('id', 'DESC');
             $total_amount = 0;
             $orders = OrderVendor::where('vendor_id', $request->vendor_id)->orderBy('id', 'DESC');
-            $allorders = $orders->whereNotIn('order_status_option_id', [1,2,4,5,6])->sum('payable_amount');
-
+            $allorders = clone($orders);
+            $allorders = $allorders->where('vendor_id', $request->vendor_id)->whereIn('order_status_option_id', [6])->sum('payable_amount');
             switch ($type) {
                 case 'complete':
-                    $orders->whereNotIn('order_status_option_id', [6]);
+                    $orders->whereIn('order_status_option_id', [6]);
                     break;
                 case 'pending':
                     $orders->whereIn('order_status_option_id', [1,2,4,5]);

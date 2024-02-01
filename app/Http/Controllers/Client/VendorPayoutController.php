@@ -211,11 +211,33 @@ class VendorPayoutController extends BaseController{
                 $query->where('user_id', Auth::user()->id);
             });
         }
+        
         $total_order_value = $total_order_value->sum('payable_amount') - $total_delivery_fees;
+
+
+        $total_promo_amount = OrderVendor::orderBy('id','desc')->where('order_status_option_id','!=',3);
+        if (Auth::user()->is_superadmin == 0) {
+            $total_promo_amount = $total_promo_amount->whereHas('vendor.permissionToUser', function ($query){
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+        $total_promo_amount = $total_promo_amount->where('coupon_paid_by', 0)->sum('discount_amount');
+
+        $vendor_payouts = VendorPayout::orderBy('id','desc');
+        if (Auth::user()->is_superadmin == 0) {
+            $vendor_payouts = $vendor_payouts->whereHas('vendor.permissionToUser', function ($query)  {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+        $vendor_payouts = $vendor_payouts->where('status', 1)->sum('amount');
+
+        $past_payout_value = $vendor_payouts;
+
 
         $pending_payouts = VendorPayout::where('status', 0);
         $completed_payouts = VendorPayout::whereIn('status', [1,2]);
         $pending_payout_value = $pending_payouts->sum('amount');
+        $available_funds = $total_order_value - $total_admin_commissions - $total_promo_amount - $past_payout_value;
         $completed_payout_value = $completed_payouts->sum('amount');
         $pending_payout_count = $pending_payouts->count();
         $completed_payout_count = $completed_payouts->count();
@@ -223,7 +245,7 @@ class VendorPayoutController extends BaseController{
         $client_currency = ClientCurrency::with('currency')->where('is_primary', 1)->first();
         $currency_symbol = $client_currency->currency->symbol ?? '$';
 
-        return view('backend.payment.vendorPayoutRequests')->with(['total_order_value' => decimal_format($total_order_value), 'total_admin_commissions' => decimal_format($total_admin_commissions), 'pending_payout_value'=>decimal_format($pending_payout_value), 'completed_payout_value'=>decimal_format($completed_payout_value), 'pending_payout_count'=>$pending_payout_count, 'completed_payout_count'=>$completed_payout_count, 'payout_options'=>$payout_options, 'currency_symbol'=>$currency_symbol]);
+        return view('backend.payment.vendorPayoutRequests')->with(['total_order_value' => decimal_format($total_order_value), 'total_admin_commissions' => decimal_format($total_admin_commissions),'total_available_value'=>decimal_format($available_funds) ,'pending_payout_value'=>decimal_format($pending_payout_value), 'completed_payout_value'=>decimal_format($completed_payout_value), 'pending_payout_count'=>$pending_payout_count, 'completed_payout_count'=>$completed_payout_count, 'payout_options'=>$payout_options, 'currency_symbol'=>$currency_symbol]);
     }
 
     public function vendorPayoutRequestsFilter(Request $request){
