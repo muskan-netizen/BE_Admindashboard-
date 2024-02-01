@@ -57,7 +57,7 @@ class HomeController extends BaseController
                 $nomenclature =  $vendor_typ_key.'_nomenclature';
                 $vendorData = [];
                     if($preferences->preferences->$clientVendorTypes == 1){
-                        $vendorData['name'] = getNomenclatureName($vendor_typ_value, false);
+                        $vendorData['name'] = getNomenclatureName($vendor_typ_value, true);
                         $iconFiledName = config('constants.VendorTypesIcon.'.$vendor_typ_key);
                         $vendorData["icon"] = $clientPreferences->$iconFiledName ? $clientPreferences->$iconFiledName : asset('images/al_custom3.png');
                         //$vendorData["name"] = $clientVendorTypes;
