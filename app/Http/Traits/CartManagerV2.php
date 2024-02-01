@@ -528,7 +528,7 @@ trait CartManagerV2
                 } else {
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
                         //Get VendorService Area
-                        pr($address_id);
+                       
                         $serviceArea = $this->getVendorServiceAreaV2($address_id, $vendorData);
                     }
                 }
