@@ -5962,7 +5962,7 @@ body .status_box label {
         width: 100%;
         top: 0;
         left: 0;
-        background: #fff;
+        background: var(--top-header-color) !important;
         position: fixed;
         -webkit-transition: all .5s ease-in-out;
         -moz-transition: all .5s ease-in-out;
@@ -18997,4 +18997,3 @@ section#alTaxiBookingWrapper .address-form .pool_radio_controls.text-center labe
         line-height: 22px;
     }
 }
-
