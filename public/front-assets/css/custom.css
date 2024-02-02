@@ -5963,7 +5963,8 @@ body .status_box label {
         width: 100%;
         top: 0;
         left: 0;
-        background: var(--top-header-color) !important;
+        /* background: var(--top-header-color) !important; */
+        background: #fff;
         position: fixed;
         -webkit-transition: all .5s ease-in-out;
         -moz-transition: all .5s ease-in-out;
