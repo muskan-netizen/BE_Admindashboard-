@@ -290,7 +290,8 @@ $(document).ready(function () {
     let queryString = window.location.search;
     let path = window.location.pathname;
     let urlParams = new URLSearchParams(queryString);
-    alert('urlParams');
+    alert('path');
+    alert(path);
     alert(urlParams);
     if ((urlParams.has('PayerID')) && (urlParams.has('token'))) {
         $('.spinner-overlay').show();
@@ -1757,9 +1758,6 @@ $(document).ready(function () {
             url: payment_paypal_url,
             data: ajaxData,
             success: function (response) {
-               
-                alert('dd');
-                alert(response.data);
                 if (response.status == "Success") {
                     window.location.href = response.data;
                 } else {
@@ -1949,12 +1947,21 @@ $(document).ready(function () {
             $("#topup_wallet_btn, .topup_wallet_confirm").attr("disabled", true);
         }
         alert(token);
+        alert(amount);
+        alert(payer_id);
+        alert('http://192.168.102.218:8001/payment/paypal/CompletePurchase');
         $.ajax({
             type: "GET",
             dataType: 'json',
-            url: payment_success_paypal_url,
+            // url: payment_success_paypal_url,
+            url: 'http://192.168.102.218:8001/payment/paypal/CompletePurchase',
             data: { 'amount': amount, 'token': token, 'PayerID': payer_id },
             success: function (response) {
+                
+                if(path.indexOf("details") !== -1){
+                    alert('details');
+                    alert(path.indexOf("details"));
+                }
                 if (response.status == "Success") {
                     if (path.indexOf("cart") !== -1) {
                         placeOrder(address_id, 3, response.data, tip);
@@ -2201,6 +2208,7 @@ $(document).ready(function () {
 
 
     window.creditWallet = function creditWallet(amount, payment_option_id, transaction_id) {
+        
         $.ajax({
             type: "POST",
             dataType: 'json',

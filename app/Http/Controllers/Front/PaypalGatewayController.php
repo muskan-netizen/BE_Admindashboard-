@@ -48,19 +48,21 @@ class PaypalGatewayController extends FrontController
         try {
             $amount = $this->getDollarCompareAmount($request->amount);
             $returnUrlParams = '?amount=' . $amount;
+            \Log::info(['return amount'=>$returnUrlParams]);
             if ($request->has('tip')) {
                 $returnUrlParams = $returnUrlParams . '&tip=' . $request->tip;
             }
-            if ($request->has('order_number')) {
-                $returnUrlParams = $returnUrlParams . '&ordernumber=' . $request->order_number;
+            if ($request->has('ordernumber')) {
+                $returnUrlParams = $returnUrlParams . '&ordernumber=' . $request->ordernumber;
             }
+            \Log::info(['return amount again'=>$returnUrlParams]);
             if ($request->has('reload_route')) {
                 $pickupRoute = $request->reload_route;
                 $response = $this->gateway->purchase([
                     'currency' => $this->currency, //'USD',
                     'amount' => $amount,
                     'cancelUrl' => url($request->cancelUrl),
-                    'returnUrl' => $pickupRoute,
+                    'returnUrl' => $pickupRoute. $returnUrlParams,
                 ])->send();
             }else{
                 $response = $this->gateway->purchase([
@@ -96,6 +98,9 @@ class PaypalGatewayController extends FrontController
             if ($request->has('tip')) {
                 $returnUrlParams = $returnUrlParams . '&tip=' . $request->tip;
             }
+            \Log::info(['amount'=>$amount]);
+            \Log::info(['payerid' =>$request->PayerID]);
+            \Log::info(['token' =>$request->token]);
             $transaction = $this->gateway->completePurchase(array(
                 'amount'                => $amount,
                 'payer_id'              => $request->PayerID,
@@ -108,8 +113,10 @@ class PaypalGatewayController extends FrontController
             // \Log::info(['tranaction response' =>  $response]);
             if ($response->isSuccessful()) {
                 // $this->successMail();
+                \Log::info('success');
                 return $this->successResponse($response->getTransactionReference());
             } else {
+                \Log::info('fail');
                 $this->failMail();
                 return $this->errorResponse($response->getMessage(), 400);
             }
