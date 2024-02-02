@@ -38,7 +38,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
 
     @if($client_preference_detail->business_type == 'taxi')
     <!-- Start Cab Booking Header From Here -->
-    <div class="cab-booking-header">
+    <div class="cab-booking-header" style="background: var(--top-header-color)">
         <div class="container-fluid">
             <div class="row align-items-center">
                 <div class="col-sm-3 col-md-2">
