@@ -608,7 +608,7 @@ class BaseController extends Controller{
         $latitude = ($user->latitude) ? $user->latitude : $lat;
         $longitude = ($user->longitude) ? $user->longitude : $lng;
         $vendorType = $user->vendorType ? $user->vendorType : $type;
-        $serviceAreaVendors = Vendor::select('id', 'show_slot');
+        $serviceAreaVendors = Vendor::vendorOnline()->select('id', 'show_slot');
         $vendors = [];
         if($vendorType){
             $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
@@ -1173,7 +1173,7 @@ class BaseController extends Controller{
         $latitude = ($user->latitude) ? $user->latitude : $lat;
         $longitude = ($user->longitude) ? $user->longitude : $lng;
         $vendorType = $user->vendorType ? $user->vendorType : $type;
-        $serviceAreaVendors = Vendor::select('id', 'show_slot');
+        $serviceAreaVendors = Vendor::vendorOnline()->select('id', 'show_slot');
         $vendors = [];
         if ($vendorType) {
             $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
