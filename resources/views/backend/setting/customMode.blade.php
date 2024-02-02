@@ -864,3 +864,17 @@
                 @if (@$getAdditionalPreference['enable_pwa'] == 1) checked='checked' @endif></span>
     </div>
 </div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="vendor_online_status_switch" class="mr-2 mb-0">{{ __('Vendor Online Status Enable/Disable') }}<small
+                class="d-block pr-5">{{ __('Change Online Status In Vendor App Enable/Disable.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="vendor_online_status"
+                id="vendor_online_status_switch" class="form-control checkbox_change"
+                data-className="vendor_online_status" data-color="#43bee1"
+                @if (@$getAdditionalPreference['vendor_online_status']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['vendor_online_status'] == 1) value="1" @else value="0" @endif
+            name="vendor_online_status" id="vendor_online_status" />
+    </div>
+</div>

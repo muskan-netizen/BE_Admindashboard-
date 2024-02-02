@@ -15,7 +15,7 @@ class Vendor extends Model implements Auditable{
   use VendorTrait;
 
   //use Searchable;
-    protected $fillable = ['name','slug','desc','short_desc','logo','banner','address','email','website','phone_no','latitude','longitude','order_min_amount','order_pre_time','auto_reject_time','commission_percent','commission_fixed_per_order','commission_monthly','dine_in','takeaway','delivery','status','add_category','setting','show_slot','vendor_templete_id','auto_accept_order', 'service_fee_percent','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','slot_minutes','closed_store_order_scheduled','pincode','return_request','ahoy_location','city','state','country','fixed_fee','fixed_fee_amount','price_bifurcation','instagram_url','service_charges_tax','delivery_charges_tax','container_charges_tax','fixed_fee_tax','service_charges_tax_id','delivery_charges_tax_id','container_charges_tax_id','fixed_fee_tax_id', 'cron_for_service_area','markup_price_tax_id','razorpay_bank_json','razorpay_contact_json', 'is_seller', 'fixed_service_charge', 'service_charge_amount', 'is_vendor_instant_booking'];
+    protected $fillable = ['name','slug','desc','short_desc','logo','banner','address','email','website','phone_no','latitude','longitude','order_min_amount','order_pre_time','auto_reject_time','commission_percent','commission_fixed_per_order','commission_monthly','dine_in','takeaway','delivery','status','add_category','setting','show_slot','vendor_templete_id','auto_accept_order', 'service_fee_percent','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','slot_minutes','closed_store_order_scheduled','pincode','return_request','ahoy_location','city','state','country','fixed_fee','fixed_fee_amount','price_bifurcation','instagram_url','service_charges_tax','delivery_charges_tax','container_charges_tax','fixed_fee_tax','service_charges_tax_id','delivery_charges_tax_id','container_charges_tax_id','fixed_fee_tax_id', 'cron_for_service_area','markup_price_tax_id','razorpay_bank_json','razorpay_contact_json', 'is_seller', 'fixed_service_charge', 'service_charge_amount', 'is_vendor_instant_booking', 'is_online'];
 
     protected $appends = ['is_wishlist'];
     public function serviceArea(){
@@ -30,11 +30,11 @@ class Vendor extends Model implements Auditable{
     public function long_term_products(){
         return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->where('is_long_term_service',1);
     }
-    public function productsLive(){ 
+    public function productsLive(){
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->where('is_live','1');
     }
 
-    public function vendor_promo(){ 
+    public function vendor_promo(){
       return $this->belongsToMany('App\Models\Promocode', 'promocode_details', 'refrence_id', 'promocode_id')->where('expiry_date','>=',Carbon::now()->format('Y-m-d'))->where('promo_type_id',1)->select('amount','title');
     }
 
@@ -156,7 +156,7 @@ class Vendor extends Model implements Auditable{
   public function getCustomCategory(){
     return $this->hasMany('App\Models\Category','vendor_id','id');
   }
- 
+
 
 
   public function getById($id){
@@ -207,7 +207,7 @@ class Vendor extends Model implements Auditable{
     {
       return $this->hasMany(Bid::class, 'vendor_id');
     }
-  
+
     public function scopeByVendorSubscriptionRule($query,$preferences)
     {
       if($preferences->subscription_mode ==1){
@@ -216,6 +216,13 @@ class Vendor extends Model implements Auditable{
         }
       }
       return $query;
+    }
+
+    public function scopeVendorOnline($query)
+    {
+        if(@getAdditionalPreference(['vendor_online_status'])['vendor_online_status'] == 1){
+          return $query->where('is_online', 1);
+        }
     }
 
     public function orderProducts()

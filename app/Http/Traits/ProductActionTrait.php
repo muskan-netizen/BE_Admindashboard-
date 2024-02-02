@@ -20,17 +20,12 @@ trait ProductActionTrait{
     {
         try
         {
-            $vendors = Vendor::select('id')->where('status', 1)->where($type, 1);
-
+            $vendors = Vendor::vendorOnline()->select('id')->where('status', 1)->where($type, 1);
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-
-
                     $point = new Point($longitude, $latitude);
                     $vendors->whereHas('serviceArea', function ($query) use ($point) {
                         $query->whereRaw("ST_Contains(service_areas.polygon, ST_GeomFromText(?))", [$point->toWKT()]);
                     });
-
-
             }
 
             if($is_admin_vendor_rating == 1){

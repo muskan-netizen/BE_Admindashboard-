@@ -1832,9 +1832,6 @@ class OrderController extends FrontController
 
     public function orderSave($request, $paymentStatus)
     {
-
-        \Log::info('orderSave');
-        \Log::info($request->all());
         try {
             $latitude = '';
             $longitude = '';

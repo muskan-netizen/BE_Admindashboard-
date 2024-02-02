@@ -466,6 +466,11 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('kwikapi/updateAll', 'Client\DeliveryOptionController@updateKwikapi')->name('kwikapi.updateAll');
         Route::post('payoutUpdateAll', 'Client\PaymentOptionController@payoutUpdateAll')->name('payoutOption.payoutUpdateAll');
         Route::post('shipengine/updateAll', 'Client\DeliveryOptionController@updateShipEngine')->name('shipengine.updateAll');
+        Route::post('borzoe/updateAll', 'Client\DeliveryOptionController@updateBorzoe')->name('borzoe.updateAll');
+        Route::get('borzoe', 'Client\BorzoeDeliveryController@borzoe')->name('borzoe');
+        Route::get('borzoe/delivery', 'Client\BorzoeDeliveryController@borzoeDelivery')->name('borzoeDelivery');
+
+
         Route::resource('inquiry', 'Client\ProductInquiryController');
         Route::get('inquiry/filter', [ProductInquiryController::class, 'show'])->name('inquiry.filter');
 

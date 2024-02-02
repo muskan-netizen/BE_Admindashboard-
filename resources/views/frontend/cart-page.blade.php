@@ -253,8 +253,7 @@
 
                         <div class="col-12 cart-heading mt-2 px-0">
                             <h5 class="my-1"><b>{{ $product->vendor ? @$product->vendor->name : '' }}</b></h5>
-                            <input type="hidden" name="category_name" id="category_name"
-                                value="{{ $product->vendor ? @$product->vendor->name : '' }}" />
+                            <input type="hidden" name="category_name" id="category_name" value="{{ $product->vendor ? @$product->vendor->name : '' }}" />
                         </div>
 
 
@@ -1531,7 +1530,7 @@
                                         <input type="hidden" name="cart_total_payable_amount "
                                             value="{{ decimal_format($cart_details->product_total_amount  ?? 0) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes) }}">
                                     @else
-                                    
+
                                         <p class="total_amt m-0" id="cart_total_payable_amount"
                                             data-cart_id="{{ $cart_details->id }}">
 
