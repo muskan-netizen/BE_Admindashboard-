@@ -17211,6 +17211,11 @@ body .status_box label {
         }
 
         @media (max-width:767px) {
+
+            section.wrapper-main.pt-lg-3.alSectionTop.d-flex.align-items-center {
+                margin-top: 80px;
+            }
+
             .footer-theme .sub-title .contact-list i {
                 position: relative !important;
                 margin-right: 10px;
