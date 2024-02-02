@@ -1898,9 +1898,7 @@ class CartController extends BaseController
             }
             $cart->total_payable_amount = 0.00;
         } else {
-
             $cart->total_payable_amount = ($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
-
         }
 
         /* if($total_taxable_amount>0){
@@ -1918,8 +1916,13 @@ class CartController extends BaseController
         if(@$rental_price){
             $cart->total_payable_amount = $rental_price;
         }
+        $total_payable_amount_calc_tip = $cart->total_payable_amount - $cart->total_tax + $loyalty_amount_saved;
 
-
+        $cart->tip = array(
+            ['label' => '5%', 'value' => decimal_format(0.05 * $total_payable_amount_calc_tip)],
+            ['label' => '10%', 'value' => decimal_format(0.1 * $total_payable_amount_calc_tip)],
+            ['label' => '15%', 'value' => decimal_format(0.15 * $total_payable_amount_calc_tip)]
+        );
         $wallet_amount_used = 0;
         if (isset($user)) {
             if ($user->balanceFloat > 0) {
@@ -1988,16 +1991,11 @@ class CartController extends BaseController
             $cart->off_scheduling_at_cart =  $preferences->off_scheduling_at_cart;
         }
 
-        $total_payable_amount_calc_tip = $cart->total_payable_amount - $total_taxable_amount;
-
         if(@$rental_price > 0){
             $cart->total_payable_amount = $rental_price;
         }
-        $cart->tip = array(
-            ['label' => '5%', 'value' => decimal_format(0.05 * $total_payable_amount_calc_tip)],
-            ['label' => '10%', 'value' => decimal_format(0.1 * $total_payable_amount_calc_tip)],
-            ['label' => '15%', 'value' => decimal_format(0.15 * $total_payable_amount_calc_tip)]
-        );
+
+    
         return $cart;
 
 
