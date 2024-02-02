@@ -1488,19 +1488,32 @@ class CartController extends BaseController
                     if ($serviceArea->isEmpty()) {
                         $vendorData->isDeliverable = 0;
                         $delivery_status = 0;
-                     //   $deliver_charge = 0;
-                     //   $vendorTotalDeliveryFee = 0;
-                     //   $vendorData->delivery_types = '';
+                        // $deliver_charge = 0;
+                        // $vendorTotalDeliveryFee = 0;
+                        // $vendorData->delivery_types = '';
                     }
                 }
 
-                // if (!isset($serviceArea)) {
-                //     $vendorData->isDeliverable = 0;
-                //     $delivery_status = 0;
-                //     $deliver_charge = 0;
-                //     $vendorTotalDeliveryFee = 0;
-                //     $vendorData->delivery_types = '';
-                // }
+                if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
+                    if (isset($serviceArea)) {
+                        if ($serviceArea->isEmpty()) {
+                            $vendorData->isDeliverable = 0;
+                            $delivery_status = 0;
+                            $deliver_charge = 0;
+                            $vendorTotalDeliveryFee = 0;
+                            $vendorData->delivery_types = '';
+                        }
+                    }
+
+                 if (!isset($serviceArea)) {
+                    $vendorData->isDeliverable = 0;
+                    $delivery_status = 0;
+                    $deliver_charge = 0;
+                    $vendorTotalDeliveryFee = 0;
+                    $vendorData->delivery_types = '';
+                 }
+            }
+                   
 
                 $payable_amount = $payable_amount + $vendorTotalDeliveryFee ;
 
