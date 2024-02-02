@@ -79,7 +79,7 @@ trait CartManagerV2
         if ($address_id > 0) {
             $address = UserAddress::where('user_id', $this->user->id)->where('id', $address_id)->first();
         } else {
-            $address = UserAddress::where('user_id', Auth::id())->where('status', 1)->orderBy('is_primary', 'desc')->first();
+            $address = UserAddress::where('user_id', $this->user->id)->where('status', 1)->orderBy('is_primary', 'desc')->first();
         }
         if (!empty($address)) {
             //$address = UserAddress::where('user_id', $this->user->id)->where('id', $address_id)->first();
@@ -1325,6 +1325,7 @@ trait CartManagerV2
                 $deliveryfee_ifnot_discounted = ($deliveryfeeOnCoupon == 0) ? $deliveryCharges_real : 0;
 
                 //till here
+                if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
                 if (isset($serviceArea)) {
                     if ($serviceArea->isEmpty()) {
                         $vendorData->service_area_empty = 1;
@@ -1337,15 +1338,17 @@ trait CartManagerV2
                     }
                 }
 
-                // if(!isset($serviceArea)){
-                //     $vendorData->service_area_empty = 1;
-                //     $vendorData->isDeliverable = 0;
-                //     $delivery_status = 0;
-                //     $deliveryCharges_real = 0;
-                //     $deliveryfee_ifnot_discounted = 0;
-                //     $select = '';
-                //     $error_message = __('Products for this vendor are not deliverable at your area. Please change address or remove product.');
-                // }
+                if(!isset($serviceArea)){
+                    $vendorData->service_area_empty = 1;
+                    $vendorData->isDeliverable = 0;
+                    $delivery_status = 0;
+                    $deliveryCharges_real = 0;
+                    $deliveryfee_ifnot_discounted = 0;
+                    $select = '';
+                    $error_message = __('Products for this vendor are not deliverable at your area. Please change address or remove product.');
+                }
+
+            }
 
                 if ($user) {
                     // calculate subscription discount On admin and vendor
