@@ -866,7 +866,7 @@ class HomeController2 extends BaseController
                     $response[] = $brand;
                 }
                 $categoryTypes = getServiceTypesCategory($action);
-                $vendors = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+                $vendors = Vendor::vendorOnline()->whereHas('getAllCategory.category',function($q)use ($categoryTypes){
                     $q->whereIn('type_id',$categoryTypes);
                 })->select('id', 'name  as dataname', 'logo', 'slug', 'address', 'show_slot')->where($action, 1);
                 if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {

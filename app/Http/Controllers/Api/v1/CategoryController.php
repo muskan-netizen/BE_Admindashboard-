@@ -100,7 +100,7 @@ class CategoryController extends BaseController
           
             //return $vendor_categories;
 
-            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->with('vendor_promo')->select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude');
+            $vendorData = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->with('vendor_promo')->select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude');
             
             $ses_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
 
@@ -184,7 +184,7 @@ class CategoryController extends BaseController
         } elseif ($type == 'vendor' && $product_list == 'true') {
             $latitude = !empty($request->latitude) ? $request->latitude : $preferences->Default_latitude;
             $longitude = !empty($request->longitude) ? $request->longitude : $preferences->Default_longitude;
-            $vendor_ids = Vendor::byVendorSubscriptionRule($preferences)->where('status', 1);
+            $vendor_ids = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->where('status', 1);
             $vendor_ids =  $vendor_ids->pluck('id')->toArray();
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $products = Product::has('vendor')->with([
@@ -272,7 +272,7 @@ class CategoryController extends BaseController
                     $vendor_ids[] = $vendor_category->vendor_id;
                 }
             }
-            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id');
+            $vendorData = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id');
          
             if(isset($preferences->pickup_delivery_service_area) && ($preferences->pickup_delivery_service_area == 1)){
 
@@ -321,7 +321,7 @@ class CategoryController extends BaseController
             $longitude = !empty($request->longitude) ? $request->longitude : $preferences->Default_longitude;
 
 
-            $vendor_ids = Vendor::byVendorSubscriptionRule($preferences)->where('status', 1);
+            $vendor_ids = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->where('status', 1);
             
             $vendor_ids =  $vendor_ids->pluck('id')->toArray();
 

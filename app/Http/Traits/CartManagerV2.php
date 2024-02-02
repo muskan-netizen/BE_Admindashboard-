@@ -270,16 +270,16 @@ trait CartManagerV2{
 
     public function productPriceAfterVendorDiscount($vendorData,$product_discount_amount,$doller_compare,$cart)
     {
-        $allProductsSum = $vendorData->vendorProducts->sum(function ($product) 
+        $allProductsSum = $vendorData->vendorProducts->sum(function ($product)
         {
             return $product->pvariant->price * $product->quantity;
         });
-       
+
 
         $PromoDelete = 0;
-        if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) 
+        if (isset($vendorData->coupon) && !empty($vendorData->coupon) )
         {
-            if ( $PromoDelete !=1) 
+            if ( $PromoDelete !=1)
             {
 
                     $minimum_spend = 0;
@@ -304,7 +304,7 @@ trait CartManagerV2{
                         unset($vendorData->coupon);
                        return  0;
                     }
-            } 
+            }
         }
 
         return $vendor_discount_amount??0;
@@ -609,7 +609,7 @@ trait CartManagerV2{
                 // $total_service_fee = 0;
                 $total_markup_fee_tax = 0;
                 $bid_vendor_discount = 0;
-                
+
                 /* Getting in Vendor product loop and setting product values*/
                 $vendorTotalDeliveryFee = 0;
                 $previousdeliveryfee = 0;
@@ -621,7 +621,7 @@ trait CartManagerV2{
             $promo_discount_amount = $sub_total_vendor = 0;
 
             //vendorData->vendorProducts  loop start
-            foreach ($vendorData->vendorProducts as $ven_key => $prod) 
+            foreach ($vendorData->vendorProducts as $ven_key => $prod)
             {
                                 $prod->product->ServicePeriods = [];
                                 $prod->service_start_time = '';
@@ -666,7 +666,7 @@ trait CartManagerV2{
                                 $vendorStartTime =  (($slotsDate)? ( $slotsDate['time'] ?  $slotsDate['time'] : '' ):'');
 
                             //start pvariant condition for product details
-                            if($prod->pvariant)   
+                            if($prod->pvariant)
                             {
                                         $cart_product_ids[] = $prod->product_id;
                                         /* Setting Out of Stock if requied quanitity is not available */
@@ -731,7 +731,7 @@ trait CartManagerV2{
                                         $variantsData = $taxData = $vendorAddons = array();
                                         $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                                         $price_in_currency = $prod->pvariant ? $prod->pvariant->price : 0;
-                                        if (@$prod->pvariant->month_price && $prod->pvariant->week_price) 
+                                        if (@$prod->pvariant->month_price && $prod->pvariant->week_price)
                                         {
                                             $schedule_days = $prod->additional_increments_hrs_min / 24;
                                             if ($schedule_days >= 7 && $schedule_days < 30) {
@@ -843,7 +843,7 @@ trait CartManagerV2{
 
                                         if($prod->addon->isNotEmpty())
                                         {
-                                            foreach ($prod->addon as $ck => $addons) 
+                                            foreach ($prod->addon as $ck => $addons)
                                             {
                                                 if($requestType == 2){
                                                     $this->apiVendorAddons($addons,$ck,$prod);
@@ -1003,13 +1003,13 @@ trait CartManagerV2{
                                     $select = '';
                                     $taxData = array();
                                     $taxRate = 0;
-                                    if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) 
+                                    if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0)
                                     {
                                         foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                                             $rate = $tax_value->tax_rate;
                                             $taxRate = $tax_value->tax_rate;
                                             $tax_amount = ($price_in_doller_compare * $rate) / 100;
-                                        
+
                                             //Find vendor Product Discount here
                                             $productPriceAfterVendorDiscount  = $this->productPriceAfterVendorDiscount($vendorData,$quantity_price,$doller_compare,$cart);
                                             $quantity_price = $quantity_price - $productPriceAfterVendorDiscount;
@@ -1080,7 +1080,7 @@ trait CartManagerV2{
                                     }
 
                                     //if ($action == 'delivery' || $action == 'appointment') {
-                                    if ( (in_array($action,['delivery','appointment','on_demand']) ) && ( $is_service_product_price_from_dispatch !=1 ) ) 
+                                    if ( (in_array($action,['delivery','appointment','on_demand']) ) && ( $is_service_product_price_from_dispatch !=1 ) )
                                     {
                                         $delivery_fee_charges = 0;
                                         $deliver_charges_lalmove =0;
@@ -1105,11 +1105,10 @@ trait CartManagerV2{
 
                                                 //pr($NumberOfroutes);
                                             // if ((!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1))  ) {
-                                            if($checkLastMile ==1)
-                                            {
+                                                if($checkLastMile ==1)
+                                                {
                                                     $deliveriesNew = new CartController();
                                                     $deliveries = $deliveriesNew->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del, $lastMileDate['tags'],$NumberOfroutes);
-
 
                                                     if (isset($deliveries[0])) {
                                                         if (count($deliveries)>1) {
@@ -1295,8 +1294,8 @@ trait CartManagerV2{
                         if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
                             $delivery_slot_amount += decimal_format($prod->slot_price);
                         }
-            
-            
+
+
             }
             /*
             *
@@ -1376,7 +1375,7 @@ trait CartManagerV2{
                         //                 $deliveryfeeOnCoupon = 1;
                         //             }
                         //         }
-                        //     } 
+                        //     }
                         // }
 
                         // //Minus tax Discount Price from Discount
