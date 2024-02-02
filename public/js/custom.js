@@ -1959,11 +1959,14 @@ $(document).ready(function () {
             success: function (response) {
                 
                 if(path.indexOf("details") !== -1){
-                    alert('details');
-                    alert(path.indexOf("details"));
+                     
                 }
                 if (response.status == "Success") {
-                    if (path.indexOf("cart") !== -1) {
+                    if(path.indexOf("details") !== -1){
+                        alert('success details');
+                        alert(path.indexOf("details"));
+                        paypalDebitTransaction(amount, 3, response.data)
+                    }else if(path.indexOf("cart") !== -1) {
                         placeOrder(address_id, 3, response.data, tip);
                     } else if (path.indexOf("wallet") !== -1) {
                         creditWallet(amount, 3, response.data);
@@ -2213,6 +2216,41 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: credit_wallet_url,
+            data: { wallet_amount: amount, payment_option_id: payment_option_id, transaction_id: transaction_id },
+            success: function (response) {
+                // var currentUrl = window.location.href;
+                location.href = path;
+                if (response.status == "Success") {
+                    // $("#topup_wallet").modal("hide");
+                    // $(".table.wallet-transactions table-body").html('');
+                    $(".wallet_balance").text(response.data.wallet_balance);
+                    success_error_alert('success', response.message, "#wallet_response");
+                    // let wallet_transactions_template = _.template($('#wallet_transactions_template').html());
+                    // $(".table.wallet-transactions table-body").append(wallet_transactions_template({wallet_transactions:response.data.transactions}));
+                } else {
+                    $("#wallet_response .message").removeClass('d-none');
+                    success_error_alert('error', response.message, "#wallet_response .message");
+                    $("#topup_wallet_btn, .topup_wallet_confirm").attr("disabled", false);
+                }
+            },
+            error: function (error) {
+                var response = $.parseJSON(error.responseText);
+                $("#wallet_response .message").removeClass('d-none');
+                success_error_alert('error', response.message, "#wallet_response .message");
+                $("#topup_wallet_btn, .topup_wallet_confirm").removeAttr("disabled");
+            },
+            complete: function (data) {
+                $('.spinner-overlay').hide();
+            }
+        });
+    }
+
+    // Paypal payment transaction
+    window.paypalDebitTransaction = function paypalDebitTransaction(amount, payment_option_id, transaction_id) {
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: payment_paypal_transaction,
             data: { wallet_amount: amount, payment_option_id: payment_option_id, transaction_id: transaction_id },
             success: function (response) {
                 // var currentUrl = window.location.href;

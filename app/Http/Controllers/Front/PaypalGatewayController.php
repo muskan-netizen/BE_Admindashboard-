@@ -125,4 +125,55 @@ class PaypalGatewayController extends FrontController
             return $this->errorResponse('Transaction has been declined', 400);
         }
     }
+
+    public function paymentTransactionSave(Request $request, $domain = ''){
+        \Log::info('paymentTransactionSave credit here');
+        if( (isset($request->user_id)) && (!empty($request->user_id)) ){
+            $user = User::find($request->user_id);
+        }elseif( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
+            $user = User::whereHas('device',function  ($qu) use ($request){
+                $qu->where('access_token', $request->auth_token);
+            })->first();
+
+        }else{
+            $user = Auth::user();
+        }
+        if($user){
+            $credit_amount = $request->wallet_amount;
+            $wallet = $user->wallet;
+            if ($credit_amount > 0) {
+                $saved_transaction = Transaction::where('meta', 'like', '%'.$request->transaction_id.'%')->first();
+                if($saved_transaction){
+                    return $this->errorResponse('Transaction has already been done', 400);
+                }
+
+                $wallet->depositFloat($credit_amount, [__("Wallet has been").' <b>Credited</b> by transaction reference <b>'.$request->transaction_id.'</b>']);
+                $payment = Payment::where('transaction_id',$request->transaction_id)->first();
+                if(!$payment){
+                    $payment = new Payment();
+                }
+                $payment->date = date('Y-m-d');
+                $payment->user_id = $user->id;
+                $payment->transaction_id = $request->transaction_id;
+                $payment->payment_option_id = $request->payment_option_id ?? null;
+                $payment->balance_transaction = $credit_amount;
+                $payment->type = 'wallet_topup';
+                $payment->save();
+
+                $transactions = Transaction::where('payable_id', $user->id)->get();
+                $response['wallet_balance'] = $wallet->balanceFloat;
+                $response['transactions'] = $transactions;
+                $message = 'Wallet has been credited successfully';
+                Session::put('success', $message);
+                // \Log::info('success1');
+                return $this->successResponse($response, $message, 200);
+            }
+            else{
+                return $this->errorResponse('Amount is not sufficient', 400);
+            }
+        }
+        else{
+            return $this->errorResponse('Invalid User', 400);
+        }
+    }
 }
