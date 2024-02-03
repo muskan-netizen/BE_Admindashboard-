@@ -99,10 +99,12 @@ class CategoryController extends BaseController
 
     public function listData($langId, $category_id, $type = '', $userid, $product_list, $mod_type, $mode_of_service = null, $limit = 12, $page = 1)
     {
-
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area')->where('id', '>', 0)->first();
+
+
+        $user = Auth::user();
+        $ses_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
         if ($type == 'vendor' && $product_list == 'false') {
-            $user = Auth::user();
             $vendor_ids = [];
             $vendor_categories = VendorCategory::where('category_id', $category_id)->where('status', 1)->get();
             foreach ($vendor_categories as $vendor_category) {
@@ -111,7 +113,7 @@ class CategoryController extends BaseController
                 }
             }
             $vendorData = Vendor::vendorOnline()->select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude');
-            $ses_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
+           
 
            
 
@@ -167,7 +169,7 @@ class CategoryController extends BaseController
             }
             return $vendorData;
         } elseif ($type == 'vendor' && $product_list == 'true') {
-            $vendor_ids = Vendor::where('status', 1)->pluck('id')->toArray();
+            $vendor_ids = Vendor::where('status', 1)->whereIn('id', $ses_vendors)->pluck('id')->toArray();
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $products = Product::has('vendor')->with([
                 'category.categoryDetail', 'category.categoryDetail.translation' => function ($q) use ($langId) {
@@ -280,7 +282,7 @@ class CategoryController extends BaseController
             }
             return $category_details;
         } elseif ($type == 'product' || $type == 'appointment' || $type == 'on demand service' || strtolower($type) == 'laundry' || $type = 'rental service') {
-            $vendors = Vendor::where('status', 1)->pluck('id')->toArray();
+            $vendors = Vendor::where('status', 1)->whereIn('id', $ses_vendors)->pluck('id')->toArray();
             
 
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
