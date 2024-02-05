@@ -884,11 +884,13 @@ class CartController extends BaseController
                 }
                 else {
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
+                       
                         if ($address_id > 0) {
                             $serviceArea = $vendorData->vendor->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
                                 $query->select('vendor_id')
                                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
                             })->where('id', $vendorData->vendor_id)->get();
+                           
                         }
                     }
                 }
@@ -1484,27 +1486,27 @@ class CartController extends BaseController
                     }*/
                 }
               
+                $vendorData->isDeliverable = 1;  
+                if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)&&($action == 'delivery')) {
+                    if (isset($serviceArea)) {
+                        if ($serviceArea->isEmpty()) {
+                            $vendorData->isDeliverable = 0;
+                            $delivery_status = 0;
+                            $deliver_charge = 0;
+                            $vendorTotalDeliveryFee = 0;
+                            $vendorData->delivery_types = '';
+                        }
+                    }
 
-            //     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
-            //         if (isset($serviceArea)) {
-            //             if ($serviceArea->isEmpty()) {
-            //                 $vendorData->isDeliverable = 0;
-            //                 $delivery_status = 0;
-            //                 $deliver_charge = 0;
-            //                 $vendorTotalDeliveryFee = 0;
-            //                 $vendorData->delivery_types = '';
-            //             }
-            //         }
-
-            //      if (!isset($serviceArea)) {
-            //         $vendorData->isDeliverable = 0;
-            //         $delivery_status = 0;
-            //         $deliver_charge = 0;
-            //         $vendorTotalDeliveryFee = 0;
-            //         $vendorData->delivery_types = '';
-            //      }
-            // } else{
-                $vendorData->isDeliverable = 1;
+                 if (!isset($serviceArea)) {
+                    $vendorData->isDeliverable = 0;
+                    $delivery_status = 0;
+                    $deliver_charge = 0;
+                    $vendorTotalDeliveryFee = 0;
+                    $vendorData->delivery_types = '';
+                 }
+            } else{
+             
                 if (isset($serviceArea)) {
                     if ($serviceArea->isEmpty()) {
                         $vendorData->isDeliverable = 0;
@@ -1514,7 +1516,7 @@ class CartController extends BaseController
                         // $vendorData->delivery_types = '';
                     }
                 }
-            // }
+             }
                    
 
                 $payable_amount = $payable_amount + $vendorTotalDeliveryFee ;

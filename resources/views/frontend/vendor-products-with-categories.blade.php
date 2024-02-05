@@ -957,6 +957,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
     @endif
 @endsection
 @if($is_service_product_price_from_dispatch_forOnDemand ==1)
+
     @section('custom-js')
     <script src="{{ asset('js/onDemand/GetDispatcherPrice.js') }}"></script>
     @endsection
@@ -1193,7 +1194,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
 
         function vendorProductsSearchResults(id = '') {
             
-       
+           
             let keyword = $("#vendor_search_box").val();
             let order_type = $("#order_type").val();
             var checkboxesChecked = [];
