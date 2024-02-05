@@ -572,7 +572,9 @@ trait OrderTrait
                                 'category_name' =>  $category_name,
                                 'specific_instruction' =>  $specific_instruction,
                                 'driverCost' =>  $driverCost,
-                                'order_pre_time'=>$vendor_details->order_pre_time
+                                'order_pre_time'=>$vendor_details->order_pre_time,
+                                'tip_amount'=>$order->tip_amount??0
+
 
                             ];
 
@@ -992,7 +994,8 @@ trait OrderTrait
                 'agent'     => $agent,
                 'task_type_id' => $task_type_id, //  for add agent booking in case of appointment
                 'service_time' =>  $service_time,
-                'order_pre_time'=>$vendor_details->order_pre_time
+                'order_pre_time'=>$vendor_details->order_pre_time,
+                'tip_amount'=>$order->tip_amount??0
 
             ];
 
@@ -1553,7 +1556,9 @@ trait OrderTrait
                          'agent'     => $agent,
                          'task_type_id' => $task_type_id, //  for add agent booking in case of appointment
                          'service_time' =>  $service_time,
-                         'rejectable_order' =>  $rejectable_order
+                         'rejectable_order' =>  $rejectable_order,
+                         'tip_amount'=>$order->tip_amount??0
+
                      ];
 
                      if ($is_restricted == 1) {
