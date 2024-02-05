@@ -21,7 +21,7 @@
                     <div class="alert alert-success" role="alert" id="success_msg" style="display:none;"></div>
                     <div class="row">
                         <div class="col-12">
-                            <h2>{{__('Personal Details.')}}</h2>
+                            <h2>{{__('Personal Details')}}</h2>
                         </div>
                     </div>
                     <div class="needs-validation vendor-signup">
@@ -45,7 +45,7 @@
                             <div class="col-lg-6">
                                 <div class="col-md-12 mb-3" id="nameInput">
                                     <div class="form-group" id="nameInputEdit">
-                                        <label for="name" class="control-label">NAME</label>
+                                        <label for="name" class="control-label">{{__('NAME')}}</label>
                                         <input type="text" class="form-control required" id="name" placeholder="John Doe" name="name" value="">
                                         <span class="invalid-feedback" id="name_error" role="alert">
                                             <strong></strong>
@@ -63,10 +63,10 @@
                                 </div>
                                 <div class="col-md-12 mb-3" id="typeInput">
                                     <div class="form-group" id="typeInputEdit">
-                                        <label for="type" class="control-label">TYPE</label>
+                                        <label for="type" class="control-label">{{__('TYPE')}}</label>
                                         <select class="form-control required" data-style="btn-light" name="type" id="type">
-                                            <option value="Employee">Employee</option>
-                                            <option value="Freelancer">Freelancer</option>
+                                            <option value="Employee">{{__('Employee')}}</option>
+                                            <option value="Freelancer">{{__('Freelancer')}}</option>
                                         </select>
                                         <span class="invalid-feedback" id="type_error" role="alert">
                                             <strong></strong>
@@ -109,7 +109,7 @@
                     <div class="row ">
                         <div class="col-md-6" id="make_modelInput">
                             <div class="form-group" id="make_modelInputEdit">
-                                <label for="make_model" class="control-label">TRANSPORT DETAILS</label>
+                                <label for="make_model" class="control-label">{{__("TRANSPORT DETAILS")}}</label>
                                 <input type="text" class="form-control required" id="make_model" placeholder="Year, Make, Model" name="make_model" value="">
                                 <span class="invalid-feedback" id="make_model_error" role="alert">
                                     <strong></strong>
@@ -118,7 +118,7 @@
                         </div>
                         <div class="col-md-6" id="uidInput">
                             <div class="form-group" id="uidInputEdit">
-                                <label for="make_model" class="control-label">UID</label>
+                                <label for="make_model" class="control-label">{{__("UID")}}</label>
                                 <input type="text" class="form-control required" id="uid" placeholder="897abd" name="uid" value="" >
                                 <span class="invalid-feedback" id="uid_error" role="alert">
                                     <strong></strong>
@@ -129,7 +129,7 @@
                     <div class="row ">
                         <div class="col-md-6" id="plate_numberInput">
                             <div class="form-group" id="plate_numberInputEdit">
-                                <label for="plate_number" class="control-label">LICENCE PLATE</label>
+                                <label for="plate_number" class="control-label">{{__("LICENCE PLATE")}}</label>
                                 <input type="text" class="form-control required" id="plate_number" name="plate_number" placeholder="508.KLV" value="">
                                 <span class="invalid-feedback" id="plate_number_error" role="alert">
                                     <strong></strong>
@@ -138,7 +138,7 @@
                         </div>
                         <div class="col-md-6" id="colorInput">
                             <div class="form-group" id="colorInputEdit">
-                                <label for="color" class="control-label">COLOR</label>
+                                <label for="color" class="control-label">{{__("COLOR")}}</label>
                                 <input type="text" class="form-control required" id="color" name="color" placeholder="Color" value="">
                                 <span class="invalid-feedback" id="color_error" role="alert">
                                     <strong></strong>
