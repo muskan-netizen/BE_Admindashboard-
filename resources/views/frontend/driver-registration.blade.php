@@ -149,18 +149,18 @@
                     <div class="form-row">
                         @foreach($driver_registration_documents as $driver_registration_document)
                         <div class="col-md-6 mb-3" id="{{$driver_registration_document->slug}}Input">
-                            <label for="">{{$driver_registration_document->name ? $driver_registration_document->name : ''}}</label>
+                            <label for="">{{$driver_registration_document->name ? __($driver_registration_document->name) : ''}}</label>
                             @if(strtolower($driver_registration_document->file_type) == 'text')
                             <div class="form-group" id="{{$driver_registration_document->slug}}InputEdit" >
                                 <input type="text" class="form-control {{ (!empty($driver_registration_document->is_required))?'required':''}}" id="input_file_logo_{{@$driver_registration_document->id}}" name="{{$driver_registration_document->slug}}" placeholder="Enter Text" value="">
-                                <span class="invalid-feedback" id="{{$driver_registration_document->slug}}_error" role="alert">
+                                <span class="invalid-feedback" id="{{__($driver_registration_document->slug)}}_error" role="alert">
                                     <strong></strong>
                                 </span>
                             </div>
                             @elseif (strtolower($driver_registration_document->file_type) == 'date')
                             <div class="form-group" id="{{$driver_registration_document->slug}}InputEdit" >
                                 <input type="date" class="form-control {{ (!empty($driver_registration_document->is_required))?'required':''}}" id="input_file_logo_{{@$driver_registration_document->id}}" name="{{$driver_registration_document->slug}}" placeholder="Enter Text" value="">
-                                <span class="invalid-feedback" id="{{$driver_registration_document->slug}}_error" role="alert">
+                                <span class="invalid-feedback" id="{{__($driver_registration_document->slug)}}_error" role="alert">
                                     <strong></strong>
                                 </span>
                             </div>
