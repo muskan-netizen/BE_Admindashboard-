@@ -45,9 +45,11 @@
     $.ajaxSetup({
         headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content') }
     });
-    // alert('frontend.account.complete-checkout');
-    // alert(urlParams.has('PayerID'));
-    // alert(urlParams.has('token'));
+    alert(action);
+    alert('frontend.account.complete-checkout');
+    alert(urlParams.has('PayerID'));
+    alert(urlParams.has('token'));
+
     if( (urlParams.has('amount')) && (urlParams.has('PayerID')) && (urlParams.has('token')) ){
         amount = urlParams.get('amount');
         paymentSuccessViaPaypal(amount, urlParams.get('token'), urlParams.get('PayerID'), path, address_id);

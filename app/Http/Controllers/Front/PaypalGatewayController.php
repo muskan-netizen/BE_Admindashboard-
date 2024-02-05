@@ -96,19 +96,23 @@ class PaypalGatewayController extends FrontController
             if ($request->has('tip')) {
                 $returnUrlParams = $returnUrlParams . '&tip=' . $request->tip;
             }
+            \Log::info(['app return url' => $request->returnUrl]);
+            \Log::info(['app cancel url' => $request->cancelUrl]);
+            \Log::info(['url param' => $returnUrlParams]);
             $transaction = $this->gateway->completePurchase(array(
                 'amount'                => $amount,
                 'payer_id'              => $request->PayerID,
                 'transactionReference'  => $request->token,
                 'currency' => $this->currency, //'USD',
-            //     'cancelUrl' =>  url($request->cancelUrl),
-            //     'returnUrl' => url($request->returnUrl . $returnUrlParams),
+                'cancelUrl' =>  url($request->cancelUrl),
+                'returnUrl' => url($request->returnUrl . $returnUrlParams),
              ));
             $response = $transaction->send();
             // \Log::info(['tranaction response' =>  $response]);
             if ($response->isSuccessful()) {
                 // $this->successMail();
                 \Log::info('success');
+                \Log::info(['user'=> $this->successResponse($response->getTransactionReference())]);
                 return $this->successResponse($response->getTransactionReference());
             } else {
                 \Log::info('fail');
