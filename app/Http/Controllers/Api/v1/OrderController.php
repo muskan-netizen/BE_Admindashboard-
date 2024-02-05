@@ -1776,7 +1776,7 @@ class OrderController extends BaseController
                 'user_icon' => $customer->image,
                 'order_pre_time'=>$vendor_details->order_pre_time,
                 'app_call' => 1,
-
+                'tip_amount'=>$order->tip_amount??0
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1913,7 +1913,9 @@ class OrderController extends BaseController
                 'dbname' => $client->database_name,
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
-                'user_icon' => $customer->image
+                'user_icon' => $customer->image,
+                'tip_amount'=>$order->tip_amount??0
+
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -2097,7 +2099,9 @@ class OrderController extends BaseController
                  'dbname' => $client->database_name,
                  'order_id' => $order->id,
                  'customer_id' => $order->user_id,
-                 'user_icon' => $customer->image
+                 'user_icon' => $customer->image,
+                 'tip_amount'=>$order->tip_amount??0
+
              ];
             if($order_vendor->is_restricted == 1)
             {

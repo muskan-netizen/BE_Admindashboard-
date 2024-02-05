@@ -1311,7 +1311,9 @@ class PickupDeliveryController extends BaseController{
                             'notify_hour' => $notify_hour ?? 0,
                             'reminder_hour' => $reminder_hour ?? 0,
                             'app_call' => 1,
-                            'call_notification' => $request->call_notification??0
+                            'call_notification' => $request->call_notification??0,
+                            'tip_amount'=>$order->tip_amount??0
+
                         ];
 
 

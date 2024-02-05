@@ -1415,7 +1415,9 @@ class PickupDeliveryController extends FrontController{
                     'notify_hour' => $notify_hour ?? 0,
                     'reminder_hour' => $reminder_hour ?? 0,
                     'app_call' => 0,
-                    'call_notification' => 0
+                    'call_notification' => 0,
+                    'tip_amount'=>$order->tip_amount??0
+
                 ];
 
                 if(isset($request->bid_task_type) && !empty($request->bid_task_type)){
