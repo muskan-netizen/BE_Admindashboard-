@@ -9,7 +9,7 @@ use Session;
 use Omnipay\Omnipay;
 use Illuminate\Http\Request;
 use Omnipay\Common\CreditCard;
-use App\Models\{PaymentOption, Client, ClientPreference, ClientCurrency};
+use App\Models\{PaymentOption, Client, ClientPreference, ClientCurrency, Payment, User};
 use App\Http\Traits\ApiResponser;
 use App\Http\Controllers\Front\FrontController;
 use Illuminate\Support\Facades\Mail;
@@ -43,19 +43,17 @@ class PaypalGatewayController extends FrontController
 
     public function paypalPurchase(Request $request)
     {
-        \Log::info(['paypalPurchase' => $request->all()]);
-        \Log::info(['paypalPurchase amount' => $request->amount]);
         try {
             $amount = $this->getDollarCompareAmount($request->amount);
             $returnUrlParams = '?amount=' . $amount;
-            \Log::info(['return amount'=>$returnUrlParams]);
+             
             if ($request->has('tip')) {
                 $returnUrlParams = $returnUrlParams . '&tip=' . $request->tip;
             }
             if ($request->has('ordernumber')) {
                 $returnUrlParams = $returnUrlParams . '&ordernumber=' . $request->ordernumber;
             }
-            \Log::info(['return amount again'=>$returnUrlParams]);
+            
             if ($request->has('reload_route')) {
                 $pickupRoute = $request->reload_route;
                 $response = $this->gateway->purchase([
@@ -91,16 +89,13 @@ class PaypalGatewayController extends FrontController
     public function paypalCompletePurchase(Request $request)
     {
         // Once the transaction has been approved, we need to complete it.
-        \Log::info(['paypalCompletePurchase' => $request->all()]);
+         
         if ($request->has(['token', 'PayerID'])) {
             $amount = $this->getDollarCompareAmount($request->amount);
             $returnUrlParams = '?amount=' . $amount;
             if ($request->has('tip')) {
                 $returnUrlParams = $returnUrlParams . '&tip=' . $request->tip;
             }
-            \Log::info(['amount'=>$amount]);
-            \Log::info(['payerid' =>$request->PayerID]);
-            \Log::info(['token' =>$request->token]);
             $transaction = $this->gateway->completePurchase(array(
                 'amount'                => $amount,
                 'payer_id'              => $request->PayerID,
@@ -127,53 +122,31 @@ class PaypalGatewayController extends FrontController
     }
 
     public function paymentTransactionSave(Request $request, $domain = ''){
-        \Log::info('paymentTransactionSave credit here');
-        if( (isset($request->user_id)) && (!empty($request->user_id)) ){
-            $user = User::find($request->user_id);
-        }elseif( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
-            $user = User::whereHas('device',function  ($qu) use ($request){
-                $qu->where('access_token', $request->auth_token);
-            })->first();
-
-        }else{
-            $user = Auth::user();
-        }
-        if($user){
-            $credit_amount = $request->wallet_amount;
-            $wallet = $user->wallet;
-            if ($credit_amount > 0) {
-                $saved_transaction = Transaction::where('meta', 'like', '%'.$request->transaction_id.'%')->first();
-                if($saved_transaction){
-                    return $this->errorResponse('Transaction has already been done', 400);
-                }
-
-                $wallet->depositFloat($credit_amount, [__("Wallet has been").' <b>Credited</b> by transaction reference <b>'.$request->transaction_id.'</b>']);
-                $payment = Payment::where('transaction_id',$request->transaction_id)->first();
-                if(!$payment){
-                    $payment = new Payment();
-                }
-                $payment->date = date('Y-m-d');
-                $payment->user_id = $user->id;
-                $payment->transaction_id = $request->transaction_id;
-                $payment->payment_option_id = $request->payment_option_id ?? null;
-                $payment->balance_transaction = $credit_amount;
-                $payment->type = 'wallet_topup';
-                $payment->save();
-
-                $transactions = Transaction::where('payable_id', $user->id)->get();
-                $response['wallet_balance'] = $wallet->balanceFloat;
-                $response['transactions'] = $transactions;
-                $message = 'Wallet has been credited successfully';
-                Session::put('success', $message);
-                // \Log::info('success1');
-                return $this->successResponse($response, $message, 200);
+        try{
+            if( (isset($request->user_id)) && (!empty($request->user_id)) ){
+                $user = User::find($request->user_id);
+            }elseif((isset($request->auth_token)) && (!empty($request->auth_token))){
+                $user = User::whereHas('device',function  ($qu) use ($request){
+                    $qu->where('access_token', $request->auth_token);
+                })->first();
+            }else{
+                $user = Auth::user();
             }
-            else{
-                return $this->errorResponse('Amount is not sufficient', 400);
+         
+            $credit_amount = $request->amount;
+            $payment = Payment::where('transaction_id',$request->transaction_id)->first();
+            if(!$payment){
+                $payment = new Payment();
             }
-        }
-        else{
-            return $this->errorResponse('Invalid User', 400);
+            $payment->date = date('Y-m-d');
+            $payment->user_id = $user->id ?? null;
+            $payment->transaction_id = $request->transaction_id;
+            $payment->payment_option_id = $request->payment_option_id ?? null;
+            $payment->balance_transaction = $credit_amount;
+            $payment->type = 'paypal_payment';
+            $payment->save();
+        }catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 400);
         }
     }
 }

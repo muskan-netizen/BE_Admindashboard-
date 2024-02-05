@@ -290,9 +290,7 @@ $(document).ready(function () {
     let queryString = window.location.search;
     let path = window.location.pathname;
     let urlParams = new URLSearchParams(queryString);
-    alert('path');
-    alert(path);
-    alert(urlParams);
+    
     if ((urlParams.has('PayerID')) && (urlParams.has('token'))) {
         $('.spinner-overlay').show();
         let tipAmount = 0;
@@ -303,7 +301,6 @@ $(document).ready(function () {
         if (urlParams.has('ordernumber')) {
             order_number = urlParams.get('ordernumber');
         }
-        alert(urlParams.get('amount'));
         paymentSuccessViaPaypal(urlParams.get('amount'), urlParams.get('token'), urlParams.get('PayerID'), path, tipAmount, order_number);
     }
 
@@ -1930,8 +1927,10 @@ $(document).ready(function () {
         }
          //Thawani Pg Ends Here Ends
     function paymentSuccessViaPaypal(amount, token, payer_id, path, tip = 0, order_number = 0) {
-        alert('paymentSuccessViaPaypal');
+        // alert('paymentSuccessViaPaypal');
         let address_id = 0;
+        var currentUrl = window.location.origin;
+        var paypalCompletePurchaseUrl = currentUrl + "/payment/paypal/CompletePurchase";
         if (path.indexOf("cart") !== -1) {
             // $('#order_placed_btn').trigger('click');
             // $('#v-pills-paypal-tab').trigger('click');
@@ -1945,26 +1944,16 @@ $(document).ready(function () {
             // $('#topup_wallet_btn').trigger('click');
             // $('#wallet_topup_form #radio-paypal').prop("checked", true);
             $("#topup_wallet_btn, .topup_wallet_confirm").attr("disabled", true);
-        }
-        alert(token);
-        alert(amount);
-        alert(payer_id);
-        alert('http://192.168.102.218:8001/payment/paypal/CompletePurchase');
+        } 
         $.ajax({
             type: "GET",
             dataType: 'json',
-            // url: payment_success_paypal_url,
-            url: 'http://192.168.102.218:8001/payment/paypal/CompletePurchase',
+            url: paypalCompletePurchaseUrl,
             data: { 'amount': amount, 'token': token, 'PayerID': payer_id },
             success: function (response) {
-                
-                if(path.indexOf("details") !== -1){
-                     
-                }
                 if (response.status == "Success") {
                     if(path.indexOf("details") !== -1){
                         alert('success details');
-                        alert(path.indexOf("details"));
                         paypalDebitTransaction(amount, 3, response.data)
                     }else if(path.indexOf("cart") !== -1) {
                         placeOrder(address_id, 3, response.data, tip);
@@ -2247,21 +2236,18 @@ $(document).ready(function () {
 
     // Paypal payment transaction
     window.paypalDebitTransaction = function paypalDebitTransaction(amount, payment_option_id, transaction_id) {
+        var currentUrl = window.location.origin;
+        var paymentPaypalTransaction = currentUrl + "/payment/paypal-transaction/store";
         $.ajax({
             type: "POST",
             dataType: 'json',
-            url: payment_paypal_transaction,
-            data: { wallet_amount: amount, payment_option_id: payment_option_id, transaction_id: transaction_id },
+            url: paymentPaypalTransaction,
+            data: { amount: amount, payment_option_id: payment_option_id, transaction_id: transaction_id },
             success: function (response) {
-                // var currentUrl = window.location.href;
                 location.href = path;
                 if (response.status == "Success") {
-                    // $("#topup_wallet").modal("hide");
-                    // $(".table.wallet-transactions table-body").html('');
                     $(".wallet_balance").text(response.data.wallet_balance);
                     success_error_alert('success', response.message, "#wallet_response");
-                    // let wallet_transactions_template = _.template($('#wallet_transactions_template').html());
-                    // $(".table.wallet-transactions table-body").append(wallet_transactions_template({wallet_transactions:response.data.transactions}));
                 } else {
                     $("#wallet_response .message").removeClass('d-none');
                     success_error_alert('error', response.message, "#wallet_response .message");

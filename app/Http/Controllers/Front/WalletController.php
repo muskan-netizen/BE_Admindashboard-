@@ -48,14 +48,12 @@ class WalletController extends FrontController
      */
     public function creditWallet(Request $request, $domain = '')
     {
-        \Log::info('wallet credit here');
         if( (isset($request->user_id)) && (!empty($request->user_id)) ){
             $user = User::find($request->user_id);
         }elseif( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
             $user = User::whereHas('device',function  ($qu) use ($request){
                 $qu->where('access_token', $request->auth_token);
             })->first();
-
         }else{
             $user = Auth::user();
         }

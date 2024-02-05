@@ -40,6 +40,7 @@
     let action = "{{ $action }}";
     let authToken = "{{ $auth_token }}";
     let address_id = "{{ $address_id }}";
+    var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
 
     $.ajaxSetup({
         headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content') }
@@ -53,15 +54,12 @@
     }
 
     function paymentSuccessViaPaypal(amount, token, payer_id, path, addressID=''){
-        alert(paypal_complete_purchase_url);
         $.ajax({
             type: "GET",
             dataType: 'json',
             url: paypal_complete_purchase_url,
             data: {'amount': amount, 'token': token, 'PayerID': payer_id},
             success: function (response) {
-                console.log('paymentSuccessViaPaypal');
-                console.log('paymentSuccessViaPaypal');
                 if(response.status == "Success"){
                     if(action == "cart"){
                         checkout_success_url = checkout_success_url.replace(":id", response.data);

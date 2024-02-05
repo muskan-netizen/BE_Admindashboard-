@@ -430,8 +430,6 @@ $(document).ready(function () {
             alert('Select recurring details');
             return false;
         }
-        alert(cab_booking_create_order);
-        alert(payment_option_id);
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -464,7 +462,6 @@ $(document).ready(function () {
                         // },3000);
 
                     }else if(payment_option_id == 3){
-                       alert(payment_paypal_url);
                        let payment_form = "pickup_delivery";
                         $.ajax({
                             type: "POST",
@@ -473,11 +470,7 @@ $(document).ready(function () {
                             data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: totalamount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,stripe_token: stripe_token , payment_form : payment_form,reload_route: reload_route,ordernumber:order_number },
                             success: function(resp) {
                                 if (resp.status == 'Success') {
-                                    alert('redirect');
-                                    alert(resp.data);
                                     window.location.replace(resp.data);
-                                } else {
-                                    alert(resp.message);
                                 }
                             },
                             error: function(error) {
@@ -1431,7 +1424,6 @@ $(document).ready(function () {
 
         const urlParams = new URLSearchParams(window.location.search);
         const yacht_id = urlParams.get('yacht_id');
-        alert(get_product_detail+'/'+product_id);
         $.ajax({
             type: "POST",
             dataType: 'json',
