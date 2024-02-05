@@ -153,14 +153,14 @@
                             @if(strtolower($driver_registration_document->file_type) == 'text')
                             <div class="form-group" id="{{$driver_registration_document->slug}}InputEdit" >
                                 <input type="text" class="form-control {{ (!empty($driver_registration_document->is_required))?'required':''}}" id="input_file_logo_{{@$driver_registration_document->id}}" name="{{$driver_registration_document->slug}}" placeholder="Enter Text" value="">
-                                <span class="invalid-feedback" id="{{__($driver_registration_document->slug)}}_error" role="alert">
+                                <span class="invalid-feedback" id="{{$driver_registration_document->slug}}_error" role="alert">
                                     <strong></strong>
                                 </span>
                             </div>
                             @elseif (strtolower($driver_registration_document->file_type) == 'date')
                             <div class="form-group" id="{{$driver_registration_document->slug}}InputEdit" >
                                 <input type="date" class="form-control {{ (!empty($driver_registration_document->is_required))?'required':''}}" id="input_file_logo_{{@$driver_registration_document->id}}" name="{{$driver_registration_document->slug}}" placeholder="Enter Text" value="">
-                                <span class="invalid-feedback" id="{{__($driver_registration_document->slug)}}_error" role="alert">
+                                <span class="invalid-feedback" id="{{$driver_registration_document->slug}}_error" role="alert">
                                     <strong></strong>
                                 </span>
                             </div>
