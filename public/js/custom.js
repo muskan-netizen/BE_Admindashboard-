@@ -289,8 +289,9 @@ $(document).ready(function () {
 
     let queryString = window.location.search;
     let path = window.location.pathname;
+     
     let urlParams = new URLSearchParams(queryString);
-    
+    alert(urlParams);
     if ((urlParams.has('PayerID')) && (urlParams.has('token'))) {
         $('.spinner-overlay').show();
         let tipAmount = 0;
@@ -1927,7 +1928,6 @@ $(document).ready(function () {
         }
          //Thawani Pg Ends Here Ends
     function paymentSuccessViaPaypal(amount, token, payer_id, path, tip = 0, order_number = 0) {
-        // alert('paymentSuccessViaPaypal');
         let address_id = 0;
         var currentUrl = window.location.origin;
         var paypalCompletePurchaseUrl = currentUrl + "/payment/paypal/CompletePurchase";
@@ -1952,9 +1952,10 @@ $(document).ready(function () {
             data: { 'amount': amount, 'token': token, 'PayerID': payer_id },
             success: function (response) {
                 if (response.status == "Success") {
-                    if(path.indexOf("details") !== -1){
-                        alert('success details');
-                        paypalDebitTransaction(amount, 3, response.data)
+                    if(path.indexOf("/") !== -1){ // app flow success
+                        paypalDebitTransaction(amount, 3, response.data);
+                    }else if(path.indexOf("details") !== -1){
+                        paypalDebitTransaction(amount, 3, response.data);
                     }else if(path.indexOf("cart") !== -1) {
                         placeOrder(address_id, 3, response.data, tip);
                     } else if (path.indexOf("wallet") !== -1) {

@@ -89,16 +89,14 @@ class PaypalGatewayController extends FrontController
     public function paypalCompletePurchase(Request $request)
     {
         // Once the transaction has been approved, we need to complete it.
-         
+        \Log::info(['app paypalCompletePurchase request' => $request->all()]);
         if ($request->has(['token', 'PayerID'])) {
             $amount = $this->getDollarCompareAmount($request->amount);
             $returnUrlParams = '?amount=' . $amount;
             if ($request->has('tip')) {
                 $returnUrlParams = $returnUrlParams . '&tip=' . $request->tip;
             }
-            \Log::info(['app return url' => $request->returnUrl]);
-            \Log::info(['app cancel url' => $request->cancelUrl]);
-            \Log::info(['url param' => $returnUrlParams]);
+            
             $transaction = $this->gateway->completePurchase(array(
                 'amount'                => $amount,
                 'payer_id'              => $request->PayerID,
@@ -112,7 +110,6 @@ class PaypalGatewayController extends FrontController
             if ($response->isSuccessful()) {
                 // $this->successMail();
                 \Log::info('success');
-                \Log::info(['user'=> $this->successResponse($response->getTransactionReference())]);
                 return $this->successResponse($response->getTransactionReference());
             } else {
                 \Log::info('fail');
