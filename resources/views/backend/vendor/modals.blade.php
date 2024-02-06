@@ -79,7 +79,7 @@
                                 </div>
                             </div>
                             <div class="row" id="add">
-                                <div class="col-md-4">
+                                <div class="col-md-12">
                                     <div class="form-group mb-3" id="addressInput">
                                         {!! Form::label('title', __('Address'),['class' => 'control-label']) !!}
                                         <div class="input-group">
@@ -272,7 +272,7 @@
 
                         </div>
                     </div><!-- al_add_user end -->
-                    
+
                     @if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == '1')
                     <h5 class="mb-2">{{__('GST DETAILS')}}</h5>
                         <div class="row">
