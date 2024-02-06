@@ -27,6 +27,7 @@ use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, C
 use GuzzleHttp\Client as GCLIENT;
 use App\Exports\VendorSimpelExport;
 use App\Exports\VendorProductExport;
+use App\Exports\VendorPaymentReportExport;
 use App\Http\Traits\ShipEngineTrait;
 use DB,Log;
 use App\Models\VendorRegistrationDocument;
@@ -2823,6 +2824,12 @@ class VendorController extends BaseController
 
     }
 
+    function vendorPaymentReport(){
+        return view('backend/vendor/generateVendorPaymentReport');
+    }
 
+    function vendorReportExport(){
+        return Excel::download(new VendorPaymentReportExport(), 'report.xlsx');
+    }
 
 }
