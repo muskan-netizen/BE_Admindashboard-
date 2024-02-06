@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class AddonSet extends Model
 {
+	use SoftDeletes;
+	
 	protected $fillable = ['title','min_select','max_select','position','status','is_core','vendor_id', 'square_modifier_id'];
 	
     public function translation(){

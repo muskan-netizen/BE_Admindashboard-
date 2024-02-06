@@ -212,6 +212,24 @@ class UserController extends BaseController
     public function deleteCustomer($domain = '', $uid, $action)
     {
         $user = User::where('id', $uid)->firstOrFail();
+
+        if($user->status == 3)
+        {
+            User::where('id', $uid)->update([
+                'email' => $user->email.'_'.$user->id."_D",  
+                'phone_number' => $user->phone_number.'_'.$user->id."_D",  
+                'auth_token' =>'',  
+                'system_id' =>'',  
+                'remember_token' => '',  
+                'facebook_auth_id' => '',  
+                'twitter_auth_id' => '',  
+                'google_auth_id' => '',  
+                'apple_auth_id' => ''
+                ]);
+
+            $user->delete();
+            return redirect()->back()->with('success', 'Customer account successfully!');
+        }
         $user->status = 3;
         $user->save();
         $msg = 'activated';
