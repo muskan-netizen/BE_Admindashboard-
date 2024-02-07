@@ -340,10 +340,12 @@ body .rating-form .btn-reset {
                     </div>
                     @endif
 
-                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                    @if(@getAdditionalPreference(['vendor_online_status'])['vendor_online_status'])
+                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Online'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="is_online" class="form-control" data-color="#43bee1" @if($vendor->is_online == 1) checked @endif>
                     </div>
+                    @endif
 
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Featured'),['class' => 'control-label']) !!}

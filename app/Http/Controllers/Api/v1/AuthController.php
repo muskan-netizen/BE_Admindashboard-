@@ -1760,8 +1760,10 @@ class AuthController extends BaseController
                     'facebook_auth_id' => '',  
                     'twitter_auth_id' => '',  
                     'google_auth_id' => '',  
-                    'apple_auth_id' => '' 
+                    'apple_auth_id' => '',
+                    'status' => 3,
                     ]);
+
                 $user->delete();
                 DB::commit(); //Commit transaction after all the operations
                 return response()->json(['massage' => __('User Deleted Successfully')], 200);
