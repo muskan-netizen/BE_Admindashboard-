@@ -120,7 +120,7 @@ span.duration p.total_price {
 /* ============= inner page home services page ============= */
 
 .booking-time .radios {
-    width: 95%;
+    width: 100%;
 }
 
 .radio-btns input[type="checkbox"] {

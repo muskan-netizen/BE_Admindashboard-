@@ -58,7 +58,7 @@ input, select, textarea, button{
     font-family: inherit;
 }
 .container, .container-lg, .container-md, .container-sm, .container-xl {
-    max-width: 1270px!important;
+    max-width: 1440px!important;
 }
 .heading{
     margin-bottom: 40px;
