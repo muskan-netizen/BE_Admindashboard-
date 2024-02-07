@@ -728,6 +728,15 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                         <li class="alVendorProductTotals">
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
+                                                    <span class="ellips">{{__('Delivery Charges')}}</span>
+                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.delivery_charges) %></span>
+                                                </h6>
+                                            </div>
+                                        </li>
+
+                                        <li class="alVendorProductTotals">
+                                            <div class='media-body'>
+                                                <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Tax')}}</span>
                                                     <span>{{Session::get('currencySymbol')}}<%= cart_details.total_taxable_amount %></span>
                                                 </h6>
@@ -749,7 +758,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Total')}}</span>
-                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.sub_total_inc_tax) %></span>
+                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.total_payable_amount) %></span>
                                                 </h6>
                                             </div>
                                         </li>

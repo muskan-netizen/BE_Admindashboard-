@@ -1368,12 +1368,19 @@ trait CartManagerV2
                     $total_markup_charges +=  $totalMarkup;
 
 
+                
+                 
+                     $subtotal_amount = $payable_amount;
+                     $payable_amount = $payable_amount + $deliveryfee_ifnot_discounted + $security_amount;
 
-                $payable_amount = $payable_amount + $deliveryfee_ifnot_discounted + $security_amount;
-                $subtotal_amount = $payable_amount;
+                     if(!in_array($action,['on_demand']))
+                     {
+                        $subtotal_amount = $payable_amount;
 
+                     }
+                  
 
-
+                     
                 //vendor service fee fixed/percent
                 $vendor_service_fee_percentage_amount = $vendor_fixed_service_charge_amount = 0;
                 if ($vendorData->vendor->fixed_service_charge == 1) {
