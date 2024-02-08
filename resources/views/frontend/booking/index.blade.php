@@ -371,14 +371,15 @@ input[type=number]::-webkit-outer-spin-button {
                             </div>
                             @endif
 
-                            @if($is_bid_ride_enable == 1)
-                            <div class="item mx-1">
-                                <input type="radio" id="bid_radio" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="0">
-                                <label class="mb-0  my-2" >
-                                    <h5 class="m-0" id="">Bid</h5>
-                                </label>
-                            </div>
-                            @endif
+                          
+	                      @if($is_bid_ride_enable == 1)
+		                    <div class="item mx-1">
+		                        <input type="radio" id="bid_radio" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="0">
+		                        <label class="pool_label mb-0  my-2" >
+		                            <h5 class="m-0" id="pool_5">Bid</h5>
+		                        </label>
+		                    </div>
+		                    @endif
 
                             @if($is_particular_driver == 1)
                             <div class="item">
