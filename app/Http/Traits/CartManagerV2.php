@@ -79,7 +79,7 @@ trait CartManagerV2
         if ($address_id > 0) {
             $address = UserAddress::where('user_id', $this->user->id)->where('id', $address_id)->first();
         } else {
-            $address = UserAddress::where('user_id', $this->user->id)->where('status', 1)->orderBy('is_primary', 'desc')->first();
+            @$address = UserAddress::where('user_id', $this->user->id)->where('status', 1)->orderBy('is_primary', 'desc')->first();
         }
         if (!empty($address)) {
             //$address = UserAddress::where('user_id', $this->user->id)->where('id', $address_id)->first();
@@ -1358,8 +1358,8 @@ trait CartManagerV2
                     $subscription_discount_vendor   = $subscription_discount_arr['vendor'];
                     $subscription_discount_delivery = $subscription_discount_arr['delivery_discount'];
                 }
-
-
+                  
+              
                 // add total delivery fee
                 if ($vendorData->vendor->delivery_charges_tax_id)
                     $total_deliver_charges +=  $deliveryfee_ifnot_discounted;
@@ -1394,7 +1394,7 @@ trait CartManagerV2
 
                     $rental_price = $rental_price + $total_service_fee;
                 }
-
+               
                 $vendorData->coupon_amount_used = decimal_format($coupon_amount_used);
                 $vendorData->service_fee_percentage_amount = decimal_format($vendor_service_fee_percentage_amount);
                 $vendorData->fixed_service_charge_amount = decimal_format($vendor_fixed_service_charge_amount);
@@ -1405,7 +1405,7 @@ trait CartManagerV2
                 $vendorData->discount_percent = decimal_format($discount_percent);
                 $vendorData->taxable_amount = decimal_format($taxable_amount);
 
-                $vendorData->product_total_amount = decimal_format($payable_amount - $taxable_amount);
+                $vendorData->product_total_amount = decimal_format($payable_amount - $taxable_amount-$vendor_service_fee_percentage_amount);
 
 
 
@@ -1496,7 +1496,7 @@ trait CartManagerV2
                 $taxCharges['total_markup_fee_tax'] = $getalltaxes->total_markup_fee_tax ?? 0;
                 $container_charges_tax = $getalltaxes->container_charges_tax ?? 0;
             } //End vendor loop
-
+          
             $is_percent = 0;
             $amount_value = 0;
             if ($cart->coupon) {
@@ -1689,7 +1689,7 @@ trait CartManagerV2
 
             $cart->address_id = $address_id ?? '';
             $cart->bid_total_discount = $bid_total_discount ?? 0;
-            $gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount);
+
             $cart->other_taxes = $other_taxes;
             $cart->other_taxes_string = $other_taxes_string;
             $cart->container_charges_tax =  decimal_format($container_charges_tax);
@@ -1698,6 +1698,7 @@ trait CartManagerV2
             $cart->dropoffSlotsCnt = count((array)$dropoffSlots);
             $cart->total_service_fee = decimal_format($total_service_fee);
             $cart->loyalty_amount = decimal_format($loyalty_amount_saved);
+            $gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount - $cart->total_service_fee);
             $cart->gross_amount = ($gross_amount < 0) ? decimal_format(0) : decimal_format($gross_amount);
             $cart->new_gross_amount = decimal_format($total_payable_amount + $total_discount_amount);
             $cart->is_long_term_service = $is_long_term_service;
@@ -1840,6 +1841,7 @@ trait CartManagerV2
                 $cart->other_taxes_string = $other_taxes_string . ',taxjar_fee:' . $cart->total_taxable_amount;
             }
         }
+       
         return $cart;
     }
 
