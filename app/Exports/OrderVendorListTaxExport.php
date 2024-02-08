@@ -43,7 +43,7 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
         if(isset($this->data->date_range)){
             $date = explode(' to ',$this->data->date_range);
             $dateF = $date[0];
-            $dateT = !empty($date[1]) ?$date[1]: $date[0];  
+            $dateT = !empty($date[1]) ?$date[1]: $date[0];
             $dateF = Carbon::parse($dateF, $timezone)->setTimezone('UTC');
             $dateT = Carbon::parse($dateT, $timezone)->setTimezone('UTC')->addDays(1);
             $vendor_orders = $vendor_orders->whereBetween('created_at',[$dateF, $dateT]);
@@ -100,10 +100,10 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
             }else{
                 $vendor_order->taxable_amount = $vendor_order->orderDetail->total_other_taxes_amount;
             }
-   
+
             $vendor_order->taxable_amount  = round($vendor_order->taxable_amount,2);
             $vendor_order->cash_payment  = $vendor_order->cash_payment;
-           
+
             $vendor_order->order_status = $order_status;
             $revenue = $vendor_order->admin_commission_percentage_amount + $vendor_order->admin_commission_fixed_amount + $vendor_order->total_markup_price;
             $vendor_order->online_payment = isset($vendor_order->payment) ? $vendor_order->payment->balance_transaction :'';

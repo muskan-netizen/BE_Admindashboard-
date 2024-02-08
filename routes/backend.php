@@ -297,6 +297,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::POST('vendor/importglobalproducts', 'Client\VendorController@importGlobalProducts')->name('import.global.product');
         Route::post('vendor/status/update', 'Client\VendorController@postUpdateStatus')->name('vendor.status');
         Route::get('user/filterdata', 'Client\UserController@getFilterData')->name('user.filterdata');
+
+        Route::get('vendor-payment-report', 'Client\VendorController@vendorPaymentReport')->name('vendorPaymentReport');
+        Route::post('vendor-report-export', 'Client\VendorController@vendorReportExport')->name('vendorReportExport');
+
         Route::resource('vendor', 'Client\VendorController');
         Route::get('vendor/categories/{id}', 'Client\VendorController@vendorCategory')->name('vendor.categories');
         Route::get('getInvetoryToken', 'Client\VendorController@getInvetoryToken')->name('getInvetoryToken');
