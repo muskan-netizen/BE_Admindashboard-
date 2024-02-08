@@ -137,12 +137,7 @@
                                     </a>
                                 </li>
                             @endif
-                            <li>
-                                <a href="{{route('vendorPaymentReport')}}">
-                                    <span class="icon-vendor"></span>
-                                    <span>Vendors Payment Report</span>
-                                </a>
-                            </li>
+
                             @if(@$getAdditionalPreference['is_vendor_marg_configuration'] == '1')
                                 <li>
                                     <a href="{{route('failed-marg-orders')}}">
@@ -188,6 +183,11 @@
                                     </a>
                                     <div class="collapse" id="sidebaraccounting">
                                         <ul class="nav-second-level">
+                                            <li>
+                                                <a href="{{route('vendorPaymentReport')}}">
+                                                    Vendors Payment Report
+                                                </a>
+                                            </li>
                                             @if(@auth()->user()->can('accounting-orders') || Auth::user()->is_superadmin == 1)
                                                 <li>
                                                     <a href="{{route('account.orders')}}">{{ __('Orders') }}</a>

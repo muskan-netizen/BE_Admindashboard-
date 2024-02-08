@@ -2828,8 +2828,8 @@ class VendorController extends BaseController
         return view('backend/vendor/generateVendorPaymentReport');
     }
 
-    function vendorReportExport(){
-        return Excel::download(new VendorPaymentReportExport(), 'report.xlsx');
+    function vendorReportExport(Request $request){
+        return Excel::download(new VendorPaymentReportExport($request), 'report.xlsx');
     }
 
 }

@@ -299,7 +299,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('user/filterdata', 'Client\UserController@getFilterData')->name('user.filterdata');
 
         Route::get('vendor-payment-report', 'Client\VendorController@vendorPaymentReport')->name('vendorPaymentReport');
-        Route::get('vendor-report-export', 'Client\VendorController@vendorReportExport')->name('vendorReportExport');
+        Route::post('vendor-report-export', 'Client\VendorController@vendorReportExport')->name('vendorReportExport');
 
         Route::resource('vendor', 'Client\VendorController');
         Route::get('vendor/categories/{id}', 'Client\VendorController@vendorCategory')->name('vendor.categories');

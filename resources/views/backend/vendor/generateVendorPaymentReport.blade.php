@@ -20,12 +20,34 @@
     </div>
 </div>
 <!-- start product action popup -->
-<div>
-    <a href="{{route('vendorReportExport')}}">
-    <button type="button" class="btn btn-primary" > Generate Report  </button>
-    </a>
-</div>
+    <form action="{{route('vendorReportExport')}}" method="post" >
+        <div class="row">
+            @csrf
+            <div class="col-lg-4">
+                <label for="start_date">Start Date</label>
+                <input type="date" name="start_date" class="form-control start_date" id="start_date" >
+            </div>
+            <div class="col-lg-4">
+                <label for="end_date">End Date</label>
+
+                <input type="date" name="end_date" class="form-control end_date" id="end_date">
+            </div>
+
+        <div class="col-lg-4 mt-3">
+            <button type="submit" class="btn btn-primary exportReport" onclick="exportReport()"> Generate Report  </button>
+        </div>
+    </div>
+</form>
+
 
 @endsection
 @section('script')
 
+<script>
+    function exportReport(){
+        var startDate = document.getElementById('start_date');
+        startDate.value = '';
+        var endate = document.getElementById('end_date');
+        endate.value = '';
+    };
+</script>
