@@ -109,7 +109,6 @@ class PaypalGatewayController extends FrontController
             $response = $transaction->send();
             if ($response->isSuccessful()) {
                 // $this->successMail();
-                \Log::info('payment success');
                 return $this->successResponse($response->getTransactionReference());
             } else {
                 

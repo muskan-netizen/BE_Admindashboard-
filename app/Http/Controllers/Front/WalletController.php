@@ -103,7 +103,6 @@ class WalletController extends FrontController
      */
     public function postPaymentCreditWallet(Request $request, $domain = '')
     {
-        \Log::info('postPaymentCreditWallet');
         if( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
             return $this->creditWallet($request);
         }else{

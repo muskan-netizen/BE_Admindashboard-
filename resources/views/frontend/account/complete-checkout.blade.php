@@ -45,10 +45,6 @@
     $.ajaxSetup({
         headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content') }
     });
-    alert(action);
-    alert('frontend.account.complete-checkout');
-    alert(urlParams.has('PayerID'));
-    alert(urlParams.has('token'));
 
     if( (urlParams.has('amount')) && (urlParams.has('PayerID')) && (urlParams.has('token')) ){
         amount = urlParams.get('amount');
@@ -69,7 +65,6 @@
                         // placeOrder(addressID, 3, response.data);
                     }
                     else if(action = "wallet"){
-                        console.log(response.data);
                         creditWallet(amount, 3, response.data);
                     }
                 }else{

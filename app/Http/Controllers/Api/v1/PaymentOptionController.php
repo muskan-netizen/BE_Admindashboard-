@@ -86,7 +86,6 @@ class PaymentOptionController extends BaseController
 
     public function postPayment(Request $request, $gateway = '')
     {
-        // \Log::info(['request url' => $request->all()]);
         if (!empty($gateway)) {
             $code = $request->header('code');
             $client = Client::where('code', $code)->first();
@@ -99,7 +98,6 @@ class PaymentOptionController extends BaseController
 
             $function = 'postPaymentVia_' . $gateway;
 
-            
             if (method_exists($this, $function)) {
                 if (!empty($request->action)) {
                     $response = $this->$function($request); // call related gateway for payment processing
@@ -398,10 +396,6 @@ class PaymentOptionController extends BaseController
             $this->gateway->setPassword($password);
             $this->gateway->setSignature($signature);
             $this->gateway->setTestMode($testmode); //set it to 'false' when go live
-            // \Log::info(['server url' =>$request->serverUrl]);
-            // \Log::info(['return url' =>$request->returnUrl]);
-            // \Log::info(['cancel url' =>$request->cancelUrl]);
-            // \Log::info(['return url' =>url($request->serverUrl . $request->returnUrl . '?amount=' . $request->amount)]);
             $response = $this->gateway->purchase([
                 'currency' => $currency, //'USD',
                 'amount' => $this->getDollarCompareAmount($request->amount),

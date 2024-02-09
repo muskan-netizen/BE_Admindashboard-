@@ -188,7 +188,7 @@
 
 
 
-        <div class="cab-detail-box style-4" id="cab_detail_box"></div>
+        <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
         <div class="promo-box style-4 d-none">
             <a class="d-block mt-2 close-promo-code-detail-box" href="javascript:void(0)">✕</a>
             <div class="row" id="cab_booking_promo_code_list_main_div">

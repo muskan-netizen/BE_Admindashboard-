@@ -1,12 +1,4 @@
    ////////   **************  cab details page  *****************  ////////
-   $(document).ready(function () {
-
-    let queryString = window.location.search;
-    let path = window.location.pathname;
-    let urlParams = new URLSearchParams(queryString);
-    // alert('ca booking js');
-   
-   });
    $.ajaxSetup({
     headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
     });
@@ -439,7 +431,6 @@ $(document).ready(function () {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
                 if(response.status == '200'){
-                    
                     if(is_cab_pooling == 4 )
                     {
                         alert(response.message);
@@ -460,7 +451,6 @@ $(document).ready(function () {
                         // setInterval(function(){
                         //     getDriverDetails(response.data.dispatch_traking_url)
                         // },3000);
-
                     }else if(payment_option_id == 3){
                        let payment_form = "pickup_delivery";
                         $.ajax({

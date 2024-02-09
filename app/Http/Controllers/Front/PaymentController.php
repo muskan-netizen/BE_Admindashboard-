@@ -137,7 +137,6 @@ class PaymentController extends FrontController{
 
     public function paypalCompleteCheckout(Request $request, $domain = '', $token = '', $action = '', $address_id ='')
     {
-        \Log::info('paypalCompleteCheckout');
         return view('frontend.account.complete-checkout')->with(['auth_token' => $token, 'action' => $action, 'address_id' => $address_id]);
     }
 
