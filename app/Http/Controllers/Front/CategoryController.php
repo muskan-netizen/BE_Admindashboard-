@@ -120,7 +120,7 @@ class CategoryController extends FrontController{
             $vendorIds = $vendors;
         }else{
             $vendorIds = array();
-            $vendorList = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'name')->where('status', '!=', $this->field_status);
+            $vendorList = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->select('id', 'name')->where('status', '!=', $this->field_status);
             if(!empty($vendorType)){
                 $vendorList= $vendorList->where($vendorType, 1);
             }
@@ -277,7 +277,7 @@ class CategoryController extends FrontController{
             $vendorIds = $vendors;
         }else{
             $vendorIds = array();
-            $vendorList = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'name')->where('status', '!=', $this->field_status);
+            $vendorList = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->select('id', 'name')->where('status', '!=', $this->field_status);
             if(!empty($vendorType)){
                 $vendorList= $vendorList->where($vendorType, 1);
             }
@@ -418,7 +418,7 @@ class CategoryController extends FrontController{
         if(strtolower($type) == 'vendor'){
             //$preferences= ClientPreference::first();
             $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'): ClientPreference::first();;
-            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->with('products')->select('vendors.id', 'name', 'banner','is_show_vendor_details' ,'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'vendor_templete_id');
+            $vendorData = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->with('products')->select('vendors.id', 'name', 'banner','is_show_vendor_details' ,'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'vendor_templete_id');
 
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $latitude = Session::get('latitude') ?? $preferences->Default_latitude;
@@ -578,7 +578,7 @@ class CategoryController extends FrontController{
         foreach($category->childs as $key => $child){
             $child->translation_name = ($child->translation->first()) ? $child->translation->first()->name : $child->slug;
         }
-        $vendor = Vendor::select('id', 'name')->where('slug', $slug2)->where('status', 1)->firstOrFail();
+        $vendor = Vendor::vendorOnline()->select('id', 'name')->where('slug', $slug2)->where('status', 1)->firstOrFail();
         if($category && $request->ajax() )
         {
             $vendor_id = isset($vendor) ?  $vendor->id : '';

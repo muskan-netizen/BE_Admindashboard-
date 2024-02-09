@@ -430,7 +430,7 @@ class FrontController extends Controller
             $vendorType = "rental";
         }
         $preferences = Session::has('preferences') ? Session::get('preferences') : $client_preferences;
-        $serviceAreaVendors = Vendor::select('id', 'show_slot');
+        $serviceAreaVendors = Vendor::vendorOnline()->select('id', 'show_slot');
         $vendors = [];
         if($vendorType){
             $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
@@ -477,7 +477,7 @@ class FrontController extends Controller
     public function getServiceAreaVendorsWithoutHyperlocal($latitude, $longitude){
         $vendorType = Session::get('vendorType');
         $preferences = Session::has('preferences') ? Session::get('preferences') : ClientPreference::where('id', '>', 0)->first();;
-        $serviceAreaVendors = Vendor::select('id', 'show_slot');
+        $serviceAreaVendors = Vendor::vendorOnline()->select('id', 'show_slot');
         $vendors = [];
         if($vendorType){
             $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);

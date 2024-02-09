@@ -392,6 +392,11 @@ class AuthController extends BaseController
         $user->phone_token_valid_till = $sendTime;
         $user->email_token_valid_till = $sendTime;
         $user->timezone = $client_timezone;
+        
+        if ($signReq->hasFile('image')) {
+            $file = $signReq->file('image');
+            $user->image = Storage::disk('s3')->put($this->folderName, $file,'public');
+        }
         $user->save();
         // user upload document
         if ($user_registration_documents->count() > 0) {
@@ -549,9 +554,11 @@ class AuthController extends BaseController
                     }
                 }
             }
+            
             $checkSystemUser = $this->checkCookies($user->id);
             $response['status'] = 'Success';
             $response['name'] = $user->name;
+            $response['source'] = $user->image;
             $response['id'] = $user->id;
             $response['auth_token'] =  $token;
             $response['email'] = $user->email;
@@ -735,7 +742,7 @@ class AuthController extends BaseController
                    // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
                     $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$otp]; 
                     $body = sendSmsTemplate('verify-account',$keyData);
-                    if (!empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
+                    if (!empty($provider)) {
                         if(getUserToken($data)['status']){
                             $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
                         }else{
@@ -1171,6 +1178,7 @@ class AuthController extends BaseController
                     'app_template_id',
                     'web_template_id'
                     )->first();
+                  
                 $phone_number = preg_replace('/\D+/', '', $username);
                 $dialCode = $request->dialCode;
                 $fullNumber = $request->full_number;
@@ -1202,13 +1210,11 @@ class AuthController extends BaseController
                     $to = '+' . $dialCode . $phone_number;
                 }
 
-                $keyData = ['{user_name}'=>auth()->user()->name??'','{otp_code}'=>$phoneCode,'{app_hash_key}'=>$request->app_hash_key??''];
-                $body = sendSmsTemplate('verify-account',$keyData);
                 $provider = $prefer->sms_provider;
                 $body = "Please enter OTP " . $phoneCode . " to verify your account.";
                 $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$phoneCode];
                 $body = sendSmsTemplate('verify-account',$keyData);
-                if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
+                if (!empty($provider)) {
                     if(getUserToken($prefer)['status']){
                         $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                     }else{
@@ -1754,8 +1760,10 @@ class AuthController extends BaseController
                     'facebook_auth_id' => '',  
                     'twitter_auth_id' => '',  
                     'google_auth_id' => '',  
-                    'apple_auth_id' => '' 
+                    'apple_auth_id' => '',
+                    'status' => 3,
                     ]);
+
                 $user->delete();
                 DB::commit(); //Commit transaction after all the operations
                 return response()->json(['massage' => __('User Deleted Successfully')], 200);

@@ -1832,8 +1832,6 @@ class OrderController extends FrontController
 
     public function orderSave($request, $paymentStatus)
     {
-
-
         try {
             $latitude = '';
             $longitude = '';
@@ -2869,9 +2867,9 @@ class OrderController extends FrontController
 
                 // check if is_tax_price_inclusive is on than no tax
                 if (! $additionalPreferences->is_tax_price_inclusive) {
-                    $new_vendor_taxable_amount = number_format((($actual_amount-$total_discount) * $rate) / 100, 2);
+                    $new_vendor_taxable_amount = number_format((($actual_amount-$vendor_discount_amount) * $rate) / 100, 2);
                 } else {
-                    $new_vendor_taxable_amount = number_format((($actual_amount-$total_discount) * $rate) / (100 + $rate), 2);
+                    $new_vendor_taxable_amount = number_format((($actual_amount-$vendor_discount_amount) * $rate) / (100 + $rate), 2);
                 }
 
                 $new_vendor_taxable_amount = str_replace(',', '', $new_vendor_taxable_amount);
@@ -4007,6 +4005,7 @@ class OrderController extends FrontController
                 'user_icon' => $customer->image,
                 'order_pre_time'=>$vendor_details->order_pre_time,
                 'app_call' => 0,
+                'tip_amount'=>$order->tip_amount??0
             ];
             if ($order_vendor->is_restricted == 1) {
                 $postdata['user_verification_type'] = isset($customer->passbase_verification) && ! is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
@@ -4136,7 +4135,9 @@ class OrderController extends FrontController
                 'dbname' => $client->database_name,
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
-                'user_icon' => $customer->image
+                'user_icon' => $customer->image,
+                'tip_amount'=>$order->tip_amount??0
+
             ];
             if ($order_vendor->is_restricted == 1) {
                 $postdata['user_verification_type'] = isset($customer->passbase_verification) && ! is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
@@ -4316,7 +4317,9 @@ class OrderController extends FrontController
                 'order_vendor_id' => $order_vendor->id,
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
-                'user_icon' => $customer->image
+                'user_icon' => $customer->image,
+                'tip_amount'=>$order->tip_amount??0
+
             ];
             if ($order_vendor->is_restricted == 1) {
                 $postdata['user_verification_type'] = isset($customer->passbase_verification) && ! is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;

@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
+use App\Http\Controllers\Client\BorzoeDeliveryController;
 use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption,Bid, CartBookingOption, CartRentalProtection, Notification, OrderNotificationsLogs, ProcessorProduct,OrderFiles, OrderVendorProduct, ProductAvailability, VendorMargConfig};
 
 use App\Models\AutoRejectOrderCron;
@@ -922,7 +923,6 @@ class OrderController extends BaseController
                             $vendor_payable_amount += $service_fee_percentage_amount;
                             $payable_amount += $service_fee_percentage_amount;
                         }
-                        \Log::info('vendor_payable_amount1--'.$vendor_payable_amount);
 
                         if ($vendor_cart_product->vendor->fixed_service_charge > 0) {
                             // $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100; // wrong percentage_amount
@@ -1776,7 +1776,7 @@ class OrderController extends BaseController
                 'user_icon' => $customer->image,
                 'order_pre_time'=>$vendor_details->order_pre_time,
                 'app_call' => 1,
-
+                'tip_amount'=>$order->tip_amount??0
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1913,7 +1913,9 @@ class OrderController extends BaseController
                 'dbname' => $client->database_name,
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
-                'user_icon' => $customer->image
+                'user_icon' => $customer->image,
+                'tip_amount'=>$order->tip_amount??0
+
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -2097,7 +2099,9 @@ class OrderController extends BaseController
                  'dbname' => $client->database_name,
                  'order_id' => $order->id,
                  'customer_id' => $order->user_id,
-                 'user_icon' => $customer->image
+                 'user_icon' => $customer->image,
+                 'tip_amount'=>$order->tip_amount??0
+
              ];
             if($order_vendor->is_restricted == 1)
             {
@@ -3799,7 +3803,9 @@ class OrderController extends BaseController
                     }elseif($orderData->shipping_delivery_type=='L'){
                         //Create Shipping place order request for Lalamove
                         //$orderPlaced = $this->placeOrderRequestlalamove($request);
-                    }elseif ($orderData->shipping_delivery_type == 'K') {
+                    } elseif ($orderData->shipping_delivery_type == 'B') {
+                        $orderPlaced = $this->placeOrderRequestBorzoeApi($request);
+                    } elseif ($orderData->shipping_delivery_type == 'K') {
                         //Create Shipping place order request for Kwik
                         $orderPlaced = $this->placeOrderRequestKwikApi($request);
 
@@ -3847,6 +3853,10 @@ class OrderController extends BaseController
                             //Cancel Shipping place order request for KwikApi
                             $lala = new QuickApiController();
                             $order_lalamove = $lala->cancelOrderRequestKwikApi($request->order_id,$request->vendor_id);
+                        }elseif ($orderData->shipping_delivery_type == 'B') {
+                            //Cancel Shipping place order request for Borzoe
+                            // $borzoe = new BorzoeDeliveryController();
+                            $order_lalamove = $this->cancleOrderToBorzoApi($request->vendor_id, $request->order_id);
                         }elseif($orderData->shipping_delivery_type=='SR'){
                             //Cancel Shipping place order request for Shiprocket
                             $ship = new ShiprocketController();
@@ -5179,6 +5189,33 @@ class OrderController extends BaseController
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
-
+    
+    /**
+     * placeOrderRequestBorzoeApi
+     *
+     * @param  mixed $request
+     * @return void
+     */
+    public function placeOrderRequestBorzoeApi($request)
+    {
+        $borzoe = new BorzoeDeliveryController();
+        //Create Shipping place order request for Borzoe delivery
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+            $order_ship = $this->placeOrderToBorzoApi($request->vendor_id, $request->order_id);
+        }
+        $orderDetails = json_decode($order_ship);
+        if ($order_ship) {
+             OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'borzoe_order_id' => $orderDetails->order->order_id,
+                    'borzoe_order_name'=> $orderDetails->order->order_name,
+                    'dispatch_traking_url' => $orderDetails->order->points[0]->tracking_url??null,
+                ]);
+            return 1;
+        }
+        return false;
+    }
 
 }

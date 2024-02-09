@@ -297,6 +297,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::POST('vendor/importglobalproducts', 'Client\VendorController@importGlobalProducts')->name('import.global.product');
         Route::post('vendor/status/update', 'Client\VendorController@postUpdateStatus')->name('vendor.status');
         Route::get('user/filterdata', 'Client\UserController@getFilterData')->name('user.filterdata');
+
+        Route::get('vendor-payment-report', 'Client\VendorController@vendorPaymentReport')->name('vendorPaymentReport');
+        Route::post('vendor-report-export', 'Client\VendorController@vendorReportExport')->name('vendorReportExport');
+
         Route::resource('vendor', 'Client\VendorController');
         Route::get('vendor/categories/{id}', 'Client\VendorController@vendorCategory')->name('vendor.categories');
         Route::get('getInvetoryToken', 'Client\VendorController@getInvetoryToken')->name('getInvetoryToken');
@@ -466,6 +470,11 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('kwikapi/updateAll', 'Client\DeliveryOptionController@updateKwikapi')->name('kwikapi.updateAll');
         Route::post('payoutUpdateAll', 'Client\PaymentOptionController@payoutUpdateAll')->name('payoutOption.payoutUpdateAll');
         Route::post('shipengine/updateAll', 'Client\DeliveryOptionController@updateShipEngine')->name('shipengine.updateAll');
+        Route::post('borzoe/updateAll', 'Client\DeliveryOptionController@updateBorzoe')->name('borzoe.updateAll');
+        Route::get('borzoe', 'Client\BorzoeDeliveryController@borzoe')->name('borzoe');
+        Route::get('borzoe/delivery', 'Client\BorzoeDeliveryController@borzoeDelivery')->name('borzoeDelivery');
+
+
         Route::resource('inquiry', 'Client\ProductInquiryController');
         Route::get('inquiry/filter', [ProductInquiryController::class, 'show'])->name('inquiry.filter');
 

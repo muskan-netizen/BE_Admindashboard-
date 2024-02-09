@@ -68,7 +68,7 @@ class HomeController extends BaseController
                         $vendorMode[] = $vendorData;
                     }
             }
-            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','add_to_cart_btn','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_particular_driver','is_enable_curb_side','is_enable_variant_set_v2','is_share_ride_users','is_recurring_booking','is_rental_weekly_monthly_price','is_enable_allergic_items','is_user_pre_signup']);
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','add_to_cart_btn','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_particular_driver','is_enable_curb_side','is_enable_variant_set_v2','is_share_ride_users','is_recurring_booking','is_rental_weekly_monthly_price','is_enable_allergic_items','is_user_pre_signup','vendor_online_status']);
 
             //mohit sir branch code updated by sohail farm meat
             $homeData['profile']->preferences->vendorMode = $vendorMode;
@@ -94,6 +94,7 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->is_bid_ride_enable         = (int) $getAdditionalPreference['is_bid_ride_enable'];
             $homeData['profile']->preferences->is_particular_driver       = (int) $getAdditionalPreference['is_particular_driver'];
             $homeData['profile']->preferences->is_enable_allergic_items       = (int) $getAdditionalPreference['is_enable_allergic_items'];
+            $homeData['profile']->preferences->vendor_online_status       = (($getAdditionalPreference['vendor_online_status'])?1:0);
 
             // on demand service is_share_ride_users
             $homeData['profile']->preferences->is_share_ride_users       = (int) $getAdditionalPreference['is_share_ride_users'];
@@ -1105,7 +1106,7 @@ class HomeController extends BaseController
                     $response[] = $brand;
                 }
                 $categoryTypes = getServiceTypesCategory($action);
-                $vendors = Vendor::byVendorSubscriptionRule($preferences)->whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+                $vendors = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->whereHas('getAllCategory.category',function($q)use ($categoryTypes){
                     $q->whereIn('type_id',$categoryTypes);
                 })->select('id', 'name  as dataname', 'logo', 'slug', 'address', 'show_slot')->where($action, 1);
 
@@ -1307,7 +1308,7 @@ class HomeController extends BaseController
         $page = $request->has('page') ? $request->page : 1;
 
         $preferences = ClientPreference::first();;
-        $vendorData = Vendor::byVendorSubscriptionRule($preferences)->with('products')->select('vendors.id', 'name', 'banner','is_show_vendor_details' ,'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'vendor_templete_id');
+        $vendorData = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->with('products')->select('vendors.id', 'name', 'banner','is_show_vendor_details' ,'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'vendor_templete_id');
 
         $category = Category::with(['tags', 'brands.translation' => function($q) use($langId){
             $q->where('brand_translations.language_id', $langId);
@@ -1361,8 +1362,8 @@ class HomeController extends BaseController
         }
 
         $homeData['popular_restaurants'] = $vendorData;
-        $homeData['all_vendors'] = Vendor::get();
-        $homeData['featured_restaurants'] = Vendor::where('is_featured',1)->get();
+        $homeData['all_vendors'] = Vendor::vendorOnline()->get();
+        $homeData['featured_restaurants'] = Vendor::vendorOnline()->where('is_featured',1)->get();
 
         return response()->json([
             'status' => 200,
@@ -1392,7 +1393,7 @@ class HomeController extends BaseController
 
     public function categoryRestaurent(Request $request,$category_id)
     {
-        $vendors = Vendor::whereHas('vendorCategories', function($q) use ($category_id){
+        $vendors = Vendor::vendorOnline()->whereHas('vendorCategories', function($q) use ($category_id){
             $q->where('category_id', $category_id);
         })->with('vendorCategories')->where(function($q) use ($request){
             if(isset($request->keyword)){
@@ -1438,7 +1439,7 @@ class HomeController extends BaseController
             $categoryTypes = getServiceTypesCategory($type);
 
 
-            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+            $vendorData = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->whereHas('getAllCategory.category',function($q)use ($categoryTypes){
                 $q->whereIn('type_id',$categoryTypes);
             })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
 

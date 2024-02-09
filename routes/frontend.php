@@ -42,6 +42,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('webhook/user_rating', 'Front\UserRatingController@userRatingWebhook')->name('user_rating_webhook');
     Route::any('livee/success','LiveePaymentController@afterPayment')->name('livee.payment');
     Route::any('webhook/success-page','Front\MpesaSafariController@successPage')->name('safari.payment');
+    Route::any('webhook/borzoe', 'Client\BorzoeDeliveryController@borzoeWebhook')->name('borzoeWebhook');
+
 
 	// order dispatcher order web hooks
 	Route::get('dispatch-order-status-update/{id?}', 'Front\DispatcherController@dispatchOrderStatusUpdate')->name('dispatch-order-update'); // Order Status update Dispatch
@@ -166,6 +168,14 @@ Route::group(['middleware' => ['domain']], function () {
 	// Mobbex
 	Route::post('payment/mobbex', 'Front\MobbexGatewayController@mobbexPurchase')->name('payment.mobbexPurchase');
 	Route::post('payment/mobbex/notify', 'Front\MobbexGatewayController@mobbexNotify')->name('payment.mobbexNotify');
+
+
+	//icici payment routes
+	Route::post('payment/gateway/icici', 'Front\IciciPaymentController@payByIcici')->name('payment.payByIcici');
+	Route::post('payment/webhook/icici', 'Front\IciciPaymentController@successPage')->name('payment.icici.success');
+	Route::post('payment/success/icici', 'Front\IciciPaymentController@successPage')->name('payment.icici.success');
+	Route::post('payment/icici-transection-status', 'Front\IciciPaymentController@iciciTransactionStatus')->name('payment.iciciTransactionStatus');
+	Route::post('payment/icici-success', 'Front\IciciPaymentController@iciciTransactionStatus')->name('transaction.icici.success');
 
 
 	//Skip Cash

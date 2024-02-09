@@ -601,7 +601,6 @@ $(document).ready(function () {
 						            document.getElementById('subscription_payment_form').appendChild(serializedField); // Append the serialized field to the form
 
 						            // Display the serialized form data in the console
-						            console.log(serializedData);
 								}
                                 if(stripe_publishable_key != ''){
                                     stripeInitialize();
@@ -882,7 +881,6 @@ $(document).ready(function () {
                let cart_vendor_id = $(this).attr("data-vendor_id");
                var href = get_product_faq+"/"+cart_product_id;
                 $.get(href, function(response) {
-                    //console.log(response);
                     $('#cart_product_order_form').modal('show');
                     $('#cart_product-order-form-modal').html(response);
                  });
@@ -1515,7 +1513,6 @@ $(document).ready(function () {
                 // Handle server response (see Step 4)
                 result.json().then(function(json) {
                     handleServerResponse(json);
-                    console.log(paymentAjaxData);
                 })
             });
         }
@@ -1842,7 +1839,6 @@ $(document).ready(function () {
                     ajaxData.push({ name: 'payment_from', value: 'subscription' });
                 } else if (typeof tip_for_past_order !== 'undefined' && tip_for_past_order == 1) {
                     total_amount = walletElement.val();
-                    console.log($("#order_number").val());
                     ajaxData.push(
                         { name: 'payment_from', value: 'tip' },
                         { name: 'order_number', value: $("#order_number").val() }
@@ -1865,7 +1861,6 @@ $(document).ready(function () {
                     if (response.status == "Success")
                     {
                         let paymentUrl = response.payment_url;
-                        console.log(response.payment_from);
                         window.location.href = paymentUrl;
                     }
                 }
@@ -1896,7 +1891,6 @@ $(document).ready(function () {
                 ajaxData.push({ name: 'payment_from', value: 'subscription' });
             } else if (typeof tip_for_past_order !== 'undefined' && tip_for_past_order == 1) {
                 total_amount = walletElement.val();
-                console.log($("#order_number").val());
                 ajaxData.push(
                 { name: 'payment_from', value: 'tip' },
                 { name: 'order_number', value: $("#order_number").val() }
@@ -2358,7 +2352,6 @@ $(document).ready(function () {
             var expData = $('#date-element-powertrans').val();
             var [expMonth, expYear] = [expData.slice(2), expData.slice(0, 2)]
             var newDate = expMonth+'/'+expYear;
-            console.log({newDate});
             cardJson = {
                 'cno': $('#card-element-powertrans').val(),
                 'dt': newDate,
@@ -2649,8 +2642,6 @@ $(document).ready(function () {
                     // }
                     //return true;
                     var cart_details = response.cart_details;
-
-                    console.log(cart_details);
                     var client_preference_detail = response.client_preference_detail;
                     var is_token_enable = response.is_token_enable;
                     var token_val = response.token_val;
@@ -3092,11 +3083,20 @@ $(document).ready(function () {
         //var fixed_fee_amount            =initialize_values($('#fixed_fee_amount').val());
         var tip                         =initialize_values($(this).val());
 
+       
+
 
         var amount_elem = $("#cart_payable_amount_original");
         var currency = amount_elem.attr('data-curr');
         var amount_payable =initialize_values(amount_elem.val());
+
         var payable_amount=0;
+
+        // if (!tip) {
+        //     alert(amount_payable);
+        //     $("#cart_total_payable_amount").html( currency +   amount_payable.toFixed(parseInt(digit_count)));
+        //     $("input[name='cart_total_payable_amount']").val(  amount_payable.toFixed(parseInt(digit_count)));
+        // }
 
         $("#cart_tip_amount").val(tip.toFixed(parseInt(digit_count)));
         // $("#cart_total_payable_amount").html(currency + (amount_payable+other_taxes).toFixed(parseInt(digit_count)));
@@ -3107,12 +3107,15 @@ $(document).ready(function () {
         }
         if(wallet_amount_available>0){
             if(wallet_amount_available >= wallet_amount_used_fixed+tip){
+
                 /* Paid amount is less then available wallet amount*/
                 $("#wallet_amount_used").text(" - "+currency+ " "+(token_currency*(wallet_amount_used_fixed+(tip/token_currency))).toFixed(parseInt(digit_count)));
             }else{
+
                 /* Paid amount is greater then available wallet amount*/
                 $("#wallet_amount_used").text(" - "+currency+ " "+wallet_amount_available.toFixed(parseInt(digit_count)));
-                payable_amount=((gross_amount + tip)  - (total_subscription_discount+wallet_amount_available+loyalty_amount));
+                payable_amount=((gross_amount + tip + total_taxable_amount) - wallet_amount_available);
+                // payable_amount=((amount_payable + tip)  - (total_subscription_discount+wallet_amount_available+loyalty_amount));
 
                 $("#cart_total_payable_amount").html( currency +   payable_amount.toFixed(parseInt(digit_count)));
                 $("input[name='cart_total_payable_amount']").val(  payable_amount.toFixed(parseInt(digit_count)));
@@ -3127,7 +3130,9 @@ $(document).ready(function () {
                 $("#MOV_Notification").removeClass("d-none");
             }
         }else{
-            payable_amount=((gross_amount + tip + total_taxable_amount)  - (total_subscription_discount+loyalty_amount));
+
+            // payable_amount=((amount_payable + tip + total_taxable_amount)  - (total_subscription_discount+loyalty_amount));
+            payable_amount=((amount_payable + tip));
             $("#cart_total_payable_amount").html(currency + payable_amount.toFixed(parseInt(digit_count)));
             $("input[name='cart_total_payable_amount']").val(payable_amount.toFixed(parseInt(digit_count)));
             if(amount_payable >= parseFloat($('#mov').text())){
@@ -3687,7 +3692,6 @@ $(document).ready(function () {
                     if(vendor_type == 'rental' || vendor_type == 'p2p') {
                         location.href =  '/viewcart';
                     }
-                    console.log(response.vendor.rental);
                     if(response.vendor.rental == 1) {
                        location.href =  '/viewcart';
                     }
@@ -4634,7 +4638,6 @@ $(document).ready(function () {
             dispatch_agent_id = agent_ids[0] ;
         }
         if((show_agent != undefined && show_agent ==1  ) && (agent_ids != undefined && agent_ids !='' )  ){
-           console.log('show driver');
            showDispatchDriver(agent_ids,cart_product_id,'');
         }
         $("#show_time" + cart_product_id).html(selected_time);
@@ -5853,7 +5856,6 @@ $(document).ready(function () {
             break;
             case '44':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                console.log('order', order);
                 if (order != '') {
                     paymentViaConekta(address_id, order);
                 }
@@ -5863,7 +5865,6 @@ $(document).ready(function () {
             break;
             case '45':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                console.log('order', order);
                 if (order != '') {
                     paymentViaTelr(address_id, order);
                 }
@@ -5886,7 +5887,6 @@ $(document).ready(function () {
                 //console.log('address_id',address_id,'payment_option_id',payment_option_id,'tip',tip);
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 if (order != '') {
-                    console.log('order',order);
                     paymentViaMtnMomo(address_id, order, payment_from='cart');
                 }
                 else{

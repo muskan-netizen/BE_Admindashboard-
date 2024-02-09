@@ -8,50 +8,50 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class OrderVendor extends Model{
     use HasFactory;
     const CANCEL_STATUS = 'Cancelled';
-	
-	protected $fillable = ['web_hook_code','payment_option_id', 'is_restricted','dispatch_traking_url','delivery_response', 'roadie_tracking_url','delivery_fee','waiting_price','waiting_time'];
-	
+
+	protected $fillable = ['web_hook_code','payment_option_id', 'is_restricted','dispatch_traking_url','delivery_response', 'roadie_tracking_url','delivery_fee','waiting_price','waiting_time','borzoe_order_id', 'borzoe_order_name'];
+
 	public function orderDetail(){
-	    return $this->hasOne('App\Models\Order' , 'id', 'order_id'); 
+	    return $this->hasOne('App\Models\Order' , 'id', 'order_id');
 	}
 	public function LuxuryOption(){
-	    return $this->hasOne('App\Models\Order' , 'id', 'order_id')->select('id','luxury_option_id'); 
+	    return $this->hasOne('App\Models\Order' , 'id', 'order_id')->select('id','luxury_option_id');
 	}
 	public function paymentOption(){
-	    return $this->hasOne('App\Models\PaymentOption' , 'id', 'payment_option_id'); 
+	    return $this->hasOne('App\Models\PaymentOption' , 'id', 'payment_option_id');
 	}
     public function vendor(){
-	    return $this->hasOne('App\Models\Vendor' , 'id', 'vendor_id'); 
+	    return $this->hasOne('App\Models\Vendor' , 'id', 'vendor_id');
 	}
 	public function user(){
-	    return $this->hasOne('App\Models\User' , 'id', 'user_id')->withTrashed(); 
+	    return $this->hasOne('App\Models\User' , 'id', 'user_id')->withTrashed();
 	}
     public function products(){
-	    return $this->hasMany('App\Models\OrderProduct' , 'order_vendor_id', 'id'); 
+	    return $this->hasMany('App\Models\OrderProduct' , 'order_vendor_id', 'id');
 	}
 	public function payment(){
-	    return $this->hasOne('App\Models\Payment' , 'order_id', 'order_id'); 
+	    return $this->hasOne('App\Models\Payment' , 'order_id', 'order_id');
 	}
 	public function accounting(){
-	    return $this->hasOne('App\Models\OrderVendorAccounting' , 'order_vendor_id', 'id'); 
+	    return $this->hasOne('App\Models\OrderVendorAccounting' , 'order_vendor_id', 'id');
 	}
 	public function coupon(){
-	    return $this->hasOne('App\Models\Promocode' , 'id', 'coupon_id'); 
+	    return $this->hasOne('App\Models\Promocode' , 'id', 'coupon_id');
 	}
 	public function status(){
-	    return $this->hasOne('App\Models\VendorOrderStatus','order_vendor_id','id')->orderBy('id', "DESC"); 
+	    return $this->hasOne('App\Models\VendorOrderStatus','order_vendor_id','id')->orderBy('id', "DESC");
 	}
 	public function exchanged_to_order(){
-	    return $this->hasOne('App\Models\OrderVendor','exchange_order_vendor_id','id'); 
+	    return $this->hasOne('App\Models\OrderVendor','exchange_order_vendor_id','id');
 	}
 	public function exchanged_of_order(){
-	    return $this->belongsTo('App\Models\OrderVendor','exchange_order_vendor_id','id'); 
+	    return $this->belongsTo('App\Models\OrderVendor','exchange_order_vendor_id','id');
 	}
 	public function orderstatus(){
-	    return $this->hasOne('App\Models\VendorOrderStatus' , 'vendor_id', 'vendor_id', 'order_id', 'order_id')->orderBy('id', 'DESC')->latest(); 
+	    return $this->hasOne('App\Models\VendorOrderStatus' , 'vendor_id', 'vendor_id', 'order_id', 'order_id')->orderBy('id', 'DESC')->latest();
 	}
 	public function OrderStatusOption(){
-       return $this->hasOne('App\Models\OrderStatusOption', 'id', 'order_status_option_id'); 
+       return $this->hasOne('App\Models\OrderStatusOption', 'id', 'order_status_option_id');
     }
 	public function cancelledBy()
 	{
@@ -70,7 +70,7 @@ class OrderVendor extends Model{
         $query->whereBetween('created_at', [$from, $to]);
     }
 
-	# get dispatcher status title 
+	# get dispatcher status title
 	public function getDispatcherStatusAttribute($value)
     {
 		$title = DispatcherStatusOption::where('id',$value)->value('title');
@@ -119,23 +119,23 @@ class OrderVendor extends Model{
 		}
         return ucfirst($title);
     }
-	
+
 	public function allStatus(){
-	    return $this->hasMany('App\Models\VendorOrderStatus','order_vendor_id','id'); 
+	    return $this->hasMany('App\Models\VendorOrderStatus','order_vendor_id','id');
 	}
 
 	public function dineInTable(){
-	    return $this->belongsTo('App\Models\VendorDineinTable' , 'vendor_dinein_table_id', 'id'); 
+	    return $this->belongsTo('App\Models\VendorDineinTable' , 'vendor_dinein_table_id', 'id');
 	}
 
 	public function tempCart(){
-	    return $this->hasOne('App\Models\TempCart' , 'order_vendor_id', 'id'); 
+	    return $this->hasOne('App\Models\TempCart' , 'order_vendor_id', 'id');
 	}
 
 	public function cancel_request(){
         return $this->hasOne('App\Models\OrderCancelRequest', 'order_vendor_id', 'id')->select('*', 'status as status_id')->orderBy('updated_at', 'desc');
     }
-    
+
     public function getVendorAmountAttribute(){
         $vendor_amount = $this->subtotal_amount;
         $discount = 0;
@@ -144,7 +144,7 @@ class OrderVendor extends Model{
         }
         return decimal_format($vendor_amount - $discount - $this->admin_commission_percentage_amount);
     }
-    
+
     public function getTotalPriceAttribute(){
         $amount = $this->payable_amount;
         $tip = !empty($this->orderDetail)?number_format($this->orderDetail->tip_amount, 2):0.00;
