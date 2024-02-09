@@ -1117,6 +1117,7 @@ trait CartManagerV2
                                         $if_previousdeliveryfee_added = 1;
                                     }
                                 }
+                             
                                 $deliveryCharges_real = $vendorTotalDeliveryFee;
 
                                 if (isset($deliveryCharges_real) && !empty($deliveryCharges_real)) {
@@ -1126,6 +1127,7 @@ trait CartManagerV2
                             } //End Check last time stone
                         }
                     }
+                    
 
                     $is_slot_from_dispatch =  $prod->product->is_slot_from_dispatch;
                     $show_dispatcher_agent =  $prod->product->is_show_dispatcher_agent;
@@ -1496,7 +1498,7 @@ trait CartManagerV2
                 $taxCharges['total_markup_fee_tax'] = $getalltaxes->total_markup_fee_tax ?? 0;
                 $container_charges_tax = $getalltaxes->container_charges_tax ?? 0;
             } //End vendor loop
-          
+       
             $is_percent = 0;
             $amount_value = 0;
             if ($cart->coupon) {
@@ -1751,11 +1753,14 @@ trait CartManagerV2
             }
 
             $cart->delivery_slot_amount = $delivery_slot_amount;
-
+            $delivery_fee_total = CartDeliveryFee::where('cart_id', $cart->id)->sum('delivery_fee');
+        
+                        
             // $cart->total_payable_amount = decimal_format($total_payable_amount);
             //$cart->delivery_charges = decimal_format($deliveryCharges);
             //$cart->total_payable_amount = decimal_format($total_payable_amount);
             $cart->delivery_charges = decimal_format($deliveryCharges_real);
+            $cart->delivery_charge = decimal_format($delivery_fee_total);
             $cart->total_deliver_charges = decimal_format($total_deliver_charges);
             $cart->total_markup_charges = decimal_format($total_markup_charges);
             $cart->total_discount_amount = decimal_format($total_discount_amount);
