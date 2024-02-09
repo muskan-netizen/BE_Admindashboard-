@@ -222,14 +222,11 @@ class PickupDeliveryController extends FrontController{
 
 
         // $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
-        \Log::info(['tag price' =>$tags_price]);
         $product->original_tags_price = decimal_format($tags_price['delivery_fee']);
         $product->tags_price = decimal_format($tags_price['delivery_fee']);
         if(isset($request->rental_hour))
         {
         $product->tags_price = decimal_format($request->rental_hour * $product->per_hour_price);
-        // \Log::info(['tag price' =>$product->tags_price]);
-        $product->tags_price = 152.00;
         $product->distance =  $product->km_included;
         }
         else{

@@ -617,7 +617,7 @@ class PickupDeliveryController extends BaseController{
 
 
             if($order_place && $order_place['status'] == 200){
-                if (($request->payment_option_id == 1) || ($request->payment_option_id == 42) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) || (( $request->has('is_postpay')) && ($request->is_postpay==1))){
+                if (($request->payment_option_id == 3) || ($request->payment_option_id == 1) || ($request->payment_option_id == 42) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) || (( $request->has('is_postpay')) && ($request->is_postpay==1))){
                     $data = [];
                     $order = $order_place['data'];
                     $request_to_dispatch = $this->placeRequestToDispatch($request, $order, $request->vendor_id);
@@ -1186,7 +1186,7 @@ class PickupDeliveryController extends BaseController{
                 $dynamic = (!empty($order_vendor->web_hook_code)) ? $order_vendor->web_hook_code : uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
                 $client_do = Client::where('code',$unique)->first();
-
+                
                 if ($request->payment_option_id == 1 && $order->payable_amount >0) {
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount - $order->wallet_amount_used;

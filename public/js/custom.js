@@ -289,9 +289,7 @@ $(document).ready(function () {
 
     let queryString = window.location.search;
     let path = window.location.pathname;
-     
     let urlParams = new URLSearchParams(queryString);
-    alert(urlParams);
     if ((urlParams.has('PayerID')) && (urlParams.has('token'))) {
         $('.spinner-overlay').show();
         let tipAmount = 0;
