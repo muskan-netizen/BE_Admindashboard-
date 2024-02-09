@@ -980,10 +980,12 @@ trait CartManagerV2
                                 $taxData[$tckey]['product_tax'] = decimal_format($product_tax);
                                 $taxable_amount = $taxable_amount + $product_tax;
                                 $payable_amount = $payable_amount + $product_tax;
+                                
                             }
                         }
                         // dd($prod->product->taxCategory->toArray());
                         $prod->taxdata = $taxData;
+                     
 
                         if ($requestType == 2) {
                             $this->appNewParameter($prod, $quantity_price);
@@ -1313,6 +1315,7 @@ trait CartManagerV2
                         }
                     }
                 }
+                
 
                 $promoCodeController = new PromoCodeController();
                 $promoCodeRequest = new Request();
@@ -1325,7 +1328,6 @@ trait CartManagerV2
                     }
                 }
                 $deliveryfee_ifnot_discounted = ($deliveryfeeOnCoupon == 0) ? $deliveryCharges_real : 0;
-
                 //till here
                 if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) &&  ($action == 'delivery') && $address_id != "" ) {
                 if (isset($serviceArea)) {
@@ -1339,6 +1341,7 @@ trait CartManagerV2
                         $error_message = __('Products for this vendor are not deliverable at your area. Please change address or remove product.');
                     }
                 }
+               
 
                 if(!isset($serviceArea)){
                     $vendorData->service_area_empty = 1;
@@ -1370,12 +1373,18 @@ trait CartManagerV2
                     $total_markup_charges +=  $totalMarkup;
 
 
-
-                $payable_amount = $payable_amount + $deliveryfee_ifnot_discounted + $security_amount;
-                $subtotal_amount = $payable_amount;
-
-
-
+                
+                    $subtotal_amount = $quantity_price;
+                    $payable_amount = $payable_amount + $deliveryfee_ifnot_discounted + $security_amount;
+ 
+                    if(!in_array($action,['on_demand']))
+                    {
+                        $subtotal_amount = $payable_amount;
+  
+                    }
+                 
+                  
+                   
                 //vendor service fee fixed/percent
                 $vendor_service_fee_percentage_amount = $vendor_fixed_service_charge_amount = 0;
                 if ($vendorData->vendor->fixed_service_charge == 1) {
@@ -1835,7 +1844,7 @@ trait CartManagerV2
                 $sub_total = $subtotal_amount ?? $sub_total;
                 $cart->sub_total =  $sub_total - $cart->bid_total_discount;
             }
-            $cart->sub_total_inc_tax =  decimal_format($cart->sub_total + $total_taxable_amount);
+            $cart->sub_total_inc_tax =  decimal_format($cart->sub_total + $taxable_amount);
             $cart->is_token =  $additionalPreference['is_token_currency_enable'] ? 1 : 0;
             $cart->token_value = $additionalPreference['token_currency'] ?? 0;
             $cart->products = $cartData->toArray();
