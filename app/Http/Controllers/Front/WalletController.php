@@ -84,7 +84,6 @@ class WalletController extends FrontController
                 $response['transactions'] = $transactions;
                 $message = 'Wallet has been credited successfully';
                 Session::put('success', $message);
-                // \Log::info('success1');
                 return $this->successResponse($response, $message, 200);
             }
             else{
