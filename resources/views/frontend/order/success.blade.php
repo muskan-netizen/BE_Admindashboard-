@@ -229,7 +229,7 @@ $order_is_long_term = $order->is_long_term;
                                     $total += decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare);
                                     @endphp
 				                         <li>{{__('Tax')}} <span>@if( $additionalPreference["is_token_currency_enable"])
-                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->taxable_amount * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->taxable_amount * @$clientCurrency->doller_compare)}}@endif</span></li>
+                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}@endif</span></li>
                                    @endif
 
                                     @if($order->luxury_option_id == 4)

@@ -327,7 +327,7 @@ input[type=number]::-webkit-outer-spin-button {
 
         </div>
         <div class="alFullMapForm col-md-12 p-0 position-absolute">
-            <div class="booking-experienceNew ds bc">
+            <div class="booking-experienceNew">
                 <div class="address-form">
                     @if (isset($client_preference_detail) && $client_preference_detail->book_for_friend == 1)
                         <div class="tip_radio_controls_book_friend text-center mt-2">
@@ -382,15 +382,14 @@ input[type=number]::-webkit-outer-spin-button {
                             </div>
                             @endif
 
-                          
-	                      @if($is_bid_ride_enable == 1)
-		                    <div class="item mx-1">
-		                        <input type="radio" id="bid_radio" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="0">
-		                        <label class="pool_label mb-0  my-2" >
-		                            <h5 class="m-0" id="pool_5">Bid</h5>
-		                        </label>
-		                    </div>
-		                    @endif
+                            @if($is_bid_ride_enable == 1)
+                            <div class="item mx-1">
+                                <input type="radio" id="bid_radio" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="0">
+                                <label class="pool_label mb-0  my-2" >
+                                    <h5 class="m-0" id="pool_5">Bid</h5>
+                                </label>
+                            </div>
+                            @endif
 
                             @if($is_particular_driver == 1)
                             <div class="item">

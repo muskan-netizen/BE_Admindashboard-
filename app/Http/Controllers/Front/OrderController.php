@@ -1356,6 +1356,7 @@ class OrderController extends FrontController
         $order->slot_delivery_fees = $slot_delivery_fees;
 
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+      
         return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency', 'fixedFeeNomenclatures'));
     }
 

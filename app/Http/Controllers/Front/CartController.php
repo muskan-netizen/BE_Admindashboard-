@@ -1973,7 +1973,10 @@ class CartController extends FrontController
      */
     public function deleteCartProduct($domain = '', Request $request)
     {
+       
         $cartProd =  CartProduct::where('id', $request->cartproduct_id)->select('cart_id', 'vendor_id', 'bid_number')->first();
+     
+       
         if ($cartProd->bid_number) {
             CartProduct::where('vendor_id', $cartProd->vendor_id)->update(['bid_number' => null, 'bid_discount' => null]);
         }
@@ -1982,6 +1985,9 @@ class CartController extends FrontController
         CartAddon::where('cart_product_id', $request->cartproduct_id)->delete();
         CartRentalProtection::where('cart_id', $cartProd->cart_id)->delete();
         CartBookingOption::where('cart_id', $cartProd->cart_id)->delete();
+        CartDeliveryFee::where('cart_id',$cartProd->cart_id)->where('vendor_id',$cartProd->vendor_id)->delete();
+      
+       
         if (!empty($cartProd)) {
 
             $cartpro_count = CartProduct::where('cart_id', $cartProd->cart_id)->count();
