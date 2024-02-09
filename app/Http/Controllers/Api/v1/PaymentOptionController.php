@@ -101,7 +101,7 @@ class PaymentOptionController extends BaseController
             if (method_exists($this, $function)) {
                 if (!empty($request->action)) {
                     $response = $this->$function($request); // call related gateway for payment processing
-                   
+                //    \Log::info('yes 1');
                     return $response;
                 }
             } else {
@@ -383,6 +383,7 @@ class PaymentOptionController extends BaseController
     public function postPaymentVia_paypal(Request $request)
     {
         try {
+            \Log::info(['postPaymentVia_paypal' => $request->all()]);
             $paypal_creds = PaymentOption::select('credentials','test_mode')->where('code', 'paypal')->where('status', 1)->first();
             $creds_arr = json_decode($paypal_creds->credentials);
             $username = (isset($creds_arr->username)) ? $creds_arr->username : '';
@@ -399,9 +400,13 @@ class PaymentOptionController extends BaseController
             $response = $this->gateway->purchase([
                 'currency' => $currency, //'USD',
                 'amount' => $this->getDollarCompareAmount($request->amount),
+                // 'cancelUrl' => url($request->serverUrl . $request->cancelUrl),
+                // 'returnUrl' => url($request->serverUrl . $request->returnUrl . '?amount=' . $request->amount),
                 'cancelUrl' => url($request->serverUrl . $request->cancelUrl),
-                'returnUrl' => url($request->serverUrl . $request->returnUrl . '?amount=' . $request->amount),
+                'returnUrl' => url('http://192.168.102.218:8001/payment/paypal/completeCheckout/?amount=' . $request->amount),
             ])->send();
+            \Log::info(['via paypal' => $response->getData()]);
+            \Log::info(['via paypal success' =>$response->isSuccessful()]);
             if ($response->isSuccessful()) {
                 return $this->successResponse($response->getData());
             } elseif ($response->isRedirect()) {

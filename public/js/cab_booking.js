@@ -450,7 +450,7 @@ $(document).ready(function () {
                         // $("#cab_detail_box").append(order_success_template(orderSuccessData)).show();
                         // setInterval(function(){
                         //     getDriverDetails(response.data.dispatch_traking_url)
-                        // },3000);
+                        // },3000); 
                     }else if(payment_option_id == 3){
                        let payment_form = "pickup_delivery";
                         $.ajax({
