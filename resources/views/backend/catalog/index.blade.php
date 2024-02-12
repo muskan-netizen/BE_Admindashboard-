@@ -478,17 +478,17 @@
                                         <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
                                             <tr class="trForClone">
 
-                                                @foreach($client_languages as $langs)
+                                                @foreach($languages as $langs)
                                                     <th>{{$langs->langName}}</th>
                                                 @endforeach
                                                 <th></th>
                                             </tr>
                                             <tbody id="table_body">
                                                     <tr>
-                                                @foreach($client_languages as $lankey => $User_langs)
+                                                @foreach($languages as $lankey => $User_langs)
                                                     <td>
-                                                        <input class="form-control" name="language_id[{{$lankey}}]" type="hidden" value="{{$User_langs->langId}}">
-                                                        <input class="form-control" name="name[{{$lankey}}]" type="text" id="facilty_name_{{$User_langs->langId}}">
+                                                        <input class="form-control" name="language_id[{{$lankey}}]" type="hidden" value="{{$User_langs->language_id}}">
+                                                        <input class="form-control" name="name[{{$lankey}}]" type="text" id="facilty_name_{{$User_langs->language_id}}">
                                                     </td>
                                                 @endforeach
                                                 <td class="lasttd"></td>
