@@ -219,13 +219,11 @@ class PickupDeliveryController extends FrontController{
             $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
 
         }
-
-
         // $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
 
         $product->original_tags_price = decimal_format($tags_price['delivery_fee']);
         $product->tags_price = decimal_format($tags_price['delivery_fee']);
-        if(isset($request->rental_hour))
+        if(!empty($request->rental_hour))
         {
         $product->tags_price = decimal_format($request->rental_hour * $product->per_hour_price);
         $product->distance =  $product->km_included;
@@ -233,11 +231,7 @@ class PickupDeliveryController extends FrontController{
         else{
             $product->distance = decimal_format($tags_price['distance']);
         }
-
-
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
-
-
         $product->duration = decimal_format($tags_price['duration']);
         $product->min_tags_price = decimal_format($tags_price['min_delivery_fee']);
 
