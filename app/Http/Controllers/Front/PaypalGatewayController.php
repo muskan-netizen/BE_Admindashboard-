@@ -43,10 +43,9 @@ class PaypalGatewayController extends FrontController
 
     public function paypalPurchase(Request $request)
     {
-        \Log::info('paypalPurchase');
         try {
             $amount = $this->getDollarCompareAmount($request->amount);
-            $returnUrlParams = '?amount=' . $amount."";
+            $returnUrlParams = '?amount=' . $amount;
              
             if ($request->has('tip')) {
                 $returnUrlParams = $returnUrlParams . '&tip=' . $request->tip;
@@ -88,7 +87,7 @@ class PaypalGatewayController extends FrontController
         }
     }
 
-    public function paypalCompletePurchase(Request $request,$domain='',$hello = '',$bie='')
+    public function paypalCompletePurchase(Request $request)
     {
         // Once the transaction has been approved, we need to complete it.
         if ($request->has(['token', 'PayerID'])) {

@@ -46,13 +46,30 @@ class PaypalGatewayController extends BaseController
         try {
 
             $amount = $this->getDollarCompareAmount($request->amount);
-            $returnUrlParams = '?amount=' . $amount."&hello=675869797897";
-            \Log::info(['urkl'=>$returnUrlParams]);
+            $returnUrlParams = '?amount=' . $amount;
             if ($request->has('tip')) {
                 $returnUrlParams = $returnUrlParams . '&tip=' . $request->tip;
             }
             if ($request->has('order_number')) {
                 $returnUrlParams = $returnUrlParams . '&ordernumber=' . $request->order_number;
+            }
+
+             if ($request->has('reload_route')) {
+                $pickupRoute = $request->reload_route;
+                
+                $response = $this->gateway->purchase([
+                    'currency' => $this->currency, //'USD',
+                    'amount' => $amount,
+                    'cancelUrl' => url($request->cancelUrl),
+                    'returnUrl' => $pickupRoute. $returnUrlParams,
+                ])->send();
+            }else{
+                $response = $this->gateway->purchase([
+                    'currency' => $this->currency, //'USD',
+                    'amount' => $amount,
+                    'cancelUrl' => url($request->cancelUrl),
+                    'returnUrl' => url($request->returnUrl . $returnUrlParams),
+                ])->send();
             }
            
             $response = $this->gateway->purchase([

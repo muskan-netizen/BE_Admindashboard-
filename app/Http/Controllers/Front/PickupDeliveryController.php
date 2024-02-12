@@ -233,8 +233,7 @@ class PickupDeliveryController extends FrontController{
         else{
             $product->distance = decimal_format($tags_price['distance']);
         }
-
-
+        
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
 
 

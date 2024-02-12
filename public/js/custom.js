@@ -1281,7 +1281,6 @@ $(document).ready(function () {
                             url: payment_option_list_url,
                             success: function (response) {
                                 if (response.status == "Success") {
-                                    // console.log(response.data);
                                     // $('#v_pills_tab').html('');
                                     $('#v_pills_tabContent').html('');
                                     // let payment_method_template = _.template($('#payment_method_template').html());
@@ -1943,7 +1942,6 @@ $(document).ready(function () {
             url: paypalCompletePurchaseUrl,
             data: { 'amount': amount, 'token': token, 'PayerID': payer_id },
             success: function (response) {
-                console.log(response.data);
                 if (response.status == "Success") {
                     if(path.indexOf("/") !== -1){ // app flow success
                         paypalDebitTransaction(amount, 3, response.data);
