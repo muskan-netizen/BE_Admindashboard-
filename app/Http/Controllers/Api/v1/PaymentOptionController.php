@@ -409,7 +409,7 @@ class PaymentOptionController extends BaseController
                 return $this->successResponse($response->getData());
             } elseif ($response->isRedirect()) {
                 $token = $response->getData();
-                if(isset($token['TOKEN']) && !empty($token['TOKEN']) && !empty($request->action)){
+                if(isset($token['TOKEN']) && $request->action=="pickup_delivery"){
                     $payment = new Payment();
                     $payment->date = date('Y-m-d');
                     $payment->user_id = $user->id ?? null;
