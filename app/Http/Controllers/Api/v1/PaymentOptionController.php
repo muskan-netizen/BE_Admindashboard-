@@ -383,7 +383,7 @@ class PaymentOptionController extends BaseController
     public function postPaymentVia_paypal(Request $request)
     {
         try {
-            \Log::info(['postPaymentVia_paypal' => $request->all()]);
+            $user = Auth::user();
             $paypal_creds = PaymentOption::select('credentials','test_mode')->where('code', 'paypal')->where('status', 1)->first();
             $creds_arr = json_decode($paypal_creds->credentials);
             $username = (isset($creds_arr->username)) ? $creds_arr->username : '';
@@ -397,19 +397,29 @@ class PaymentOptionController extends BaseController
             $this->gateway->setPassword($password);
             $this->gateway->setSignature($signature);
             $this->gateway->setTestMode($testmode); //set it to 'false' when go live
+           
             $response = $this->gateway->purchase([
                 'currency' => $currency, //'USD',
                 'amount' => $this->getDollarCompareAmount($request->amount),
-                // 'cancelUrl' => url($request->serverUrl . $request->cancelUrl),
-                // 'returnUrl' => url($request->serverUrl . $request->returnUrl . '?amount=' . $request->amount),
                 'cancelUrl' => url($request->serverUrl . $request->cancelUrl),
-                'returnUrl' => url('http://192.168.102.218:8001/payment/paypal/completeCheckout/?amount=' . $request->amount),
+                'returnUrl' => url('/payment/paypal/CompletePurchase?amount='.$request->amount.'&order_number='.$request->order_number.'&action='.$request->action.'&come_from='.$request->come_from)
             ])->send();
-            \Log::info(['via paypal' => $response->getData()]);
-            \Log::info(['via paypal success' =>$response->isSuccessful()]);
+             
             if ($response->isSuccessful()) {
                 return $this->successResponse($response->getData());
             } elseif ($response->isRedirect()) {
+                $token = $response->getData();
+                if(isset($token['TOKEN']) && !empty($token['TOKEN']) && !empty($request->action)){
+                    $payment = new Payment();
+                    $payment->date = date('Y-m-d');
+                    $payment->user_id = $user->id ?? null;
+                    $payment->transaction_id = $token['TOKEN'];
+                    $payment->payment_option_id = 3;
+                    $payment->order_id = $request->order_number; 
+                    $payment->balance_transaction = $request->amount?? '';
+                    $payment->type = $request->action;
+                    $payment->save();
+                }
                 return $this->successResponse($response->getRedirectUrl());
             } else {
                 return $this->errorResponse($response->getMessage(), 400);

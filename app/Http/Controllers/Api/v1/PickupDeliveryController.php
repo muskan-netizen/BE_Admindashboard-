@@ -623,7 +623,7 @@ class PickupDeliveryController extends BaseController{
 
 
             if($order_place && $order_place['status'] == 200){
-                if (($request->payment_option_id == 3) || ($request->payment_option_id == 1) || ($request->payment_option_id == 42) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) || (( $request->has('is_postpay')) && ($request->is_postpay==1))){
+                if (($request->payment_option_id == 1) || ($request->payment_option_id == 42) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) || (( $request->has('is_postpay')) && ($request->is_postpay==1))){
                     $data = [];
                     $order = $order_place['data'];
                     $request_to_dispatch = $this->placeRequestToDispatch($request, $order, $request->vendor_id);

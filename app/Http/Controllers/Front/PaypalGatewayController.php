@@ -46,7 +46,7 @@ class PaypalGatewayController extends FrontController
         \Log::info('paypalPurchase');
         try {
             $amount = $this->getDollarCompareAmount($request->amount);
-            $returnUrlParams = '?amount=' . $amount;
+            $returnUrlParams = '?amount=' . $amount."";
              
             if ($request->has('tip')) {
                 $returnUrlParams = $returnUrlParams . '&tip=' . $request->tip;
@@ -88,10 +88,9 @@ class PaypalGatewayController extends FrontController
         }
     }
 
-    public function paypalCompletePurchase(Request $request)
+    public function paypalCompletePurchase(Request $request,$domain='',$hello = '',$bie='')
     {
         // Once the transaction has been approved, we need to complete it.
-        \Log::info(['paypalCompletePurchase'=>$request->all()]);
         if ($request->has(['token', 'PayerID'])) {
             $amount = $this->getDollarCompareAmount($request->amount);
             $returnUrlParams = '?amount=' . $amount;
@@ -109,11 +108,13 @@ class PaypalGatewayController extends FrontController
              ));
             $response = $transaction->send();
             if ($response->isSuccessful()) {
-                // $this->successMail();
-                \Log::info(['paypal success' => $response->getData()]);
+                if($request->action=='pickup_delivery'){
+                    $dataResponse = $response->getData();
+                    $payment = Payment::where('transaction_id',$request->token)->first();
+                    return $this->completePickupDelivery($payment,$request,$request->come_from);
+                }
                 return $this->successResponse($response->getTransactionReference());
             } else {
-                
                 $this->failMail();
                 return $this->errorResponse($response->getMessage(), 400);
             }
@@ -121,6 +122,34 @@ class PaypalGatewayController extends FrontController
             $this->failMail();
             return $this->errorResponse('Transaction has been declined', 400);
         }
+    }
+
+
+    // Pickup delivery
+    public function completePickupDelivery($payment,$requestdata,$come_from){
+   
+        if(isset($requestdata->PayerID) && $requestdata->token)
+        {
+            $data['payment_option_id']   = 3;
+            $data['transaction_id']      = $payment->transaction_id;
+            $data['amount']              = $requestdata->amount;
+            $data['order_number']        = $requestdata->order_number;
+            $data['reload_route']        = 'routes';
+            $request                     = new \Illuminate\Http\Request($data);
+            $plaseOrderForPickup         = new PickupDeliveryController();
+            $res                         = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+
+            if($come_from == 'app')
+            {
+                $response['status']         = 'Success';
+                $response['msg']            = 'Success Added Pickup Delivery.';
+                $response['payment_from']   = 'pickup_delivery';
+                $response['data']           = $res;
+            }
+            
+            return response()->json($response,200);
+        }
+
     }
 
     public function paymentTransactionSave(Request $request, $domain = ''){

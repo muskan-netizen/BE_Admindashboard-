@@ -1943,6 +1943,7 @@ $(document).ready(function () {
             url: paypalCompletePurchaseUrl,
             data: { 'amount': amount, 'token': token, 'PayerID': payer_id },
             success: function (response) {
+                console.log(response.data);
                 if (response.status == "Success") {
                     if(path.indexOf("/") !== -1){ // app flow success
                         paypalDebitTransaction(amount, 3, response.data);
