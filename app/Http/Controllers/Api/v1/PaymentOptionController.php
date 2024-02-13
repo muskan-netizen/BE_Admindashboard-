@@ -101,7 +101,6 @@ class PaymentOptionController extends BaseController
             if (method_exists($this, $function)) {
                 if (!empty($request->action)) {
                     $response = $this->$function($request); // call related gateway for payment processing
-                //    \Log::info('yes 1');
                     return $response;
                 }
             } else {
