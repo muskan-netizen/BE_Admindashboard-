@@ -44,6 +44,7 @@ class PaypalGatewayController extends FrontController
     public function paypalPurchase(Request $request)
     {
         try {
+            $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
             $returnUrlParams = '?amount=' . $amount;
              
@@ -51,17 +52,17 @@ class PaypalGatewayController extends FrontController
                 $returnUrlParams = $returnUrlParams . '&tip=' . $request->tip;
             }
             if ($request->has('ordernumber')) {
-                $returnUrlParams = $returnUrlParams . '&ordernumber=' . $request->ordernumber;
+                $returnUrlParams = '/payment/paypal/CompletePurchase?amount='.$request->amount.'&order_number='.$request->ordernumber.'&action=pickup_delivery&come_from=web&return_route='.$request->reload_route;
+               
             }
             
             if ($request->has('reload_route')) {
                 $pickupRoute = $request->reload_route;
-                
                 $response = $this->gateway->purchase([
                     'currency' => $this->currency, //'USD',
                     'amount' => $amount,
                     'cancelUrl' => url($request->cancelUrl),
-                    'returnUrl' => $pickupRoute. $returnUrlParams,
+                    'returnUrl' => url($returnUrlParams),
                 ])->send();
             }else{
                 $response = $this->gateway->purchase([
@@ -73,9 +74,22 @@ class PaypalGatewayController extends FrontController
             }
 
             if ($response->isSuccessful()) {
+                
                 return $this->successResponse($response->getData());
             }
             elseif ($response->isRedirect()) {
+                $token = $response->getData();
+                if(isset($token['TOKEN']) && $request->payment_form=="pickup_delivery"){
+                    $payment = new Payment();
+                    $payment->date = date('Y-m-d');
+                    $payment->user_id = $user->id ?? null;
+                    $payment->transaction_id = $token['TOKEN'];
+                    $payment->payment_option_id = 3;
+                    $payment->order_id = $request->ordernumber; 
+                    $payment->balance_transaction = $request->amount?? '';
+                    $payment->type = $request->payment_form;
+                    $payment->save();
+                }
                 return $this->successResponse($response->getRedirectUrl());
             } else {
                 $this->failMail();
@@ -110,7 +124,12 @@ class PaypalGatewayController extends FrontController
                 if($request->action=='pickup_delivery'){
                     $dataResponse = $response->getData();
                     $payment = Payment::where('transaction_id',$request->token)->first();
-                    return $this->completePickupDelivery($payment,$request,$request->come_from);
+                    if(!empty($request->return_route && $request->come_from)){
+                        $this->completePickupDelivery($payment,$request,$request->come_from);
+                        return redirect($request->return_route);
+                    }else{
+                        return $this->completePickupDelivery($payment,$request,$request->come_from);
+                    }
                 }
                 return $this->successResponse($response->getTransactionReference());
             } else {
@@ -126,7 +145,7 @@ class PaypalGatewayController extends FrontController
 
     // Pickup delivery
     public function completePickupDelivery($payment,$requestdata,$come_from){
-   
+        
         if(isset($requestdata->PayerID) && $requestdata->token)
         {
             $data['payment_option_id']   = 3;
@@ -137,16 +156,26 @@ class PaypalGatewayController extends FrontController
             $request                     = new \Illuminate\Http\Request($data);
             $plaseOrderForPickup         = new PickupDeliveryController();
             $res                         = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
-
+           
+            if($come_from == 'web' && !empty($requestdata->return_route))
+            {
+                $response['status']         = 'Success';
+                $response['msg']            = 'Success Added Pickup Delivery.';
+                $response['payment_from']   = 'pickup_delivery';
+                $response['data']           = $res;
+                return response()->json($response,200); 
+            }
             if($come_from == 'app')
             {
                 $response['status']         = 'Success';
                 $response['msg']            = 'Success Added Pickup Delivery.';
                 $response['payment_from']   = 'pickup_delivery';
                 $response['data']           = $res;
+                return response()->json($response,200); 
             }
+             
             
-            return response()->json($response,200);
+             
         }
 
     }

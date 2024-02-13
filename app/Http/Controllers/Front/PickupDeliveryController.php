@@ -59,7 +59,6 @@ class PickupDeliveryController extends FrontController{
     public function getOrderTrackingDetails(Request $request, $domain = ''){
 
         $order = OrderVendor::with('orderDetail')->where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first()->toArray();
-
        $response = Http::get($request->new_dispatch_traking_url);
 
         if(count($order) > 0) {
@@ -233,7 +232,6 @@ class PickupDeliveryController extends FrontController{
         else{
             $product->distance = decimal_format($tags_price['distance']);
         }
-        
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
 
 
@@ -794,7 +792,7 @@ class PickupDeliveryController extends FrontController{
                     'message' => 'Recurring Order placed successfully.'
                 ]);
             }
-
+             
             if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                 $data = [];
                 $order = $order_place['data'];
