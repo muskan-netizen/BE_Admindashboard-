@@ -124,6 +124,9 @@ class PickupDeliveryController extends FrontController{
         if(count($locations) > 0){
             $pickup_latitude = $locations[0] ? $locations[0]->latitude : '';
             $pickup_longitude = $locations[0] ? $locations[0]->longitude : '';
+            $dropoff_latitude = $locations[1] ? $locations[1]->latitude : '';
+            $dropoff_longitude = $locations[1] ? $locations[1]->longitude : '';
+
         }
         $vendor_categories = VendorCategory::where('category_id', $category_id)->where('status', 1)->get();
         foreach ($vendor_categories as $vendor_category) {
@@ -138,9 +141,9 @@ class PickupDeliveryController extends FrontController{
 
         if(isset($preferences->pickup_delivery_service_area) && ($preferences->pickup_delivery_service_area == 1)){
 
-            if (!empty($pickup_latitude) && !empty($pickup_longitude)) {
-                $vendors = $vendors->whereHas('serviceArea', function ($query) use ($pickup_latitude, $pickup_longitude) {
-                    $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))");
+            if (!empty($pickup_latitude) && !empty($pickup_longitude) && !empty($dropoff_latitude) && !empty($dropoff_longitude)) {
+                $vendors = $vendors->whereHas('serviceArea', function ($query) use ($pickup_latitude, $pickup_longitude,$dropoff_latitude,$dropoff_longitude) {
+                    $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))")->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$dropoff_latitude." ".$dropoff_longitude.")'))");
                 });
             }
         }
