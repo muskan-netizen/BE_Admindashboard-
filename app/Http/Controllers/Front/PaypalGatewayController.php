@@ -43,6 +43,7 @@ class PaypalGatewayController extends FrontController
 
     public function paypalPurchase(Request $request)
     {
+        \Log::info(['paypalPurchase' => $request->all()]);
         try {
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
@@ -65,14 +66,15 @@ class PaypalGatewayController extends FrontController
                     'returnUrl' => url($returnUrlParams),
                 ])->send();
             }else{
+                \Log::info(['cd' => url($request->returnUrl)]);
                 $response = $this->gateway->purchase([
                     'currency' => $this->currency, //'USD',
                     'amount' => $amount,
                     'cancelUrl' => url($request->cancelUrl),
-                    'returnUrl' => url($request->returnUrl . $returnUrlParams),
+                    'returnUrl' => url($request->returnUrl),
                 ])->send();
             }
-
+            \Log::info(['check succes' =>$response->isSuccessful()]);
             if ($response->isSuccessful()) {
                 
                 return $this->successResponse($response->getData());
