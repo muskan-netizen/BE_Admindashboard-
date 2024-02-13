@@ -124,6 +124,9 @@ class PickupDeliveryController extends FrontController{
         if(count($locations) > 0){
             $pickup_latitude = $locations[0] ? $locations[0]->latitude : '';
             $pickup_longitude = $locations[0] ? $locations[0]->longitude : '';
+            $dropoff_latitude = $locations[1] ? $locations[1]->latitude : '';
+            $dropoff_longitude = $locations[1] ? $locations[1]->longitude : '';
+
         }
         $vendor_categories = VendorCategory::where('category_id', $category_id)->where('status', 1)->get();
         foreach ($vendor_categories as $vendor_category) {
@@ -138,9 +141,9 @@ class PickupDeliveryController extends FrontController{
 
         if(isset($preferences->pickup_delivery_service_area) && ($preferences->pickup_delivery_service_area == 1)){
 
-            if (!empty($pickup_latitude) && !empty($pickup_longitude)) {
-                $vendors = $vendors->whereHas('serviceArea', function ($query) use ($pickup_latitude, $pickup_longitude) {
-                    $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))");
+            if (!empty($pickup_latitude) && !empty($pickup_longitude) && !empty($dropoff_latitude) && !empty($dropoff_longitude)) {
+                $vendors = $vendors->whereHas('serviceArea', function ($query) use ($pickup_latitude, $pickup_longitude,$dropoff_latitude,$dropoff_longitude) {
+                    $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))")->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$dropoff_latitude." ".$dropoff_longitude.")'))");
                 });
             }
         }
@@ -219,13 +222,11 @@ class PickupDeliveryController extends FrontController{
             $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
 
         }
-
-
         // $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
 
         $product->original_tags_price = decimal_format($tags_price['delivery_fee']);
         $product->tags_price = decimal_format($tags_price['delivery_fee']);
-        if(isset($request->rental_hour))
+        if(!empty($request->rental_hour))
         {
         $product->tags_price = decimal_format($request->rental_hour * $product->per_hour_price);
         $product->distance =  $product->km_included;
@@ -233,11 +234,7 @@ class PickupDeliveryController extends FrontController{
         else{
             $product->distance = decimal_format($tags_price['distance']);
         }
-
-
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
-
-
         $product->duration = decimal_format($tags_price['duration']);
         $product->min_tags_price = decimal_format($tags_price['min_delivery_fee']);
 
