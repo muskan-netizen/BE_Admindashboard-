@@ -237,7 +237,7 @@ class PickupDeliveryController extends FrontController{
 
         $product->duration = decimal_format($tags_price['duration']);
         $product->min_tags_price = decimal_format($tags_price['min_delivery_fee']);
-
+        
         //for cab pooling
 
         $loyalty_amount_saved = 0;

@@ -42,21 +42,23 @@ class PaypalGatewayController extends FrontController
     }
 
     public function paypalPurchase(Request $request)
-    {
-        \Log::info(['paypalPurchase' => $request->all()]);
+    { 
         try {
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
             $returnUrlParams = '?amount=' . $amount;
-             
+            
             if ($request->has('tip')) {
                 $returnUrlParams = $returnUrlParams . '&tip=' . $request->tip;
             }
-            if ($request->has('ordernumber')) {
-                $returnUrlParams = '/payment/paypal/CompletePurchase?amount='.$request->amount.'&order_number='.$request->ordernumber.'&action=pickup_delivery&come_from=web&return_route='.$request->reload_route;
-               
+            if ($request->has('order_number')) {
+                $returnUrlParams = $returnUrlParams . '&ordernumber=' . $request->order_number;
             }
             
+            if($request->has('ordernumber') && $request->payment_form=='pickup_delivery'){
+                $returnUrlParams = '/payment/paypal/CompletePurchase?amount='.$request->amount.'&order_number='.$request->ordernumber.'&action='.$request->payment_form.'&come_from=web&return_route='.$request->reload_route;
+            }
+
             if ($request->has('reload_route')) {
                 $pickupRoute = $request->reload_route;
                 $response = $this->gateway->purchase([
@@ -66,7 +68,6 @@ class PaypalGatewayController extends FrontController
                     'returnUrl' => url($returnUrlParams),
                 ])->send();
             }else{
-                \Log::info(['cd' => url($request->returnUrl)]);
                 $response = $this->gateway->purchase([
                     'currency' => $this->currency, //'USD',
                     'amount' => $amount,
@@ -74,7 +75,7 @@ class PaypalGatewayController extends FrontController
                     'returnUrl' => url($request->returnUrl),
                 ])->send();
             }
-            \Log::info(['check succes' =>$response->isSuccessful()]);
+             
             if ($response->isSuccessful()) {
                 
                 return $this->successResponse($response->getData());
