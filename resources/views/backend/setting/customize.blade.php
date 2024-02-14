@@ -1869,8 +1869,8 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                         <div class="col-sm-12">
                             <div class="form-group d-flex justify-content-between">
                                 <label for="is_pre_signup" class="mr-3 mb-0">{{ __("User Pre SignUp") }}</label>
-                                <input type="checkbox" data-plugin="switchery" name="is_user_pre_signup" id="is_phone_signup_switch" class="form-control checkbox_change" data-className="is_phone_signup"  data-color="#43bee1" @if( @$getAdditionalPreference['is_user_pre_signup'] == '1') checked='checked' @endif>
-                                <input type="hidden"  @if(@$getAdditionalPreference['is_user_pre_signup'] == 1) value="1" @else value="0" @endif  name="is_user_pre_signup"  id="is_pre_signup"/>
+                                <input type="checkbox" data-plugin="switchery" name="is_user_pre_signup" id="is_user_pre_signup_switch" class="form-control checkbox_change" data-className="is_user_pre_signup"  data-color="#43bee1" @if( @$getAdditionalPreference['is_user_pre_signup'] == '1') checked='checked' @endif>
+                                <input type="hidden"  @if(@$getAdditionalPreference['is_user_pre_signup'] == 1) value="1" @else value="0" @endif  name="is_user_pre_signup"  id="is_user_pre_signup"/>
                             </div>
                         </div>
                         @foreach($verify_options as $key => $opt)

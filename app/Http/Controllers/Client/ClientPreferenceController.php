@@ -291,7 +291,6 @@ class ClientPreferenceController extends BaseController{
         return true;
     }
     public function update(Request $request, $code){
-
         $cp = new ClientPreference();
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
         if(!$preference){
@@ -904,10 +903,9 @@ class ClientPreferenceController extends BaseController{
         }
         $preferenceset->save();
         $client = Client::first();
-
         ClientPreferenceAdditional::updateOrCreate(
             ['key_name' => 'is_user_pre_signup', 'client_code' => $client->code],
-            ['key_name' => 'is_user_pre_signup', 'key_value' => ($request->has('is_user_pre_signup') && $request->input('is_user_pre_signup') == 'on') ? 1 : 0,'client_code' => $client->code,'client_id'=> $client->id]);
+            ['key_name' => 'is_user_pre_signup', 'key_value' => $request->input('is_user_pre_signup') ? $request->input('is_user_pre_signup') : 0 ,'client_code' => $client->code,'client_id'=> $client->id]);
 
         if($request->has('send_to') && $request->send_to == 'customize' ){
             return redirect()->route('configure.customize')->with('success', 'Client customizations updated successfully!');
