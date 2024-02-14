@@ -1589,6 +1589,18 @@ $(document).ready(function () {
         }).get();
 
     });
+    $(document).on("click",".delete-drop-off",function() {
+        $(".check-dropoff-secpond").css("display", "block");
+        $('.add-more-location').attr("style", "display: none !important");
+        $('.where-to-second').attr("style", "display: none !important");
+        $('.where-to-first').attr("style", "display: block !important");
+        $('.check-dropoff').attr("style", "display: block !important");
+        $('#destination_location_add_temp').attr("style", "display: none !important");
+
+        $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
+            $(this).hide();
+        }).get();
+    });
 
     $(document).on("click",".scheduled-ride",function() {
         $('.location-list').attr("style", "display: none !important");
