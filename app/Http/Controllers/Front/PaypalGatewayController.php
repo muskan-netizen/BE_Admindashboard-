@@ -72,7 +72,7 @@ class PaypalGatewayController extends FrontController
                     'currency' => $this->currency, //'USD',
                     'amount' => $amount,
                     'cancelUrl' => url($request->cancelUrl),
-                    'returnUrl' => url($request->returnUrl),
+                    'returnUrl' => url($request->returnUrl . $returnUrlParams),
                 ])->send();
             }
              
