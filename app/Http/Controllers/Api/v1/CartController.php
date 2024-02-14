@@ -1933,6 +1933,10 @@ class CartController extends BaseController
         if($cart->total_fixed_fee_amount){
             $cart->total_payable_amount = $cart->total_payable_amount +$cart->total_fixed_fee_amount;
         }
+        if(!empty($total_container_charges)){
+            $cart->total_payable_amount  += $total_container_charges;
+        }
+        
         if(@$rental_price){
             $cart->total_payable_amount = $rental_price;
         }
