@@ -69,8 +69,8 @@ class ClientPreferenceController extends BaseController{
             }
         }
 
-  
-        
+
+
         $accounting     = ThirdPartyAccounting::where('code','xero')->first();
 
         $productDeliveryFeeByRole = ProductDeliveryFeeByRole::groupBy('role_id')->get()->pluck('role_id')->toArray();
@@ -208,7 +208,7 @@ class ClientPreferenceController extends BaseController{
             }
 
         try {
-           
+
 
             $this->updatePreferenceAdditional($request);
 
@@ -291,12 +291,11 @@ class ClientPreferenceController extends BaseController{
         return true;
     }
     public function update(Request $request, $code){
- 
 
         $cp = new ClientPreference();
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
         if(!$preference){
-            $preference = new ClientPreference();
+            $z = new ClientPreference();
             $preference->client_code = $code;
         }
 
@@ -502,7 +501,7 @@ class ClientPreferenceController extends BaseController{
             // $preference->delivery_check = ($request->has('delivery_check') && $request->delivery_check == 'on') ? 1 : 0;
         }
 
- 
+
         if($request->has('custom_mods_config') && $request->custom_mods_config == '1'){
             $preference->enquire_mode = ($request->has('enquire_mode') && $request->enquire_mode == 'on') ? 1 : 0;
             $preference->pharmacy_check = ($request->has('pharmacy_check') && $request->pharmacy_check == 'on') ? 1 : 0;
@@ -539,8 +538,8 @@ class ClientPreferenceController extends BaseController{
             $preference->is_hourly_pickup_rental = ($request->has('is_hourly_pickup_rental_switch') && $request->is_hourly_pickup_rental_switch == 'on') ? 1 : 0;
         }
 
-      
-         
+
+
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){
          $preference->is_edit_order_admin = ($request->has('is_edit_order_admin') && $request->is_edit_order_admin == 'on') ? 1 : 0;
@@ -1083,7 +1082,7 @@ class ClientPreferenceController extends BaseController{
         }
 
     }
-       
+
 
         /**
      * Update the specified resource in storage.
@@ -1127,41 +1126,41 @@ class ClientPreferenceController extends BaseController{
     public function resetToDefault(Request $request)
     {
         $client_preference = ClientPreference::select('business_type')->first();
-        
+
         switch($client_preference->business_type)
         {
 
             case 'taxi':
                 $this->resetPickDropConfiguration("pick_drop_check");
                 break;
-            
+
             case 'food_grocery_ecommerce':
                 $this->resetDeliveryConfiguration("delivery_check");
                 break;
-            
+
             case 'home_service':
                 $this->resetOnDemandConfiguration("on_demand_check");
                 break;
-            
+
             case 'laundry':
                 $this->resetLaundryConfiguration("laundry_check");
                 break;
-            
+
             case 'rental':
                 $this->resetRentalConfiguration("rental_check");
                 break;
-                
+
             case 'p2p':
                 $this->resetP2PConfiguration("p2p_check");
                 break;
-            
+
             case 'emart':
                 $this->resetEmartConfiguration("delivery_check");
                 break;
             case 'super_app':
                 $this->resetSuperAppConfiguration("delivery_check");
                 break;
-            
+
             default:
                 break;
          }
