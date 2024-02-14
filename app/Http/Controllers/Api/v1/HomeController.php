@@ -74,6 +74,7 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->vendorMode = $vendorMode;
 
             $homeData['profile']->preferences->is_cab_pooling = (int) $getAdditionalPreference['is_cab_pooling'];
+            $homeData['profile']->preferences->distance_matrix_app_status = (int) $getAdditionalPreference['distance_matrix_app_status'];
             $homeData['profile']->preferences->chat_button = (int) $getAdditionalPreference['chat_button'];
             $homeData['profile']->preferences->call_button = (int) $getAdditionalPreference['call_button'];
             $homeData['profile']->preferences->add_to_cart_btn = (int) $getAdditionalPreference['add_to_cart_btn'];
