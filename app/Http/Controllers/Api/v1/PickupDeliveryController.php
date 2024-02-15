@@ -1566,7 +1566,7 @@ class PickupDeliveryController extends BaseController{
         }
         
         $order->tax_rate =  $tax_amount;        
-        $order->subtotal_amount = $order->subtotal_amount + $tax_amount;      
+        // $order->subtotal_amount = $order->subtotal_amount + $tax_amount;      
         $order->loyalty_amount_saved = $loyalty_amount_saved ?? 0;        
         $order->payable_amount =  $order->payable_amount + $tax_amount - $order->orderDetail['subscription_discount'];       
         // $order->total_tags_price = decimal_format($product->total_tags_price + $taxable_amount);
