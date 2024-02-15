@@ -86,7 +86,6 @@ class PaymentOptionController extends BaseController
 
     public function postPayment(Request $request, $gateway = '')
     {
-
         if (!empty($gateway)) {
             $code = $request->header('code');
             $client = Client::where('code', $code)->first();
@@ -98,7 +97,6 @@ class PaymentOptionController extends BaseController
             }
 
             $function = 'postPaymentVia_' . $gateway;
-
 
             if (method_exists($this, $function)) {
                 if (!empty($request->action)) {
@@ -384,6 +382,7 @@ class PaymentOptionController extends BaseController
     public function postPaymentVia_paypal(Request $request)
     {
         try {
+            $user = Auth::user();
             $paypal_creds = PaymentOption::select('credentials','test_mode')->where('code', 'paypal')->where('status', 1)->first();
             $creds_arr = json_decode($paypal_creds->credentials);
             $username = (isset($creds_arr->username)) ? $creds_arr->username : '';
@@ -397,15 +396,29 @@ class PaymentOptionController extends BaseController
             $this->gateway->setPassword($password);
             $this->gateway->setSignature($signature);
             $this->gateway->setTestMode($testmode); //set it to 'false' when go live
+           
             $response = $this->gateway->purchase([
                 'currency' => $currency, //'USD',
                 'amount' => $this->getDollarCompareAmount($request->amount),
                 'cancelUrl' => url($request->serverUrl . $request->cancelUrl),
-                'returnUrl' => url($request->serverUrl . $request->returnUrl . '?amount=' . $request->amount),
+                'returnUrl' => url('/payment/paypal/CompletePurchase?amount='.$request->amount.'&order_number='.$request->order_number.'&action='.$request->action.'&come_from='.$request->come_from)
             ])->send();
+             
             if ($response->isSuccessful()) {
                 return $this->successResponse($response->getData());
             } elseif ($response->isRedirect()) {
+                $token = $response->getData();
+                if(isset($token['TOKEN']) && $request->action=="pickup_delivery"){
+                    $payment = new Payment();
+                    $payment->date = date('Y-m-d');
+                    $payment->user_id = $user->id ?? null;
+                    $payment->transaction_id = $token['TOKEN'];
+                    $payment->payment_option_id = 3;
+                    $payment->order_id = $request->order_number; 
+                    $payment->balance_transaction = $request->amount?? '';
+                    $payment->type = $request->action;
+                    $payment->save();
+                }
                 return $this->successResponse($response->getRedirectUrl());
             } else {
                 return $this->errorResponse($response->getMessage(), 400);
