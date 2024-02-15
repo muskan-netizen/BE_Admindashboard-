@@ -59,7 +59,6 @@ class PickupDeliveryController extends FrontController{
     public function getOrderTrackingDetails(Request $request, $domain = ''){
 
         $order = OrderVendor::with('orderDetail')->where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first()->toArray();
-
        $response = Http::get($request->new_dispatch_traking_url);
 
         if(count($order) > 0) {
@@ -134,7 +133,7 @@ class PickupDeliveryController extends FrontController{
                 $vendor_ids[] = $vendor_category->vendor_id;
            }
         }
-        $vendors = Vendor::vendorOnline()->select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id')
+        $vendors = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id')
         ->with('slot')->withAvg('product', 'averageRating');
 
 
@@ -223,7 +222,7 @@ class PickupDeliveryController extends FrontController{
 
         }
         // $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
-
+       
         $product->original_tags_price = decimal_format($tags_price['delivery_fee']);
         $product->tags_price = decimal_format($tags_price['delivery_fee']);
         if(!empty($request->rental_hour))
@@ -237,7 +236,7 @@ class PickupDeliveryController extends FrontController{
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
         $product->duration = decimal_format($tags_price['duration']);
         $product->min_tags_price = decimal_format($tags_price['min_delivery_fee']);
-
+        
         //for cab pooling
 
         $loyalty_amount_saved = 0;
@@ -432,7 +431,7 @@ class PickupDeliveryController extends FrontController{
             $paginate = $request->has('limit') ? $request->limit : 12;
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $language_id = Session::get('customerLanguage');
-            $vendor = Vendor::vendorOnline()->select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude',
+            $vendor = Vendor::select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude',
                         'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'fixed_service_charge', 'service_charge_amount')
                         ->where('id', $vid)->first();
             if(!$vendor){
@@ -543,7 +542,7 @@ class PickupDeliveryController extends FrontController{
             $paginate = $request->has('limit') ? $request->limit : 12;
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $language_id = Session::get('customerLanguage');
-            $vendor = Vendor::vendorOnline()->select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude',
+            $vendor = Vendor::select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude',
                         'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'fixed_service_charge', 'service_charge_amount')
                         ->where('id', $vid)->first();
             if(!$vendor){
@@ -792,7 +791,7 @@ class PickupDeliveryController extends FrontController{
                     'message' => 'Recurring Order placed successfully.'
                 ]);
             }
-
+             
             if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                 $data = [];
                 $order = $order_place['data'];
@@ -874,7 +873,6 @@ class PickupDeliveryController extends FrontController{
             $order = Order::where('order_number',$order_number)->with('orderLocation')->first();
 
            if($order && $order->orderLocation){
-
             if (($request->has('transaction_id')) && (!empty($request->transaction_id))) {
                 $order->payment_status = 1;
             }
@@ -1412,9 +1410,7 @@ class PickupDeliveryController extends FrontController{
                     'notify_hour' => $notify_hour ?? 0,
                     'reminder_hour' => $reminder_hour ?? 0,
                     'app_call' => 0,
-                    'call_notification' => 0,
-                    'tip_amount'=>$order->tip_amount??0
-
+                    'call_notification' => 0
                 ];
 
                 if(isset($request->bid_task_type) && !empty($request->bid_task_type)){

@@ -1091,9 +1091,8 @@ class HomeController extends BaseController
     }
 
 
-    public function  searchVendors($langId, $keyword, $limit, $page, $action, $latitude, $longitude)
+    public function  searchVendors($langId, $keyword, $limit, $page, $action='delivery', $latitude, $longitude)
     {
-
         $orderBy = "";
         foreach ($keyword as $key=>$word) {
             $orderBy .= " WHEN name LIKE '$word%' THEN ".$key."  ";
@@ -1136,7 +1135,7 @@ class HomeController extends BaseController
 
         $vendors = $vendors->where(function ($q) use ($keyword) {
             foreach ($keyword as $word) {
-                $q->orwhere('name', 'LIKE', $word . '%')->orWhere('address', 'LIKE', $word . '%');
+                $q->orwhere('name', 'LIKE', '%'.$word . '%')->orWhere('address', 'LIKE', '%'.$word . '%');
             }
         })->where('status', 1);
         if(@$orderBy){
@@ -1220,7 +1219,7 @@ class HomeController extends BaseController
 
             ->where(function ($q) use ($keyword) {
                 foreach ($keyword as $word) {
-                    $q->orwhere('products.sku', ' LIKE', $word . '%')->orWhere('products.url_slug', 'LIKE', $word . '%')->orWhere('pt.title', 'LIKE', $word . '%');
+                    $q->orwhere('products.sku', ' LIKE', '%'.$word . '%')->orWhere('products.url_slug', 'LIKE', '%'. $word . '%')->orWhere('pt.title', 'LIKE', '%'. $word . '%');
                 }
             })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')
             ->whereIn('vendor_id', $allowed_vendors);
@@ -1281,7 +1280,7 @@ class HomeController extends BaseController
             $curId = Auth::user()->language;
             $limit = $request->has('limit') ? $request->limit : 10;
             $page = $request->has('page') ? $request->page : 1;
-            $action = $request->has('type') && $request->type ? $request->type : null;
+            $action = $request->has('type') && $request->type ? $request->type : 'delivery';
             // $types = ['delivery', "dine_in", "takeaway"];
 
             $latitude = $request->latitude;
