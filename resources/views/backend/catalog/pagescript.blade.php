@@ -128,7 +128,7 @@
     $(document).on('click', '.addOptionRow-Add', function(e) {
         var d = new Date();
         var n = d.getTime();
-        var $tr = $('.optionTableAddVarient tbody tr').next('tr');
+        var $tr = $('.optionTableAddVarient tr:eq(1)'); 
         var $clone = $tr.clone();
         $clone.find(':text').val('');
         $clone.find(':hidden').val('');

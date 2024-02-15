@@ -802,19 +802,19 @@
             grid: false,
         });
     });
-    $(document).on('click', '.addOptionRow-Add', function(e) {
-        var $tr = $('.optionTableAdd tbody>tr:first').next('tr');
+    $(document).on('click', '.addOptionRow-AddOn', function(e) {
+        var $tr = $('.optionTableAdd .input_tr:first');
         var $clone = $tr.clone();
         $clone.find(':text').val('');
         $clone.find('.lasttd').html('<a href="javascript:void(0);" class="action-icon deleteCurRow"> <i class="mdi mdi-delete"></i></a>');
         $('.optionTableAdd').append($clone);
-        var slider = $("#slider-range").data("ionRangeSlider");
-        var from = slider.result.from;
-        var to = $('#banner-datatable >tbody >tr.input_tr').length;
-        slider.update({
-            min: from,
-            max: to,
-        });
+        // var slider = $("#slider-range").data("ionRangeSlider");
+        // var from = slider.result.from;
+        // var to = $('#banner-datatable >tbody >tr.input_tr').length;
+        // slider.update({
+        //     min: from,
+        //     max: to,
+        // });
     });
 
     $(document).on('click', '.addOptionRow-edit', function(e) {
@@ -833,21 +833,21 @@
         });
     });
     $("#addAddonmodal").on('click', '.deleteCurRow', function() {
-        var slider = $("#addAddonmodal #slider-range").data("ionRangeSlider");
-        var from = slider.result.from;
-        var to = $('#addAddonmodal #banner-datatable >tbody >tr.input_tr').length - 1;
-        slider.update({
-            min: from,
-            max: to,
-        });
+        // var slider = $("#addAddonmodal #slider-range").data("ionRangeSlider");
+        // var from = slider.result.from;
+        // var to = $('#addAddonmodal #banner-datatable >tbody >tr.input_tr').length - 1;
+        // slider.update({
+        //     min: from,
+        //     max: to,
+        // });
         $(this).closest('tr').remove();
-        var slider = $("#slider-range").data("ionRangeSlider");
-        var from = slider.result.from;
-        var to = $('#banner-datatable >tbody >tr.input_tr').length;
-        slider.update({
-            min: from,
-            max: to,
-        });
+        // var slider = $("#slider-range").data("ionRangeSlider");
+        // var from = slider.result.from;
+        // var to = $('#banner-datatable >tbody >tr.input_tr').length;
+        // slider.update({
+        //     min: from,
+        //     max: to,
+        // });
     });
 
     $("#editdAddonmodal").on('click', '.deleteCurRow', function() {
