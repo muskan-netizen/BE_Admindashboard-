@@ -534,7 +534,7 @@ class UserhomeController extends FrontController
             if ($this->additionalPreference['is_cache_enable_for_home'] == 1 && @$find_key['data']) {
                 $homeData = $find_key['data'];
                 // Logging the retrieved data
-               \Log::info('Retrieved HTML from Redis: ' . $homeData);
+             
                 echo $homeData;
                 exit;
             } else {
