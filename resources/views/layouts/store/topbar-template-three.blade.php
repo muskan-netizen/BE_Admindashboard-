@@ -65,9 +65,9 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                                 <li>
                                     <a href="{{route('extrapage',['slug' => $page->slug])}}">
                                         @if(isset($page->translations) && $page->translations->first()->title != null)
-                                        {{ $page->translations->first()->title ?? ''}}
+                                        {{ __($page->translations->first()->title) ?? ''}}
                                         @else
-                                        {{ $page->primary->title ?? ''}}
+                                        {{ __($page->primary->title) ?? ''}}
                                         @endif
                                     </a>
                                 </li>
@@ -76,9 +76,9 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                                 <li>
                                     <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_blank">
                                         @if(isset($page->translations) && $page->translations->first()->title != null)
-                                        {{ $page->translations->first()->title ?? ''}}
+                                        {{ __($page->translations->first()->title) ?? ''}}
                                         @else
-                                        {{ $page->primary->title ?? ''}}
+                                        {{ __($page->primary->title) ?? ''}}
                                         @endif
                                     </a>
                                 </li>

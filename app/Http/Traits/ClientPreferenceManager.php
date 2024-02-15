@@ -75,7 +75,8 @@ trait ClientPreferenceManager{
       }
 
     Cache::forget('client_preferences_additional_["'.$key.'"]');
-      ClientPreferenceAdditional::updateOrCreate(
+
+    $id =  ClientPreferenceAdditional::updateOrCreate(
           ['key_name' => $key, 'client_code' => $client->code],
           ['key_name' => $key, 'key_value' => $value,'client_code' => $client->code,'client_id'=> $client->id]);
     }

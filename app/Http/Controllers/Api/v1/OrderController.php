@@ -397,21 +397,29 @@ class OrderController extends BaseController
                             if( !empty($vendor_cart_product->slot_price) ) {
                                 $slot_based_price += $vendor_cart_product->slot_price;
                             }
-                            if ((isset($client_preference->is_hyperlocal)) && ($client_preference->is_hyperlocal == 1) && ($latitude) && ($longitude)){
-                                if (!empty($latitude) && !empty($longitude)) {
-                                    if(($client_preference->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)){
-                                        $serviceArea = $vendor_cart_product->vendor->where(function($query) use ($latitude, $longitude) {
-                                            $query->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
-                                                $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
-                                            })
-                                            ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
-                                                $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
-                                            });
-                                        })->where('id', $vendor_id)->get();
+                            if ((isset($client_preference->is_hyperlocal)) && ($client_preference->is_hyperlocal == 1) && !empty($latitude) && !empty($longitude)){
+                                $serviceArea =  $order_vendor->vendor->where('id',$order_vendor->vendor_id)->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                                    $query->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
+                                })->first();
 
-                                        if($serviceArea->isEmpty()){
-                                            return $this->errorResponse(__('Products for this vendor are not deliverable at your area. Please change address or remove product.'), 400);
-                                        }
+                                if(!isset($serviceArea)) {
+                                    DB::rollback();
+                                    return $this->errorResponse(__('Products for this vendor are not deliverable at your area. Please change address or remove product.'), 400);
+                                }
+
+                                if(($client_preference->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)){
+                                    $serviceArea = $vendor_cart_product->vendor->where(function($query) use ($latitude, $longitude) {
+                                        $query->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                            $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                        })
+                                        ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                            $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                        });
+                                    })->where('id', $vendor_id)->get();
+
+                                    if($serviceArea->isEmpty()){
+                                        DB::rollback();
+                                        return $this->errorResponse(__('Products for this vendor are not deliverable at your area. Please change address or remove product.'), 400);
                                     }
                                 }
                             }

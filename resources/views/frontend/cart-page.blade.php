@@ -81,6 +81,8 @@
 
 @endphp
 
+
+
 @if ($cart_details->totalQuantity <= 0)
     <div class="container">
         <div class="row mt-2 mb-4 mb-lg-5">
@@ -239,14 +241,14 @@
                                 @endif
                                 <div id="mov" style="display:none;">{{ $product->vendor->order_min_amount }}
                                 </div>
-                                @if (isset($product->isDeliverable) && $product->isDeliverable == 0)
-                                    <div class="col-12">
-                                        <div class="text-danger">
-                                            <i class="fa fa-exclamation-circle"></i>
-                                            {{ __('Products for this vendor are not deliverable at your area. Please change address or remove product.') }}
-                                        </div>
+                                @if ($product->isDeliverable != '' && $product->isDeliverable == 0)
+                                <div class="col-12">
+                                    <div class="text-danger">
+                                        <i class="fa fa-exclamation-circle"></i>
+                                        {{ __('Products for this vendor are not deliverable at your area. Please change address or remove product.') }}
                                     </div>
-                                @endif
+                                </div>
+                            @endif
 
                             </div>
                         </div>
@@ -794,7 +796,7 @@
                                 <div class="col-lg-6">
                                     @if ($product->delOptions)
                                         <div
-                                            class="row mb-1 d-flex align-items-center  dfsdf  @if ($product->promo_free_deliver == 1) {{ $product->promo_free_deliver }} org_price @endif ">
+                                            class="row mb-1 d-flex align-items-center  @if ($product->promo_free_deliver == 1) {{ $product->promo_free_deliver }} org_price @endif ">
                                             <div class="col-5 text-lg-right">
                                                 <label class="m-0 radio">
                                                     {{ __('Delivery Fee') }} :</label>
@@ -946,7 +948,8 @@
                                             <p class="total_amt m-0">
 
                                                 @if ($additionalPreference['is_token_currency_enable'])
-                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($product->product_total_amount + $product->vendor->fixed_fee_amount)) }}
+                                              
+                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($product->product_total_amount)) }}
                                                     @else
                                                     {{ Session::get('currencySymbol') . decimal_format($product->product_sub_total_amount + $product->vendor->fixed_fee_amount - $product->bid_vendor_discount ?? 0) }}
                                                 @endif
@@ -1173,33 +1176,35 @@
 
 
                         </div>
+
+                        
                         <div class="col-lg-12 mt-3 cart-price">
 
-                            @if ($cart_details->sub_total > 0)
-                                <div class="row">
-                                    <div class="col-6">{{ __('Total') }}</div>
-                                    {{-- <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->sub_total - $cart_details->bid_total_discount)}}</b></div> --}}
-                                    <div class="col-6 text-right"><b>
-                                            @if ($additionalPreference['is_token_currency_enable'])
-                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->total_gross_amount)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->total_gross_amount) }}
-                                            @endif
-                                        </b>
-                                    </div>
-                                </div>
-                                <hr class="my-2">
-                            @endif
+                         
                             @if ($cart_details->total_deliver_charges > 0)
                                 <div class="row">
                                     <div class="col-6">{{ __('Total Delivery Fee') }}</div>
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->total_deliver_charges)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->total_deliver_charges) }}
+                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->delivery_charge)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->delivery_charge) }}
                                             @endif
                                         </b>
                                     </div>
                                 </div>
                                 <hr class="my-2">
                             @endif
+                            @if ($cart_details->gross_amount > 0)
+                            <div class="row">
+                                <div class="col-6">{{ __('SubTotal') }}</div>
+                                <div class="col-6 text-right"><b>
+                                        @if ($additionalPreference['is_token_currency_enable'])
+                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->gross_amount)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->gross_amount -$cart_details->bid_total_discount) }}
+                                        @endif
+                                    </b>
+                                </div>
+                            </div>
+                            <hr class="my-2">
+                        @endif
                             @if ($serviceType == 'rental' || $serviceType == 'p2p')
                                 <div class="row">
                                     <div class="col-6">{{ __('Security Amount') }}</div>
@@ -1281,30 +1286,8 @@
                 </div> --}}
                             @endif
 
-                            @if ($price_bifurcation != 1)
-                                <!-- <hr class="my-2"> -->
-                                <div class="row">
-                                    <div class="col-6">{{ __('Sub Total') }}</div>
-                                    {{-- @if ($serviceType == 'rental')
-                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount+$vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
-                    <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
-                @else  --}}
-                                    {{-- <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount - $cart_details->bid_total_discount)}}</b></span> --}}
-                                    <div class="col-6 text-right"><b>
-                                            @if ($additionalPreference['is_token_currency_enable'])
-                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}
-                                            @else
-                                                {{ Session::get('currencySymbol') }}
-                                            @endif
-                                            <span
-                                                id="gross_amount">{{ $additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($cart_details->gross_amount)) : decimal_format($cart_details->gross_amount - $cart_details->bid_total_discount) }}
-                                        </b></span>
-                                        <span id="other_taxes" style="display:none;">{{ $other_taxes }}</span>
-                                    </div>
-                                    {{-- @endif --}}
-                                </div>
-                                <hr class="my-2">
-                            @endif
+                   
+
                             @if ($cart_details->total_taxable_amount + $other_taxes > 0)
                                 <div class="row">
                                     <div class="col-6">{{ __('Tax') }}</div>

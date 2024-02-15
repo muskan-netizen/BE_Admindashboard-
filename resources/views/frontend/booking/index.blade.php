@@ -327,7 +327,7 @@ input[type=number]::-webkit-outer-spin-button {
 
         </div>
         <div class="alFullMapForm col-md-12 p-0 position-absolute">
-            <div class="booking-experienceNew ds bc">
+            <div class="booking-experienceNew">
                 <div class="address-form">
                     @if (isset($client_preference_detail) && $client_preference_detail->book_for_friend == 1)
                         <div class="tip_radio_controls_book_friend text-center mt-2">
@@ -368,14 +368,25 @@ input[type=number]::-webkit-outer-spin-button {
                                 <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
                                     <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
                                 </label>
+
+                               
+                            </div>
+                            <div class="item mx-1">
+                            <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_pooling" name="is_cab_pooling_radio"
+                                      value="1">
+                                <label class="pool_label mb-0  my-2" for="cab_pooling" id="label_cab_pooling">
+                                    <h5 class="m-0" id="pool_5">{{ __('Pooling') }}</h5>
+                                </label>
+
+                               
                             </div>
                             @endif
 
                             @if($is_bid_ride_enable == 1)
                             <div class="item mx-1">
                                 <input type="radio" id="bid_radio" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="0">
-                                <label class="mb-0  my-2" >
-                                    <h5 class="m-0" id="">Bid</h5>
+                                <label class="pool_label mb-0  my-2" >
+                                    <h5 class="m-0" id="pool_5">Bid</h5>
                                 </label>
                             </div>
                             @endif

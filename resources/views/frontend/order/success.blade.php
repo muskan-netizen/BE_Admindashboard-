@@ -13,7 +13,7 @@ if($serviceType == 'rental')
     $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges+$order->rental_protection_amount+$order->booking_option_price - $order->wallet_amount_used;
 }else{
 
-    $total = $order->taxable_amount+$order->total_service_fee+$order->fixed_fee_amount+$order->total_container_charges+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount - $order->wallet_amount_used;
+    $total = $order->total_other_taxes_amount+$order->total_service_fee+$order->fixed_fee_amount+$order->total_container_charges+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount - $order->wallet_amount_used;
 }
 
 $additional_price=0;
@@ -238,7 +238,8 @@ $order_is_long_term = $order->is_long_term;
                                     // $total += decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare);
                                     // dd($total);
                                     @endphp
-				                         <li>{{__('Tax')}} <span>{{Session::get('currencySymbol').decimal_format($order->total_other_taxes_amount)}}</span></li>
+				                         <li>{{__('Tax')}} <span>@if( $additionalPreference["is_token_currency_enable"])
+                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}@endif</span></li>
                                    @endif
 
                                     @if($order->luxury_option_id == 4)
