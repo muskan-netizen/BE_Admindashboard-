@@ -314,7 +314,7 @@ class AuthController extends BaseController
             $rules['email'] = 'required|email|unique:users';
         }
         if($preferences->verify_phone == 1){
-            $rules['phone_number'] = 'required|string|min:7|max:15|unique:users,deleted_at,NULL';
+            $rules['phone_number'] = 'required|string|min:7|max:15|unique:users';
         }
         if($signReq->has('has_address') && $signReq->has_address ==1 ){
             $rules['address_type']  = 'required';
@@ -347,7 +347,7 @@ class AuthController extends BaseController
             }
 
             if(!empty($signReq->phone_number) && ($preferences->verify_phone == 0)){
-                $rules['phone_number'] = 'string|min:7|max:15|unique:users,deleted_at,NULL';
+                $rules['phone_number'] = 'string|min:7|max:15|unique:users';
             }
         }
         $message['email.required'] = __('The email or phone number field is required.');
