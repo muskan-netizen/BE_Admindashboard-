@@ -663,6 +663,7 @@ class UserhomeController extends FrontController
                 if($client_preferences->is_hyperlocal == 1) {
                     $this->storeLocations($locations,$html,$this->loc_key);
                 }else{
+                    \Log::info('Retrieved HTML from Redis');
                     Redis::set($this->loc_key, json_encode($html));
                     $html = Redis::get($this->loc_key);
 
