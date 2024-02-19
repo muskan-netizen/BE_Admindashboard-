@@ -1157,7 +1157,9 @@ class HomeController extends BaseController
                 //     // $response[] = $vendor;
                 // }
                // pr($vendorids);
-                $products = Product::byProductCategoryServiceType($action)->with(['category.categoryDetail.translation' => function ($q) use ($langId) {
+                $products = Product::byProductCategoryServiceType($action)->with(['variantSingle' => function ($q) {
+                    $q->select('id','title',  'product_id', 'quantity', 'price','markup_price', 'barcode','compare_at_price');
+                },'category.categoryDetail.translation' => function ($q) use ($langId) {
                     $q->where('category_translations.language_id', $langId);
                 }, 'media'])->join('product_translations as pt', 'pt.product_id', 'products.id')
                     ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
@@ -1185,7 +1187,9 @@ class HomeController extends BaseController
 
                 return $this->successResponse($response);
             } else {
-                $products = Product::byProductCategoryServiceType($action)->join('product_translations as pt', 'pt.product_id', 'products.id')
+                $products = Product::byProductCategoryServiceType($action)->with('variantSingle', function ($q) use ($langId) {
+                    $q->select('id','title', 'product_id', 'quantity', 'price','markup_price', 'barcode','compare_at_price');
+                })->join('product_translations as pt', 'pt.product_id', 'products.id')
                     ->select('products.id', 'products.sku', 'pt.title', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
                     ->where('pt.language_id', $langId)
                     ->whereHas('vendor', function ($query) use ($action) {
