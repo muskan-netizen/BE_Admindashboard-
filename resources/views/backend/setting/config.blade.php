@@ -1024,7 +1024,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                     </div>
                 </div>
             </form><!-- SMS Configuration end -->
@@ -1532,7 +1532,7 @@
 
                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                         <label for="call_button_switch" class="mr-2 mb-0">{{ __('Call Button') }}<small
-                                class="d-block pr-5">{{ __('Enable to allow customers to chat button.') }}</small></label>
+                                class="d-block pr-5">{{ __('Enable to allow customers to call button.') }}</small></label>
                         <span> <input type="checkbox" data-plugin="switchery" name="call_button_switch"
                                 id="call_button_switch" class="form-control checkbox_change"
                                 data-className="call_button" data-color="#43bee1"
@@ -1630,7 +1630,7 @@
                                 <hr />
                             </div>
                         </div>
-                       
+
 
                         <div class="col-12 mt-2">
                             <div class="form-group mt-2 d-flex switchery-demo">
@@ -2354,7 +2354,7 @@
         </div>
     </div>
 
-    
+
     <div class="col-xl-4 col-lg-4 mb-3">
         <div class="page-title-box">
             <h4 class="page-title text-uppercase">{{ __('Vendor Notification Product Stock') }}</h4>
@@ -2461,10 +2461,10 @@
                     </div>
                 </div>
                 </div>
-       
+
                 </div>
             </form>
-    
+
     </div>
 </div>
 
@@ -2525,11 +2525,11 @@
                     </div>
                 </div>
         </form>
-        
-    
+
+
 
     </div>
-    
+
     {{-- ends here marg form --}}
     </div>
     <div class="col-xl-4 col-lg-4 mb-3">
@@ -2547,10 +2547,10 @@
                 <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
                 </button>
             </div>
-            
+
 
             <div class="col-12">
-                
+
                 <div class="form-group mb-0 d-flex switchery-demo">
                     <label for="" class="mr-3">{{ __('Enable') }}</label>
                     <input type="checkbox" data-plugin="switchery" name="blockchain_route_formation_switch"
@@ -2560,9 +2560,9 @@
                     <input type="hidden" @if (@$getAdditionalPreference['blockchain_route_formation'] == 1) value="1" @else value="0" @endif
                         name="blockchain_route_formation" id="blockchain_route_formation" />
                 </div>
-        
+
                 <div class="row mt-2  @if (@$getAdditionalPreference['blockchain_route_formation'] != 1) d-none @endif;" id="blockchain_configuration_div">
-                   
+
                     <div class="col-6">
                     <label for="" class="mr-3">{{ __('Blockchain Api Domain') }}</label>
                         <input type="text" name="blockchain_api_domain" id="blockchain_api_domain"
@@ -2977,7 +2977,7 @@
             $('.optionTableAdd').append($clone);
 
         });
-        $('#add_slot_modal_btn').click(function(e) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+        $('#add_slot_modal_btn').click(function(e) {
             document.getElementById("slotForm").reset();
             $('#add_slot_modal input[name=slot_id]').val("");
             $('#add_slot_modal').modal('show');
@@ -2986,7 +2986,7 @@
 
 
         $(document).on("click", "#sync_marg_btn", function(e) {
-            e.preventDefault();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+            e.preventDefault();
             $.ajax({
                 type: "GET",
                 dataType: 'json',
@@ -3656,16 +3656,16 @@
             }
         }
         $('#blockchain_route_formation_switch').on('change', function() {
-  
+
             if ($('#blockchain_route_formation_switch:checked').length != 1) {
                 $('#blockchain_configuration_div').hide();
             } else {
                 $('#blockchain_configuration_div').show();
             }
-      
+
          });
 
-       
+
         $('#pickup_notification_switch2')[0].onchange = function() {
             if ($('#pickup_notification_switch2:checked').length != 1) {
                 $('#pickup_notification_div2').hide();
@@ -3706,7 +3706,7 @@
                 $('#xero_config_div').show();
             }
         }
-        
+
 
         var xero_enable_switch = $('#xero_enable_switch');
         if (xero_enable_switch.length > 0) {

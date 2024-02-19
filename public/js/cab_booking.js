@@ -1,5 +1,4 @@
    ////////   **************  cab details page  *****************  ////////
-
    $.ajaxSetup({
     headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
     });
@@ -423,7 +422,6 @@ $(document).ready(function () {
             alert('Select recurring details');
             return false;
         }
-
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -433,15 +431,15 @@ $(document).ready(function () {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
                 if(response.status == '200'){
-
                     if(is_cab_pooling == 4 )
                     {
                         alert(response.message);
                         window.location.href = response.redirect;
                     }
-
+                     
                     let order_number = response.data.order_number;
                     let reload_route = response.data.route;
+                    
                     if((payment_option_id == 1) || (payment_option_id == 2)){
                         // placeOrderBeforePayment('',payment_option_id,0,order_number);
                         window.location.replace(response.data.route);
@@ -452,9 +450,9 @@ $(document).ready(function () {
                         // $("#cab_detail_box").append(order_success_template(orderSuccessData)).show();
                         // setInterval(function(){
                         //     getDriverDetails(response.data.dispatch_traking_url)
-                        // },3000);
+                        // },3000); 
                     }else if(payment_option_id == 3){
-                        let payment_form = "pickup_delivery";
+                       let payment_form = "pickup_delivery";
                         $.ajax({
                             type: "POST",
                             dataType: 'json',
@@ -463,8 +461,6 @@ $(document).ready(function () {
                             success: function(resp) {
                                 if (resp.status == 'Success') {
                                     window.location.replace(resp.data);
-                                } else {
-                                    alert(resp.message);
                                 }
                             },
                             error: function(error) {
@@ -1418,7 +1414,6 @@ $(document).ready(function () {
 
         const urlParams = new URLSearchParams(window.location.search);
         const yacht_id = urlParams.get('yacht_id');
-
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -1588,6 +1583,18 @@ $(document).ready(function () {
             $(this).hide();
         }).get();
 
+    });
+    $(document).on("click",".delete-drop-off",function() {
+        $(".check-dropoff-secpond").css("display", "block");
+        $('.add-more-location').attr("style", "display: none !important");
+        $('.where-to-second').attr("style", "display: none !important");
+        $('.where-to-first').attr("style", "display: block !important");
+        $('.check-dropoff').attr("style", "display: block !important");
+        $('#destination_location_add_temp').attr("style", "display: none !important");
+
+        $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
+            $(this).hide();
+        }).get();
     });
 
     $(document).on("click",".scheduled-ride",function() {

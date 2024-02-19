@@ -419,7 +419,7 @@ input[type=number]::-webkit-outer-spin-button {
                                 <div class="title title-24 position-relative edit-dropoff"> {{ __('To') }} - <span
                                         id="dropoff-where-to"></span><i class="fa fa-angle-down" aria-hidden="true"></i>
                                 </div>
-                                <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel=""></i>
+                                    <i class="fa fa-times ml-1 apremove delete-drop-off" aria-hidden="true" data-rel=""></i>                 
                             </li>
                         </ul>
                         <a class="add-more-location position-relative pl-2" style="display:none"
