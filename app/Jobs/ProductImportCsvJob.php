@@ -201,7 +201,7 @@ class ProductImportCsvJob implements ShouldQueue
                         if (isset($row[23]) && $row[23] != "") {
 
                             foreach (explode(',', $row[23]) as $titleKey => $Addontitle) {
-                                $vendorAddonSetExists = AddonSet::where('title', "LIKE", $Addontitle)->where('vendor_id', $this->vendor_id)->first();
+                                $vendorAddonSetExists = AddonSet::where('title', "LIKE", $Addontitle)->first();
                                 if (! $vendorAddonSetExists) {
                                     $error[] = "Row " . $i . " : Addon doesn't exist";
                                     $checker = 1;
@@ -281,7 +281,7 @@ class ProductImportCsvJob implements ShouldQueue
                                     ]);
                                     if (isset($da[23]) && $da[23] != "") {
                                         foreach (explode(',', $da[23]) as $titleKey => $Addontitle) {
-                                            $vendorAddonSetExists = AddonSet::where('title', "LIKE", $Addontitle)->where('vendor_id', $this->vendor_id)->first();
+                                            $vendorAddonSetExists = AddonSet::where('title', "LIKE", $Addontitle)->first();
                                             if ($vendorAddonSetExists) {
                                                 $addonsArray = [
                                                     'product_id' => $product,
@@ -519,7 +519,7 @@ class ProductImportCsvJob implements ShouldQueue
                                     $delete = ProductTag::where('product_id', $product_id->id)->delete();
                                     if (isset($da[23]) && $da[23] != "") {
                                         foreach (explode(',', $da[23]) as $titleKey => $Addontitle) {
-                                            $vendorAddonSetExists = AddonSet::where('title', "LIKE", $Addontitle)->where('vendor_id', $this->vendor_id)->first();
+                                            $vendorAddonSetExists = AddonSet::where('title', "LIKE", $Addontitle)->first();
                                             if ($vendorAddonSetExists) {
                                                 $addonsArray = [
                                                     'product_id' => $product_id->id,
