@@ -1519,7 +1519,7 @@ class VendorController extends BaseController{
                 $user->name = $request->name;
                 $user->email = $request->email;
                 $user->title = $request->title;
-                $user->country_id = $county->id;
+                $user->country_id = $county ? $county->id : null;
                 $user->dial_code = $request->dialCode;
                 $user->phone_token_valid_till = $sendTime;
                 $user->email_token_valid_till = $sendTime;
@@ -1578,7 +1578,7 @@ class VendorController extends BaseController{
             $vendor->longitude = $request->longitude;
             $vendor->desc = $request->vendor_description;
             $vendor->slug = Str::slug($request->name, "-");
-            $vendor->is_seller = $request->vendor_type??0;
+            $vendor->is_seller = 0;
             $vendor->save();
             $permission_details = PermissionsOld::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
             if ($vendor_registration_documents->count() > 0) {
