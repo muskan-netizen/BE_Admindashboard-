@@ -1578,7 +1578,7 @@ class VendorController extends BaseController{
             $vendor->longitude = $request->longitude;
             $vendor->desc = $request->vendor_description;
             $vendor->slug = Str::slug($request->name, "-");
-            $vendor->is_seller = 0;
+            $vendor->is_seller = $request->vendor_type??0;
             $vendor->save();
             $permission_details = PermissionsOld::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
             if ($vendor_registration_documents->count() > 0) {
