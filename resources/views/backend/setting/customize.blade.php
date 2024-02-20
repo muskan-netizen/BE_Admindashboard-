@@ -252,7 +252,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
         <!-- Localization end -->
     </div>
 
-  
+
     <!--Localization end -->
 {{-- vendoe typs section aline by harbans singh :) --}}
     <div class="row col-spacing">
@@ -264,7 +264,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
             {{-- @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' ) --}}
             @php
                 $typeArray = getCategoryTypes();
-               
+
             @endphp
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
@@ -1663,7 +1663,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             </div>
                             @endforeach
                         </div>
-                        
+
                         <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
@@ -1671,7 +1671,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                 </div>
                             </div>
                             @php
-                        
+
                             @endphp
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-2">
@@ -1689,7 +1689,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             </div>
                             @endforeach
                         </div>
-                        
+
                       <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
@@ -1697,7 +1697,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                 </div>
                             </div>
                             @php
-                        
+
                             @endphp
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-2">
@@ -1722,7 +1722,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                 </div>
                             </div>
                             @php
-                        
+
                             @endphp
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-2">
@@ -1747,7 +1747,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                 </div>
                             </div>
                             @php
-                        
+
                             @endphp
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-2">
@@ -1869,8 +1869,8 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                         <div class="col-sm-12">
                             <div class="form-group d-flex justify-content-between">
                                 <label for="is_pre_signup" class="mr-3 mb-0">{{ __("User Pre SignUp") }}</label>
-                                <input type="checkbox" data-plugin="switchery" name="is_user_pre_signup" id="is_phone_signup_switch" class="form-control checkbox_change" data-className="is_phone_signup"  data-color="#43bee1" @if( @$getAdditionalPreference['is_user_pre_signup'] == '1') checked='checked' @endif>
-                                <input type="hidden"  @if(@$getAdditionalPreference['is_user_pre_signup'] == 1) value="1" @else value="0" @endif  name="is_phone_signup"  id="is_pre_signup"/>
+                                <input type="checkbox" data-plugin="switchery" name="is_user_pre_signup" id="is_user_pre_signup_switch" class="form-control checkbox_change" data-className="is_user_pre_signup"  data-color="#43bee1" @if( @$getAdditionalPreference['is_user_pre_signup'] == '1') checked='checked' @endif>
+                                <input type="hidden"  @if(@$getAdditionalPreference['is_user_pre_signup'] == 1) value="1" @else value="0" @endif  name="is_user_pre_signup"  id="is_user_pre_signup"/>
                             </div>
                         </div>
                         @foreach($verify_options as $key => $opt)
@@ -2594,7 +2594,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="card-box mb-0 ">
                                 <div class="d-flex align-items-center justify-content-between">
                                    <h4 class="header-title text-uppercase">{{__('Options')}}</h4>
-                                   
+
                                 </div>
                                 <div id="option_div">
 
@@ -3238,7 +3238,7 @@ $(document).ready(function(){
                         $('.option_section').remove();
                         $("#selector_div").addClass("d-none");
                     }
-                    
+
 
                   $(document).find("#add_user_registration_document_modal select[name=file_type]").val(response.data.file_type).change();
 
@@ -3249,7 +3249,7 @@ $(document).ready(function(){
                   $.each(response.data.translations, function( index, value ) {
                     $('#add_user_registration_document_modal #user_registration_document_name_'+value.language_id).val(value.name);
                   });
-                  
+
                   $.each(response.data.options, function( index, value ) {
                     $.each(value.translations, function( index1, value1 ) {
                         $('#add_user_registration_document_modal #option_name_'+index+'_'+value1.language_id).val(value1.name);
