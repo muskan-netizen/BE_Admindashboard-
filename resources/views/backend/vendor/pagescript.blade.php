@@ -808,13 +808,13 @@
         $clone.find(':text').val('');
         $clone.find('.lasttd').html('<a href="javascript:void(0);" class="action-icon deleteCurRow"> <i class="mdi mdi-delete"></i></a>');
         $('.optionTableAdd').append($clone);
-        // var slider = $("#slider-range").data("ionRangeSlider");
-        // var from = slider.result.from;
-        // var to = $('#banner-datatable >tbody >tr.input_tr').length;
-        // slider.update({
-        //     min: from,
-        //     max: to,
-        // });
+        var slider = $("#slider-range").data("ionRangeSlider");
+        var from = slider.result.from;
+        var to = $('#banner-datatable >tbody >tr.input_tr').length;
+        slider.update({
+            min: from,
+            max: to,
+        });
     });
 
     $(document).on('click', '.addOptionRow-edit', function(e) {
