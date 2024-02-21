@@ -810,7 +810,7 @@
         $('.optionTableAdd').append($clone);
         var slider = $("#slider-range").data("ionRangeSlider");
         var from = slider.result.from;
-        var to = $('#banner-datatable >tbody >tr.input_tr').length;
+        var to = $('.optionTableAdd >tbody >tr.input_tr').length;
         slider.update({
             min: from,
             max: to,

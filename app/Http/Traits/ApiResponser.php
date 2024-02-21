@@ -537,6 +537,11 @@ trait ApiResponser
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->africasTalking_sms($to,$body,$crendentials);
             }
+			elseif($client_preference->sms_provider == 7) //for Vonage
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->vonage_sms($to,$body,$crendentials);
+            }
             elseif($client_preference->sms_provider == 9) //for Ethiopia
             {
             $crendentials = json_decode($client_preference->sms_credentials);
