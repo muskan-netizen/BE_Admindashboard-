@@ -68,12 +68,13 @@ class HomeController extends BaseController
                         $vendorMode[] = $vendorData;
                     }
             }
-            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','add_to_cart_btn','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_particular_driver','is_enable_curb_side','is_enable_variant_set_v2','is_share_ride_users','is_recurring_booking','is_rental_weekly_monthly_price','is_enable_allergic_items','is_user_pre_signup','vendor_online_status']);
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','add_to_cart_btn','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_particular_driver','is_enable_curb_side','is_enable_variant_set_v2','is_share_ride_users','is_recurring_booking','is_rental_weekly_monthly_price','is_enable_allergic_items','is_user_pre_signup','vendor_online_status','distance_matrix_app_status']);
 
             //mohit sir branch code updated by sohail farm meat
             $homeData['profile']->preferences->vendorMode = $vendorMode;
 
             $homeData['profile']->preferences->is_cab_pooling = (int) $getAdditionalPreference['is_cab_pooling'];
+            $homeData['profile']->preferences->distance_matrix_app_status = (int) $getAdditionalPreference['distance_matrix_app_status'] ?? "";
             $homeData['profile']->preferences->chat_button = (int) $getAdditionalPreference['chat_button'];
             $homeData['profile']->preferences->call_button = (int) $getAdditionalPreference['call_button'];
             $homeData['profile']->preferences->add_to_cart_btn = (int) $getAdditionalPreference['add_to_cart_btn'];
@@ -1156,10 +1157,14 @@ class HomeController extends BaseController
                 //     // $response[] = $vendor;
                 // }
                // pr($vendorids);
-                $products = Product::byProductCategoryServiceType($action)->with(['category.categoryDetail.translation' => function ($q) use ($langId) {
+                $products = Product::byProductCategoryServiceType($action)->with(['vendor'=>function($q) {
+                    $q->select('id','name');
+                },'variantSingle' => function ($q) {
+                    $q->select('id','title', 'product_id', 'quantity', 'price','markup_price', 'barcode','compare_at_price');
+                },'category.categoryDetail.translation' => function ($q) use ($langId) {
                     $q->where('category_translations.language_id', $langId);
                 }, 'media'])->join('product_translations as pt', 'pt.product_id', 'products.id')
-                    ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
+                    ->select('products.id','products.vendor_id','products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
                     ->where('pt.language_id', $langId)
                     ->whereHas('vendor', function ($query) use ($action) {
                         $query->where($action, 1);
@@ -1184,8 +1189,12 @@ class HomeController extends BaseController
 
                 return $this->successResponse($response);
             } else {
-                $products = Product::byProductCategoryServiceType($action)->join('product_translations as pt', 'pt.product_id', 'products.id')
-                    ->select('products.id', 'products.sku', 'pt.title', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
+                $products = Product::byProductCategoryServiceType($action)->with(['vendor'=>function($q) {
+                    $q->select('id','name');
+                },'variantSingle'=> function ($q) use ($langId) {
+                    $q->select('id','title', 'product_id', 'quantity', 'price','markup_price', 'barcode','compare_at_price');
+                }])->join('product_translations as pt', 'pt.product_id', 'products.id')
+                    ->select('products.id', 'products.sku','products.vendor_id', 'pt.title', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
                     ->where('pt.language_id', $langId)
                     ->whereHas('vendor', function ($query) use ($action) {
                         $query->where($action, 1);

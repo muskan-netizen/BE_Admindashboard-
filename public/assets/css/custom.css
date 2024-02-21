@@ -1965,7 +1965,8 @@ i.mdi.mdi-exclamation-thick {
 
 .nav-user img {
     border-radius: 0%;
-    margin-right: 5px
+    margin-right: 5px;
+    object-fit:contain;
 }
 
 .dropdown-menu.show {
