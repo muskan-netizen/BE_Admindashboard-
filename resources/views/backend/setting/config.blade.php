@@ -983,6 +983,36 @@
                             </div>
                         </div>
 
+                        <div class="row sms_fields mx-0" id="vonage_fields"
+                            style="display : {{ $preference->sms_provider ==7 ? 'flex' : 'none' }};">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="vonage_api_key">{{ __('API Key') }}</label>
+                                    <input type="text" name="vonage_api_key" id="vonage_api_key" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('vonage_api_key', $sms_crendential->api_key ?? '') }}">
+                                    @if ($errors->has('vonage_api_key'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('vonage_api_key') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mtalkz_sender_id">{{ __('Secret Key') }}</label>
+                                    <input type="password" name="vonage_secret_key" id="vonage_secret_key" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('vonage_secret_key', $sms_crendential->secret_key ?? '') }}">
+                                    @if ($errors->has('vonage_secret_key'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('vonage_secret_key') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
                   <div class="row sms_fields mx-0" id="sms_country_fields"style="display : {{ $preference->sms_provider == 10 ? 'flex' : 'none' }};">
                     <div class="col-12">
                         <div class="form-group mb-2">

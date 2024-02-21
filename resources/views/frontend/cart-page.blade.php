@@ -1656,9 +1656,14 @@
                                     <input type="hidden" id="edit_order_schedule_slot"
                                         value="{{ $schedule_slots_edit }}">
                                 @endif
-                                @if ($serviceType == 'rental')
+                                @if (@$additionalPreference['cart_cms_page_status'] == 1)
                                     <div class="text-sm-left mb-2">
-                                        <input type="checkbox" name="agree_term_check" id="agree_term_check" value="" disabled> <a href="javascript:void(0);" class="agree_term_btn">Agree Term</a>
+                                            <input type="checkbox" name="refund_term_check" id="refund_term_check" value="" disabled> <a href="javascript:void(0);" class="refund_term_policy">I accept the refund Terms & policy</a>
+                                    </div>
+                                @endif
+                                @if ($serviceType == 'rental' || @$additionalPreference['cart_cms_page_status'] == 1)
+                                    <div class="text-sm-left mb-2">
+                                        <input type="checkbox" name="agree_term_check" id="agree_term_check" value="" disabled> <a href="javascript:void(0);" class="agree_term_btn">I accept the Terms & Conditions</a>
                                     </div>
                                 @endif
                                 @php
@@ -1795,8 +1800,21 @@
     </div>
 
 @endif
-@if ($serviceType == "rental" || $serviceType == 'p2p')
-    @include('frontend.cart.rentalConsentFormModal')
+@php
+    $termsPage = $cmsPages->filter(function($page) {
+            return $page->slug == 'terms-conditions';
+    })->first();
+    $refundPolicy = $cmsPages->filter(function($page) {
+            return $page->slug == 'refund-policy';
+    })->first();
+@endphp
+
+@if ($serviceType == "rental" || $serviceType == 'p2p' || @$additionalPreference['cart_cms_page_status'] == 1)
+    @include('frontend.cart.rentalConsentFormModal', ['page' => $termsPage])
+@endif
+
+@if (@$additionalPreference['cart_cms_page_status'] == 1)
+    @include('frontend.cart.refundPolicyFormModal', ['page' => $refundPolicy])
 @endif
 
 <script>
@@ -1864,6 +1882,20 @@
             backdrop: 'static',
             keyboard: false
         });
+    });
+
+    $(document).on('click', '.refund_term_policy', function(){
+        $('#refund_form_rental').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+
+    $(document).on('click', '#refund_agree_btn', function(){
+        $('#refund_term_check').prop('checked', true);
+        $('#refund_term_check').attr('disabled', false);
+        $("#order_placed_btn").attr('disabled', false);
+        $('#refund_form_rental').modal('hide');
     });
 
     $(document).on('click', '#agree_btn', function(){
