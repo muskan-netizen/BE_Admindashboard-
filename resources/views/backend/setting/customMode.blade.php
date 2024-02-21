@@ -878,3 +878,31 @@
             name="vendor_online_status" id="vendor_online_status" />
     </div>
 </div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="distance_matrix_app_switch" class="mr-2 mb-0">{{ __('Google Matrix with Only App') }}<small
+                class="d-block pr-5">{{ __('Change Google Matrix Api /AppDisable.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="distance_matrix_app_status"
+                id="distance_matrix_app_switch" class="form-control checkbox_change"
+                data-className="distance_matrix_app_status" data-color="#43bee1"
+                @if (@$getAdditionalPreference['distance_matrix_app_status']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['distance_matrix_app_status'] == 1) value="1" @else value="0" @endif
+            name="distance_matrix_app_status" id="distance_matrix_app_status" />
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="cart_cms_page_switch" class="mr-2 mb-0">{{ __('Cart CMS Pages') }}<small
+                class="d-block pr-5">{{ __('Show CMS pages on cart page for all modules') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="cart_cms_page_status"
+                id="cart_cms_page_switch" class="form-control checkbox_change"
+                data-className="cart_cms_page_status" data-color="#43bee1"
+                @if (@$getAdditionalPreference['cart_cms_page_status']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['cart_cms_page_status'] == 1) value="1" @else value="0" @endif
+            name="cart_cms_page_status" id="cart_cms_page_status" />
+    </div>
+</div>

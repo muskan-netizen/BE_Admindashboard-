@@ -148,6 +148,7 @@ Route::group(['middleware' => ['domain']], function () {
 	// Paypal
 	Route::post('payment/paypal', 'Front\PaypalGatewayController@paypalPurchase')->name('payment.paypalPurchase');
 	Route::get('payment/paypal/CompletePurchase', 'Front\PaypalGatewayController@paypalCompletePurchase')->name('payment.paypalCompletePurchase');
+	Route::post('payment/paypal-transaction/store', 'Front\PaypalGatewayController@paymentTransactionSave')->name('payment.paypal.transaction');
 	# for App side paypal payment
 	Route::get('payment/paypal/completeCheckout/{token?}/{action?}/{address?}', 'Front\PaymentController@paypalCompleteCheckout')->name('payment.paypalCompleteCheckout');
 	Route::get('payment/checkoutSuccess/{id}', 'Front\PaymentController@getCheckoutSuccess')->name('payment.getCheckoutSuccess');
