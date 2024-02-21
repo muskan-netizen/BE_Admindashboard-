@@ -242,7 +242,7 @@
                     },
                     phone_number: {
                         required: true,
-                        number: true,
+                        // number: true,
                         minlength: 7,
                         maxlength: 15,
                         regex: /^[1-9][0-9]*$/
