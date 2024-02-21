@@ -984,7 +984,7 @@
                         </div>
 
                         <div class="row sms_fields mx-0" id="vonage_fields"
-                            style="display : {{ $preference->sms_provider ==72 ? 'flex' : 'none' }};">
+                            style="display : {{ $preference->sms_provider ==7 ? 'flex' : 'none' }};">
                             <div class="col-12">
                                 <div class="form-group mb-2">
                                     <label for="vonage_api_key">{{ __('API Key') }}</label>
