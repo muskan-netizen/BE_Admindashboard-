@@ -57,9 +57,9 @@
             overflow-x: hidden
         }
 
-        #alTaxiBookingWrapper .vehical-container {
+        /* #alTaxiBookingWrapper .vehical-container {
             max-height: 200px
-        }
+        } */
 
         #alTaxiBookingWrapper .location-box {
             padding: 10px 24px
