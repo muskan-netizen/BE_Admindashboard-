@@ -128,7 +128,7 @@
     $(document).on('click', '.addOptionRow-Add', function(e) {
         var d = new Date();
         var n = d.getTime();
-        var $tr = $('.optionTableAddVarient tbody tr').next('tr');
+        var $tr = $('.optionTableAddVarient tr:eq(1)'); 
         var $clone = $tr.clone();
         $clone.find(':text').val('');
         $clone.find(':hidden').val('');
@@ -139,7 +139,7 @@
         var picker = new jscolor("#hexa-colorpicker-" + n, options);
     });
 
-    $(document).on('click', '.addOptionRow-edit', function(e) {
+    $(document).on('click', '.addOptionRow-edit-Addon', function(e) {
         var d = new Date();
         var n = d.getTime();
         var $tr = $('.optionTableEdit tbody>tr:first').next('tr');
