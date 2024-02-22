@@ -486,18 +486,17 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             @if($product->is_recurring_booking == 1)
                                                  @include('frontend.product-part.recurring-booking')
                                             @endif
-                                            @if(@getAdditionalPreference(['is_rental_weekly_monthly_price'])==1)
+                                            @if(@getAdditionalPreference(['is_rental_weekly_monthly_price'])['is_rental_weekly_monthly_price'] && $product->category->categoryDetail->type_id == 10 && Session::get('vendorType') == 'rental')
                                                 @include('frontend.product-part.booking-slot-p2p-rental')
                                             @elseif($product->category->categoryDetail->type_id == 10 && Session::get('vendorType') == 'car_rental')
                                                 @include('frontend.product-part.booking-slot')
-                                                @elseif($product->category->categoryDetail->type_id == 10 && Session::get('vendorType') == 'rental')
-                                                @include('frontend.product-part.booking')
                                             @endif
 
 
                                             @if(!empty($product->addOn) && $product->addOn->count() > 0)
                                             <div class="border-product">
                                                 <h6 class="product-title">{{ __('Addon List')}}</h6>
+
                                                 <div id="addon-table">
                                                     @foreach($product->addOn as $row => $addon)
                                                         <div class="addon-product">
@@ -1514,11 +1513,15 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     var add_to_cart_url = "{{ route('addToCart') }}";
     $(document).on('click', '.changeVariant', function() {
         var $this = $(this);
+         
+        // var data_id = $(this).attr('data-variant-id');
+        // // Set session variable
+        // sessionStorage.setItem('selected_variant', data_id);
+        // var myValue = sessionStorage.getItem('selected_variant');
         var myValue = []; // Initialize an empty array
 
         $('.selected_variant:checked').each(function() {
-            var value = $(this).attr('data-varient-id'); // Get the value of the 'data' attribute
-            $('#prod_variant_id').val(value);
+            var value = $(this).attr('data-variant-id'); // Get the value of the 'data' attribute
             myValue.push(value); // Push the value into the array
         });
 
@@ -1526,21 +1529,21 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         var option_title = $(this).data('option-title');
         $('.changeVariant_'+option_title).removeAttr('checked');
         $this.attr('checked', 'checked');
-        $key =  $(this).data('row-key');
+       $key =  $(this).data('row-key');
         updatePrice(myValue ,$key);
     });
 
-    // $(document).on('click', '.selected_variant', function() {
-    //     var $this = $(this);
-    //     var option_title = $(this).data('option-title');
-    //     $('.changeVariant_'+option_title).removeAttr('checked');
-    //     $this.attr('checked', 'checked');
-    //     var isSelected = $this.is(':checked');
-    //     if(isSelected){
-    //         // alert($(this).data('variant-id'));
-    //         $('#prod_variant_id').val($(this).data('variant-id'));
-    //     }
-    // });
+    $(document).on('click', '.selected_variant', function() {
+        var $this = $(this);
+        var option_title = $(this).data('option-title');
+        $('.changeVariant_'+option_title).removeAttr('checked');
+        // $this.attr('checked', 'checked');
+        // var isSelected = $this.is(':checked');
+        // if(isSelected){
+        //     // alert($(this).data('variant-id'));
+        //     $('#prod_variant_id').val($(this).data('variant-id'));
+        // }
+    });
 
     function updatePrice(myValue ,key){
         var variants = [];
