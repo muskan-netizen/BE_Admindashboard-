@@ -306,7 +306,7 @@
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-                                                                                            
+
                                                                                             @if ($order->fixed_fee_amount > 0)
                                                                                                 <li
                                                                                                     class="d-flex align-items-center justify-content-between">
@@ -364,7 +364,7 @@
                                                                                                  $vendor->taxable_amount + $vendor->service_fee_percentage_amount + $vendor->fixed_fee +
                                                                                                  $vendor->delivery_fee + $vendor->additional_price + $vendor->toll_amount-$order->wallet_amount_used;
                                                                                                     $subtotal_order_price += $product_subtotal_amount;
-                                                                                                    
+
                                                                                                 @endphp
                                                                                                 <span>{{$additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($product_subtotal_amount
                                                                                                     *
@@ -373,8 +373,52 @@
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
 
+                                                                                            <li>
+                                                                                                @php
+                                                                                                    $docs = \App\Models\OrderDocument::where('order_vendor_product_id', $order->vendors[0]->id)->get();
+                                                                                                @endphp
+                                                                                                @if(count($docs) > 0)
+                                                                                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Documents</button>
+                                                                                                @endif
+                                                                                            </li>
                                                                                         </ul>
                                                                                     </div>
+
+                                                                                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                                                        <div class="modal-dialog" role="document">
+                                                                                          <div class="modal-content">
+                                                                                            <div class="modal-header">
+                                                                                              <h4 class="header-title mb-3" id="exampleModalLabel">{{ __('Documents') }}</h4>
+                                                                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                                <span aria-hidden="true">&times;</span>
+                                                                                              </button>
+                                                                                            </div>
+                                                                                            <div class="modal-body">
+                                                                                                @if($docs && count($docs) > 0)
+                                                                                                    @foreach($docs as $file)
+                                                                                                        @php
+                                                                                                            $files = Storage::disk('s3')->url($file['document']);
+                                                                                                        @endphp
+                                                                                                        <div class="mb-2 d-flex ">
+                                                                                                            <div class="col-12">
+                                                                                                                <img  src="{{url('file-download' . '/pdf.png')}}"    ><a href="{{$files}}"> {{$file['file_name']}}   </a>
+                                                                                                            </div>
+
+                                                                                                        </div>
+                                                                                                    @endforeach
+                                                                                                @endif
+                                                                                            </div>
+                                                                                            <div class="card-body">
+
+                                                                                            </div>
+
+                                                                                            <div class="modal-footer">
+
+                                                                                            </div>
+                                                                                          </div>
+                                                                                        </div>
+                                                                                      </div>
+
                                                                                     <?php
                                                                                         $pkup  = json_encode(date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone))));
                                                                                         $dpoff = json_encode(date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_dropoff, $timezone))));
@@ -529,7 +573,7 @@
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-															
+
                                                                                 @if ($order->total_container_charges > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -677,3 +721,5 @@
                                                 </div>
                                                 {{ $activeOrders->appends(['pageType' => 'activeOrders'])->links() }}
                                             </div>
+                                            <!-- Modal -->
+
