@@ -2412,8 +2412,8 @@ class OrderController extends BaseController
                 $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
                 $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
                 $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
-                $order->payable_amount = $order->total_price;
-                $order->payable_amount = decimal_format($order->total_price - $order->orderDetail->wallet_amount_used);
+                
+                $order->payable_amount = decimal_format($order->orderDetail->payable_amount);
                 if(checkColumnExists('orders', 'is_postpay')){
                     $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
                 }
@@ -2979,9 +2979,9 @@ class OrderController extends BaseController
                }
            }
 
-            // $order['user_document_value'] =  $user_docs;
-           $order->taxable_amount =  decimal_format($total_other_taxes??0);
-           $order->total_other_taxes =  decimal_format($total_other_taxes??0);
+             // $order['user_document_value'] =  $user_docs;
+            $order->taxable_amount =  decimal_format($total_other_taxes??0);
+            $order->total_other_taxes =  decimal_format($total_other_taxes??0);
             $order['user_document_list'] =  $user_registration_documents;
             $order['category_KYC_document'] = $category_KYC_document??null;
             $order->slot_based_Price =  $slot_based_Price??0;

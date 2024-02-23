@@ -1193,9 +1193,8 @@ class CartController extends BaseController
                         // Check if is_cart_checked is 1 then add $vendor_products_total_amount
                         if($prod->is_cart_checked == 1){
                             $proSum = $proSum + $quantity_price + $quantity_container_charges;
-
-                            $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                         }
+                        $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
 
                         $total_container_charges = $total_container_charges + $quantity_container_charges;
                         $prod->luxury_option_id= $prod->luxury_option_id??'';
@@ -1652,7 +1651,6 @@ class CartController extends BaseController
                     //     }
                     // }
                 }
-                $order_sub_total = $order_sub_total + $vendor_products_total_amount;
 
                 $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
