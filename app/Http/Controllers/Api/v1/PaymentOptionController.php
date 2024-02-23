@@ -39,49 +39,46 @@ class PaymentOptionController extends BaseController
 
     public function getPaymentOptions(Request $request, $page = '')
     {
-
         $code = $this->paymentOptionArray($page);
-        //mohit sir branch code added by sohail
         $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
         if ($request->service_type == 'takeaway' && !empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101)) {
             $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->where('id', '!=', 1)->get(['id', 'code', 'credentials', 'title', 'off_site']);
         } else {
             //Till here
             $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code', 'credentials', 'title', 'off_site']);
-
-            foreach ($payment_options as $option) {
-                if ($option->code == 'stripe') {
-                    $option->title = __('Credit/Debit Card (Stripe)');
-                } elseif ($option->code == 'kongapay') {
-                    $option->title = 'Pay Now';
-                } elseif ($option->code == 'mvodafone') {
-                    $option->title = 'Vodafone M-PAiSA';
-                } elseif ($option->code == 'mobbex') {
-                    $option->title = __('Mobbex');
-                } elseif ($option->code == 'offline_manual') {
-                    $json = json_decode($option->credentials);
-                    $option->title = $json->manule_payment_title;
-                } elseif ($option->code == 'mycash') {
-                    $option->title = __('Digicel MyCash');
-                } elseif ($option->code == 'windcave') {
-                    $option->title = __('Windcave (Debit/Credit card)');
-                } elseif ($option->code == 'stripe_ideal') {
-                    $option->title = __('iDEAL');
-                } elseif ($option->code == 'authorize_net') {
-                    $option->title = __('Credit/Debit Card');
-                } elseif ($option->code == 'obo') {
-                    $option->title = __("O'Pay");
-                } elseif ($option->code == 'livee') {
-                    $option->title = __("livees");
-                }elseif($option->code == 'totalpay') {
-                    $option->title = __('Total Pay');
-                }elseif($option->code == 'thawani') {
-                    $option->title = __('Thawani Payment');
-                }
-                $option->title = __($option->title);
-            }
-            return $this->successResponse($payment_options, '', 201);
         }
+        foreach ($payment_options as $option) {
+            if ($option->code == 'stripe') {
+                $option->title = __('Credit/Debit Card (Stripe)');
+            } elseif ($option->code == 'kongapay') {
+                $option->title = 'Pay Now';
+            } elseif ($option->code == 'mvodafone') {
+                $option->title = 'Vodafone M-PAiSA';
+            } elseif ($option->code == 'mobbex') {
+                $option->title = __('Mobbex');
+            } elseif ($option->code == 'offline_manual') {
+                $json = json_decode($option->credentials);
+                $option->title = $json->manule_payment_title;
+            } elseif ($option->code == 'mycash') {
+                $option->title = __('Digicel MyCash');
+            } elseif ($option->code == 'windcave') {
+                $option->title = __('Windcave (Debit/Credit card)');
+            } elseif ($option->code == 'stripe_ideal') {
+                $option->title = __('iDEAL');
+            } elseif ($option->code == 'authorize_net') {
+                $option->title = __('Credit/Debit Card');
+            } elseif ($option->code == 'obo') {
+                $option->title = __("O'Pay");
+            } elseif ($option->code == 'livee') {
+                $option->title = __("livees");
+            }elseif($option->code == 'totalpay') {
+                $option->title = __('Total Pay');
+            }elseif($option->code == 'thawani') {
+                $option->title = __('Thawani Payment');
+            }
+            $option->title = __($option->title);
+        }
+        return $this->successResponse($payment_options, '', 201);
     }
 
     public function postPayment(Request $request, $gateway = '')
@@ -396,14 +393,14 @@ class PaymentOptionController extends BaseController
             $this->gateway->setPassword($password);
             $this->gateway->setSignature($signature);
             $this->gateway->setTestMode($testmode); //set it to 'false' when go live
-           
+
             $response = $this->gateway->purchase([
                 'currency' => $currency, //'USD',
                 'amount' => $this->getDollarCompareAmount($request->amount),
                 'cancelUrl' => url($request->serverUrl . $request->cancelUrl),
                 'returnUrl' => url('/payment/paypal/CompletePurchase?amount='.$request->amount.'&order_number='.$request->order_number.'&action='.$request->action.'&come_from='.$request->come_from)
             ])->send();
-             
+
             if ($response->isSuccessful()) {
                 return $this->successResponse($response->getData());
             } elseif ($response->isRedirect()) {
@@ -414,7 +411,7 @@ class PaymentOptionController extends BaseController
                     $payment->user_id = $user->id ?? null;
                     $payment->transaction_id = $token['TOKEN'];
                     $payment->payment_option_id = 3;
-                    $payment->order_id = $request->order_number; 
+                    $payment->order_id = $request->order_number;
                     $payment->balance_transaction = $request->amount?? '';
                     $payment->type = $request->action;
                     $payment->save();
