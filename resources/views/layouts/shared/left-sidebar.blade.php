@@ -306,13 +306,14 @@
 
                             @endif
 
+                            @if(Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('admin.serviceArea.index')}}">
                                     <span class="icon-customer-2"></span>
                                     <span> {{ __('Admin Service Area') }} </span>
                                 </a>
                             </li>
-
+                            @endif
                             {{-- <li>
                                 <a href="{{route('company.getList')}}">
                                     <span class="icon-customer-2"></span>

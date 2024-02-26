@@ -1325,7 +1325,7 @@ class CartController extends BaseController
                                     $tax_amount = ($price_in_doller_compare * $rate) / 100;
 
                                      //Find vendor Product Discount here
-                                     $productPriceAfterVendorDiscount  = $this->productPriceAfterVendorDiscount($vendorData,$quantity_price,$clientCurrency->doller_compare,$cart);
+                                     $productPriceAfterVendorDiscount  = $this->productPriceAfterVendorDiscount($prod,$quantity_price,$clientCurrency->doller_compare,$cart);
                                      $quantity_price = $quantity_price - $productPriceAfterVendorDiscount;
 
                                     if(!$additionalPreferences->is_tax_price_inclusive){
@@ -1348,7 +1348,7 @@ class CartController extends BaseController
                                 }
                             }else{
                                  //Find vendor Product Discount here
-                                 $productPriceAfterVendorDiscount  = $this->productPriceAfterVendorDiscount($vendorData,$quantity_price,$clientCurrency->doller_compare,$cart);
+                                 $productPriceAfterVendorDiscount  = $this->productPriceAfterVendorDiscount($prod,$quantity_price,$clientCurrency->doller_compare,$cart);
                                  $quantity_price = $quantity_price - $productPriceAfterVendorDiscount;
                             }
                             $prod->taxdata = $taxData;
