@@ -1868,8 +1868,10 @@ class CartController extends BaseController
         $userCart->save();
         // add delivery fee charges as other tax as per web code.
         $cart->other_taxes = $deliver_fee_charges;
+        $fixedFeeNomenclatures = $this->fixedFee($langId).' tax';
+        
         $cart->specific_taxes = array(
-            ['label' => 'Fixed fee tax', 'value' => decimal_format($total_fixed_fee_tax)],
+            ['label' => $fixedFeeNomenclatures, 'value' => decimal_format($total_fixed_fee_tax)],
             ['label' => 'Service fee tax', 'value' => decimal_format($total_service_fee_tax)],
             ['label' => 'Deliver fee tax', 'value' => decimal_format($deliver_fee_charges_tax)],
             ['label' => 'Markup fee tax', 'value' => decimal_format($total_markup_fee_tax)],
