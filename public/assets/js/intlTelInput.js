@@ -86,7 +86,7 @@
             // don't display these countries
             excludeCountries: [],
             // format the input value during initialisation and on setNumber
-            formatOnDisplay: true,
+            formatOnDisplay: false,
             // geoIp lookup function
             geoIpLookup: null,
             // inject a hidden input with this name, and on submit, populate it with the result of getNumber
