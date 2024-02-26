@@ -75,7 +75,7 @@ class StripeGatewayController extends FrontController
             $secret_key = stripePaymentCredentials()->secret_key;
             $stripe = new \Stripe\StripeClient($secret_key);
 
-            $webhook_url = 'http://'.$domain.':8001/payment/webhook/stripe';
+            $webhook_url = 'https://'.$domain.'/payment/webhook/stripe';
             $webhook_exists = false;
             $endpoints = $stripe->webhookEndpoints->all();
             foreach($endpoints->data as $obj){
