@@ -693,7 +693,7 @@ class CartController extends BaseController
         $allProductsSum = 0;
         $cart_products = CartProduct::with(['product.variant', 'addon.option'])
         ->where('vendor_id', $vendorData->vendor_id)
-        ->where('cart_id', $cart->id)
+        ->where('cart_id', $vendorData->cart_id)
         ->get();
         foreach ($cart_products as $cart_product) {
             // Calculate total price for the product variant
