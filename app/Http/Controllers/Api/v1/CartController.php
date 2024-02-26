@@ -678,7 +678,7 @@ class CartController extends BaseController
         $cart->delete();
         return response()->json(['message' => __('Empty cart successfully.')]);
     }
-    
+
     /**
      * productPriceAfterVendorDiscount
      *
@@ -693,7 +693,7 @@ class CartController extends BaseController
         $allProductsSum = 0;
         $cart_products = CartProduct::with(['product.variant', 'addon.option'])
         ->where('vendor_id', $vendorData->vendor_id)
-        ->where('cart_id', $vendorData->cart_id)
+        ->where('cart_id', $cart->id)
         ->get();
         foreach ($cart_products as $cart_product) {
             // Calculate total price for the product variant
@@ -713,9 +713,9 @@ class CartController extends BaseController
             $allProductsSum += $product_addon_price;
         }
         $PromoDelete = 0;
-        if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) 
+        if (isset($vendorData->coupon) && !empty($vendorData->coupon) )
         {
-            if ( $PromoDelete !=1) 
+            if ( $PromoDelete !=1)
             {
 
                     $minimum_spend = 0;
@@ -740,7 +740,7 @@ class CartController extends BaseController
                         unset($vendorData->coupon);
                        return  0;
                     }
-            } 
+            }
         }
         return $vendor_discount_amount??0;
     }
@@ -1936,7 +1936,7 @@ class CartController extends BaseController
         if(!empty($total_container_charges)){
             $cart->total_payable_amount  += $total_container_charges;
         }
-        
+
         if(@$rental_price){
             $cart->total_payable_amount = $rental_price;
         }
@@ -2019,7 +2019,7 @@ class CartController extends BaseController
             $cart->total_payable_amount = $rental_price;
         }
 
-    
+
         return $cart;
 
 
