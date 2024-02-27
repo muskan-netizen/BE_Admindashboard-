@@ -830,8 +830,18 @@ $timezone = Auth::user()->timezone;
                         <tr>
                             <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                             <td>
+                                @php
+                            if($order->luxury_option_id == 4) // 'rental'
+                                {
 
-                              <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount)}}</div>
+                                    $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges+$order->rental_protection_amount+$order->booking_option_price - $order->wallet_amount_used +$order->total_other_taxes_amount;
+                                }else{
+
+                                    $total = $order->taxable_amount+$order->total_service_fee+$order->fixed_fee_amount+$order->total_container_charges+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount - $order->wallet_amount_used + $order->total_other_taxes_amount;
+                                }
+                                @endphp
+
+                              <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($total)}}</div>
                             </td>
                     </tr>
 
