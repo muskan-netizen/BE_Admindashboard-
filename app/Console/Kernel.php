@@ -20,8 +20,8 @@ class Kernel extends ConsoleKernel
         Commands\RejectOrderNotification::class,
         Commands\HubSpotSyncData::class,
         Commands\RecurringBooking::class,
-        Commands\CloneDatabase::class
-
+        Commands\CloneDatabase::class,
+        Commands\CopyVendorDataToolCommand::class
         //
     ];
 
