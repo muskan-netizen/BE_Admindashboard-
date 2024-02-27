@@ -89,7 +89,6 @@ class ToolsController extends BaseController
             $tool->copy_to = $request->copy_to;
             $tool->copy_from = $request->copy_from;
             $tool->save();
-            $this->store($request->copy_to,$request->copy_from);
             return redirect()->back()->with('success', 'Catalog data saved successfully!');
 
         } catch (Exception $e) {

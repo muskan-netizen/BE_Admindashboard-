@@ -462,7 +462,6 @@ class VendorController extends BaseController
         $vendor->state_code = $request->state_code;
         $vendor->country = $request->country;
         $vendor->country_code = $request->country_code??'US';
-        $vendor->show_slot = isset($request->show_slot) && $request->show_slot == 'on' ? 1 : 0;
         if(@$this->roleId=='5')
         {
             $vendor->refference_id = auth()->id();
