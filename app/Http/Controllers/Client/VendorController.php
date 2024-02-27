@@ -462,6 +462,7 @@ class VendorController extends BaseController
         $vendor->state_code = $request->state_code;
         $vendor->country = $request->country;
         $vendor->country_code = $request->country_code??'US';
+        $vendor->show_slot = isset($request->show_slot) && $request->show_slot == 'on' ? 1 : 0;
         if(@$this->roleId=='5')
         {
             $vendor->refference_id = auth()->id();
@@ -1520,7 +1521,6 @@ class VendorController extends BaseController
             // $vendor->fixed_fee_amount = $request->has('fixed_fee_amount') ? $request->fixed_fee_amount : 0.00;
 
             $vendor->fixed_fee_amount = $request->has('fixed_fee') ? $request->fixed_fee_amount : 0.00;
-
         }else{
 
             //Commission & Taxes (Visible For Admin)
