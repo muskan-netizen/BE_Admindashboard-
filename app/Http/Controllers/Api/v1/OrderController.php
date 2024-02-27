@@ -133,7 +133,7 @@ class OrderController extends BaseController
             $longitude = '';
             $Order_bid_discount = 0;
             $daysCnt ='';
-
+            $totalFreeDeliveryCharges = 0;
             if ($user) {
                 DB::beginTransaction();
 
@@ -907,6 +907,7 @@ class OrderController extends BaseController
                                 $vendor_discount_amount = $vendor_discount_amount +  $delivery_fee;
                                 $vendor_payable_amount = $vendor_payable_amount - $delivery_fee;
                                 $total_discount += $delivery_fee;
+                                $totalFreeDeliveryCharges += $delivery_fee;
                                 $deliveryfeeOnCoupon = 1;
                             }
                             if(isset($rate) && $total_discount > 0 ){
@@ -1046,7 +1047,7 @@ class OrderController extends BaseController
                         $order->total_amount = ($total_amount + $total_container_charges) - $Order_bid_discount??0;
                     }
                     $order->total_discount = $total_discount;
-                    $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
+                    $payable_amount = $payable_amount + $total_delivery_fee - $total_discount -$totalFreeDeliveryCharges;
 
 
                     if ($loyalty_amount_saved > 0) {
