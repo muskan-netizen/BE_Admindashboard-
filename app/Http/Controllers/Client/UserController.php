@@ -78,14 +78,14 @@ class UserController extends BaseController
         $companies = Company::get();
         return view('backend/users/index')->with(['inactive_users' => $inactive_users, 'social_logins' => $social_logins, 'active_users' => $active_users, 'users' => $users, 'roles' => $roles, 'countries' => $countries, 'csvCustomers' => $csvCustomers, 'user_registration_documents' => $user_registration_documents,'companies'=>$companies]);
     }
-    
+
     public function getFilterData(Request $request)
     {
 
 
         $current_user = Auth::user();
         $users = User::with('orders')->withCount(['orders', 'currentlyWorkingOrders'])->where('is_superadmin', '!=', 1)->orderBy('id', 'desc');
-        
+
         if (!empty($request->date_filter)) {
             $date = explode(",", $request->date_filter);
             // dd($date);
@@ -97,15 +97,15 @@ class UserController extends BaseController
                 $start_date = $start_date . ' 00:00:00';
                 $end_date   = $end_date . ' 00:00:00';
                 $query      = 'SELECT * FROM users WHERE EXISTS (SELECT 1 FROM orders WHERE orders.user_id = users.id AND orders.created_at >= ? AND orders.created_at <= ?)';
-                
-                $user_ids   = DB::select($query, [$start_date, $end_date]); 
+
+                $user_ids   = DB::select($query, [$start_date, $end_date]);
                 $user_ids   = array_column($user_ids, 'id');
-            
+
                 $users = User::with('orders')->withCount(['orders', 'currentlyWorkingOrders'])->whereNotIn('id',$user_ids)->where('is_superadmin', '!=', 1)->where('created_at', '<=', $end_date )
                 ->orderBy('id', 'desc');
-                
 
-             
+
+
 
             }
         }
@@ -216,14 +216,14 @@ class UserController extends BaseController
         if($user->status == 3)
         {
             User::where('id', $uid)->update([
-                'email' => $user->email.'_'.$user->id."_D",  
-                'phone_number' => $user->phone_number.'_'.$user->id."_D",  
-                'auth_token' =>'',  
-                'system_id' =>'',  
-                'remember_token' => '',  
-                'facebook_auth_id' => '',  
-                'twitter_auth_id' => '',  
-                'google_auth_id' => '',  
+                'email' => $user->email.'_'.$user->id."_D",
+                'phone_number' => $user->phone_number.'_'.$user->id."_D",
+                'auth_token' =>'',
+                'system_id' =>'',
+                'remember_token' => '',
+                'facebook_auth_id' => '',
+                'twitter_auth_id' => '',
+                'google_auth_id' => '',
                 'apple_auth_id' => ''
                 ]);
 
@@ -294,8 +294,8 @@ class UserController extends BaseController
     {
         $customer = new User();
 
-        $validation  = Validator::make($request->all(), $customer->rules())->validate();
-        //$validator = $this->validator($request->all())->validate();
+                    $validation  = Validator::make($request->all(), $customer->rules())->validate();
+                //$validator = $this->validator($request->all())->validate();
 
         $saveId = $this->save($request, $customer, 'false');
         if ($saveId > 0) {
@@ -462,7 +462,7 @@ class UserController extends BaseController
 
         $vendorRole = @$user->roles[0]->id;
         if(@$vendorRole && $vendorRole == 4){
-         //Need to remove vendor permissons from user table 
+         //Need to remove vendor permissons from user table
          $this->removeVendorPermissionAndRole($id);
         }
 
@@ -528,7 +528,7 @@ class UserController extends BaseController
                 }
             }
         }
-        // //Need to remove vendor permissons from user table 
+        // //Need to remove vendor permissons from user table
         // $this->removeVendorPermissionAndRole($id);
         return redirect()->back()->with('success','Customer Updated successfully!');
     }
@@ -710,15 +710,15 @@ class UserController extends BaseController
     }
 
     public function export(Request $request)
-    {   
-       
+    {
+
         $fileName ="users.xlsx";
         if(!empty($request->start_date) && !empty($request->end_date)){
             $daterange = $request->start_date.' to '.$request->end_date;
             $fileName ="no_order_by_users_for($daterange).xlsx";
         }
 
-       
+
         return Excel::download(new CustomerExport($request),$fileName);
     }
 

@@ -20,8 +20,8 @@ class Kernel extends ConsoleKernel
         Commands\RejectOrderNotification::class,
         Commands\HubSpotSyncData::class,
         Commands\RecurringBooking::class,
-        Commands\CloneDatabase::class
-
+        Commands\CloneDatabase::class,
+        Commands\CopyVendorDataToolCommand::class
         //
     ];
 
@@ -33,6 +33,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('copy:catalog')->everyTwoMinutes();
         $schedule->command('cart:reminder')->hourly();
         $schedule->command('auto:reject_order')->everyMinute();
         $schedule->command('auto:reject_order_notifi')->everyMinute();
@@ -42,7 +43,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('auto:create_recurring_order_for_dispatcher')->hourly();
         $schedule->command('send_campaign:notification')->everyMinute();
         $schedule->command('service_area:active_for_vendor_slot')->everyMinute();
-        $schedule->command('copy:catalog')->everyTenMinutes();
         $schedule->command('pickup:notify')->everyMinute();
         // $schedule->command('inspire')->hourly();
     }

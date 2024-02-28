@@ -193,8 +193,8 @@
                 <div class="al_new_export_table royo_customber_btn table_customber_add">
                     <div class="position-absolute mb-2">
 
-                        
-                        
+
+
                         @if($hub_key==1)
                             <button class="btn btn-info waves-effect waves-light text-sm-right sync_hubspot" userId="0"><i class="mdi mdi-sync mr-1"></i>{{ __('Sync with hubspot') }}
                             </button>
@@ -256,7 +256,7 @@
                                                                     <th>{{ __('User Type')}}</th>
                                                                     <th>{{ __('Login Type') }}</th>
                                                                     <th>{{ __('Signup Date')}}</th>
-                                                                    <th class="d-flex">{{ __('Last Login') }} 
+                                                                    <th class="d-flex">{{ __('Last Login') }}
                                                                     <div class="datepicker_filter d-flex ml-1 mt-1">
                                                                         <span class="tooltiptext">No orders placed</span>
                                                                         <i class="fa fa-calendar" title="No orders placed" data-original-title="No orders placed" data-toggle="tooltip" data-placement="top" data-title="No orders placed"></i>
@@ -346,7 +346,7 @@
 @include('backend.users.modals')
 <script type="text/javascript">
     $(document).ready(function() {
-       
+
         var table;
         $.ajaxSetup({
             headers: {
@@ -358,12 +358,12 @@
             $('input[type="search"]').val('');
             initDataTable('user_datatable','active');
         });
-        
+
         $(document).on("click","#inactive-user",function() {
             $('input[type="search"]').val('');
             initDataTable('inactive_user_datatable','inactive');
         });
-        
+
 
         $(document).on("change","#company_option_select_box",function() {
             initDataTable('user_datatable','active');
@@ -399,7 +399,7 @@
                     "responsive": true,
                     "destroy": true,
                     "searching": true,
-                    "scrollX": true,
+                    "scrollX": false,
                     "processing": true,
                     "serverSide": true,
                     "iDisplayLength": 20,
@@ -668,7 +668,7 @@
             }
         }
 
-        
+
     });
 
     $(document).delegate(".customer_wallet_link", "click", function() {
@@ -862,7 +862,7 @@
         var exporturl   = $(".exportUserModal").attr('data-url');
         exporturl  = exporturl+'?start_date='+start_date+'&end_date='+end_date;
         $(".exportUserModal").attr('data-url',exporturl);
-       
+
 
         $('#user_datatable').DataTable({
                     "dom": '<"toolbar">Bfrtip',
@@ -884,7 +884,7 @@
                     },
                     drawCallback: function(data) {
                         $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
-                       
+
                     },
                     buttons: [{
                         className: 'btn btn-success waves-effect waves-light',
@@ -1119,7 +1119,7 @@
                             var switchery = new Switchery(html);
                         });
 
-                        
+
                         $('.dataTables_filter input[type="search"]').css({
                             'width': '280px',
                             'display': 'inline-block'
@@ -1130,12 +1130,12 @@
                     }
                 });
 
-                
-              
+
+
        // console.log('start_date',start_date,'end_date',end_date);
     }
     $('.exportUsersPdf').click(function(){
-            
+
                   $('.buttons-pdf').click();
     });
 </script>
