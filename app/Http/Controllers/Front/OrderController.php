@@ -1348,7 +1348,7 @@ class OrderController extends FrontController
             $total_other_taxes += (float) $row;
         }
 
-        $order->total_other_taxes_amount=$total_other_taxes;
+        $order->total_other_taxes_amount = $total_other_taxes;
 
         $slot_delivery_fees = 0;
         foreach ($order->products as $product) {
@@ -1791,17 +1791,6 @@ class OrderController extends FrontController
     public function placeOrder(Request $request, $domain = '')
     {
 
-
-
-
-        // $stock = $this->ProductVariantStock('18');
-
-        // dd($request->all());
-        // if ($request->input("payment-group") == '1') {
-        // $langId = Session::get('customerLanguage');
-        // $navCategories = $this->categoryNav($langId);
-        // return view('frontend/orderPayment')->with(['navCategories' => $navCategories, 'first_name' => $request->first_name, 'last_name' => $request->last_name, 'email_address' => $request->email_address, 'phone' => $request->phone, 'total_amount' => $request->total_amount, 'address_id' => $request->address_id]);
-        // }
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
          if($request->payment_option_id=='52'){
             if($primaryCurrency->currency->iso_code!='QAR'){
@@ -1890,12 +1879,7 @@ class OrderController extends FrontController
             if (isset($preferences->stop_order_acceptance_for_users) && ($preferences->stop_order_acceptance_for_users == 1)) {
                 return $this->errorResponse(__('Sorry! We are not accepting orders right now.'), 400);
             }
-            $loyalty_amount_saved = 0;
-            $redeem_points_per_primary_currency = '';
-            // $loyalty_card = LoyaltyCard::where('status', '0')->first();
-            // if ($loyalty_card) {
-            //     $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
-            // }
+            
             $currency_id = Session::get('customerCurrency');
             $language_id = Session::get('customerLanguage');
             $cart = Cart::where('user_id', $user->id)->with([
@@ -1920,10 +1904,29 @@ class OrderController extends FrontController
             /* Get Currencies of client and customer */
             $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+
+            $loyalty_amount_saved = 0;
+            $redeem_points_per_primary_currency = '';
+            $loyalty_card = LoyaltyCard::where('status', '0')->first();
+            if ($loyalty_card) {
+                $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
+            }
+
+            $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+            
+            if ($order_loyalty_points_earned_detail) {
+                $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+                if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
+                    $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
+                    if (($customerCurrency) && ($customerCurrency->is_primary != 1)) {
+                        $loyalty_amount_saved = $loyalty_amount_saved * $customerCurrency->doller_compare;
+                    }
+                }
+            }
             // Get earn and used loyalty amount
-            // $loyaltyCheck = $this->getOrderLoyalityAmount($user, $customerCurrency);
-            // $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
-            // $loyalty_points_used = $loyaltyCheck->loyalty_points_used ?? 0;
+            $loyaltyCheck = $this->getOrderLoyalityAmount($user, $customerCurrency);
+            $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
+            $loyalty_points_used = $loyaltyCheck->loyalty_points_used ?? 0;
 
             // check gift card
 
@@ -2979,12 +2982,6 @@ class OrderController extends FrontController
 
             $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
 
-            // if ($loyalty_amount_saved > 0) {
-            //     if ($loyalty_amount_saved > $payable_amount) {
-            //         $loyalty_amount_saved = $payable_amount;
-            //         $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
-            //     }
-            // }
             // ------------ move up
             $tip_amount = 0;
             if (isset($request->tip)) {
