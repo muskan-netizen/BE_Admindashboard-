@@ -74,6 +74,7 @@ Options']) @section('css')
                 $api_access_token = (isset($creds->api_access_token)) ? $creds->api_access_token : '';
                 $api_secret_key = (isset($creds->api_secret_key)) ? $creds->api_secret_key : '';
                 $publishable_key = (isset($creds->publishable_key)) ? $creds->publishable_key : '';
+				$webhook_signature = (isset($creds->webhook_signature)) ? $creds->webhook_signature : '';
                 $secret_key = (isset($creds->secret_key)) ? $creds->secret_key : '';
                 $public_key = (isset($creds->public_key)) ? $creds->public_key : '';
                 $private_key = (isset($creds->private_key)) ? $creds->private_key : '';
@@ -389,6 +390,15 @@ Options']) @section('css')
 										__("Publishable Key") }}</label> <input type="password"
 										name="stripe_publishable_key" id="stripe_publishable_key"
 										class="form-control" value="{{$publishable_key}}" @if($opt->status
+									== 1) required @endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="stripe_webhook_signature" class="mr-3">{{
+										__("Webhook_signature") }}</label> <input type="password"
+										name="stripe_webhook_signature" id="stripe_webhook_signature"
+										class="form-control" value="{{$webhook_signature}}" @if($opt->status
 									== 1) required @endif>
 								</div>
 							</div>
