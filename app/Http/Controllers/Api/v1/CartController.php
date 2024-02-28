@@ -678,7 +678,7 @@ class CartController extends BaseController
         $cart->delete();
         return response()->json(['message' => __('Empty cart successfully.')]);
     }
-    
+
     /**
      * productPriceAfterVendorDiscount
      *
@@ -716,9 +716,9 @@ class CartController extends BaseController
         $PromoDelete = 0;
         $data['vendor_discount_amount'] = 0;
         $data['deliveryfeeOnCoupon'] = 0;
-        if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) 
+        if (isset($vendorData->coupon) && !empty($vendorData->coupon) )
         {
-            if ( $PromoDelete !=1) 
+            if ( $PromoDelete !=1)
             {
 
                     $minimum_spend = 0;
@@ -746,7 +746,7 @@ class CartController extends BaseController
                         unset($vendorData->coupon);
                        return $data;
                     }
-            } 
+            }
         }
         return $data??0;
     }
@@ -1887,7 +1887,7 @@ class CartController extends BaseController
         // add delivery fee charges as other tax as per web code.
         $cart->other_taxes = $deliver_fee_charges;
         $fixedFeeNomenclatures = $this->fixedFee($langId).' tax';
-        
+
         $cart->specific_taxes = array(
             ['label' => $fixedFeeNomenclatures, 'value' => decimal_format($total_fixed_fee_tax)],
             ['label' => 'Service fee tax', 'value' => decimal_format($total_service_fee_tax)],
@@ -1954,7 +1954,7 @@ class CartController extends BaseController
         if(!empty($total_container_charges)){
             $cart->total_payable_amount  += $total_container_charges;
         }
-        
+
         if(@$rental_price){
             $cart->total_payable_amount = $rental_price;
         }
@@ -2037,7 +2037,7 @@ class CartController extends BaseController
             $cart->total_payable_amount = $rental_price;
         }
 
-    
+
         return $cart;
 
 
