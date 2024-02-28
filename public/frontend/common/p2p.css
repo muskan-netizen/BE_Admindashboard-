@@ -297,9 +297,9 @@ body.al_body_template_nine.p2p-module .product-buttons {
     object-fit: cover;
 }
 
-section.cab-banner-area.alTaxiBannerStart {
+/* section.cab-banner-area.alTaxiBannerStart {
     display: none;
-}
+} */
 
 body.al_body_template_nine.p2p-module .home-slider-wrapper .banner-img-outer img {
     max-height: initial !important;
