@@ -1667,9 +1667,9 @@ body.al_body_template_eight section.section-b-space {
     padding-top: 10px !important;
 }
 
-body.al_body_template_eight section.cab-banner-area.alTaxiBannerStart {
+/* body.al_body_template_eight section.cab-banner-area.alTaxiBannerStart {
     display: none;
-}
+} */
 
 body.al_body_template_eight .category-block {
     background-color: #fff;

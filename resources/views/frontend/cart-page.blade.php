@@ -1180,31 +1180,39 @@
                         
                         <div class="col-lg-12 mt-3 cart-price">
 
-                         
-                            @if ($cart_details->total_deliver_charges > 0)
+                            @if ($cart_details->sub_total > 0)
                                 <div class="row">
-                                    <div class="col-6">{{ __('Total Delivery Fee') }}</div>
+                                    <div class="col-6">{{ __('Total') }}</div>
+                                    {{-- <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->sub_total - $cart_details->bid_total_discount)}}</b></div> --}}
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->delivery_charge)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->delivery_charge) }}
+                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->total_gross_amount + $cart_details->total_taxable_amount + $other_taxes)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->total_gross_amount + $cart_details->total_taxable_amount + $other_taxes) }}
                                             @endif
                                         </b>
                                     </div>
                                 </div>
                                 <hr class="my-2">
                             @endif
-                            @if ($cart_details->gross_amount > 0)
-                            <div class="row">
-                                <div class="col-6">{{ __('SubTotal') }}</div>
-                                <div class="col-6 text-right"><b>
-                                        @if ($additionalPreference['is_token_currency_enable'])
-                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->gross_amount)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->gross_amount -$cart_details->bid_total_discount) }}
-                                        @endif
-                                    </b>
+                            @if ($price_bifurcation != 1)
+                                <!-- <hr class="my-2"> -->
+                                <div class="row">
+                                    <div class="col-6">{{ __('Sub Total') }}</div>
+                                    <div class="col-6 text-right"><b>
+                                            @if ($additionalPreference['is_token_currency_enable'])
+                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}
+                                            @else
+                                                {{ Session::get('currencySymbol') }}
+                                            @endif
+                                            <span
+                                                id="gross_amount">{{ $additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($cart_details->gross_amount - $cart_details->bid_total_discount - $cart_details->total_service_fee )) : decimal_format($cart_details->gross_amount - $cart_details->bid_total_discount - $cart_details->total_service_fee ) }}
+                                        </b></span>
+                                        <span id="other_taxes" style="display:none;">{{ $other_taxes }}</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <hr class="my-2">
-                        @endif
+                                <hr class="my-2">
+                            @endif
+                            
+                          
                             @if ($serviceType == 'rental' || $serviceType == 'p2p')
                                 <div class="row">
                                     <div class="col-6">{{ __('Security Amount') }}</div>
@@ -1256,16 +1264,6 @@
                                         value="{{ $total_fixed_fee_amount }}">
                                 </div>
                             @endif
-                            {{--
-                @if (cart_details . total_container_charges > 0 && price_bifurcation != 1)
-                <hr class="my-2">
-                <div class="row">
-                    <div class="col-6">{{__('Total Container Charges')}}</div>
-                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol'). decimal_format(cart_details.total_container_charges) %></b></div>
-                </div>
-                <hr class="my-2">
-            @endif
-            --}}
                             @php
                                 if ($product_container_charges_tax_amount > 0) {
                                     $other_taxes = $other_taxes + $product_container_charges_tax_amount;
@@ -1279,11 +1277,7 @@
                             @endphp
                             <input type="hidden" id="other_taxes_string" value="{{ $other_taxes_string }}">
                             @if ($serviceType == 'rental' || $serviceType == 'p2p')
-                                {{-- <div class="row">
-                    <div class="col-6">{{__('Extended Duration')}}</div>
-                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
-                    </div>
-                </div> --}}
+                             
                             @endif
 
                    
@@ -1366,6 +1360,34 @@
                                 <hr class="my-2">
                             @else
                                 <div class="col-6 text-right" id="wallet_amount_used" style="display:none">0</div>
+                            @endif
+
+                            @if ($cart_details->total_deliver_charges > 0 )
+                                <div class="row">
+                                    <div class="col-6">{{ __('Total Delivery Fee') }}</div>
+                                    <div class="col-6 text-right" >  @if ($additionalPreference['is_token_currency_enable'])
+                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}
+                                            {{ getInToken(decimal_format($cart_details->total_deliver_charges )) }}
+                                            @else{{ Session::get('currencySymbol') . decimal_format($cart_details->total_deliver_charges ) }}
+                                        @endif
+                                    </div>
+                                </div>
+                                <hr class="my-2">
+                            @endif
+
+                            @if ($cart_details->free_delivery_amount > 0 )
+                            <div class="row">
+                                    <div class="col-6">
+                                        {{  __('Free Delivery Discount') }}
+                                    </div>
+                                    <div class="col-6 text-right" > - @if ($additionalPreference['is_token_currency_enable'])
+                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}
+                                            {{ getInToken(decimal_format($cart_details->free_delivery_amount )) }}
+                                            @else{{ Session::get('currencySymbol') . decimal_format($cart_details->free_delivery_amount ) }}
+                                        @endif
+                                    </div>
+                                </div>
+                                <hr class="my-2">
                             @endif
 
                             @if ($client_preference_detail->tip_before_order == 1)

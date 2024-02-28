@@ -297,6 +297,8 @@ trait CartManagerV2
             $allProductsSum += $product_addon_price;
         }
         $PromoDelete = 0;
+        $data['vendor_discount_amount'] = 0;
+        $data['deliveryfeeOnCoupon'] = 0;
         if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) 
         {
             if ( $PromoDelete !=1) 
@@ -314,19 +316,22 @@ trait CartManagerV2
                     if( ($minimum_spend <= $allProductsSum ) && ($maximum_spend >= $allProductsSum))
                     {
                             if ($vendorData->coupon->promo->promo_type_id == 2) {
-                                $vendor_discount_amount = $vendorData->coupon->promo->amount;
+                                $data['vendor_discount_amount'] = $vendorData->coupon->promo->amount;
                             } else {
-                                $vendor_discount_amount = ($product_discount_amount * $vendorData->coupon->promo->amount / 100);
+                                $data['vendor_discount_amount'] = ($product_discount_amount * $vendorData->coupon->promo->amount / 100);
+                            }
+                            if ($vendorData->coupon->promo->allow_free_delivery == 1) {
+                                $data['deliveryfeeOnCoupon'] = 1;
                             }
                     }else{
                         $cart->coupon()->delete();
                         $vendorData->coupon()->delete();
                         unset($vendorData->coupon);
-                       return  0;
+                       return $data;
                     }
             } 
         }
-        return $vendor_discount_amount??0;
+        return $data??0;
     }
 
     /**
@@ -511,6 +516,7 @@ trait CartManagerV2
             $delivery_slot_amount = 0;
             $is_long_term_service = 0;
             $container_charges_tax = 0;
+            $free_delivery_amount = 0;
 
             $deliver_fee_charges = 0;
             $total_fixed_fee_tax = 0;
@@ -617,7 +623,6 @@ trait CartManagerV2
                 }
                 $cart_product_ids = [];
                 $vendor_discount_amount = 0;
-
                 $deliver_fee_charges = 0;
                 $total_fixed_fee_tax = 0;
                 // $total_service_fee = 0;
@@ -631,9 +636,24 @@ trait CartManagerV2
                 $security_amount = 0.00;
                 $if_previousdeliveryfee_added = 0;
 
-            $deliveryfeeOnCoupon = 0;
-            $promo_discount_amount = $sub_total_vendor = 0;
+                $deliveryfeeOnCoupon = 0;
+                $promo_discount_amount = $sub_total_vendor = 0;
 
+                $vendor_details['vendor_address'] = $vendorData->vendor->select('id','latitude','longitude','address')->where('id', $vendorData->vendor_id)->first();
+                if (isset($vendorData->coupon) && !empty($vendorData->coupon) && isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)){
+                    if($vendorData->coupon->promo->restriction_on == 0)
+                    {
+                        $coupon_product_ids = $vendorData->coupon->promo->details->pluck('refrence_id')->toArray();
+                        $in_or_not = $vendorData->coupon->promo->restriction_type;
+
+                    }
+                    elseif($vendorData->coupon->promo->restriction_on == 1){
+                        $coupon_vendor_ids = $vendorData->coupon->promo->details->pluck('refrence_id')->toArray();
+                        $in_or_not = $vendorData->coupon->promo->restriction_type;
+                    }
+                   
+                }
+              
             //vendorData->vendorProducts  loop start
             foreach ($vendorData->vendorProducts as $ven_key => $prod) 
             {
@@ -1026,25 +1046,31 @@ trait CartManagerV2
                                         
                                             //Find vendor Product Discount here
                                             $productPriceAfterVendorDiscount  = $this->productPriceAfterVendorDiscount($vendorData,$quantity_price,$doller_compare,$cart);
-                                            $quantity_price = $quantity_price - $productPriceAfterVendorDiscount;
+                                            $quantity_price = $quantity_price - $productPriceAfterVendorDiscount['vendor_discount_amount'];
                                             if(!$this->additionalPreferences->is_tax_price_inclusive){
                                                 $product_tax = ($quantity_price )* $rate / 100;
                                             }else{
                                                 $product_tax = (($quantity_price ) * $rate) / (100 + $rate);
                                             }
+                                            if ($productPriceAfterVendorDiscount['deliveryfeeOnCoupon'] == 1) {
+                                                $deliveryfeeOnCoupon = 1;
+                                            }
                                             $taxData[$tckey]['identifier'] = $tax_value->identifier;
                                             $taxData[$tckey]['rate'] = $rate;
                                             $taxData[$tckey]['tax_amount'] = decimal_format($tax_amount);
                                             $taxData[$tckey]['product_tax'] = decimal_format($product_tax);
-                                            $promo_discount_amount += $productPriceAfterVendorDiscount;
+                                            $promo_discount_amount += $productPriceAfterVendorDiscount['vendor_discount_amount'];
                                             $taxable_amount = $taxable_amount + $product_tax;
                                             $sub_total_vendor += $quantity_price;
                                         }
                                     }else{
                                         //Find vendor Product Discount here
                                         $productPriceAfterVendorDiscount  = $this->productPriceAfterVendorDiscount($vendorData,$quantity_price,$doller_compare,$cart);
-                                        $quantity_price = $quantity_price - $productPriceAfterVendorDiscount;
-                                        $promo_discount_amount += $productPriceAfterVendorDiscount;
+                                        $quantity_price = $quantity_price - $productPriceAfterVendorDiscount['vendor_discount_amount'];
+                                        if ($productPriceAfterVendorDiscount['deliveryfeeOnCoupon'] == 1) {
+                                            $deliveryfeeOnCoupon = 1;
+                                        }
+                                        $promo_discount_amount += $productPriceAfterVendorDiscount['vendor_discount_amount'];
                                         $sub_total_vendor += $quantity_price;
                                     }
 
@@ -1183,6 +1209,7 @@ trait CartManagerV2
                                                     }
                                                 }
                                                 $deliveryCharges_real = $vendorTotalDeliveryFee;
+                                                
 
                                                 if (isset($vendorTotalDeliveryFee) && !empty($vendorTotalDeliveryFee)) {
                                                     $dtype = explode('_', $code);
@@ -1192,7 +1219,10 @@ trait CartManagerV2
                                     }
 
                             }//End Pvariant condition
+                         if($deliveryfeeOnCoupon == 1){
+                            $free_delivery_amount +=   $deliveryCharges_real;
 
+                         }
                         $is_slot_from_dispatch =  $prod->product->is_slot_from_dispatch;
                         $show_dispatcher_agent =  $prod->product->is_show_dispatcher_agent;
                         $last_mile_check       = $prod->product->Requires_last_mile  ;
@@ -1860,6 +1890,8 @@ trait CartManagerV2
             $cart->delivery_charges = decimal_format($deliveryCharges_real);
             $cart->delivery_charge = decimal_format($delivery_fee_total);
             $cart->total_deliver_charges = decimal_format($total_deliver_charges);
+            $cart->free_delivery_amount = decimal_format($free_delivery_amount);
+            
             $cart->total_markup_charges = decimal_format($total_markup_charges);
             $cart->total_discount_amount = decimal_format($total_discount_amount);
             $cart->total_taxable_amount = decimal_format($total_taxable_amount);

@@ -226,14 +226,14 @@ class StripeGatewayController extends FrontController
                  $intent = \Stripe\PaymentIntent::create($postdata);
             }
 
-         
+
             if (isset($json_obj->payment_intent_id)) {
                 $intent = \Stripe\PaymentIntent::retrieve(
                     $json_obj->payment_intent_id
                 );
                 $intent->confirm();
             }
-           
+
             $this->generateResponse($intent, $parameters);
         } catch (\Stripe\Exception\ApiErrorException $e) {
             # Display error on client
@@ -691,12 +691,12 @@ class StripeGatewayController extends FrontController
             $token = $request->stripe_token;
             $plan = SubscriptionPlansUser::where('slug', $request->subscription_id)->firstOrFail();
             $secret_key = stripePaymentCredentials()->secret_key;
-           
+
             \Stripe\Stripe::setApiKey($this->api_key_new);
             $stripe = new \Stripe\StripeClient($secret_key);
-          
+
             $webhook_url = 'https://'.$domain.'/payment/webhook/stripe';
-            
+
 
             $webhook_exists = false;
             $endpoints = $stripe->webhookEndpoints->all();
@@ -718,12 +718,12 @@ class StripeGatewayController extends FrontController
                     ]
                 ]);
             }
-            
+
 
             $stripPlanId =    $plan->strip_plan_id;
-            
+
             $saved_payment_method = UserSavedPaymentMethods::where('user_id', Auth::user()->id)->where('payment_option_id', $request->payment_option_id)->first();
-           
+
             if (empty($saved_payment_method)) {
                 $user = Auth::user();
                 $address = UserAddress::where('user_id', $user->id);
@@ -736,7 +736,7 @@ class StripeGatewayController extends FrontController
                     $add = ["city" => 'New york', "country" => 'US', "line1" => 'sector 28', "line2" => "", "postal_code" => '10001', "state" => 'New york'];
 
                 }
-                $customerResponse = \Stripe\Customer::create(array(  
+                $customerResponse = \Stripe\Customer::create(array(
                     'description' => 'Creating Customer',
                     'name' => $user->name,
                     'email' => $user->email,
@@ -745,11 +745,11 @@ class StripeGatewayController extends FrontController
                         'user_id' => $user->id,
                         'phone_number' => $user->phone_number
                     ],
-                ));  
+                ));
                 $customer_id = $customerResponse['id'];
-               
+
                 if ($customer_id) {
-                
+
                     $payment_method = new UserSavedPaymentMethods;
                     $payment_method->user_id = Auth::user()->id;
                     $payment_method->payment_option_id = $request->payment_option_id;
@@ -760,7 +760,7 @@ class StripeGatewayController extends FrontController
                 $customer_id = $saved_payment_method->customerReference;
             }
             //payment method will be attached to the customer
-            $paymentMethod = \Stripe\PaymentMethod::retrieve( $request->payment_method_id); 
+            $paymentMethod = \Stripe\PaymentMethod::retrieve( $request->payment_method_id);
             $paymentMethod->attach(['customer' => $customer_id]);
             \Stripe\Customer::update(
                 $customer_id,
@@ -771,8 +771,8 @@ class StripeGatewayController extends FrontController
                 ]
             );
 
-        
-            // Get Customer from Stripe 
+
+            // Get Customer from Stripe
             $customer = \Stripe\Customer::retrieve($customer_id);
             // Get the default payment method ID
             $defaultPaymentMethodId = $customer->invoice_settings->default_payment_method;
@@ -781,10 +781,10 @@ class StripeGatewayController extends FrontController
 
             // Attach the payment method to the customer
             //$paymentMethod->attach(['customer' => $customer_id]);
-          
+
             //Carbon::now()->setTimezone($client->timezone);
             $current_date_time = strtotime(Carbon::now()->addMinute()->toDateTimeString());
-          
+
                 $amount = $plan->price;
                 // $postdata = array(
                 //     'payment_method'       => $defaultPaymentMethodId,
@@ -801,7 +801,7 @@ class StripeGatewayController extends FrontController
                 //         'type_id' => $request->type_id
                 //     ]
                 // );
-                
+
             $subscribedPlans = \Stripe\Subscription::all([
                 'customer' => $customer->id,
                 'status' => 'active',
@@ -829,13 +829,13 @@ class StripeGatewayController extends FrontController
                 //     );
                 //     $intent->confirm();
                 // }
-                // $price = \Stripe\Price::create([ 
-                //     'unit_amount' => $postdata['amount'], 
-                //     'currency' => $postdata['currency'], 
-                //     'recurring' => ['interval' => $plan->frequency], 
-                //     'product_data' => ['name' => $plan->title], 
+                // $price = \Stripe\Price::create([
+                //     'unit_amount' => $postdata['amount'],
+                //     'currency' => $postdata['currency'],
+                //     'recurring' => ['interval' => $plan->frequency],
+                //     'product_data' => ['name' => $plan->title],
                 // ]);
-                
+
                 $subscriptionData = [
                     'customer' => $customer_id,
                     'items' => [
@@ -853,23 +853,23 @@ class StripeGatewayController extends FrontController
                         'subscription_id' => $request->subscription_id,
                         'amount' => $plan->price,
                         'type_id' => $request->type_id
-                        
+
                     ],
                     'expand' => ['latest_invoice.payment_intent'],
                     'collection_method' => 'charge_automatically', // Set to 'charge_automatically' for automatic payments
                     'payment_behavior' => 'allow_incomplete'
                 ];
-                
+
                 if($request->type_id == SubscriptionPlansUser::SUBSCRIPTION_MEAL){
                     $subscriptionData['metadata']['mealSubscriptionForm'] = $request->mealSubscriptionForm;
                     $subscriptionData['metadata']['days'] = $request->days;
                 }
-                
+
                 $subscription = \Stripe\Subscription::create($subscriptionData);
                 $intent = $subscription->latest_invoice->payment_intent;
                 if (($intent->status == 'requires_action') && isset($intent->next_action->type) && ($intent->next_action->type == 'use_stripe_sdk')) {
                     # Tell the client to handle the action
-                   
+
                     $returnUrl = route('user.subscription.plans');
                     echo json_encode([
                         'requires_action' => true,
@@ -889,7 +889,7 @@ class StripeGatewayController extends FrontController
                         'result' => $returnUrl,
                         "message"=>$message
                     ]);
-        
+
                 } else {
                     # Invalid status
                     http_response_code(500);
@@ -1428,7 +1428,7 @@ class StripeGatewayController extends FrontController
     {
         $secret_key = stripePaymentCredentials()->secret_key;
         \Stripe\Stripe::setApiKey($secret_key);
-        
+
         $payload = @file_get_contents('php://input');
         $event = null;
         try {
@@ -1440,10 +1440,9 @@ class StripeGatewayController extends FrontController
             http_response_code(400);
             exit();
         }
-        
+
         Webhook::create(['tracking_order_id'=>'','response'=>$request->getContent() ?? json_encode($payload)]);
         // Handle the event
-        $subscriptionController = new UserSubscriptionController();
         switch ($event->type) {
             case 'payment_intent.succeeded':
                 $paymentIntent = $event->data->object;
@@ -1481,7 +1480,7 @@ class StripeGatewayController extends FrontController
                             $payment->payment_option_id = 4;
                             $payment->type = 'cart';
                             $payment->save();
-                            
+
                             // Deduct wallet amount if payable amount is successfully done on gateway
                             if ( $order->wallet_amount_used > 0 ) {
                                 $user = User::find($user_id);
@@ -1496,11 +1495,11 @@ class StripeGatewayController extends FrontController
                                     ]);
                                 }
                             }
-                            
+
                             // Auto accept order
                             $orderController = new OrderController();
                             $orderController->autoAcceptOrderIfOn($order->id);
-                            
+
                             // Remove cart
                             CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                             Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
@@ -1509,7 +1508,7 @@ class StripeGatewayController extends FrontController
                             CartProduct::where('cart_id', $cart_id)->delete();
                             CartProductPrescription::where('cart_id', $cart_id)->delete();
                             CartDeliveryFee::where('cart_id', $cart_id)->delete();
-                            
+
                             // Send Notification
                             if (!empty($order->vendors)) {
                                 foreach ($order->vendors as $vendor_value) {
@@ -1521,9 +1520,9 @@ class StripeGatewayController extends FrontController
                             $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
                             $super_admin = User::where('is_superadmin', 1)->pluck('id');
                             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
-                            
+
                             $request = new Request(['user_id'=>$order->user_id,'address_id'=>$order->address_id]);
-                            
+
                             //Send Email to customer
                             $orderController->sendSuccessEmail($request, $order);
                             //Send Email to Vendor
@@ -1533,7 +1532,7 @@ class StripeGatewayController extends FrontController
                             // send sms
                             $this->sendSuccessSMS($request, $order);
                         }
-                        
+
                         // Send Email
                         //   $this->successMail();
                     }
@@ -1562,12 +1561,12 @@ class StripeGatewayController extends FrontController
                     $subscriptionController->purchaseGiftCard($request, '', $gift_card_id);
                 }
                 break;
-                
+
             case 'payment_intent.payment_failed':
                 $paymentIntent = $event->data->object;
 
                 $meta = $paymentIntent->metadata;
-                
+
                 $user_id = $payment_form = $order_number = '';
                 // $amount = $paymentIntent->amount / 100;
                 if($meta){
@@ -1575,7 +1574,7 @@ class StripeGatewayController extends FrontController
                     $user_id = $meta->user_id;
                 }
                 $user = User::find($user_id);
-                
+
                 if($payment_form == 'cart'){
                     $order_number = $meta->order_number;
                     $order = Order::where('order_number', $order_number)->first();
@@ -1585,7 +1584,7 @@ class StripeGatewayController extends FrontController
                         //     $wallet = $user->wallet;
                         //     $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
                         // }
-                        
+
                         // $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
                         // foreach($order_products as $order_prod){
                         //     OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
@@ -1598,7 +1597,7 @@ class StripeGatewayController extends FrontController
                         // $order->delete();
                     }
                 }
-            break;    
+            break;
             case 'customer.subscription.created':
                 $paymentIntent = $event->data->object;
                 $transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
@@ -1625,7 +1624,7 @@ class StripeGatewayController extends FrontController
                     $mealSubscription = $meta->mealSubscriptionForm ?? '';
                     $days = $meta->days ?? '';
                 }
-                
+                $subscriptionController = new UserSubscriptionController();
                 $message = __('Your subscription has been activated successfully.');
                 $request->merge(['payment_option_id' => 4, 'amount' => $amount, 'transaction_id' => $payment_intent_id,'strip_subscriber_id'=>$paymentIntent->id,'message'=>$message ,'user_id'=>$meta->user_id, 'type_id' => $type_id, 'mealSubscriptionForm' => $mealSubscription,'days' => $days]);
                 $subscriptionController->purchaseSubscriptionPlan($request, '',  $meta->subscription_id);
@@ -1635,15 +1634,15 @@ class StripeGatewayController extends FrontController
                 $paymentIntent = $event->data->object;
                 if($paymentIntent->status == 'past_due' || $paymentIntent->status == 'canceled' ) {
                   ////Log::info($event->data->object);
-                  
+
                   $meta = $paymentIntent->metadata;
                   //$meta = $paymentIntent->lines->data[0]->metadata;
                   ////Log::info($paymentIntent->lines->data[0]->metadata);
                   $payment_intent_id = $paymentIntent->payment_intent;
-  
+
                   if( (isset($meta->user_id)) && (!empty($meta->user_id)) ){
                       $user = User::find($meta->user_id);
-                  
+                      $subscriptionController = new UserSubscriptionController();
                       $message = __('Your subscription has been expired.');
                       if($paymentIntent->status == 'canceled'){
                         $request->merge(['strip_subscriber_id'=>$paymentIntent->id,'user_id'=>$meta->user_id,'status_id'=>'3' ]);
@@ -1661,12 +1660,12 @@ class StripeGatewayController extends FrontController
                 $meta = $paymentIntent->metadata;
                 ////Log::info($paymentIntent->lines->data[0]->metadata);
                 $payment_intent_id = $paymentIntent->payment_intent;
-
+                $subscriptionController = new UserSubscriptionController();
                 if( (isset($meta->user_id)) && (!empty($meta->user_id)) ){
                     $user = User::find($meta->user_id);
                     $request->merge(['strip_subscriber_id'=>$paymentIntent->id,'user_id'=>$meta->user_id,'status_id'=>'1' ]);
                     $subscriptionController->deleteSubscriptionPlan($request, '',  $meta->subscription_id);
-                    
+
                 }
 
             break;
@@ -1677,10 +1676,10 @@ class StripeGatewayController extends FrontController
                 $meta = $paymentIntent->lines->data[0]->metadata;
                 ////Log::info($paymentIntent->lines->data[0]->metadata);
                 $payment_intent_id = $paymentIntent->payment_intent;
-
+                $subscriptionController = new UserSubscriptionController();
                 if( (isset($meta->user_id)) && (!empty($meta->user_id)) ){
                     $user = User::find($meta->user_id);
-                
+
                     $message = __('Your payment has been failed.');
                     $request->merge(['strip_subscriber_id'=>$paymentIntent->id,'user_id'=>$meta->user_id,'status_id'=>'1' ]);
                     $subscriptionController->updateSubscriptionPlan($request, '',  $meta->subscription_id);
@@ -1709,6 +1708,7 @@ class StripeGatewayController extends FrontController
                 }
 
                 if( (isset($meta->user_id)) && (!empty($meta->user_id)) ){
+                    $subscriptionController = new UserSubscriptionController();
                     $user = User::find($meta->user_id);
                     $message = __('Your subscription has been activated successfully.');
                     $wallet = $user->wallet;
@@ -1718,18 +1718,16 @@ class StripeGatewayController extends FrontController
                     \Stripe\Subscription::update($stripeSubscriptionId, [
                         'payment_behavior' => 'default_incomplete',
                     ]);
-                   
+
                 }
-            
+
             break;
 
-                
-                
                 // ... handle other event types
             default:
                 echo 'Received unknown event type ' . $event->type;
         }
-        
+
         http_response_code(200);
     }
 
@@ -1756,7 +1754,7 @@ class StripeGatewayController extends FrontController
         switch ($event->type) {
             case 'payment_intent.succeeded':
                 $paymentIntent = $event->data->object;
-                
+
                 $transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
@@ -1853,7 +1851,7 @@ class StripeGatewayController extends FrontController
                 $paymentIntent = $event->data->object;
 
                 $meta = $paymentIntent->metadata;
-                
+
                 $user_id = $payment_form = $order_number = '';
                 // $amount = $paymentIntent->amount / 100;
                 if($meta){
@@ -1953,7 +1951,7 @@ class StripeGatewayController extends FrontController
         switch ($event->type) {
             case 'payment_intent.succeeded':
                 $paymentIntent = $event->data->object;
-                
+
                 $transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
@@ -2041,7 +2039,7 @@ class StripeGatewayController extends FrontController
                 $paymentIntent = $event->data->object;
 
                 $meta = $paymentIntent->metadata;
-                
+
                 $user_id = $payment_form = $order_number = '';
                 // $amount = $paymentIntent->amount / 100;
                 if($meta){
@@ -2200,7 +2198,7 @@ class StripeGatewayController extends FrontController
                 $paymentIntent = $event->data->object;
 
                 $meta = $paymentIntent->metadata;
-                
+
                 $user_id = $payment_form = $order_number = '';
                 // $amount = $paymentIntent->amount / 100;
                 if($meta){

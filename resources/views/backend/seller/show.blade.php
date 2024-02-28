@@ -927,7 +927,7 @@
       a.dispatchEvent(my_evt);
     }
     //canvas.parentNode.removeChild(canvas);
-  }  
+  }
 }
 
     $(document).on("click", ".editTablebtn", function() {
