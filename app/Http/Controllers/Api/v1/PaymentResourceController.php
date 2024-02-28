@@ -183,7 +183,6 @@ class PaymentResourceController extends BaseController
     // Confirm Payment Intent For Stripe
     public function confirmPaymentIntent(Request $request)
     {
-       
         $stripe_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'stripe')->where('status', 1)->first();
         $creds_arr = json_decode($stripe_creds->credentials);
         $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
@@ -228,6 +227,7 @@ class PaymentResourceController extends BaseController
     {
         try {
             $user    = Auth::user();
+
             $address = UserAddress::where('user_id', $user->id);
             $amount = $parameters['total_amount'];
             $payment_form = $parameters['payment_form'];
@@ -239,59 +239,63 @@ class PaymentResourceController extends BaseController
             $returnUrl = '';
 
             if($payment_form == 'cart'){
+
                 // $orderController = new OrderController();
                 // $result = $orderController->postPlaceOrder($request);
                 // $returnUrl = $result;
-                // $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
-                // $cart_id = $cart ? $cart->id : 0 ;
+                $cart = Cart::select('id','user_id')->where('status', '0')->where('user_id', $user->id)->first();
+                $cart_id = $cart ? $cart->id : 0 ;
                 $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                 if ($order) {
-                    // $order->payment_status = 1;
-                    // $order->save();
-                    // $payment_exists = Payment::where('transaction_id', $transactionId)->first();
-                    // if (!$payment_exists) {
-                    //     $payment = new Payment();
-                    //     $payment->date = date('Y-m-d');
-                    //     $payment->order_id = $order->id;
-                    //     $payment->transaction_id = $transactionId;
-                    //     $payment->balance_transaction = $amount;
-                    //     $payment->type = 'cart';
-                    //     $payment->save();
+                    if ($user->balanceFloat > 0 && $order->wallet_amount_used > 0) {
+                            $user->wallet->withdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
+                    }
+                    $order->payment_status = 1;
+                    $order->save();
+                    $payment_exists = Payment::where('transaction_id', $transactionId)->first();
+                    if (!$payment_exists) {
 
-                    //     // Auto accept order
-                    //     $orderController = new OrderController();
-                    //     $orderController->autoAcceptOrderIfOn($order->id);
+                        $payment = new Payment();
+                        $payment->date = date('Y-m-d');
+                        $payment->order_id = $order->id;
+                        $payment->user_id = $user->id;
+                        $payment->transaction_id = $transactionId;
+                        $payment->balance_transaction = $amount;
+                        $payment->type = 'cart';
+                        $payment->save();
 
-                    //     // Remove cart
-                    //     Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
-                    //     CartAddon::where('cart_id', $cart_id)->delete();
-                    //     CartCoupon::where('cart_id', $cart_id)->delete();
-                    //     CartProduct::where('cart_id', $cart_id)->delete();
-                    //     CartProductPrescription::where('cart_id', $cart_id)->delete();
-                    //     CartDeliveryFee::where('cart_id', $cart_id)->delete();
+                        // Auto accept order
+                        $orderController = new OrderController();
+                        $orderController->autoAcceptOrderIfOn($order->id);
+                        // Remove cart
+                        Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+                        CartAddon::where('cart_id', $cart_id)->delete();
+                        CartCoupon::where('cart_id', $cart_id)->delete();
+                        CartProduct::where('cart_id', $cart_id)->delete();
+                        CartProductPrescription::where('cart_id', $cart_id)->delete();
+                        CartDeliveryFee::where('cart_id', $cart_id)->delete();
 
-                    //     // Send Notification
-                    //     if (!empty($order->vendors)) {
-                    //         foreach ($order->vendors as $vendor_value) {
-                    //             $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
-                    //             $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
-                    //             $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
-                    //         }
-                    //     }
-                    //     $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
-                    //     $super_admin = User::where('is_superadmin', 1)->pluck('id');
-                    //     $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                        // Send Notification
+                        if (!empty($order->vendors)) {
+                            foreach ($order->vendors as $vendor_value) {
+                                $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                                $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
+                                $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+                            }
+                        }
+                        
+                        $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+                        $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                        $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
 
-                    //     $request->request->add(['user_id'=>$order->user_id,'address_id'=>$order->address_id]);
-                    //     //Send Email to customer
-                    //     $orderController->sendSuccessEmail($request, $order);
-                    //     //Send Email to Vendor
-                    //     foreach ($order->vendors->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
-                    //         $orderController->sendSuccessEmail($request, $order, $vendor_id);
-                    //     }
-                    // }
-                    // Send Email
-                    //   $this->successMail();
+                        $request->request->add(['user_id'=>$order->user_id,'address_id'=>$order->address_id]);
+                        //Send Email to customer
+                        $orderController->sendSuccessEmail($request, $order);
+                        //Send Email to Vendor
+                        foreach ($order->vendors->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+                            $orderController->sendSuccessEmail($request, $order, $vendor_id);
+                        }
+                    }
                 }
                 return $this->successResponse($order, __('Order placed successfully.'), 200);
                 
