@@ -1873,6 +1873,8 @@ $(document).ready(function () {
             //totalpay Ends
     function paymentSuccessViaPaypal(amount, token, payer_id, path, tip = 0, order_number = 0) {
         let address_id = 0;
+        var currentUrl = window.location.origin;
+        var paypalCompletePurchaseUrl = currentUrl + "/payment/paypal/CompletePurchase";
         if (path.indexOf("cart") !== -1) {
             // $('#order_placed_btn').trigger('click');
             // $('#v-pills-paypal-tab').trigger('click');
@@ -1890,11 +1892,13 @@ $(document).ready(function () {
         $.ajax({
             type: "GET",
             dataType: 'json',
-            url: payment_success_paypal_url,
+            url: paypalCompletePurchaseUrl,
             data: { 'amount': amount, 'token': token, 'PayerID': payer_id },
             success: function (response) {
                 if (response.status == "Success") {
-                    if (path.indexOf("cart") !== -1) {
+                    if(path.indexOf("details") !== -1){
+                        paypalDebitTransaction(amount, 3, response.data);
+                    }else if (path.indexOf("cart") !== -1) {
                         placeOrder(address_id, 3, response.data, tip);
                     } else if (path.indexOf("wallet") !== -1) {
                         creditWallet(amount, 3, response.data);
@@ -2154,6 +2158,39 @@ $(document).ready(function () {
                     success_error_alert('success', response.message, "#wallet_response");
                     // let wallet_transactions_template = _.template($('#wallet_transactions_template').html());
                     // $(".table.wallet-transactions table-body").append(wallet_transactions_template({wallet_transactions:response.data.transactions}));
+                } else {
+                    $("#wallet_response .message").removeClass('d-none');
+                    success_error_alert('error', response.message, "#wallet_response .message");
+                    $("#topup_wallet_btn, .topup_wallet_confirm").attr("disabled", false);
+                }
+            },
+            error: function (error) {
+                var response = $.parseJSON(error.responseText);
+                $("#wallet_response .message").removeClass('d-none');
+                success_error_alert('error', response.message, "#wallet_response .message");
+                $("#topup_wallet_btn, .topup_wallet_confirm").removeAttr("disabled");
+            },
+            complete: function (data) {
+                $('.spinner-overlay').hide();
+            }
+        });
+    }
+
+
+    // Paypal payment transaction
+    window.paypalDebitTransaction = function paypalDebitTransaction(amount, payment_option_id, transaction_id) {
+        var currentUrl = window.location.origin;
+        var paymentPaypalTransaction = currentUrl + "/payment/paypal-transaction/store";
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: paymentPaypalTransaction,
+            data: { amount: amount, payment_option_id: payment_option_id, transaction_id: transaction_id },
+            success: function (response) {
+                location.href = path;
+                if (response.status == "Success") {
+                    $(".wallet_balance").text(response.data.wallet_balance);
+                    success_error_alert('success', response.message, "#wallet_response");
                 } else {
                     $("#wallet_response .message").removeClass('d-none');
                     success_error_alert('error', response.message, "#wallet_response .message");

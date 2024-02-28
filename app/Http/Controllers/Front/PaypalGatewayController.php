@@ -9,7 +9,7 @@ use Session;
 use Omnipay\Omnipay;
 use Illuminate\Http\Request;
 use Omnipay\Common\CreditCard;
-use App\Models\{PaymentOption, Client, ClientPreference, ClientCurrency};
+use App\Models\{PaymentOption, Client, ClientPreference, ClientCurrency, Payment, User};
 use App\Http\Traits\ApiResponser;
 use App\Http\Controllers\Front\FrontController;
 use Illuminate\Support\Facades\Mail;
@@ -44,29 +44,52 @@ class PaypalGatewayController extends FrontController
     public function paypalPurchase(Request $request)
     {
         try {
+            $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
             $returnUrlParams = '?amount=' . $amount;
             if ($request->has('tip')) {
                 $returnUrlParams = $returnUrlParams . '&tip=' . $request->tip;
             }
-            if ($request->has('order_number')) {
-                $returnUrlParams = $returnUrlParams . '&ordernumber=' . $request->order_number;
+            if($request->has('ordernumber') && $request->payment_form=='pickup_delivery'){
+                $returnUrlParams = '/payment/paypal/CompletePurchase?amount='.$request->amount.'&order_number='.$request->ordernumber.'&action='.$request->payment_form.'&come_from=web&return_route='.$request->reload_route;
             }
-            $response = $this->gateway->purchase([
-                'currency' => $this->currency, //'USD',
-                'amount' => $amount,
-                'cancelUrl' => url($request->cancelUrl),
-                'returnUrl' => url($request->returnUrl . $returnUrlParams),
-            ])->send();
-            if ($response->isSuccessful()) {
-                return $this->successResponse($response->getData());
-            } elseif ($response->isRedirect()) {
-                $this->failMail();
-                return $this->successResponse($response->getRedirectUrl());
-            } else {
-                $this->failMail();
-                return $this->errorResponse($response->getMessage(), 400);
-            }
+            if ($request->has('reload_route')) {
+                $pickupRoute = $request->reload_route;
+                $response = $this->gateway->purchase([
+                    'currency' => $this->currency, //'USD',
+                    'amount' => $amount,
+                    'cancelUrl' => url($request->cancelUrl),
+                    'returnUrl' => url($returnUrlParams),
+                    ])->send();
+                }else{
+                    $response = $this->gateway->purchase([
+                        'currency' => $this->currency, //'USD',
+                        'amount' => $amount,
+                        'cancelUrl' => url($request->cancelUrl),
+                        'returnUrl' => url($request->returnUrl . $returnUrlParams),
+                    ])->send();
+                }
+                if ($response->isSuccessful()) {
+                    return $this->successResponse($response->getData());
+                } elseif ($response->isRedirect()) {
+                    $token = $response->getData();
+                    if(isset($token['TOKEN']) && $request->payment_form=="pickup_delivery"){
+                        $payment = new Payment();
+                        $payment->date = date('Y-m-d');
+                        $payment->user_id = $user->id ?? null;
+                        $payment->transaction_id = $token['TOKEN'];
+                        $payment->payment_option_id = 3;
+                        $payment->order_id = $request->order_id; 
+                        $payment->balance_transaction = $request->amount?? '';
+                        $payment->type = $request->payment_form;
+                        $payment->save();
+                    }
+                    $this->failMail();
+                    return $this->successResponse($response->getRedirectUrl());
+                } else {
+                    $this->failMail();
+                    return $this->errorResponse($response->getMessage(), 400);
+                }
         } catch (\Exception $ex) {
             $this->failMail();
             return $this->errorResponse($ex->getMessage(), 400);
@@ -86,12 +109,23 @@ class PaypalGatewayController extends FrontController
                 'amount'                => $amount,
                 'payer_id'              => $request->PayerID,
                 'transactionReference'  => $request->token,
-            //     'cancelUrl' =>  url($request->cancelUrl),
-            //     'returnUrl' => url($request->returnUrl . $returnUrlParams),
+                'currency' => $this->currency, //'USD',
+            //  'cancelUrl' =>  url($request->cancelUrl),
+            //  'returnUrl' => url($request->returnUrl . $returnUrlParams),
              ));
             $response = $transaction->send();
             if ($response->isSuccessful()) {
                 // $this->successMail();
+                if($request->action=='pickup_delivery'){
+                    $dataResponse = $response->getData();
+                    $payment = Payment::where('transaction_id',$request->token)->first();
+                    if(!empty($request->return_route && $request->come_from)){
+                        $this->completePickupDelivery($payment,$request,$request->come_from);
+                        return redirect($request->return_route);
+                    }else{
+                        return $this->completePickupDelivery($payment,$request,$request->come_from);
+                    }
+                }
                 return $this->successResponse($response->getTransactionReference());
             } else {
                 $this->failMail();
@@ -102,4 +136,66 @@ class PaypalGatewayController extends FrontController
             return $this->errorResponse('Transaction has been declined', 400);
         }
     }
+
+    // Pickup delivery
+    public function completePickupDelivery($payment,$requestdata,$come_from){
+        if(isset($requestdata->PayerID) && $requestdata->token)
+        {
+            $data['payment_option_id']   = 3;
+            $data['transaction_id']      = $payment->transaction_id;
+            $data['amount']              = $requestdata->amount;
+            $data['order_number']        = $requestdata->order_number;
+            $data['reload_route']        = 'routes';
+            $request                     = new \Illuminate\Http\Request($data);
+            $plaseOrderForPickup         = new PickupDeliveryController();
+            $res                         = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+           
+            if($come_from == 'web' && !empty($requestdata->return_route))
+            {
+                $response['status']         = 'Success';
+                $response['msg']            = 'Success Added Pickup Delivery.';
+                $response['payment_from']   = 'pickup_delivery';
+                $response['data']           = $res;
+                return response()->json($response,200); 
+            }
+            if($come_from == 'app')
+            {
+                $response['status']         = 'Success';
+                $response['msg']            = 'Success Added Pickup Delivery.';
+                $response['payment_from']   = 'pickup_delivery';
+                $response['data']           = $res;
+                return response()->json($response,200); 
+            }
+        }
+    }
+
+    public function paymentTransactionSave(Request $request, $domain = ''){
+        try{
+            if( (isset($request->user_id)) && (!empty($request->user_id)) ){
+                $user = User::find($request->user_id);
+            }elseif((isset($request->auth_token)) && (!empty($request->auth_token))){
+                $user = User::whereHas('device',function  ($qu) use ($request){
+                    $qu->where('access_token', $request->auth_token);
+                })->first();
+            }else{
+                $user = Auth::user();
+            }
+         
+            $credit_amount = $request->amount;
+            $payment = Payment::where('transaction_id',$request->transaction_id)->first();
+            if(!$payment){
+                $payment = new Payment();
+            }
+            $payment->date = date('Y-m-d');
+            $payment->user_id = $user->id ?? null;
+            $payment->transaction_id = $request->transaction_id;
+            $payment->payment_option_id = $request->payment_option_id ?? null;
+            $payment->balance_transaction = $credit_amount;
+            $payment->type = 'paypal_payment';
+            $payment->save();
+        }catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 400);
+        }
+    }
+    
 }
