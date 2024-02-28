@@ -688,8 +688,9 @@ class CartController extends BaseController
      * @param  mixed $cart
      * @return void
      */
-    public function productPriceAfterVendorDiscount($vendorData,$product_discount_amount,$doller_compare,$cart)
+  public function productPriceAfterVendorDiscount($vendorData,$product_discount_amount,$doller_compare,$cart)
     {
+
         $allProductsSum = 0;
         $cart_products = CartProduct::with(['product.variant', 'addon.option'])
         ->where('vendor_id', $vendorData->vendor_id)
@@ -713,6 +714,8 @@ class CartController extends BaseController
             $allProductsSum += $product_addon_price;
         }
         $PromoDelete = 0;
+        $data['vendor_discount_amount'] = 0;
+        $data['deliveryfeeOnCoupon'] = 0;
         if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) 
         {
             if ( $PromoDelete !=1) 
@@ -730,19 +733,22 @@ class CartController extends BaseController
                     if( ($minimum_spend <= $allProductsSum ) && ($maximum_spend >= $allProductsSum))
                     {
                             if ($vendorData->coupon->promo->promo_type_id == 2) {
-                                $vendor_discount_amount = $vendorData->coupon->promo->amount;
+                                $data['vendor_discount_amount'] = $vendorData->coupon->promo->amount;
                             } else {
-                                $vendor_discount_amount = ($product_discount_amount * $vendorData->coupon->promo->amount / 100);
+                                $data['vendor_discount_amount'] = ($product_discount_amount * $vendorData->coupon->promo->amount / 100);
+                            }
+                            if ($vendorData->coupon->promo->allow_free_delivery == 1) {
+                                $data['deliveryfeeOnCoupon'] = 1;
                             }
                     }else{
                         $cart->coupon()->delete();
                         $vendorData->coupon()->delete();
                         unset($vendorData->coupon);
-                       return  0;
+                       return $data;
                     }
             } 
         }
-        return $vendor_discount_amount??0;
+        return $data??0;
     }
 
 
@@ -898,7 +904,8 @@ class CartController extends BaseController
             $rentalProtection = 0;
             $bookingOption = 0 ;
             $securityAmount = 0;
-
+            $deliveryfeeOnCoupon = 0;
+            $totalFreeDeliveryCharges = 0;
             $total_markup_charges = 0 ;
             $deliver_fee_charges = 0;
             $total_fixed_fee_tax = 0;
@@ -1193,9 +1200,8 @@ class CartController extends BaseController
                         // Check if is_cart_checked is 1 then add $vendor_products_total_amount
                         if($prod->is_cart_checked == 1){
                             $proSum = $proSum + $quantity_price + $quantity_container_charges;
-
-                            $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                         }
+                        $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
 
                         $total_container_charges = $total_container_charges + $quantity_container_charges;
                         $prod->luxury_option_id= $prod->luxury_option_id??'';
@@ -1326,8 +1332,10 @@ class CartController extends BaseController
 
                                      //Find vendor Product Discount here
                                      $productPriceAfterVendorDiscount  = $this->productPriceAfterVendorDiscount($prod,$quantity_price,$clientCurrency->doller_compare,$cart);
-                                     $quantity_price = $quantity_price - $productPriceAfterVendorDiscount;
-
+                                     $quantity_price = $quantity_price - $productPriceAfterVendorDiscount['vendor_discount_amount'];
+                                     if ($productPriceAfterVendorDiscount['deliveryfeeOnCoupon'] == 1) {
+                                        $deliveryfeeOnCoupon = 1;
+                                    }
                                     if(!$additionalPreferences->is_tax_price_inclusive){
                                         $product_tax = ($quantity_price) * $rate / 100;
                                     }else{
@@ -1349,7 +1357,10 @@ class CartController extends BaseController
                             }else{
                                  //Find vendor Product Discount here
                                  $productPriceAfterVendorDiscount  = $this->productPriceAfterVendorDiscount($prod,$quantity_price,$clientCurrency->doller_compare,$cart);
-                                 $quantity_price = $quantity_price - $productPriceAfterVendorDiscount;
+                                 $quantity_price = $quantity_price - $productPriceAfterVendorDiscount['vendor_discount_amount'];
+                                 if ($productPriceAfterVendorDiscount['deliveryfeeOnCoupon'] == 1) {
+                                    $deliveryfeeOnCoupon = 1;
+                                }
                             }
                             $prod->taxdata = $taxData;
                             // if($prod->product->)
@@ -1531,9 +1542,12 @@ class CartController extends BaseController
                                     if($vendorData->coupon->promo->restriction_on == 0 ){
                                         $gross_coupon_amount = $coupon_apply_price;
                                     }
+                                    if ($vendorData->coupon->promo->allow_free_delivery == 1) {
+                                        $deliveryfeeOnCoupon = 1;
+                                    }
                                     $dis_amt = $percentage_amount = ($gross_coupon_amount * $vendorData->coupon->promo->amount / 100);
                                     // $payable_amount -= $percentage_amount;
-                                    $discount_amount = $percentage_amount;
+                                    $discount_amount = $percentage_amount +$vendorTotalDeliveryFee;
                                 }
 
                                 $couponData['coupon_id'] =  $vendorData->coupon->promo->id;
@@ -1652,7 +1666,6 @@ class CartController extends BaseController
                     //     }
                     // }
                 }
-                $order_sub_total = $order_sub_total + $vendor_products_total_amount;
 
                 $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
@@ -1678,7 +1691,10 @@ class CartController extends BaseController
                 }
                 $vendorData->is_promo_code_available = $is_promo_code_available;
 
-
+                if($deliveryfeeOnCoupon == 1){
+                    $totalFreeDeliveryCharges +=$vendorTotalDeliveryFee;
+                    $vendorTotalDeliveryFee = 0;
+                }
 
                 $totalDeliveryCharges+=$vendorTotalDeliveryFee;
 
@@ -1870,8 +1886,10 @@ class CartController extends BaseController
         $userCart->save();
         // add delivery fee charges as other tax as per web code.
         $cart->other_taxes = $deliver_fee_charges;
+        $fixedFeeNomenclatures = $this->fixedFee($langId).' tax';
+        
         $cart->specific_taxes = array(
-            ['label' => 'Fixed fee tax', 'value' => decimal_format($total_fixed_fee_tax)],
+            ['label' => $fixedFeeNomenclatures, 'value' => decimal_format($total_fixed_fee_tax)],
             ['label' => 'Service fee tax', 'value' => decimal_format($total_service_fee_tax)],
             ['label' => 'Deliver fee tax', 'value' => decimal_format($deliver_fee_charges_tax)],
             ['label' => 'Markup fee tax', 'value' => decimal_format($total_markup_fee_tax)],
@@ -1981,7 +1999,7 @@ class CartController extends BaseController
         }
 
 
-        $cart->total_payable_amount += ($securityAmount + $rentalProtection + $bookingOption);
+        $cart->total_payable_amount += ($securityAmount + $rentalProtection + $bookingOption - $totalFreeDeliveryCharges);
         //$cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
 
         //mohit sir branch code updated by sohail farm meat
