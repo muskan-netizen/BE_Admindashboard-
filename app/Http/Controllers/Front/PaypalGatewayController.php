@@ -88,7 +88,7 @@ class PaypalGatewayController extends FrontController
                     $payment->user_id = $user->id ?? null;
                     $payment->transaction_id = $token['TOKEN'];
                     $payment->payment_option_id = 3;
-                    $payment->order_id = $request->ordernumber; 
+                    $payment->order_id = $request->order_id; 
                     $payment->balance_transaction = $request->amount?? '';
                     $payment->type = $request->payment_form;
                     $payment->save();

@@ -436,7 +436,7 @@ $(document).ready(function () {
                         alert(response.message);
                         window.location.href = response.redirect;
                     }
-                     
+                    let order_id = response.data.id;
                     let order_number = response.data.order_number;
                     let reload_route = response.data.route;
                     
@@ -457,7 +457,7 @@ $(document).ready(function () {
                             type: "POST",
                             dataType: 'json',
                             url: payment_paypal_url,
-                            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: totalamount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,stripe_token: stripe_token , payment_form : payment_form,reload_route: reload_route,ordernumber:order_number },
+                            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: totalamount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,stripe_token: stripe_token , payment_form : payment_form,reload_route: reload_route,ordernumber:order_number,order_id:order_id },
                             success: function(resp) {
                                 if (resp.status == 'Success') {
                                     window.location.replace(resp.data);
