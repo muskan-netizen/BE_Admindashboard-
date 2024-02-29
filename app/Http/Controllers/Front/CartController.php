@@ -306,7 +306,7 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
-
+           
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         $vendor = Vendor::find($request->vendor_id);
@@ -1742,11 +1742,10 @@ class CartController extends FrontController
             $cart->delivery_type =  $code ?? 'D';
             $cart->sub_total =  $sub_total ?? 0;
 
-            // dd($cart->toArray());
             $cart->products = $cartData->toArray();
         }
 
-
+           
         return $cart;
     }
 
@@ -2224,6 +2223,7 @@ class CartController extends FrontController
                 $currency_code = $currency->currency->iso_code;
             }
             $cart_details->currency_code = $currency_code;
+          
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
             if ($action == 'car_rental') {
                 $addon = AddonSet::with('option', 'translation')->where('vendor_id', $cart_details->vendor_id)->where('status', 1)->get();

@@ -951,7 +951,11 @@
                                               
                                                     {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($product->product_total_amount)) }}
                                                     @else
-                                                    {{ Session::get('currencySymbol') . decimal_format($product->product_sub_total_amount + $product->vendor->fixed_fee_amount - $product->bid_vendor_discount ?? 0) }}
+                                                    @if($serviceType == 'rental')
+                                                    {{ Session::get('currencySymbol') . decimal_format($product->product_sub_total_amount + $product->vendor->fixed_fee_amount +$additionalPrice - $product->bid_vendor_discount ?? 0) }}
+                                                    @else
+                                                    {{ Session::get('currencySymbol') . decimal_format($product->product_sub_total_amount + $product->vendor->fixed_fee_amount + - $product->bid_vendor_discount ?? 0) }}
+                                                    @endif
                                                 @endif
                                             </p>
                                         </div>
@@ -1186,7 +1190,9 @@
                                     {{-- <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->sub_total - $cart_details->bid_total_discount)}}</b></div> --}}
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->total_gross_amount + $cart_details->total_taxable_amount + $other_taxes)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->total_gross_amount + $cart_details->total_taxable_amount + $other_taxes) }}
+                                            
+                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->total_gross_amount + $cart_details->total_taxable_amount + $other_taxes)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->total_gross_amount + $cart_details->total_taxable_amount + $other_taxes +@$additionalPrice) }}
+                                           
                                             @endif
                                         </b>
                                     </div>
@@ -1195,7 +1201,7 @@
                             @endif
                             @if ($price_bifurcation != 1)
                                 <!-- <hr class="my-2"> -->
-                                <div class="row">
+                                {{-- <div class="row">
                                     <div class="col-6">{{ __('Sub Total') }}</div>
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
@@ -1208,7 +1214,7 @@
                                         </b></span>
                                         <span id="other_taxes" style="display:none;">{{ $other_taxes }}</span>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <hr class="my-2">
                             @endif
                             
