@@ -1690,7 +1690,9 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     var addonoptids = [];
     $(function() {
         $(".productDetailAddonOption").click(function(e) {
-            var addon_elem = $(this).closest('tr');
+           // var addon_elem = $(this).closest('tr');
+            var addon_elem = $(this).parents('.productAddonSetOptions');
+
             var addon_minlimit = addon_elem.data('min');
             var addon_maxlimit = addon_elem.data('max');
             if(addon_elem.find(".productDetailAddonOption:checked").length > addon_maxlimit) {
