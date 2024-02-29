@@ -314,22 +314,22 @@
                                                         // $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee + $vendor->waiting_price;
                                                         // $subtotal_order_price += $product_subtotal_amount;
 
-                                                    
+
                                                         $product_subtotal_amount = $vendor->subtotal_amount - $vendor->discount_amount + $vendor->total_container_charges +
                                                         $vendor->taxable_amount + $vendor->service_fee_percentage_amount + $vendor->fixed_fee +
                                                         $vendor->delivery_fee + $vendor->additional_price + $vendor->toll_amount-$order->wallet_amount_used;
                                                         $subtotal_order_price += $product_subtotal_amount;
-                                                        
+
                                                     @endphp
-                                             
+
                                                     <span>{{ Session::get('currencySymbol') }}{{ decimal_format($product_subtotal_amount * $clientCurrency->doller_compare) }}</span>
                                                 </li>
                                                 <li>
                                                     @php
                                                         $docs = \App\Models\OrderDocument::where('order_vendor_product_id', $order->vendors[0]->id)->get();
                                                     @endphp
-                                                    @if(count($docs) > 0)
-                                                        <button type="button" class="btn btn-primary docButtons" data-toggle="modal" data-target="#exampleModal">Documents</button>
+                                                    @if(count($docs) > 0 && getAdditionalPreference(['document_report'])['document_report'] == 1)
+                                                        <button type="button" class="btn btn-primary docButtons" data-toggle="modal" data-target="#exampleModal" style="color: white!important">View Reports</button>
                                                     @endif
                                                 </li>
                                             </ul>

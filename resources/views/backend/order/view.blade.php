@@ -120,11 +120,13 @@ $timezone = Auth::user()->timezone;
             </div>
             @endif
         </div>
-        <div class="uploadDocument">
-            <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#exampleModal">
-                Upload Report
-            </button>
-        </div>
+        @if(getAdditionalPreference(['document_report'])['document_report'] == 1)
+            <div class="uploadDocument">
+                <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#exampleModal">
+                    Upload Report
+                </button>
+            </div>
+        @endif
         @if ($order->vendors->first())
         @if ($order->vendors->first()->cancel_request && $order->vendors->first()->cancel_request->status == 'Pending')
         <div class="row">
