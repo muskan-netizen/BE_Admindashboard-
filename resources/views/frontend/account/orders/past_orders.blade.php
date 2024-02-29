@@ -18,6 +18,7 @@
                         continue;
                     }
                 @endphp
+
                 <div class="col-12">
                     <div class="row no-gutters order_head">
                         <div class="col-md-3 alOrderStatus">
@@ -326,7 +327,7 @@
                                                 </li>
                                                 <li>
                                                     @php
-                                                        $docs = \App\Models\OrderDocument::where('order_vendor_product_id', $order->vendors[0]->id)->get();
+                                                        $docs = $vendor->orderDocument;
                                                     @endphp
                                                     @if(count($docs) > 0 && getAdditionalPreference(['document_report'])['document_report'] == 1)
                                                         <button type="button" class="btn btn-primary docButtons" data-toggle="modal" data-target="#exampleModal" style="color: white!important">View Reports</button>

@@ -1235,7 +1235,7 @@ $timezone = Auth::user()->timezone;
           </button>
         </div>
         <div class="modal-body">
-            <form method="post" enctype="multipart/form-data" action="/client/order/upload/documents/{{$order->id}}/{{$order->vendors[0]->vendor_id}}">
+            <form method="post" enctype="multipart/form-data" action="{{route('orderDocument',['order_id' => $order->id, 'vendor_id' => $order->vendors[0]->vendor_id]) }}" >
                 @csrf
                 <div class="form-group">
                     <input type="file" name="document[]" multiple class="form-control mb-2" >
@@ -1256,7 +1256,7 @@ $timezone = Auth::user()->timezone;
                                 <img  src="{{url('file-download' . '/pdf.png')}}"    ><a href="{{$files}}"> {{$file['file_name']}}   </a>
                             </div>
                             <div class="col-3">
-                                <a href="/client/order/delete/documents/{{$file->id}}"> <i class="fa fa-trash"></i></a>
+                                <a  href="{{route('deleteDocument',$file->id)}}" > <i class="fa fa-trash"></i></a>
                             </div>
                         </div>
                     @endforeach
