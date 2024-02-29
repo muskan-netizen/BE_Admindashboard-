@@ -737,6 +737,7 @@ trait CartManagerV2
                                         $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                                         $price_in_currency = ($additionalPreference['is_price_by_role'] == 1 ) ? $prod->pvariant->new_price : $prod->pvariant->price??0;
                                         if($cartData[0]->luxury_option_id == 4 ){ // for rental case
+                                            
                                             if(($prod->pvariant->incremental_price_per_min!='' && $prod->pvariant->incremental_price_per_min > 0)){
                                                 $prod->additional_price = ($prod->additional_increments_hrs_min / $prod->pvariant->incremental_price_per_min);
                                                 if(@$prod->pvariant->month_price && $prod->pvariant->week_price){
@@ -760,7 +761,9 @@ trait CartManagerV2
                                             //$payable_amount =  $price_in_currency + $prod->additional_price;
                                             $sub_total += $prod->additional_price;
                                         }
-
+                                        if(@$sub_total){
+                                            $cart->total_payable_amount = $cart->total_payable_amount + $sub_total;
+                                        }
 
                                         $variantsData = $taxData = $vendorAddons = array();
                                         $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
@@ -1953,6 +1956,9 @@ trait CartManagerV2
                 }
             }
 
+       
+
+
             $cart->pickup_delay_date =  $pickup_delay_date ?? 0;
             $cart->dropoff_delay_date =  $dropoff_delay_date ?? 0;
             $cart->delivery_type =  $code ?? 'D';
@@ -1973,9 +1979,12 @@ trait CartManagerV2
                 $cart->total_payable_amount += $cart->total_taxable_amount;
                 $cart->other_taxes_string = $other_taxes_string . ',taxjar_fee:' . $cart->total_taxable_amount;
             }
+
+            
         }
        
         return $cart;
+        
     }
 
     public function hideSecretKeysV2($res)

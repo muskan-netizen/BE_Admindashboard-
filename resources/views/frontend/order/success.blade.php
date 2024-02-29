@@ -293,7 +293,7 @@ $order_is_long_term = $order->is_long_term;
                         @endphp
                         @if($serviceType == 'rental')
                         <h3>{{__('Total')}} <span>@if( $additionalPreference["is_token_currency_enable"])
-                            {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format(($total + $additional_price) * @$clientCurrency->doller_compare))}}@else{{Session::get('currencySymbol').decimal_format(($total + $additional_price) * @$clientCurrency->doller_compare)}}@endif</span></h3>
+                            {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format(($total) * @$clientCurrency->doller_compare))}}@else{{Session::get('currencySymbol').decimal_format(($total) * @$clientCurrency->doller_compare)}}@endif</span></h3>
                     </div>
                  @else
                 <h3>{{__('Total')}} <span>@if( $additionalPreference["is_token_currency_enable"])
