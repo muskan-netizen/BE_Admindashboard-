@@ -1520,7 +1520,6 @@ class VendorController extends BaseController
             // $vendor->fixed_fee_amount = $request->has('fixed_fee_amount') ? $request->fixed_fee_amount : 0.00;
 
             $vendor->fixed_fee_amount = $request->has('fixed_fee') ? $request->fixed_fee_amount : 0.00;
-
         }else{
 
             //Commission & Taxes (Visible For Admin)

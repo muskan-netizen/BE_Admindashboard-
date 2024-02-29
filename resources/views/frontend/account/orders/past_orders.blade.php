@@ -5,6 +5,14 @@
             @foreach ($pastOrders as $key => $order)
 
             @php
+
+            $total_other_taxes=0.00;
+             if(!empty($order->total_other_taxes)){
+                $total_other_taxes  =   (float) array_sum(explode(":", $order->total_other_taxes));
+            }else{
+                $total_other_taxes = $order->taxable_amount;
+            }
+
                 if(count($order->vendors)==0)
                     {
                         continue;
@@ -270,6 +278,18 @@
                                                         <span>{{ Session::get('currencySymbol') }}{{ decimal_format($vendor->discount_amount * $clientCurrency->doller_compare) }}</span>
                                                     </li>
                                                 @endif
+
+                                                @if ($vendor->taxable_amount  > 0)
+                                                <li
+                                                    class="d-flex align-items-center justify-content-between">
+                                                    <label
+                                                        class="m-0">{{ __('Tax') }}</label>
+                                                    <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format(($vendor->taxable_amount) * $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format(($vendor->taxable_amount)
+                                                        *
+                                                        $clientCurrency->doller_compare)}}</span>
+                                                </li>
+                                            @endif
+
                                                 @if ($vendor->delivery_fee > 0)
                                                     <li class="d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Delivery Fee') }}</label>
@@ -291,9 +311,17 @@
                                                     class="grand_total d-flex align-items-center justify-content-between">
                                                     <label class="m-0">{{ __('Amount') }}</label>
                                                     @php
-                                                        $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee + $vendor->waiting_price;
+                                                        // $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee + $vendor->waiting_price;
+                                                        // $subtotal_order_price += $product_subtotal_amount;
+
+                                                    
+                                                        $product_subtotal_amount = $vendor->subtotal_amount - $vendor->discount_amount + $vendor->total_container_charges +
+                                                        $vendor->taxable_amount + $vendor->service_fee_percentage_amount + $vendor->fixed_fee +
+                                                        $vendor->delivery_fee + $vendor->additional_price + $vendor->toll_amount-$order->wallet_amount_used;
                                                         $subtotal_order_price += $product_subtotal_amount;
+                                                        
                                                     @endphp
+                                             
                                                     <span>{{ Session::get('currencySymbol') }}{{ decimal_format($product_subtotal_amount * $clientCurrency->doller_compare) }}</span>
                                                 </li>
                                                 <li>
@@ -396,7 +424,7 @@
                                 <ul class="price_box_bottom m-0 pl-0 pt-1">
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{ __('Sub Total') }}</label>
-                                        <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->total_amount + $order->total_delivery_fee + $order->total_waiting_price * $clientCurrency->doller_compare) }}</span>
+                                        <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->total_amount * $clientCurrency->doller_compare) }}</span>
                                     </li>
                                     @if ($order->wallet_amount_used > 0)
                                         <li class="d-flex align-items-center justify-content-between">
@@ -416,6 +444,16 @@
                                             <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->taxable_amount * $clientCurrency->doller_compare) }}</span>
                                         </li>
                                     @endif
+
+                                    @if ($order->total_container_charges > 0)
+                                        <li
+                                            class="d-flex align-items-center justify-content-between">
+                                            <label
+                                                class="m-0">{{ __('Container Charges') }}</label>
+                                            <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format(($vendor->total_container_charges) * $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format(($vendor->total_container_charges) * $clientCurrency->doller_compare)}}</span>
+                                        </li>
+                                    @endif
+
                                     @if ($order->total_service_fee > 0)
                                         <li class="d-flex align-items-center justify-content-between">
                                             <label class="m-0">{{ __('Service Fee') }}</label>
@@ -434,18 +472,18 @@
                                             <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->subscription_discount * $clientCurrency->doller_compare) }}</span>
                                         </li>
                                     @endif
-                                    @if ($order->total_discount_calculate > 0)
-                                        <li class="d-flex align-items-center justify-content-between">
-                                            <label class="m-0">{{ __('Discount') }}</label>
-                                            <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->total_discount_calculate * $clientCurrency->doller_compare) }}</span>
-                                        </li>
-                                    @endif
                                     @if ($order->total_delivery_fee > 0)
                                         <li class="d-flex align-items-center justify-content-between">
                                             <label class="m-0">{{ __('Delivery Fee') }}</label>
                                             <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->total_delivery_fee * $clientCurrency->doller_compare) }}</span>
                                         </li>
                                     @endif
+                                    @if ($order->total_discount_calculate > 0)
+                                    <li class="d-flex align-items-center justify-content-between">
+                                        <label class="m-0">{{ __('Discount') }}</label>
+                                        <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->total_discount_calculate * $clientCurrency->doller_compare) }}</span>
+                                    </li>
+                                @endif
                                     @if ($order->total_waiting_price > 0)
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{ __('Waiting Time ').(($order->total_waiting_time)?'('.$order->total_waiting_time.'Min)':'') }}</label>
@@ -460,7 +498,7 @@
                                     @endif
                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{ __('Total Payable') }}</label>
-                                        <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount - $order->total_discount_calculate * $clientCurrency->doller_compare) }}</span>
+                                        <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount * $clientCurrency->doller_compare) }}</span>
                                     </li>
                                     {{-- mohit sir branch code added by sohail --}}
                                     @if (@$order->advance_amount > 0)
