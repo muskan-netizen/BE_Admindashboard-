@@ -1958,10 +1958,6 @@ trait CartManagerV2
 
        
 
-            // if(@$cart->additional_price){
-            //     $cart->total_payable_amount=$cart->total_payable_amount+$cart->additional_price;
-
-            // }
 
             $cart->pickup_delay_date =  $pickup_delay_date ?? 0;
             $cart->dropoff_delay_date =  $dropoff_delay_date ?? 0;
