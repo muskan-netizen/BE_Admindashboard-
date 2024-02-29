@@ -954,7 +954,7 @@
                                                     @if($serviceType == 'rental')
                                                     {{ Session::get('currencySymbol') . decimal_format($product->product_sub_total_amount + $product->vendor->fixed_fee_amount +$additionalPrice - $product->bid_vendor_discount ?? 0) }}
                                                     @else
-                                                    {{ Session::get('currencySymbol') . decimal_format($product->product_sub_total_amount + $product->vendor->fixed_fee_amount + - $product->bid_vendor_discount ?? 0) }}
+                                                    {{ Session::get('currencySymbol') . decimal_format($product->product_sub_total_amount + $product->vendor->fixed_fee_amount - $product->bid_vendor_discount ?? 0) }}
                                                     @endif
                                                 @endif
                                             </p>
