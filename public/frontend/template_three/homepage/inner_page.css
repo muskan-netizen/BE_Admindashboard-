@@ -4117,3 +4117,35 @@ a.morelink.less {
     min-height: inherit;
     overflow: hidden;
 }
+
+
+
+
+.al_body_template_three .alFullMapForm {
+    top: 50px;
+    height: 90vh!important;
+    overflow-y: scroll;
+    background-color: #fff !important;
+}
+.al_body_template_three .booking-experienceNew {
+    overflow-y: inherit !important;
+}
+.al_body_template_three .booking-experienceNew {
+    height: auto !important;
+}
+.al_body_template_three .cab-outer {
+    height: auto !important;
+    overflow: auto;
+    background-color: #fff !important;
+}
+.al_body_template_three #alTaxiBookingWrapper #cab_detail_box .cab-outer.style-4 {
+    position: absolute;
+    top: 0;
+    height: auto;
+    background: #ffff;
+    overflow-y: scroll;
+    width: 100%;
+}
+.al_body_template_three .payment-promo-container {
+    margin-top: 4rem;
+}
