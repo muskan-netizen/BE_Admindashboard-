@@ -301,17 +301,18 @@
                                                         $docs = \App\Models\OrderDocument::where('order_vendor_product_id', $order->vendors[0]->id)->get();
                                                     @endphp
                                                     @if(count($docs) > 0)
-                                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Documents</button>
+                                                        <button type="button" class="btn btn-primary docButtons" data-toggle="modal" data-target="#exampleModal">Documents</button>
                                                     @endif
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
+
                                     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                           <div class="modal-content">
                                             <div class="modal-header">
-                                              <h4 class="header-title mb-3" id="exampleModalLabel">{{ __('Documents') }}</h4>
+                                              <h4 class="header-title mb-3" id="exampleModalLabel">{{ __('Reports') }}</h4>
                                               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                               </button>
@@ -324,7 +325,7 @@
                                                         @endphp
                                                         <div class="mb-2 d-flex ">
                                                             <div class="col-12">
-                                                                <img  src="{{url('file-download' . '/pdf.png')}}"    ><a href="{{$files}}"> {{$file['file_name']}}   </a>
+                                                                <img  src="{{url('file-download' . '/pdf.png')}}"    ><a target="_blank" href="{{$files}}"> {{$file['file_name']}}   </a>
                                                             </div>
 
                                                         </div>
@@ -573,3 +574,17 @@
     </div>
     {{ $pastOrders->appends(['pageType' => 'pastOrders'])->links() }}
 </div>
+<style>
+    .docButtons{
+        padding: 5px 10px!important;
+        font-size: 10px!important;
+        letter-spacing: 2px;
+        font-weight: 500;
+        text-shadow: none;
+        border-radius: 4px;
+        border-width: 1px;
+        width: auto !important;
+        max-width: max-content;
+        text: white;
+    }
+</style>

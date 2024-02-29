@@ -122,7 +122,7 @@ $timezone = Auth::user()->timezone;
         </div>
         <div class="uploadDocument">
             <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#exampleModal">
-                Upload Document
+                Upload Report
             </button>
         </div>
         @if ($order->vendors->first())
@@ -1217,7 +1217,7 @@ $timezone = Auth::user()->timezone;
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Upload Document</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Upload Report</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -1232,8 +1232,8 @@ $timezone = Auth::user()->timezone;
             </form>
         </div>
         <div class="card-body">
-            <h4 class="header-title mb-3">{{ __('Documents') }}</h4>
             @if(count($order->vendors) > 0)
+                <h4 class="header-title mb-3">{{__('Reports') }}</h4>
                 @foreach($order->vendors as $doc)
                     @foreach($doc->orderDocument as $file)
                         @php

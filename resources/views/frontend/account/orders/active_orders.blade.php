@@ -373,18 +373,19 @@
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
 
-                                                                                            <li>
+                                                                                            {{-- <li>
                                                                                                 @php
                                                                                                     $docs = \App\Models\OrderDocument::where('order_vendor_product_id', $order->vendors[0]->id)->get();
                                                                                                 @endphp
                                                                                                 @if(count($docs) > 0)
                                                                                                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Documents</button>
                                                                                                 @endif
-                                                                                            </li>
+                                                                                            </li> --}}
+
                                                                                         </ul>
                                                                                     </div>
 
-                                                                                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                                                    {{-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                                                         <div class="modal-dialog" role="document">
                                                                                           <div class="modal-content">
                                                                                             <div class="modal-header">
@@ -417,7 +418,7 @@
                                                                                             </div>
                                                                                           </div>
                                                                                         </div>
-                                                                                      </div>
+                                                                                      </div> --}}
 
                                                                                     <?php
                                                                                         $pkup  = json_encode(date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone))));
