@@ -26,5 +26,11 @@ class NomenclatureTableSeeder extends Seeder
         if(!NomenClature::where(['label'=>'Car-Rental'])->exists()){
             NomenClature::Create(['label'=>'Car-Rental']);
         }
+        if(!NomenClature::where(['label'=>'Online'])->exists()){
+            NomenClature::Create(['label'=>'Online']);
+        }
+        if(!NomenClature::where(['label'=>'Products'])->exists()){
+            NomenClature::Create(['label'=>'Products']);
+        }
     }
 }

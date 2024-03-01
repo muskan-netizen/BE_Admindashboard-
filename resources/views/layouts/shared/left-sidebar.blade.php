@@ -96,7 +96,11 @@
                                 <li>
                                     <a href="{{route('order.index')}}">
                                         <span class="icon-orders"></span>
-                                        <span> {{ __('Orders') }} </span>
+                                        @php
+                                            $ordersNom = getNomenclatureName('Orders', true);
+                                            $ordersNom = ($ordersNom=="Orders")?__('Orders'):__($ordersNom);
+                                        @endphp
+                                        <span> {{ __($ordersNom) }} </span>
                                     </a>
                                 </li>
 
