@@ -120,10 +120,17 @@ $timezone = Auth::user()->timezone;
             </div>
             @endif
         </div>
-
+        @if(getAdditionalPreference(['document_report'])['document_report'] == 1)
+            <div class="uploadDocument">
+                <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#exampleModal">
+                    Upload Report
+                </button>
+            </div>
+        @endif
         @if ($order->vendors->first())
         @if ($order->vendors->first()->cancel_request && $order->vendors->first()->cancel_request->status == 'Pending')
         <div class="row">
+
             <div class="col-lg-12 mb-3">
                 <div class="card mb-0 h-100" id="cancel-request-card">
                     <div class="card-body">
@@ -1216,6 +1223,55 @@ $timezone = Auth::user()->timezone;
 </div>
 </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Upload Report</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form method="post" enctype="multipart/form-data" action="{{route('orderDocument',['order_id' => $order->id, 'vendor_id' => $order->vendors[0]->vendor_id]) }}" >
+                @csrf
+                <div class="form-group">
+                    <input type="file" name="document[]" multiple class="form-control mb-2" >
+                    <input type="submit" class="btn btn-success text-center" value="Upload" />
+                </div>
+            </form>
+        </div>
+        <div class="card-body">
+            @if(count($order->vendors) > 0)
+                <h4 class="header-title mb-3">{{__('Reports') }}</h4>
+                @foreach($order->vendors as $doc)
+                    @foreach($doc->orderDocument as $file)
+                        @php
+                            $files = Storage::disk('s3')->url($file['document']);
+                        @endphp
+                        <div class="mb-2 d-flex ">
+                            <div class="col-9">
+                                <img  src="{{url('file-download' . '/pdf.png')}}"    ><a href="{{$files}}"> {{$file['file_name']}}   </a>
+                            </div>
+                            <div class="col-3">
+                                <a  href="{{route('deleteDocument',$file->id)}}" > <i class="fa fa-trash"></i></a>
+                            </div>
+                        </div>
+                    @endforeach
+                @endforeach
+            @endif
+        </div>
+
+        <div class="modal-footer">
+          {{-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button> --}}
+        </div>
+      </div>
+    </div>
+  </div>
+
       <!-- modal for Delay Time -->
 <div class="modal fade delay_time" id="showDelayTimeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
    <div class="modal-dialog" role="document">

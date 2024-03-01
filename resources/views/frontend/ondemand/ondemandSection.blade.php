@@ -23,7 +23,8 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
 <section class="home-serivces" id="alSixHomeServices">
     <div class="container">
         <div class="row mb-lg-5 mb-md-4 mb-3">
-            <div class="col-xl-8 offset-xl-2">
+        <!-- class="col-xl-8 offset-xl-2 replace class to col-md-12" -->
+            <div class="col-md-12">
                 <div class="step-indicator">
 
                     <div class="step step1 @if(app('request')->input('step') >= '1' || empty(app('request')->input('step'))) active @endif">
@@ -728,6 +729,15 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                         <li class="alVendorProductTotals">
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
+                                                    <span class="ellips">{{__('Delivery Charges')}}</span>
+                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.delivery_charges) %></span>
+                                                </h6>
+                                            </div>
+                                        </li>
+
+                                        <li class="alVendorProductTotals">
+                                            <div class='media-body'>
+                                                <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Tax')}}</span>
                                                     <span>{{Session::get('currencySymbol')}}<%= cart_details.total_taxable_amount %></span>
                                                 </h6>
@@ -749,7 +759,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Total')}}</span>
-                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.sub_total_inc_tax) %></span>
+                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.total_payable_amount) %></span>
                                                 </h6>
                                             </div>
                                         </li>

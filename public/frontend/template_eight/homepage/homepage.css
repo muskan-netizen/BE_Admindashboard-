@@ -2004,7 +2004,7 @@ article#page-container section .vendors section h2.h2-heading{margin-bottom: 20p
 
 @media(max-width:767px) {
     .vender-logo.deals-product.product-card-box.position-relative.text-center.al_custom_vendors_sec .suppliers-img-outer.position-relative {
-        min-height: inherit !important;
+        min-height: 150px !important;
     }
     article#page-container section .vendors section a {
         padding-bottom: 10px;
@@ -2018,6 +2018,7 @@ article#page-container section .vendors section h2.h2-heading{margin-bottom: 20p
     }
     article#page-container section .vendors section a {
         padding-bottom: 0;
+        width: 100%;
     }
     .al_body_template_eight .brand-img {
         height: inherit;
@@ -2028,7 +2029,6 @@ article#page-container section .vendors section h2.h2-heading{margin-bottom: 20p
     .al_body_template_eight .al_custom_brand .slick-slide {
         margin: 0 10px 0 0;
     }
-
     .al_body_template_eight .product-description_list p span.product_discription {
         width: 60%;
     }

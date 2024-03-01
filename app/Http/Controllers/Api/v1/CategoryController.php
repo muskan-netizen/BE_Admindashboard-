@@ -86,7 +86,10 @@ class CategoryController extends BaseController
         $type = strtolower($type);
         $user = Auth::user();
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area','subscription_mode')->where('id', '>', 0)->first();
-
+        
+        $latitude = !empty($request->latitude) ? $request->latitude : $preferences->Default_latitude;
+        $longitude = !empty($request->longitude) ? $request->longitude : $preferences->Default_longitude;
+         
         if ($type == 'vendor' && $product_list == 'false') {
          
             $vendor_ids = [];
@@ -255,8 +258,8 @@ class CategoryController extends BaseController
                         }
                     
                 }
-
             }
+
             return $products;
         } elseif ($type == 'pickup/delivery') {
             $vendor_ids = [];
@@ -324,7 +327,6 @@ class CategoryController extends BaseController
             $vendor_ids = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->where('status', 1);
             
             $vendor_ids =  $vendor_ids->pluck('id')->toArray();
-
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $products = Product::has('vendor')->with([
                 'category.categoryDetail', 'category.categoryDetail.translation' => function ($q) use ($langId) {

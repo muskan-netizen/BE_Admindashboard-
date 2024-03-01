@@ -160,10 +160,6 @@ class CartController extends FrontController
         }
         $template = WebStylingOption::where('is_selected', '1')->first();
 
-
-
-
-
         if ($action == "car_rental") {
             return view('frontend.yacht.summary', compact('public_key_yoco', 'cart', 'client_detail', 'data', 'ageVerify', 'terms', 'privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data, $nomenclatureProductOrderForm, $client_preference_detail, $client_detail);
         } else {
@@ -310,7 +306,7 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
-
+           
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         $vendor = Vendor::find($request->vendor_id);
@@ -1746,11 +1742,10 @@ class CartController extends FrontController
             $cart->delivery_type =  $code ?? 'D';
             $cart->sub_total =  $sub_total ?? 0;
 
-            // dd($cart->toArray());
             $cart->products = $cartData->toArray();
         }
 
-
+           
         return $cart;
     }
 
@@ -1979,7 +1974,10 @@ class CartController extends FrontController
      */
     public function deleteCartProduct($domain = '', Request $request)
     {
+       
         $cartProd =  CartProduct::where('id', $request->cartproduct_id)->select('cart_id', 'vendor_id', 'bid_number')->first();
+     
+       
         if ($cartProd->bid_number) {
             CartProduct::where('vendor_id', $cartProd->vendor_id)->update(['bid_number' => null, 'bid_discount' => null]);
         }
@@ -1988,6 +1986,9 @@ class CartController extends FrontController
         CartAddon::where('cart_product_id', $request->cartproduct_id)->delete();
         CartRentalProtection::where('cart_id', $cartProd->cart_id)->delete();
         CartBookingOption::where('cart_id', $cartProd->cart_id)->delete();
+        CartDeliveryFee::where('cart_id',$cartProd->cart_id)->where('vendor_id',$cartProd->vendor_id)->delete();
+      
+       
         if (!empty($cartProd)) {
 
             $cartpro_count = CartProduct::where('cart_id', $cartProd->cart_id)->count();
@@ -2179,7 +2180,10 @@ class CartController extends FrontController
             ];
             $cart_details = $this->getCartsNewV2($obj, $request);
         }
-
+        if(!empty($cart_details->error_message)){
+            $error_message = $cart_details->error_message;
+        }
+        // pr($cart_details);
 
         $client_preference_detail = ClientPreference::first();
         $client_preference_detail  = $this->hideSecretKeys($client_preference_detail);
@@ -2219,6 +2223,7 @@ class CartController extends FrontController
                 $currency_code = $currency->currency->iso_code;
             }
             $cart_details->currency_code = $currency_code;
+          
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
             if ($action == 'car_rental') {
                 $addon = AddonSet::with('option', 'translation')->where('vendor_id', $cart_details->vendor_id)->where('status', 1)->get();
@@ -2338,7 +2343,9 @@ class CartController extends FrontController
 
                      //Borzoe Delivery changes code
                      $borzoe_deliver_fee = $this->borzoeDelivery($vendorData->vendor_id);
+                     if(!empty($borzoe_deliver_fee)){
                      $deliverFee = json_decode($borzoe_deliver_fee);
+                     
                      $borzoe_deliver_fee = $deliverFee->order->payment_amount;
                      if ($borzoe_deliver_fee > 0) {
                          $borzoe_deliver_fee = decimal_format($borzoe_deliver_fee);
@@ -2356,6 +2363,7 @@ class CartController extends FrontController
                          );
                          $option = array_merge($option, $optionBorzoeApi);
                      }
+                    }
                      //End Borzoe Delivery changes code
 
 
@@ -2576,6 +2584,7 @@ class CartController extends FrontController
                 if ($cus_address) {
                     $tasks = array();
                     $vendor_details = Vendor::find($vendor_id);
+
                     $location[] = array(
                         'latitude' => $vendor_details->latitude ?? 30.71728880,
                         'longitude' => $vendor_details->longitude ?? 76.80350870

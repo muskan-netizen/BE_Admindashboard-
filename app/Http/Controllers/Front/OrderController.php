@@ -802,6 +802,7 @@ class OrderController extends FrontController
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             },
+            'vendors.orderDocument',
             'vendors.dineInTable.category',
             'vendors.products',
             'vendors.products.product',
@@ -857,7 +858,6 @@ class OrderController extends FrontController
                             // $Pq->where('dispatcher_status_option_id',2);
                             $Pq->whereNotIn('dispatcher_status_option_id',[1,5,6]);
                     }
-
                     $Pq->with(['products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
                 });
 
@@ -1358,6 +1358,7 @@ class OrderController extends FrontController
         $order->slot_delivery_fees = $slot_delivery_fees;
 
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+      
         return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency', 'fixedFeeNomenclatures'));
     }
 
@@ -1879,7 +1880,7 @@ class OrderController extends FrontController
             if (isset($preferences->stop_order_acceptance_for_users) && ($preferences->stop_order_acceptance_for_users == 1)) {
                 return $this->errorResponse(__('Sorry! We are not accepting orders right now.'), 400);
             }
-            
+
             $currency_id = Session::get('customerCurrency');
             $language_id = Session::get('customerLanguage');
             $cart = Cart::where('user_id', $user->id)->with([
@@ -1913,7 +1914,7 @@ class OrderController extends FrontController
             }
 
             $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-            
+
             if ($order_loyalty_points_earned_detail) {
                 $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
                 if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
@@ -2221,32 +2222,31 @@ class OrderController extends FrontController
                     $order['payable_amount'] = $vendor_cart_product->price;
 
 
-                    if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-                        if (! empty($latitude) && ! empty($longitude)) {
-                            if (($preferences->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)) {
-                                $serviceArea = $vendor_cart_product->vendor->where(function ($query) use ($latitude, $longitude) {
-                                    $query->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
-                                        $q->select('vendor_id')
-                                            ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")
-                                            ->where('is_active_for_vendor_slot', 1);
-                                    })
-                                        ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
-                                        $q->select('vendor_id')
-                                            ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")
-                                            ->where('is_active_for_vendor_slot', 1);
-                                    });
-                                })
-                                    ->where('id', $vendor_id)
-                                    ->get();
+                    if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && !empty($latitude) && !empty($longitude)){
+                        $serviceArea =  $OrderVendor->vendor->where('id',$OrderVendor->vendor_id)->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                            $query->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
+                        })->first();
+                        if(!isset($serviceArea)) {
+                            DB::rollback();
+                            return $this->errorResponse(__('Products for this vendor are not deliverable at your area. Please change address or remove product.'), 400);
+                        }
 
-                                if ($serviceArea->isEmpty()) {
-                                    return $this->errorResponse(__('Products for this vendor are not deliverable at your area. Please change address or remove product.'), 400);
-                                }
+                        if (($preferences->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)) {
+                            $serviceArea = $vendor_cart_product->vendor->where(function($query) use ($latitude, $longitude) {
+                                $query->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                })
+                                ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                });
+                            })->where('id', $vendor_id)->get();
+
+                            if($serviceArea->isEmpty()){
+                                DB::rollback();
+                                return $this->errorResponse(__('Products for this vendor are not deliverable at your area. Please change address or remove product.'), 400);
                             }
                         }
                     }
-
-
 
                     if(@$luxury_option->id == 4){
                         $security_amount += $vendor_cart_product->product->security_amount;
@@ -2264,14 +2264,13 @@ class OrderController extends FrontController
                     $variant_price = $variant->price;
                     if($luxury_option->id == 9 && @$variant->month_price){
                         $schedule_days = $vendor_cart_product->additional_increments_hrs_min / 24;
-                            if($schedule_days >= 7 && $schedule_days < 30){
-
-                                $variant_price = $variant->week_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
-                            }elseif($schedule_days >= 30){
-                                $variant_price = $variant->month_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
-                            }else{
-                                $variant_price = $variant->price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
-                            }
+                        if($schedule_days >= 7 && $schedule_days < 30){
+                            $variant_price = $variant->week_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                        }elseif($schedule_days >= 30){
+                            $variant_price = $variant->month_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                        }else{
+                            $variant_price = $variant->price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                        }
 
                     }
 

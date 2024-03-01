@@ -1595,5 +1595,7 @@ ul.header-dropdown.d-none.d-sm-inline li {
         top: 160px;
         max-width: 100%;
         z-index: 1;
+        right: -95px;
+        top: 35px !important;
     }
     }
