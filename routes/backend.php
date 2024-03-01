@@ -395,6 +395,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('order/updateReport', 'Client\OrderController@uploadReport')->name('order.upload.report');
         Route::get('orderReport/delete/{id}', 'Client\OrderController@deleteReport')->name('order.report.delete');
         Route::post('order/delay_time', 'Client\OrderController@addExtraPrepTimeToOrder')->name('order.delay_time');
+        Route::post('order/upload/documents/{order_id}/{vendor_id}', 'Client\OrderController@orderDocument')->name('orderDocument');
+        Route::get('order/delete/documents/{id}', 'Client\OrderController@deleteDocument')->name('deleteDocument');
 
 
         Route::post('admin/company', 'Client\CompanyController@store')->name('company.add');

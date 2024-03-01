@@ -18,6 +18,7 @@
                         continue;
                     }
                 @endphp
+
                 <div class="col-12">
                     <div class="row no-gutters order_head">
                         <div class="col-md-3 alOrderStatus">
@@ -76,7 +77,7 @@
                         <div class="col-md-9 mb-3">
                             @php
                                 $subtotal_order_price = $total_order_price = $total_tax_order_price = 0;
-                                $luxury_option_id = $order->luxury_option_id; 
+                                $luxury_option_id = $order->luxury_option_id;
                             @endphp
                             @foreach ($order->vendors as $key => $vendor)
                                 @php
@@ -144,11 +145,11 @@
                                                     @endphp
                                                     @foreach ($vendor->products as $product)
                                                         @php
-                                                            
+
                                                             if (@$product->product->returnable && $product->product->returnable == 1 && @$vendor->is_order_days_for_return) {
                                                                 $returnable = 1;
                                                             }
-                                                            
+
                                                             if (@$product->product->replaceable && $product->product->replaceable == 1 && @$vendor->is_order_days_for_return) {
                                                                 $replaceable = 1;
                                                             }
@@ -192,7 +193,7 @@
                                                                 @endphp
                                                             </li>
                                                         @endif
-                                                      
+
                                                     @endforeach
                                                 </ul>
                                             </div>
@@ -226,7 +227,7 @@
 
                                                     </ul>
 
-                                                @elseif($product->routes->first() && ($product->routes->first()->dispatch_traking_url !=''))    
+                                                @elseif($product->routes->first() && ($product->routes->first()->dispatch_traking_url !=''))
                                                     <ul class="product_list p-0 m-0 text-center">
                                                         @php
                                                             $driverrating = $order->driver_rating->rating ?? 0;
@@ -295,7 +296,7 @@
                                                         <label class="m-0">{{ __('Delivery Fee') }}</label>
                                                         <span>{{ Session::get('currencySymbol') }}{{ decimal_format($vendor->delivery_fee * $clientCurrency->doller_compare) }}</span>
                                                     </li>
-                                                   
+
                                                 @endif
                                             @if ($vendor->waiting_price > 0)
                                                 <li class="d-flex align-items-center justify-content-between">
@@ -314,24 +315,67 @@
                                                         // $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee + $vendor->waiting_price;
                                                         // $subtotal_order_price += $product_subtotal_amount;
 
-                                                    
+
                                                         $product_subtotal_amount = $vendor->subtotal_amount - $vendor->discount_amount + $vendor->total_container_charges +
                                                         $vendor->taxable_amount + $vendor->service_fee_percentage_amount + $vendor->fixed_fee +
                                                         $vendor->delivery_fee + $vendor->additional_price + $vendor->toll_amount-$order->wallet_amount_used;
                                                         $subtotal_order_price += $product_subtotal_amount;
-                                                        
+
                                                     @endphp
-                                             
+
                                                     <span>{{ Session::get('currencySymbol') }}{{ decimal_format($product_subtotal_amount * $clientCurrency->doller_compare) }}</span>
+                                                </li>
+                                                <li>
+                                                    @php
+                                                        $docs = $vendor->orderDocument;
+                                                    @endphp
+                                                    @if(count($docs) > 0 && getAdditionalPreference(['document_report'])['document_report'] == 1)
+                                                        <button type="button" class="btn btn-primary docButtons" data-toggle="modal" data-target="#exampleModal" style="color: white!important">View Reports</button>
+                                                    @endif
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
+
+                                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <h4 class="header-title mb-3" id="exampleModalLabel">{{ __('Reports') }}</h4>
+                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                              </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                @if($docs && count($docs) > 0)
+                                                    @foreach($docs as $file)
+                                                        @php
+                                                            $files = Storage::disk('s3')->url($file['document']);
+                                                        @endphp
+                                                        <div class="mb-2 d-flex ">
+                                                            <div class="col-12">
+                                                                <img  src="{{url('file-download' . '/pdf.png')}}"    ><a target="_blank" href="{{$files}}"> {{$file['file_name']}}   </a>
+                                                            </div>
+
+                                                        </div>
+                                                    @endforeach
+                                                @endif
+                                            </div>
+                                            <div class="card-body">
+
+                                            </div>
+
+                                            <div class="modal-footer">
+
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="d-flex align-items-center justifiy-content-end alListBtnGroups">
                                                 @if (@$vendor->is_exchanged_or_returned && $vendor->is_exchanged_or_returned == 1)
-                                                    @if ($vendor->exchanged_to_order->order_status_option_id == 6)
+                                                    @if (@$vendor->exchanged_to_order->order_status_option_id == 6)
                                                         <button class="btn btn-solid"> {{ __('Replaced') }}</button>
                                                     @else($vendor->order_status_option_id == 9)
                                                         <button class="btn btn-solid"> {{ __('Replacement Pending') }}
@@ -549,6 +593,7 @@
                                             </div>
                                         </div>
                                     </div>
+
                                     <hr class="my-2">
                                 @endif
 
@@ -568,3 +613,17 @@
     </div>
     {{ $pastOrders->appends(['pageType' => 'pastOrders'])->links() }}
 </div>
+<style>
+    .docButtons{
+        padding: 5px 10px!important;
+        font-size: 10px!important;
+        letter-spacing: 2px;
+        font-weight: 500;
+        text-shadow: none;
+        border-radius: 4px;
+        border-width: 1px;
+        width: auto !important;
+        max-width: max-content;
+        text: white;
+    }
+</style>

@@ -802,6 +802,7 @@ class OrderController extends FrontController
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             },
+            'vendors.orderDocument',
             'vendors.dineInTable.category',
             'vendors.products',
             'vendors.products.product',
@@ -857,7 +858,6 @@ class OrderController extends FrontController
                             // $Pq->where('dispatcher_status_option_id',2);
                             $Pq->whereNotIn('dispatcher_status_option_id',[1,5,6]);
                     }
-
                     $Pq->with(['products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
                 });
 
@@ -1879,7 +1879,7 @@ class OrderController extends FrontController
             if (isset($preferences->stop_order_acceptance_for_users) && ($preferences->stop_order_acceptance_for_users == 1)) {
                 return $this->errorResponse(__('Sorry! We are not accepting orders right now.'), 400);
             }
-            
+
             $currency_id = Session::get('customerCurrency');
             $language_id = Session::get('customerLanguage');
             $cart = Cart::where('user_id', $user->id)->with([
@@ -1913,7 +1913,7 @@ class OrderController extends FrontController
             }
 
             $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-            
+
             if ($order_loyalty_points_earned_detail) {
                 $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
                 if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
