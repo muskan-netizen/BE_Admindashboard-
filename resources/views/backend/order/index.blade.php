@@ -116,8 +116,8 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 </div>
 @php
         $ordersNom = getNomenclatureName('Orders', true);
-            $ordersNom = ($ordersNom=="Orders")?__('Orders'):__($ordersNom);
-        @endphp
+        $ordersNom = ($ordersNom=="Orders")?__('Orders'):__($ordersNom);
+@endphp
 <script type="text/template" id="no_order_template">
     <div class="error-msg mt-3">
         <img class="mb-2" src="{{asset('images/no-order.svg')}}">
@@ -125,7 +125,6 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     </div>
     </script>
 
-@endphp
 <div class="col-12">
     <div class="row order-list-spinner">
         <div class="tab-product pl-2 pr-2 flex-grow-1">
