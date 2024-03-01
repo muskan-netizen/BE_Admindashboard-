@@ -38,7 +38,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
 
     @if($client_preference_detail->business_type == 'taxi')
     <!-- Start Cab Booking Header From Here -->
-    <div class="cab-booking-header"  style="background: var(--top-header-color)">
+    <div class="cab-booking-header" style="background: var(--top-header-color)">
         <div class="container-fluid">
             <div class="row align-items-center">
                 <div class="col-sm-3 col-md-2">
@@ -58,9 +58,9 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                 <li>
                                     <a href="{{ route('extrapage', ['slug' => $page->slug]) }}">
                                         @if (isset($page->translations) && $page->translations->first()->title != null)
-                                        {{ $page->translations->first()->title ?? '' }}
+                                        {{ __($page->translations->first()->title) ?? '' }}
                                         @else
-                                        {{ $page->primary->title ?? '' }}
+                                        {{ __($page->primary->title) ?? '' }}
                                         @endif
                                     </a>
                                 </li>
@@ -69,9 +69,9 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                 <li>
                                     <a href="{{ route('extrapage', ['slug' => $page->slug]) }}" target="_blank">
                                         @if (isset($page->translations) && $page->translations->first()->title != null)
-                                        {{ $page->translations->first()->title ?? '' }}
+                                        {{ __($page->translations->first()->title) ?? '' }}
                                         @else
-                                        {{ $page->primary->title ?? '' }}
+                                        {{ __($page->primary->title) ?? '' }}
                                         @endif
                                     </a>
                                 </li>

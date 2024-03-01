@@ -434,14 +434,19 @@ span.org_price.ml-1.font-14 {
 .displayProducts .inner_spacing h3 {
     padding: 10px 0px;
 }
-#alTaxiBookingWrapper #cab_detail_box {
+body.al_body_template_one #alTaxiBookingWrapper #cab_detail_box {
     height: 100%;
-}
-#alTaxiBookingWrapper #cab_detail_box .cab-outer.style-4 {
-    position: relative;
+    position: absolute;
     top: 0;
-    height: 60%;
-    background: #ffff;
+    width: 100%;
+    background-color: #fff;
+}
+
+#alTaxiBookingWrapper #cab_detail_box .cab-outer.style-4 {
+	position: relative;
+	top: 0;
+	/* height: 85%; */
+	background: #ffff;
 }
 .al_body_template_nine  .displayProducts .inner_spacing h3{
     margin-bottom: 0!important;

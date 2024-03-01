@@ -2209,13 +2209,13 @@ class VendorController extends BaseController{
             $product_category_ids = $product_category_ids->isNotEmpty() ? $product_category_ids->toArray() : [];
 
             if($vendor->vendor_templete_id == 5){
-            $vendor_categories = Category::select('categories.id','categories.type_id', 'types.title as redirect_to')->join('types', 'types.id', 'categories.type_id')->whereHas('vendorCategory',function ($q)use($vid){
-                $q->where('vendor_id',$vid)->where('status', 1);
-            })->whereHas('data',function ($q)use($vid){
-                $q->where('is_live', 1)->where('vendor_id', $vid);
-            })->withCount(['data' => function ($q)use($vid){
-                $q->where('is_live', 1)->where('vendor_id', $vid);
-            }])->with(['translation' => function($q) use($langId){
+                $vendor_categories = Category::select('categories.id','categories.type_id', 'types.title as redirect_to')->join('types', 'types.id', 'categories.type_id')->whereHas('vendorCategory',function ($q)use($vid){
+                    $q->where('vendor_id',$vid)->where('status', 1);
+                })->whereHas('data',function ($q)use($vid){
+                    $q->where('is_live', 1)->where('vendor_id', $vid);
+                })->withCount(['data' => function ($q)use($vid){
+                    $q->where('is_live', 1)->where('vendor_id', $vid);
+                }])->with(['translation' => function($q) use($langId){
                     $q->where('category_translations.language_id', $langId);
                 }])->with(['data' => function ($q)use($langId,$userid, $multipli,$vid){
                     $q->where('is_live', 1)->where('vendor_id', $vid)->with([
@@ -2238,52 +2238,48 @@ class VendorController extends BaseController{
                     ->select('products.*',DB::raw("'$multipli' as variant_multiplier"))->withCount(['variantSet','addOn'])
                     ->orderBy('product_translations.title', 'asc')
                     ->groupBy('products.id');
-                    }]);
+                }]);
 
-                    if(isset($request->category_id))
-                    {
-                       $vendor_categories = $vendor_categories->where(function($q) use ($request)
-                        {
-                            $q->where('categories.id',$request->category_id)->orWhere('categories.parent_id',$request->category_id);
-                        });
-                    }
-
-
-                    $vendor_categories = $vendor_categories->get()->map(function ($query) {
-                        $query->setRelation('data', $query->data->take(15));
-                         return $query;
+                if(isset($request->category_id))
+                {
+                    $vendor_categories = $vendor_categories->where(function($q) use ($request){
+                        $q->where('categories.id',$request->category_id)->orWhere('categories.parent_id',$request->category_id);
                     });
+                }
 
+                $vendor_categories = $vendor_categories->get()->map(function ($query) {
+                    $query->setRelation('data', $query->data->take(15));
+                    return $query;
+                });
                 $listData =  array_values($vendor_categories->toArray());
             }else{
                 $vendorCategories = VendorCategory::select(\DB::raw("group_concat(`category_translations`.`name`) as categoriesList"))
                 ->join('category_translations', 'category_translations.category_id', '=', 'vendor_categories.category_id')
                 ->where('vendor_id', $vendor->id)->where('status', 1)->where('category_translations.language_id',$langId)->groupBy('vendor_categories.vendor_id')->first();
                 $categoriesList = !empty($vendorCategories)?$vendorCategories->categoriesList:$categoriesList;
-
                 $cat_id = $request->category_id;
                 $products = Product::byProductCategoryServiceType($type)->with([
-                    'category.categoryDetail' => function($q) use($cat_id){
-                        $q->where('categories.id', $cat_id)->orWhere('categories.parent_id', $cat_id);
-                    },
-                    'category.categoryDetail.translation' => function($q) use($langId){
-                        $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
-                        ->where('category_translations.language_id', $langId);
-                    }, 'inwishlist' => function($qry) use($userid){
-                        $qry->where('user_id', $userid);
-                    },
-                    'media.image',
-                    'translation' => function($q) use($langId){
-                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id','body_html as translation_description')->where('language_id', $langId)->orderBy('id','desc');
-                        $q->groupBy('language_id','product_id');
-                    },
-                    'variant' => function($q) use($langId,$multipli){
-                    $q->select('id','sku', 'product_id', 'title', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price',DB::raw("'$multipli' as multiplier"));
-                        // $q->groupBy('product_id');
-                    }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
-                    'tags.tag.translations' => function ($q) use ($langId) {
-                        $q->where('language_id', $langId);
-                    }
+                        'category.categoryDetail' => function($q) use($cat_id){
+                            $q->where('categories.id', $cat_id)->orWhere('categories.parent_id', $cat_id);
+                        },
+                        'category.categoryDetail.translation' => function($q) use($langId){
+                            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                            ->where('category_translations.language_id', $langId);
+                        }, 'inwishlist' => function($qry) use($userid){
+                            $qry->where('user_id', $userid);
+                        },
+                        'media.image',
+                        'translation' => function($q) use($langId){
+                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id','body_html as translation_description')->where('language_id', $langId)->orderBy('id','desc');
+                            $q->groupBy('language_id','product_id');
+                        },
+                        'variant' => function($q) use($langId,$multipli){
+                        $q->select('id','sku', 'product_id', 'title', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price',DB::raw("'$multipli' as multiplier"));
+                            // $q->groupBy('product_id');
+                        }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
+                        'tags.tag.translations' => function ($q) use ($langId) {
+                            $q->where('language_id', $langId);
+                        }
                 ])->join('product_translations', 'product_translations.product_id', '=', 'products.id')
                 ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock',
                 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant',
@@ -2303,18 +2299,16 @@ class VendorController extends BaseController{
                         $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
                         $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
                         $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
-
                     }
                 }
             }
-
             $vendor->categoriesList = $categoriesList;
             $response['vendor'] = $vendor;
             $response['products'] = ($vendor->vendor_templete_id != 5) ? $products : [];
             $response['categories'] = ($vendor->vendor_templete_id == 5) ? $listData : [];
             return response()->json(['data' => $response]);
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
+            return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
 
