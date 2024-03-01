@@ -524,7 +524,7 @@
 @else
 <div class="error-msg mt-3">
     <img class="mb-2" src="{{asset('images/no-order.svg')}}">
-    <p>{{ __("You don't have orders right now.") }}</p>
+    <p>{{ __("You don't have ".$ordersNom." right now.") }}</p>
 </div>
 @endif
 

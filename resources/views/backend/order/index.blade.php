@@ -114,12 +114,18 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         </div> -->
     </div>
 </div>
+@php
+        $ordersNom = getNomenclatureName('Orders', true);
+            $ordersNom = ($ordersNom=="Orders")?__('Orders'):__($ordersNom);
+        @endphp
 <script type="text/template" id="no_order_template">
     <div class="error-msg mt-3">
         <img class="mb-2" src="{{asset('images/no-order.svg')}}">
-        <p>{{ __("You don't have orders right now.") }}</p>
+        <p>{{ __("You don't have ".$ordersNom." right now.") }}</p>
     </div>
     </script>
+
+@endphp
 <div class="col-12">
     <div class="row order-list-spinner">
         <div class="tab-product pl-2 pr-2 flex-grow-1">
@@ -127,7 +133,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="pending_order-tab" data-toggle="tab" href="#pending_orders" role="tab" aria-selected="false" data-rel="pending_orders">
-                        <i class="icofont icofont-man-in-glasses"></i>{{ __('Pending Orders') }} <sup class="total-items" id="pending-orders" data-count="{{$pending_order_count}}">({{$pending_order_count}})</sup>
+                        <i class="icofont icofont-man-in-glasses"></i>{{ __('Pending '. $ordersNom) }} <sup class="total-items" id="pending-orders" data-count="{{$pending_order_count}}">({{$pending_order_count}})</sup>
                     </a>
                     <div class="material-border"></div>
                 </li>
@@ -136,7 +142,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 @if ($client_preferences->business_type == 'rental')
                     <li class="nav-item">
                         <a class="nav-link" id="rental_pending_delivery-tab" data-toggle="tab" href="#rental_pending_delivery" role="tab" aria-selected="true" data-rel="rental_pending_delivery">
-                            <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders" data-count="{{$active_order_count}}">({{$active_order_count}})</sup>
+                            <i class="icofont icofont-ui-home"></i>{{ __('Active '. $ordersNom) }} <sup class="total-items" id="active-orders" data-count="{{$active_order_count}}">({{$active_order_count}})</sup>
                         </a>
                         <div class="material-border"></div>
                         <ul class="nav nav-tabs nav-material rental_filter_tab" id="top-tab" role="tablist" style="display:none;">
@@ -163,14 +169,14 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 @else
                     <li class="nav-item">
                         <a class="nav-link" id="active_orders_tab" data-toggle="tab" href="#active_orders" role="tab" aria-selected="true" data-rel="active_orders">
-                            <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders" data-count="{{$active_order_count}}">({{$active_order_count}})</sup>
+                            <i class="icofont icofont-ui-home"></i>{{ __('Active '. $ordersNom) }} <sup class="total-items" id="active-orders" data-count="{{$active_order_count}}">({{$active_order_count}})</sup>
                         </a>
                         <div class="material-border"></div>
                     </li> 
                 @endif
                 <li class="nav-item">
                     <a class="nav-link" id="orders_history_tab" data-toggle="tab" href="#orders_history" role="tab" aria-selected="false" data-rel="orders_history">
-                        <i class="icofont icofont-man-in-glasses"></i>{{ __('Orders History') }} <sup class="total-items" id="history-orders" data-count="{{$past_order_count}}">({{$past_order_count}})</sup>
+                        <i class="icofont icofont-man-in-glasses"></i>{{ __($ordersNom.' History') }} <sup class="total-items" id="history-orders" data-count="{{$past_order_count}}">({{$past_order_count}})</sup>
                     </a>
                     <div class="material-border"></div>
                 </li>
@@ -184,7 +190,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     </b>
                 </a>
                 <a class="mr-2" href="{{route('cancel-order.requests')}}">
-                    <b>{{ __("Cancel Order Request") }}
+                    <b>{{ __("Cancel ".$ordersNom." Request") }}
                         <span class="total-items">({{$cancel_order_requests}})</span>
                         {{-- <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> --}}
                     </b>
@@ -274,7 +280,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 <div class="tab-pane fade past-order position-relative h-100" id="{{$VendorTypesName}}_orders" role="tabpanel" aria-labelledby="{{$VendorTypesName}}_tab">
                     <div class="error-msg mt-3">
                         <img class="mb-2" src="{{asset('images/no-order.svg')}}">
-                        <p>{{ __("You don't have orders right now.") }}</p>
+                        <p>{{ __("You don't have ".$ordersNom." right now.") }}</p>
                     </div>
                 </div>
             @endif
