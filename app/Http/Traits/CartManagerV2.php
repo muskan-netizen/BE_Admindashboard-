@@ -1815,12 +1815,12 @@ trait CartManagerV2
          
             $cart->address_id = $address_id??'';
             $cart->bid_total_discount = $bid_total_discount??0;
-            $total_gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used);
+            $total_gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount );
             $gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount);
             $other_taxes = array_sum($taxCharges);
             $other_taxes_string = 'tax_fixed_fee:' . $taxCharges['total_fixed_fee_tax'] . ',tax_service_charges:' . $taxCharges['total_service_fee'] . ',tax_delivery_charges:' . $taxCharges['deliver_fee_charges'] . ',tax_markup_fee:' . $taxCharges['total_markup_fee_tax'] . ',product_tax_fee:' . $total_taxable_amount;;
 
-
+           
     
 
             $cart->other_taxes = $other_taxes;
@@ -1834,6 +1834,7 @@ trait CartManagerV2
             $gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount - $cart->total_service_fee);
             $cart->gross_amount = ($gross_amount < 0) ? decimal_format(0) : decimal_format($gross_amount);
             $cart->total_gross_amount = ($total_gross_amount < 0) ? decimal_format(0) : decimal_format($total_gross_amount);
+          
             $cart->new_gross_amount = decimal_format($total_payable_amount + $total_discount_amount);
             $cart->is_long_term_service = $is_long_term_service;
 
@@ -1853,8 +1854,11 @@ trait CartManagerV2
                 }
             }
 
+         
 
+                
             if (!$this->additionalPreferences->is_tax_price_inclusive) {
+                
                 $cartTotalPay = decimal_format($total_payable_amount);
                 // gift card calculation
                 if ($giftCardAmount > 0 && $cartTotalPay > 0) {
@@ -1869,6 +1873,7 @@ trait CartManagerV2
                     $cart->total_payable_amount +=  $cartTotalPay;
                 }
             } else {
+               
                 $cartTotalPay = decimal_format($total_payable_amount - $total_taxable_amount - $other_taxes);
                 // gift card calculation
                 if ($giftCardAmount > 0) {
@@ -1885,7 +1890,7 @@ trait CartManagerV2
            
             $cart->delivery_slot_amount = $delivery_slot_amount;
             $delivery_fee_total = CartDeliveryFee::where('cart_id', $cart->id)->sum('delivery_fee');
-        
+            
                         
             // $cart->total_payable_amount = decimal_format($total_payable_amount);
             //$cart->delivery_charges = decimal_format($deliveryCharges);
@@ -1982,6 +1987,8 @@ trait CartManagerV2
 
             
         }
+          
+    
        
         return $cart;
         

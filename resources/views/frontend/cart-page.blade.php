@@ -1191,7 +1191,7 @@
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
                                             
-                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->total_gross_amount + $cart_details->total_taxable_amount + $other_taxes)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->total_gross_amount + $cart_details->total_taxable_amount + $other_taxes +@$additionalPrice) }}
+                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->total_gross_amount )) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->total_gross_amount   +@$additionalPrice) }}
                                            
                                             @endif
                                         </b>
