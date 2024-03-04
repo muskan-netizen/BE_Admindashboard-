@@ -411,6 +411,12 @@ body .create_box a.btn.btn-solid.mt-2 {
     background: var(--theme-deafult)
 }
 
+.al_body_template_three .payment-promo-container {
+    margin-top: 0;
+    position: absolute;
+    bottom: 50px;
+    width: 100%;
+}
 .step-indicator .step-icon-order {
     height: 30px;
     width: 30px;
@@ -1777,10 +1783,25 @@ article#page-container {
     box-shadow: 0 2px 5px -2px hsla(0, 0%, 0%, .25)
 }
 
-.pool_radio {
+/* .pool_radio {
     display: none;
+} */
+.address-form .item input {
+	width: 100%;
+	height: 50px;
+	position: absolute;
+	left: 0;
+	z-index: 9;
+	opacity: 0;
 }
-
+.item {
+	position: relative;
+}
+.pool_radio_controls {
+	display: flex;
+	justify-content: center;
+	margin: 30px 0;
+}
 .pool_label {
     display: inline-block;
     background: #fff;

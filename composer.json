@@ -49,7 +49,7 @@
         "laravel-notification-channels/fcm": "~2.0",
         "laravel/framework": "^8.0",
         "laravel/scout": "^9.0",
-        "laravel/socialite": "^5.2",
+        "laravel/socialite": "5.10",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.0",
         "laravelcollective/html": "^6.2",

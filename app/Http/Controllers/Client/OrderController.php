@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
 
-use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart, ClientPreferenceAdditional, OrderLongTermServices,Currency, ProcessorProduct,OrderLongTermServiceSchedule, Product, OrderProductDispatchReturnRoute, OrderVendorProduct, VendorOrderProductStatus, ProductBooking};
+use App\Models\{OrderDocument, Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart, ClientPreferenceAdditional, OrderLongTermServices,Currency, ProcessorProduct,OrderLongTermServiceSchedule, Product, OrderProductDispatchReturnRoute, OrderVendorProduct, VendorOrderProductStatus, ProductBooking};
 use App\Models\Client as ClientData;
 
 use DB;
@@ -759,6 +759,7 @@ class OrderController extends BaseController
               'vendors.products.prescription' => function ($query) use ($vendor_id, $order_id) {
                 $query->where('vendor_id', $vendor_id)->where('order_id', $order_id);
             },
+            'vendors.orderDocument',
             'vendors.products' => function ($query) use ($vendor_id) {
                 $query->where('vendor_id', $vendor_id);
 
@@ -3463,4 +3464,27 @@ class OrderController extends BaseController
         return view('backend.order.blockchain-order-data',compact(['data','orderDetail']) );
     }
 
+    public function orderDocument(Request $request, $domain, $id, $vendor_id)
+    {
+        $orderVendor = OrderVendor::where('order_id', $id)->where('vendor_id', $vendor_id)->first();
+        foreach ($request->document as $document) {
+            if ($document->isValid()) {
+                $filename = 'prods/' . uniqid() . '_' . $document->getClientOriginalName();
+                Storage::disk('s3')->put($filename, file_get_contents($document->path()), 'public');
+                if (Storage::disk('s3')->exists($filename)) {
+                    $data['order_vendor_product_id'] = $orderVendor->id;
+                    $data['document'] = $filename;
+                    $data['file_name'] = $document->getClientOriginalName();
+                    OrderDocument::create($data);
+                }
+            }
+        }
+        return redirect()->back()->with('success', 'Document Uploaded Successfully');
+    }
+
+    public function deleteDocument($domain, $id)
+    {
+        OrderDocument::where('id', $id)->delete();
+        return redirect()->back()->with('success', 'Document Deleted Successfully');
+    }
 }
