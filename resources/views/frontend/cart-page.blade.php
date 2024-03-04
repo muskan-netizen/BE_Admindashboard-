@@ -954,7 +954,7 @@
                                                     @if($serviceType == 'rental')
                                                     {{ Session::get('currencySymbol') . decimal_format($product->product_sub_total_amount + $product->vendor->fixed_fee_amount +$additionalPrice - $product->bid_vendor_discount ?? 0) }}
                                                     @else
-                                                    {{ Session::get('currencySymbol') . decimal_format($product->product_sub_total_amount + $product->vendor->fixed_fee_amount - $product->bid_vendor_discount ?? 0) }}
+                                                    {{ Session::get('currencySymbol') . decimal_format($product->product_sub_total_amount + $product->vendor->fixed_fee_amount + $vendor_product->pvariant->container_charges - $product->bid_vendor_discount ?? 0  ) }}
                                                     @endif
                                                 @endif
                                             </p>
@@ -1299,7 +1299,7 @@
                                             @endif
 
                                             <span
-                                                id="total_taxable_amount">{{ $additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($cart_details->total_taxable_amount + $other_taxes)) : decimal_format($cart_details->total_taxable_amount + $other_taxes) }}</span>
+                                                id="total_taxable_amount">{{ $additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($cart_details->total_taxable_amount)) : decimal_format($cart_details->total_taxable_amount) }}</span>
                                         </b>
                                     </div>
                                 </div>
