@@ -412,9 +412,9 @@ body .create_box a.btn.btn-solid.mt-2 {
 }
 
 .al_body_template_three .payment-promo-container {
-    margin-top: 0;
-    position: absolute;
-    bottom: 50px;
+    margin-top: 15px;
+    position: relative;
+    bottom: unset;
     width: 100%;
 }
 .step-indicator .step-icon-order {
