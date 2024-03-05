@@ -1947,7 +1947,6 @@ trait CartManagerV2
 
             if(@$newRentalPrice && (FacadesSession::get('vendorType') == "rental"))
             {
-                $cart->sub_total = $newRentalPrice;
                 $cart->total_payable_amount = $newRentalPrice;
                 $cart->payable_amount = $newRentalPrice;
             }

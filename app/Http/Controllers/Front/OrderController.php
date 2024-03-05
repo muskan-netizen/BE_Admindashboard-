@@ -1822,6 +1822,10 @@ class OrderController extends FrontController
 
     public function orderSave($request, $paymentStatus)
     {
+     
+     
+     
+    
         try {
             $latitude = '';
             $longitude = '';
@@ -2033,7 +2037,8 @@ class OrderController extends FrontController
             $order->pick_drop_order_number = $request->pick_drop_order_number ?? null;
             /* Save initial details of order */
             $order->payable_amount = $request->total_amount;
-
+            $order->total_amount = $request->total_amount;
+          
             $order->save();
 
 
