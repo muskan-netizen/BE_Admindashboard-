@@ -2148,4 +2148,90 @@ if (!function_exists('recurringCalculationFunction')) {
             return false;
         }
     }
+
+    if (!function_exists('productPriceAfterVendorDiscount')) 
+    {
+        function productPriceAfterVendorDiscount($vendorData,$product_discount_amount,$doller_compare,$cart)
+        {
+            $nowdate = Carbon::now()->toDateTimeString();
+            $allProductsSum = $vendor_discount_amount =  0;
+            $cart_products = CartProduct::with(['product.variant', 'addon.option'])
+            ->where('vendor_id', $vendorData->vendor_id)
+            ->where('cart_id', $vendorData->cart_id)
+            ->get();
+            foreach ($cart_products as $cart_product) {
+                // Calculate total price for the product variant
+                $total_price =$cart_product->pvariant->actual_price ?? $cart_product->pvariant->price??0;
+                // Calculate the total price of the product (variant price * quantity)
+                $allProductsSum += $total_price * $cart_product->quantity;
+                // Calculate the total price of the addons for the product
+                $product_addon_price = 0;
+                foreach ($cart_product->addon as $addon) {
+                    $addon_option = $addon->option;
+                    if ($addon_option) {
+                        $addon_price = $addon_option->price * $cart_product->quantity;
+                        $product_addon_price += $addon_price;
+                    }
+                }
+                // Add the total addon price to the overall sum
+                $allProductsSum += $product_addon_price;
+            }
+            $PromoDelete = 0;
+            if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) 
+            {
+
+                    if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
+                        if($vendorData->coupon->promo->first_order_only==1){
+                            if(auth()->user()){
+                                $userOrder = auth()->user()->orders->first();
+                                if($userOrder){
+                                    $cart->coupon()->delete();
+                                    $vendorData->coupon()->delete();
+                                    unset($vendorData->coupon);
+                                    $PromoDelete =1;
+                                }
+                            }
+                        }
+                        if ($PromoDelete !=1) {
+                            if(!($vendorData->coupon->promo->expiry_date >= $nowdate) ){
+                                $cart->coupon()->delete();
+                                $vendorData->coupon()->delete();
+                                unset($vendorData->coupon);
+                                $PromoDelete =1;
+                            }
+                        }
+                    }
+
+
+                if ( $PromoDelete !=1) 
+                {
+
+                        $minimum_spend = 0;
+                        if (isset($vendorData->coupon->promo->minimum_spend)) {
+                            $minimum_spend = $vendorData->coupon->promo->minimum_spend * $doller_compare;
+                        }
+
+                        $maximum_spend = 0;
+                        if (isset($vendorData->coupon->promo->maximum_spend)) {
+                            $maximum_spend = $vendorData->coupon->promo->maximum_spend * $doller_compare;
+                        }
+                        if( ($minimum_spend <= $allProductsSum ) && ($maximum_spend >= $allProductsSum))
+                        {
+                                if ($vendorData->coupon->promo->promo_type_id == 2) {
+                                    $countPrd = ((count($cart_products)>0)?count($cart_products):1);
+                                    $vendor_discount_amount = $vendorData->coupon->promo->amount/$countPrd;
+                                } else {
+                                    $vendor_discount_amount = ($product_discount_amount * $vendorData->coupon->promo->amount / 100);
+                                }
+                        }else{
+                            $cart->coupon()->delete();
+                            $vendorData->coupon()->delete();
+                            unset($vendorData->coupon);
+                        return  0;
+                        }
+                } 
+            }
+            return $vendor_discount_amount??0;
+        }
+    }
 }
