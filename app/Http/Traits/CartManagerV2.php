@@ -1426,12 +1426,8 @@ trait CartManagerV2
 
                         $newRentalPrice = $payable_amount;
 
-                        
-                       
 
-                    
-
-                        $payable_amount = $sub_total + $deliveryfee_ifnot_discounted + $security_amount;
+                        $payable_amount = $sub_total_vendor + $deliveryfee_ifnot_discounted + $security_amount;
                         // $subtotal_amount = $sub_total + $deliveryfee_ifnot_discounted;
                         $subtotal_amount = $payable_amount;
                         $payable_amount = $payable_amount + $taxable_amount;
