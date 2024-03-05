@@ -691,10 +691,12 @@ trait CartManagerV2
                                             //$payable_amount =  $price_in_currency + $prod->additional_price;
                                             $sub_total += $prod->additional_price;
                                         }
+
+                                      
                                         if(@$sub_total){
                                             $cart->total_payable_amount = $cart->total_payable_amount + $sub_total;
                                         }
-
+                                        
                                         $variantsData = $taxData = $vendorAddons = array();
                                         $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                                         $price_in_currency = $prod->pvariant ? $prod->pvariant->price : 0;
@@ -792,7 +794,7 @@ trait CartManagerV2
                                         }else{
                                             $payable_amount = $payable_amount + $prod->additional_price + $quantity_price ;
                                         }
-
+                                       
                                         $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $quantity_container_charges;
                                         $total_container_charges =  $quantity_container_charges;
                                       
@@ -968,7 +970,7 @@ trait CartManagerV2
                                         }
 
                                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
-
+                                    
                                     /* Calulating product taxes info */
                                     $select = '';
                                     $taxData = array();
@@ -1241,7 +1243,7 @@ trait CartManagerV2
                                 $rental_price = $rental_price * $prod->days;
                             }
                         }
-
+                        
                         $product = Product::with([
                             'variant' => function ($sel) {
                                 $sel->groupBy('product_id');
@@ -1283,6 +1285,7 @@ trait CartManagerV2
                 vendorData->vendorProducts Products loop End
             *
             */
+            
             $sub_total = $sub_total_vendor;
 
                         // if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
@@ -1421,12 +1424,15 @@ trait CartManagerV2
                         if($vendorData->vendor->add_markup_price)
                         $total_markup_charges +=  $totalMarkup;
 
+                        $newRentalPrice = $payable_amount;
+
 
                         $payable_amount = $sub_total_vendor + $deliveryfee_ifnot_discounted + $security_amount;
                         // $subtotal_amount = $sub_total + $deliveryfee_ifnot_discounted;
                         $subtotal_amount = $payable_amount;
                         $payable_amount = $payable_amount + $taxable_amount;
-
+                        
+                       
                         //vendor service fee fixed/percent
                         $vendor_service_fee_percentage_amount = $vendor_fixed_service_charge_amount = 0;
                         if($vendorData->vendor->fixed_service_charge == 1){
@@ -1439,7 +1445,7 @@ trait CartManagerV2
                                 $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                             }
                         }
-
+                       
 
                         //end applying service fee on vendor products total
                         $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount + $vendor_fixed_service_charge_amount;
@@ -1449,12 +1455,12 @@ trait CartManagerV2
                         }
 
                        
-
+                      
                 $vendorData->coupon_amount_used = decimal_format($coupon_amount_used);
                 $vendorData->service_fee_percentage_amount = decimal_format($vendor_service_fee_percentage_amount);
                 $vendorData->fixed_service_charge_amount = decimal_format($vendor_fixed_service_charge_amount);
                 $vendorData->delivery_fee_charges = decimal_format($delivery_fee_charges);
-
+              
                 $vendorData->payable_amount = decimal_format($payable_amount);
                 $vendorData->discount_amount = decimal_format($discount_amount);
                 $vendorData->discount_percent = decimal_format($discount_percent);
@@ -1462,13 +1468,14 @@ trait CartManagerV2
 
                 $vendorData->product_total_amount = decimal_format($payable_amount - $taxable_amount-$vendor_service_fee_percentage_amount);
 
-
+              
 
                 $vendorData->bid_vendor_discount = decimal_format($bid_vendor_discount);
-
+               
                 $bid_total_discount += $vendorData->bid_vendor_discount;
-
-                $vendorData->product_sub_total_amount = decimal_format($subtotal_amount);
+                
+                $vendorData->product_sub_total_amount = decimal_format($subtotal_amount ?? 0);
+               
                 $vendorData->isDeliverable = 1;
                 $vendorData->promo_free_deliver = $PromoFreeDeliver;
                 $vendorData->is_vendor_closed = $is_vendor_closed;
@@ -1477,7 +1484,7 @@ trait CartManagerV2
                 $vendorData->closed_store_order_scheduled = (($slotsDate) ? $product->vendor->closed_store_order_scheduled : 0);
 
                 $vendorData->delOptions = $select ?? '';
-
+                
                 //mohit sir branch code added by sohail
                 $processorProduct = [];
                 if (checkTableExists('processor_products')) {
@@ -1521,12 +1528,13 @@ trait CartManagerV2
                         ->where('role_id', $role_id)->first();
                     $vendorData->vendor->order_min_amount = empty($vendor_min_amount_data) ? 0 : $vendor_min_amount_data->order_min_amount;
                 }
-
+              
                 if ((float)($vendorData->vendor->order_min_amount) > $payable_amount + (float)($vendorData->vendor->fixed_fee_amount) - (float)($loyalty_amount_saved)) {  # if any vendor total amount of order is less then minimum order amount
                     $vendorData->les_order_min_amount = 1;
                     $delivery_status = 0;
                 }
 
+               
 
                 $total_payable_amount = $total_payable_amount + $payable_amount + $vendorData->vendor->fixed_fee_amount;
                
@@ -1798,7 +1806,7 @@ trait CartManagerV2
          
 
             
-
+          
 
             if (!$this->additionalPreferences->is_tax_price_inclusive) {
                 $cartTotalPay = decimal_format($total_payable_amount);
@@ -1829,7 +1837,7 @@ trait CartManagerV2
                 $cart->payy = decimal_format(($total_payable_amount - $total_taxable_amount - $other_taxes) + $cart->other_taxes);
             }
             
-           
+          
             $cart->delivery_slot_amount = $delivery_slot_amount;
             $delivery_fee_total = CartDeliveryFee::where('cart_id', $cart->id)->sum('delivery_fee');
         
@@ -1933,11 +1941,15 @@ trait CartManagerV2
                 $cart->other_taxes_string = $other_taxes_string . ',taxjar_fee:' . $cart->total_taxable_amount;
             }
 
+            if(@$newRentalPrice && (FacadesSession::get('vendorType') == "rental"))
+            {
+                $cart->total_payable_amount = $newRentalPrice;
+                $cart->payable_amount = $newRentalPrice;
+            }
+
             
         }
-
-    
-       
+     
         return $cart;
         
     }
