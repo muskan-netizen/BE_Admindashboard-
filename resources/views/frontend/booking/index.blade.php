@@ -191,9 +191,11 @@
             background-color: #fff;
             left: 0;
             height: 100%;
+            /* height: auto; */
             overflow-x: hidden;
             overflow-y: scroll;
             width: 100%;
+            /* padding-bottom:30px;  */
         }
 
         .slick_bid_ride .slick-items{
