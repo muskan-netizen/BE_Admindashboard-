@@ -1246,7 +1246,6 @@ class CartController extends BaseController
 
                             $payable_amount = $payable_amount + $quantity_price;
 
-                            $payable_amount = $payable_amount + $quantity_price;
                             // Check if is_cart_checked is 1 then add $quantity_price in payable amount
                             if($prod->is_cart_checked == 1){
                                 // $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
@@ -1911,9 +1910,9 @@ class CartController extends BaseController
             $cart->total_payable_amount  += $total_service_fee;
         }
 
-        if(!empty($totalDeliveryCharges)){
-            $cart->total_payable_amount  += $totalDeliveryCharges;
-        }
+        // if(!empty($totalDeliveryCharges)){
+        //     $cart->total_payable_amount  += $totalDeliveryCharges;
+        // }
 
         
         $wallet_amount_used = 0;
