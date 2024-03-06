@@ -81,7 +81,7 @@
         <div class="col-lg-9 col-xl-9">
             <div class="">
             @include('backend.vendor.topbar-tabs')
-                
+
                 <div class="tab-content">
                     <div class="tab-pane {{($tab == 'configuration') ? 'active show' : '' }} card-body" id="configuration">
                     </div>

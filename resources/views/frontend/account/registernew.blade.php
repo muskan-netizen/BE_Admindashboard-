@@ -261,15 +261,23 @@
                                 </div>
                                 <div class="form-check mb-4">
                                     <input type="checkbox" name="term_and_condition" class="form-check-input @error('term_and_condition') is-invalid @enderror" id="html">
-                                    <label for="html" class="mr-3">{{ __('I accept the') }}
-                                        <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
-                                            target="_blank">{{ __('Terms And Conditions') }} </a>
-                                        {{ __('and have read the') }}
-                                        <a href="{{ $privacy ? route('extrapage', $privacy->slug) : '#' }}"
-                                            target="_blank">
-                                            {{ __('Privacy Policy') }}.
-                                        </a>
-                                    </label>
+                                            @if(session()->get("customerLanguage") == "59")
+                                            <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
+                                                target="_blank"> {{ __('I accept the Terms And Conditions and and have read the Privacy Policy.') }}
+                                            </a>
+                                             @else
+
+                                            <label for="html" class="mr-3">{{ __('I accept the') }}
+                                            <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
+                                                target="_blank">{{ __('Terms And Conditions') }} </a>
+                                                {{ __('and have read the') }}
+                                                <a href="{{ $privacy ? route('extrapage', $privacy->slug) : '#' }}"
+                                                target="_blank">
+                                                {{ __('Privacy Policy') }}
+                                                </a>
+                                            </label>
+                                            @endif
+                                       
                                     @if($errors->first('term_and_condition'))
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $errors->first('term_and_condition') }}</strong>
