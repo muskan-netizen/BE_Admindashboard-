@@ -17,17 +17,24 @@ class PaymentObserver
     public function created(Payment $payment)
     {
         $payment_info = json_decode(json_encode($payment->toArray()), true);
-            $uid = $payment_info['user_id'];
+
+            $uid = $payment_info['user_id']??null;
             $uname = "";
+
+        if(@$uid){
             $userInfo = User::where('id', $uid)->first();
             if($userInfo) {
                $uname = $userInfo->name ?? 'N/A';
             }
+        }
+
         $data = array(
             'location' => 'payment-call',
-            'details' => 'User-Id : '.$uid.', Name : '.$uname.', Date : '.date('d-m-Y H:i:a').', '.json_encode($payment->toArray()),
+            'details' => 'User-Id : '.$uid.', Name : '.$uname??'N/A'.', Date : '.date('d-m-Y H:i:a').', '.json_encode($payment->toArray()),
         );
        TrackEvent::create($data);
+
+    
     }
 
 
