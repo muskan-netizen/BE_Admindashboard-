@@ -1915,10 +1915,11 @@ class CartController extends BaseController
 
       
 
-        if(!empty($totalDeliveryCharges)){
-            $cart->total_payable_amount  += $totalDeliveryCharges;
-        }
-       
+        // if(!empty($totalDeliveryCharges)){
+        //     $cart->total_payable_amount  += $totalDeliveryCharges;
+        // }
+
+        
         $wallet_amount_used = 0;
         if (isset($user)) {
             if ($user->balanceFloat > 0) {
