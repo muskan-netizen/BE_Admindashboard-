@@ -1646,7 +1646,7 @@ class CartController extends BaseController
                     $totalFreeDeliveryCharges +=$vendorTotalDeliveryFee;
                     $vendorTotalDeliveryFee = 0;
                 }
-
+              
                 $totalDeliveryCharges+=$vendorTotalDeliveryFee;
 
             //All other tax calculations
@@ -1847,6 +1847,8 @@ class CartController extends BaseController
             ['label' => 'Container fee tax', 'value' => decimal_format($container_charges_tax)],
             ['label' => "Total ".@$taxData[0]['identifier']." amount", 'value' => decimal_format($total_taxable_amount)]
         );
+      
+        
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);
         $cart->total_markup_charges = decimal_format($total_markup_charges);
@@ -1909,6 +1911,9 @@ class CartController extends BaseController
         if(!empty($total_service_fee)){
             $cart->total_payable_amount  += $total_service_fee;
         }
+     
+
+      
 
         // if(!empty($totalDeliveryCharges)){
         //     $cart->total_payable_amount  += $totalDeliveryCharges;
@@ -1964,7 +1969,6 @@ class CartController extends BaseController
             $totalAmount = $cart->total_payable_amount;
             $cart->total_payable_amount = $advancePayableAmount;
         }
-
         // $cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
         $cart->total_amount= number_format((float)$totalAmount, 2, '.', '');
         $cart->advance_payable_amount= number_format((float)$advancePayableAmount, 2, '.', '');
@@ -1995,7 +1999,7 @@ class CartController extends BaseController
             $cart->total_payable_amount = $rental_price;
         }
 
-
+       
         return $cart;
         }catch(\Exception $ex){
             return [];
