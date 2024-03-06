@@ -1908,9 +1908,9 @@ class CartController extends BaseController
         if(@$rental_price){
             $cart->total_payable_amount = $rental_price;
         }
-        if(!empty($total_service_fee)){
-            $cart->total_payable_amount  += $total_service_fee;
-        }
+        // if(!empty($total_service_fee)){
+        //     $cart->total_payable_amount  += $total_service_fee;
+        // }
      
 
       
