@@ -522,6 +522,10 @@
         </div>
     @endforeach
 @else
+@php
+    $ordersNom = getNomenclatureName('Orders', true);
+    $ordersNom = ($ordersNom=="Orders")?__('Orders'):__($ordersNom);
+@endphp
 <div class="error-msg mt-3">
     <img class="mb-2" src="{{asset('images/no-order.svg')}}">
     <p>{{ __("You don't have ".$ordersNom." right now.") }}</p>
