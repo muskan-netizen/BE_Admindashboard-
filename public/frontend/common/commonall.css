@@ -1656,6 +1656,14 @@ body[dir="rtl"] #step-4-ondemand .add-on-main-div {
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
 }
+.al_body_template_two .booking-experience {
+	height: calc(100vh - 150px);
+	position: absolute;
+	width: 400px;
+	top: 50px;
+	overflow-y: auto;
+}
+
 @media(min-width:1440px){
     .al_body_template_eight .container {
         max-width: 1500px;
