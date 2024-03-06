@@ -195,7 +195,7 @@
             overflow-x: hidden;
             overflow-y: scroll;
             width: 100%;
-            /* padding-bottom:30px;  */
+            padding-bottom:30px; 
         }
 
         .slick_bid_ride .slick-items{
