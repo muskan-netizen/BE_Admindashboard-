@@ -2685,6 +2685,7 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
         position: absolute;
         width: 400px;
         top: 50px;
+        overflow-y: auto;
     }
 }
 
