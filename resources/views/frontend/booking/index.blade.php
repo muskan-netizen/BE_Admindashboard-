@@ -410,8 +410,8 @@ input[type=number]::-webkit-outer-spin-button {
                                 <h5 class="m-0" id="">{{ __(getDynamicTypeName('Recurring')) }}</h5>
                             </label>
                             </div>
-                        @endif
                         </div>
+                        @endif
 
                     <div class="location-box check-pick-first">
                         <div class="where-to-go">
