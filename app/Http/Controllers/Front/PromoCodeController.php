@@ -23,7 +23,7 @@ class PromoCodeController extends Controller{
     use ApiResponser;
     protected $user;
 
-    
+
     public function postProductPromoCodeCheck(Request $request){
         try {
             $user = Auth::user();
@@ -33,7 +33,7 @@ class PromoCodeController extends Controller{
             $firstOrderCheck = 0;
             $is_from_cart = $request->is_cart ? $request->is_cart :0;
             $now = Carbon::now()->toDateTimeString();
-            $now = convertDateTimeInClientTimeZone($now);             
+            $now = convertDateTimeInClientTimeZone($now);
             $promo_code_details = PromoCodeDetail::where('refrence_id', $product_id)->pluck('promocode_id');
             $result1 = Promocode::whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details,$firstOrderCheck) {
                 $query->where(function ($query2) use ($promo_code_details) {
@@ -134,7 +134,7 @@ class PromoCodeController extends Controller{
                         $addon_option = AddonOption::where(['addon_id'=>$addons->addon_id,'id'=>$addons->option_id]);
                         if($addon_option->exists()){
                             $addon_price = $addon_option->first()->price * $cart_product->quantity;
-                        }                        
+                        }
                         $product_addon_price += $addon_price??0;
                     }
                 }
@@ -192,7 +192,7 @@ class PromoCodeController extends Controller{
                     });
 
                 });
-                
+
                 if($firstOrderCheck){
                     $result2->where('first_order_only', 0);
                 }
@@ -238,12 +238,18 @@ class PromoCodeController extends Controller{
                 return $this->errorResponse('Invalid Cart Id', 422);
             }
             $promo_code = Promocode::where('id', $request->coupon_id)->first();
-            
+
             if(!$promo_code){
                 return $this->errorResponse('Invalid Promocode Id', 422);
             }elseif(isset($request->amount) && $request->amount < $promo_code->minimum_spend){
                 return $this->errorResponse('Add item worth '.(int)($promo_code->minimum_spend - $request->amount).' to apply this offer.', 422);
             }
+
+            $order_vendor_user_promo_count = OrderVendor::where(['coupon_id' => $request->coupon_id])->count();
+            if($order_vendor_user_promo_count >= $promo_code->limit_total){
+                return $this->errorResponse(__('Coupon Code limit has been reached.'), 422);
+            }
+
             $order_vendor_user_promo_count = OrderVendor::where(['user_id' => $user->id, 'coupon_id' => $request->coupon_id])->count();
             if($order_vendor_user_promo_count >= $promo_code->limit_per_user){
                 return $this->errorResponse('Coupon Code already applied.', 422);
@@ -403,7 +409,7 @@ class PromoCodeController extends Controller{
         if( !empty($vendor_id) ) {
             $promocode_vendor = Promocode::select('promocodes.name', 'promocodes.short_desc', 'promo_types.title as promo_type_title', 'promocodes.amount', 'promocodes.promo_type_id')->whereDate('expiry_date', '>=', $now)->join('promocode_details', 'promocode_details.promocode_id', 'promocodes.id')->join('promo_types', 'promo_types.id', 'promocodes.promo_type_id')->where(['promocodes.promo_visibility' => 'public'])->where('promocodes.restriction_on', '1')->where('promocode_details.refrence_id', $vendor_id)->get()->toArray();
         }
-        
+
         return array_merge($promocode_product, $promocode_vendor);
     }
 

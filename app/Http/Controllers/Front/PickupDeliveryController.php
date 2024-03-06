@@ -212,14 +212,14 @@ class PickupDeliveryController extends FrontController{
         if($preferences->is_hourly_pickup_rental == 1)
         {
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del,1);
-      
-            
+
+
         }
         else{
             $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
 
         }
- 
+
 
         // $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
 
@@ -233,11 +233,11 @@ class PickupDeliveryController extends FrontController{
         else{
             $product->distance = decimal_format($tags_price['distance']);
         }
-        
-       
+
+
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
 
-       
+
         $product->duration = decimal_format($tags_price['duration']);
         $product->min_tags_price = decimal_format($tags_price['min_delivery_fee']);
 
@@ -275,10 +275,10 @@ class PickupDeliveryController extends FrontController{
         }
         $loyalty_points_used = 0;
         $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-        if ($order_loyalty_points_earned_detail) {         
+        if ($order_loyalty_points_earned_detail) {
             $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
-            if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {               
-                $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;              
+            if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
+                $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
             }
         }
 
@@ -385,7 +385,7 @@ class PickupDeliveryController extends FrontController{
                 }
             }
         }
-        
+
         //wallet amount used
         $product->wallet_amount_used = 0;
         if($user->balanceFloat > 0){
@@ -397,9 +397,9 @@ class PickupDeliveryController extends FrontController{
             }
             $product->wallet_amount_used = decimal_format($wallet_amount_used);
         }
-        $product->total_tags_price = $product->total_tags_price - $product->subscription_discount??0.0;      
+        $product->total_tags_price = $product->total_tags_price - $product->subscription_discount??0.0;
         $product->total_tags_price =  decimal_format($product->total_tags_price - $product->wallet_amount_used);
-        
+
         if(isset($request->yacht_id)){
             $yacht = Product::with(['pimage','variant'])->select('id','title')->find($request->yacht_id);
             $product->yacht = $yacht;
@@ -518,10 +518,10 @@ class PickupDeliveryController extends FrontController{
     }
     public function productsByRentalVendorInPickupDelivery(Request $request, $domain = '',$cid = 0){
         try {
-            
- 
+
+
             $cid = $request->category_id;
-           
+
 
             $preferences = ClientPreference::where('id', '>', 0)->first();
             $user = Auth::user();
@@ -530,10 +530,10 @@ class PickupDeliveryController extends FrontController{
                 $client_timezone = DB::table('clients')->first('timezone');
                 $user->timezone = $client_timezone->timezone ?? $user->timezone;
             }
-    
+
             $vendor_category = VendorCategory::where('category_id',$cid)->where('status',1)->first();
 
-          
+
             $vid = $vendor_category->vendor_id;
             $schedule_datetime_del = '';
             if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
@@ -541,8 +541,8 @@ class PickupDeliveryController extends FrontController{
             }else{
                 $schedule_datetime_del = Carbon::now()->timezone('UTC')->format('Y-m-d H:i:s');
             }
-   
-           
+
+
             $paginate = $request->has('limit') ? $request->limit : 12;
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $language_id = Session::get('customerLanguage');
@@ -552,7 +552,7 @@ class PickupDeliveryController extends FrontController{
             if(!$vendor){
                 return response()->json(['error' => 'No record found.'], 200);
             }
-            
+
             $products = Product::with(['category.categoryDetail', 'tollpass', 'travelmode', 'emissiontype', 'inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },'media.image', 'translation' => function($q) use($language_id){
@@ -585,7 +585,7 @@ class PickupDeliveryController extends FrontController{
                 foreach ($products as $key => $product) {
                     $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del,1);
 
-                   
+
                     $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'93/93'.$product->media->first()->image->path['image_path'] : '';
                     $product->image_url = $image_url;
                     $product->service_charge_amount  = ($vendor->fixed_service_charge == 1)?$vendor->service_charge_amount:0.00;
@@ -717,10 +717,10 @@ class PickupDeliveryController extends FrontController{
                 $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->tollpass)?$product->tollpass->toll_pass:'IN_FASTAG':'IN_FASTAG'), 'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->emissiontype)?$product->emissiontype->emission_type:'GASOLINE':'GASOLINE'), 'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->travelmode)?$product->travelmode->travelmode:'TAXI':'TAXI')];
                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
-                
+
                 if($is_rental)
                 {
-                    
+
                     $res = $client->post($url.'/api/get-delivery-fee-rental',
                     ['form_params' => ($postdata)]
                 );
@@ -728,9 +728,9 @@ class PickupDeliveryController extends FrontController{
                 {
                     $res = $client->post($url.'/api/get-delivery-fee',
                     ['form_params' => ($postdata)]
-                );  
+                );
                 }
-                
+
                 $response = json_decode($res->getBody(), true);
                 //pr($response);
                 \Log::info('response');
@@ -758,8 +758,8 @@ class PickupDeliveryController extends FrontController{
     */
      public function createOrder(Request $request){
 
-          
-       
+
+
         try {
             DB::beginTransaction();
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
@@ -982,13 +982,13 @@ class PickupDeliveryController extends FrontController{
                 //         $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
                 //     }
                 // }
-                
+
                 $loyalty_points_used = 0;
-                $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();                
-                if ($order_loyalty_points_earned_detail) {                    
-                    $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;                    
-                    if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {                       
-                        $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;                        
+                $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+                if ($order_loyalty_points_earned_detail) {
+                    $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+                    if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
+                        $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
                     }
                 }
                 if($request->payment_option_id == 2){
@@ -1042,7 +1042,7 @@ class PickupDeliveryController extends FrontController{
                 $order->luxury_option_id    = $luxury_option->id;
 
                 $order->specific_instructions = $request->task_description ?? '';
-               
+
                 if ($client_preference->is_hourly_pickup_rental != 1) {
 
                 $order->recurring_booking_time = $returnBookingTime ;
@@ -1185,16 +1185,16 @@ class PickupDeliveryController extends FrontController{
                         $order_vendor->admin_commission_fixed_amount = $vendor_info->commission_fixed_per_order;
                     }
                 }
-                $vendor_payable_amount = $vendor_payable_amount - $loyalty_amount_saved ?? 0;               
-                $order_vendor->payable_amount = $vendor_payable_amount;               
-                if ($product['taxCategory']) {                  
-                    foreach ($product['taxCategory']['taxRate'] as $tax_rate_detail) {                       
-                        $rate                  = round($tax_rate_detail->tax_rate);                       
-                        $tax_amount            = ($price_in_dollar_compare * $rate) / 100;                       
-                        $product_tax           = $payable_amount * $rate / 100;                        
-                        $payable_amount        = $payable_amount + $product_tax;                       
-                        $taxable_amount        = $taxable_amount + $product_tax;                       
-                    } 
+                $vendor_payable_amount = $vendor_payable_amount - $loyalty_amount_saved ?? 0;
+                $order_vendor->payable_amount = $vendor_payable_amount;
+                if ($product['taxCategory']) {
+                    foreach ($product['taxCategory']['taxRate'] as $tax_rate_detail) {
+                        $rate                  = round($tax_rate_detail->tax_rate);
+                        $tax_amount            = ($price_in_dollar_compare * $rate) / 100;
+                        $product_tax           = $payable_amount * $rate / 100;
+                        $payable_amount        = $payable_amount + $product_tax;
+                        $taxable_amount        = $taxable_amount + $product_tax;
+                    }
                 }
                 $order_vendor->taxable_amount = $taxable_amount;
                 $order_vendor->save();
@@ -1517,6 +1517,7 @@ class PickupDeliveryController extends FrontController{
 
     public function postVerifyPromoCode(Request $request){
         try {
+            $user = Auth::user();
             $validator = $this->validatePromoCode();
             if($validator->fails()){
                 return $this->errorResponse($validator->messages(), 422);
@@ -1529,6 +1530,23 @@ class PickupDeliveryController extends FrontController{
             $cart_detail = Promocode::where('id', $request->coupon_id)->first();
             if(!$cart_detail){
                 return $this->errorResponse('Invalid Promocode Id', 422);
+            }
+
+            if($cart_detail->first_order_only == 1){
+                $orders_count = Order::where('user_id', $user->id)->count();
+                if($orders_count > 0){
+                    return $this->errorResponse('Coupon Code apply only first order.', 422);
+                }
+            }
+
+            $order_vendor_user_promo_count = OrderVendor::where(['coupon_id' => $request->coupon_id])->count();
+            if($order_vendor_user_promo_count >= $cart_detail->limit_total){
+                return $this->errorResponse(__('Coupon Code limit has been reached.'), 422);
+            }
+
+            $order_vendor_user_promo_count = OrderVendor::where(['user_id' => $user->id, 'coupon_id' => $request->coupon_id])->count();
+            if($order_vendor_user_promo_count >= $cart_detail->limit_per_user){
+                return $this->errorResponse(__('Coupon Code already applied.'), 422);
             }
 
             if($cart_detail->promo_type_id == 2){
