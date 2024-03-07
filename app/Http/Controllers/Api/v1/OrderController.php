@@ -5207,7 +5207,6 @@ class OrderController extends BaseController
      */
     public function placeOrderRequestBorzoeApi($request)
     {
-        \Log::info([$request->all()]);
         $borzoe = new BorzoeDeliveryController();
         //Create Shipping place order request for Borzoe delivery
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();

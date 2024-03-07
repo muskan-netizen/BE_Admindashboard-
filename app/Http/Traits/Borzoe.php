@@ -65,7 +65,6 @@ trait Borzoe{
     }
 
     public function placeOrderToBorzoApi($vendor_id, $order_id){
-        try{
                 $this->brozoConfig();
                 $order = Order::find($order_id);
                 $customer = User::findOrFail($order->user_id);
@@ -73,10 +72,6 @@ trait Borzoe{
                 $amountPay = $order->ordervendor->where('vendor_id',$vendor_id)->value('payable_amount')??0;
                 $vendor_details = Vendor::findOrFail($vendor_id);
                 $url = $this->api_url.'create-order';
-            \Log::info('[$vendor_details]');
-            \Log::info([$vendor_details]);
-            \Log::info('[$cus_address]');
-            \Log::info([$cus_address]);
                     $data = [
                         'matter' => 'Documents',
                         'points' => [
@@ -103,9 +98,6 @@ trait Borzoe{
                     $response = curl_exec($ch);
                     curl_close($ch);
                     return $response;
-        }catch (\Exception $e) {
-            \Log::info($e->getMessage().' -- '.$e->getLine().' -- '.$e->getFile());    
-        }
     }
 
     public function cancleOrderToBorzoApi($vendor_id, $order_id){
