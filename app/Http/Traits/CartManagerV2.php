@@ -583,10 +583,12 @@ trait CartManagerV2
                     }
                    
                 }
-              
+                
+
             //vendorData->vendorProducts  loop start
             foreach ($vendorData->vendorProducts as $ven_key => $prod) 
             {
+               
                                 $prod->product->ServicePeriods = [];
                                 $prod->service_start_time = '';
                                 $prod->is_long_term_service = 0;
@@ -761,14 +763,15 @@ trait CartManagerV2
                                             $quantity_price = $price_in_doller_compare * $prod->quantity;
                                         }
                                         $quantity_price =  (($quantity_price)*($prod->recurring_date_count));
-
-                                        $total_container_charges = $container_charges_in_currency * $prod->quantity;
                                        
+                                        // $total_container_charges = $container_charges_in_currency * $prod->quantity;
+ 
                                         $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
                                         if($prod->is_cart_checked == 1){
                                             $sub_total+=$quantity_price + $quantity_container_charges;
                                         }
 
+                                        
                                         $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
 
                                         $total_quantity += $prod->quantity;
@@ -794,10 +797,11 @@ trait CartManagerV2
                                         }else{
                                             $payable_amount = $payable_amount + $prod->additional_price + $quantity_price ;
                                         }
-                                       
                                         $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $quantity_container_charges;
-                                        $total_container_charges =  $quantity_container_charges;
-                                      
+                                        $total_container_charges +=  $quantity_container_charges;
+
+                                        
+                                        
                                         
                                         if(
                                             ($in_or_not == 0 && in_array($prod->product_id,$coupon_product_ids))
@@ -1280,6 +1284,9 @@ trait CartManagerV2
             
             
             }
+        
+
+  
             /*
             *
                 vendorData->vendorProducts Products loop End
@@ -1546,7 +1553,8 @@ trait CartManagerV2
                 $total_subscription_discount_vendor    = $total_subscription_discount_vendor + $subscription_discount_vendor;
                 $total_subscription_discount_delivery  = $total_subscription_discount_delivery + $subscription_discount_delivery;
                 $vendorData->is_promo_code_available = $is_promo_code_available;
-
+           
+        
                 
                 $taxChargeable['deliveryCharges'] = $total_deliver_charges;
                 $taxChargeable['vendor_service_fee_percentage_amount'] = $total_service_fee;
@@ -1854,7 +1862,7 @@ trait CartManagerV2
             $cart->total_discount_amount = decimal_format($total_discount_amount);
             $cart->total_taxable_amount = decimal_format($total_taxable_amount);
                
-            
+        
             $cart->total_container_charges = decimal_format($total_container_charges);
           
             $cart->wallet_amount_available = decimal_format($wallet_amount_available);
@@ -1949,7 +1957,6 @@ trait CartManagerV2
 
             
         }
-     
         return $cart;
         
     }
