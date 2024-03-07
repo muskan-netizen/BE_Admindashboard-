@@ -456,7 +456,8 @@ body.al_body_template_one #alTaxiBookingWrapper #cab_detail_box {
     left: 0;
     right: 0;
 } */
-.al_body_template_two  #alTaxiBookingWrapper .alFullMapForm  .cab-detail-box {
+.al_body_template_two  #alTaxiBookingWrapper .alFullMapForm  .cab-detail-box,
+.al_body_template_three   #alTaxiBookingWrapper .alFullMapForm  .cab-detail-box  {
     position: absolute;
     top: 0;
     left: 0;
@@ -1670,7 +1671,7 @@ body[dir="rtl"] #step-4-ondemand .add-on-main-div {
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
 }
-.al_body_template_two .booking-experience {
+.al_body_template_two .booking-experience  {
 	height: calc(100vh - 150px);
 	position: absolute;
 	width: 400px;
