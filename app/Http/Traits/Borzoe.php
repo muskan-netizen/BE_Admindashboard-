@@ -68,15 +68,15 @@ trait Borzoe{
         try{
                 $this->brozoConfig();
                 $order = Order::find($order_id);
-                $customer = User::find(auth()->id());
+                $customer = User::findOrFail(auth()->id());
                 $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
                 $amountPay = $order->ordervendor->where('vendor_id',$vendor_id)->value('payable_amount')??0;
-                $vendor_details = Vendor::find($vendor_id);
+                $vendor_details = Vendor::findOrFail($vendor_id);
                 $url = $this->api_url.'create-order';
             \Log::info('[$vendor_details]');
             \Log::info([$vendor_details]);
-            \Log::info('[$customer]');
-            \Log::info([$customer]);
+            \Log::info('[$cus_address]');
+            \Log::info([$cus_address]);
                     $data = [
                         'matter' => 'Documents',
                         'points' => [
