@@ -1442,10 +1442,10 @@ class PickupDeliveryController extends FrontController{
                     'dispatcher_status_option_id' =>  1,
                     'vendor_id' =>  $vendor]);
 
-                    if ($request->payment_option_id == 2){
-                        $wal =   $wallet->forceWithdrawFloat($order->payable_amount, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
+                    $ex_gateways_wallet = [4,36,40,41,22]; // stripe,mycash,userede,openpay,ccavenue
+                    if (in_array($order->payment_option_id, $ex_gateways_wallet )){
+                        $wal =   $wallet->forceWithdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
                     }
-                 return $response;
                 }
                 return $response;
             }
@@ -1457,10 +1457,7 @@ class PickupDeliveryController extends FrontController{
             }
     }
 
-
-
-
-      /**
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
