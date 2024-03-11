@@ -1519,7 +1519,7 @@ class VendorController extends BaseController{
                 $user->name = $request->name;
                 $user->email = $request->email;
                 $user->title = $request->title;
-                $user->country_id = $county->id;
+                $user->country_id = $county ? $county->id : null;
                 $user->dial_code = $request->dialCode;
                 $user->phone_token_valid_till = $sendTime;
                 $user->email_token_valid_till = $sendTime;

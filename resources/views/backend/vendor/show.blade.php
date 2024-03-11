@@ -208,7 +208,7 @@
         <div class="col-lg-9 col-xl-9">
             <div class="">
                 @include('backend.vendor.topbar-tabs')
-                
+
                 <div class="tab-content">
                     <div class="tab-pane {{($tab == 'configuration') ? 'active show' : '' }} " id="configuration">
                        @if($vendor->vendor_templete_id ==  6)
@@ -436,7 +436,7 @@
                             </div>
                         </div>
                         @endif
-                        <div class="card-box">                            
+                        <div class="card-box">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="row align-items-center mb-3">
@@ -464,7 +464,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody id="review_table_tbody_list">
-            
+
                                             </tbody>
                                         </table>
                                     </div>
@@ -943,7 +943,7 @@
     </div>
 </div>
 
-<div id="edit-pincode-form" class="modal fade add_reason" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">    
+<div id="edit-pincode-form" class="modal fade add_reason" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header border-bottom">
@@ -953,7 +953,7 @@
             <form id="save_reason_form" method="post" enctype="multipart/form-data" action="{{ route('pincode.store') }}">
                 @csrf
                 <div class="modal-body pb-0" id="edit-pincode-body">
-    
+
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-info waves-effect waves-light submitPincode">{{ __('Submit') }}</button>
@@ -1022,7 +1022,7 @@
       a.dispatchEvent(my_evt);
     }
     //canvas.parentNode.removeChild(canvas);
-  }  
+  }
 }
 
     $(document).on("click", ".editTablebtn", function() {
