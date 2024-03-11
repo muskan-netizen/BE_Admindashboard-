@@ -327,7 +327,7 @@ class PromoCodeController extends Controller{
                 return $this->errorResponse('Coupon Code already applied.', 422);
             }
 
-            $order_vendor_user_promo_count = OrderVendor::where(['coupon_id' => $request->coupon_id])->count();
+            $order_vendor_user_promo_count = OrderVendor::where(['coupon_code' => $request->promocode])->count();
             if($order_vendor_user_promo_count >= $promo_code->limit_total){
                 return $this->errorResponse(__('Coupon Code limit has been reached.'), 422);
             }
