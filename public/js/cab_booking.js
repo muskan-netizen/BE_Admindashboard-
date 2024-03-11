@@ -436,10 +436,10 @@ $(document).ready(function () {
                         alert(response.message);
                         window.location.href = response.redirect;
                     }
-                     
+
                     let order_number = response.data.order_number;
                     let reload_route = response.data.route;
-                    
+
                     if((payment_option_id == 1) || (payment_option_id == 2)){
                         // placeOrderBeforePayment('',payment_option_id,0,order_number);
                         window.location.replace(response.data.route);
@@ -450,7 +450,7 @@ $(document).ready(function () {
                         // $("#cab_detail_box").append(order_success_template(orderSuccessData)).show();
                         // setInterval(function(){
                         //     getDriverDetails(response.data.dispatch_traking_url)
-                        // },3000); 
+                        // },3000);
                     }else if(payment_option_id == 3){
                        let payment_form = "pickup_delivery";
                         $.ajax({
@@ -1338,6 +1338,13 @@ $(document).ready(function () {
                     }
                     $('.cab-detail-box #real_amount').text(response.data.currency_symbol+''+current_amount);
                 }
+            },
+            error: function (reject) {
+                if (reject.status === 422) {
+                    var message = $.parseJSON(reject.responseText);
+                    sweetAlert.error(message.message,"");
+                  //  $(".invalid-feedback.manual_promocode").html("<strong>" + message.message + "</strong>");
+                }
             }
         });
     });
@@ -1447,7 +1454,7 @@ $(document).ready(function () {
                             let particular_driver_template = _.template($('#particular_driver_template').html());
                             $("#cab_detail_box").append(particular_driver_template(cabData)).show();
                         }else{
-                           
+
                             let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
                             $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
                         }

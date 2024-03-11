@@ -113,12 +113,12 @@ class PickupDeliveryController extends BaseController{
                         $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
                     }
                     $loyalty_points_used = 0.0;
-                    $order_loyalty_points_earned_detail = Order::where('user_id', $userid)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();                   
+                    $order_loyalty_points_earned_detail = Order::where('user_id', $userid)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
                     if ($order_loyalty_points_earned_detail) {
-                        $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;                      
-                        if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {                            
-                            $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;                            
-                        }                       
+                        $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+                        if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
+                            $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
+                        }
                     }
                     $total_price = 0 ;
                     $payable_amount= 0;
@@ -210,7 +210,7 @@ class PickupDeliveryController extends BaseController{
                             $product->total_tags_price = decimal_format($totalTagPriceWithSubscription)+ $product->service_charge_amount- $loyalty_amount_saved??0.00;
                         }
                     }
-                    
+
                     $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
                     $divider = isset($divider) ? $divider : 1;
                     $price_in_currency = $product->tags_price / $divider;
@@ -227,7 +227,7 @@ class PickupDeliveryController extends BaseController{
                             $payable_amount        = $payable_amount + $product_tax;
                             $taxable_amount        = $taxable_amount + $product_tax;
                         }
-                        
+
                     }
                     // $product->vendor_payable_amount = $vendor_payable_amount;
                     // $product->rate = $rate;
@@ -283,8 +283,8 @@ class PickupDeliveryController extends BaseController{
     }
 
 
-    public function postCabProductById(Request $request){
-
+    public function postCabProductById(Request $request)
+    {
         try
         {
             $user = Auth::user();
@@ -307,8 +307,8 @@ class PickupDeliveryController extends BaseController{
             if($request->recurringformPost)
             {
             $recurring = recurringCalculationFunction($request);
-            
-            $recurringDays  = $recurring->daysCnt??1; 
+
+            $recurringDays  = $recurring->daysCnt??1;
             }
 
             $schedule_datetime_del = '';
@@ -328,7 +328,7 @@ class PickupDeliveryController extends BaseController{
             $product->image_url = $image_url;
             $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
             // \Log::info(json_encode($tags_price));
-        
+
             if($recurringDays)
             {
                 $tags_price['delivery_fee'] = decimal_format($tags_price['delivery_fee'] * $recurringDays);
@@ -367,16 +367,16 @@ class PickupDeliveryController extends BaseController{
 
                     $product->service_charge_amount  = $product->tags_price * $product->vendor->service_fee_percent/100;
                 }
-            } 
-       
+            }
+
 
             $product->total_tags_price = decimal_format($product->tags_price + $product->toll_fee + $product->service_charge_amount);
 
 
-        
+
             $customerCurrency = ClientCurrency::where('is_primary', 1)->first();
             $price_in_doller_compare = $product->total_tags_price  * $customerCurrency->doller_compare;
-    
+
             // dd($product->taxCategory);
             //Add Tax on product
             $taxData = array();
@@ -384,7 +384,7 @@ class PickupDeliveryController extends BaseController{
                 foreach ($product->taxCategory->taxRate as $tckey => $tax_value) {
                     $rate = $tax_value->tax_rate;
                     $product_tax = ($price_in_doller_compare * $rate) / 100;
-    
+
                     $taxData[$tckey]['identifier'] = $tax_value->identifier;
                     $taxData[$tckey]['rate'] = $rate;
                     $taxData[$tckey]['product_tax'] = decimal_format($product_tax);
@@ -396,23 +396,23 @@ class PickupDeliveryController extends BaseController{
                 }
             }
             // dd($price_in_doller_compare);
-    
-    
+
+
             $service_charges_tax_rate = 0;
                 if($product->vendor->service_charges_tax_id!=null){
                     if(isset($taxRates[$product->vendor->service_charges_tax_id])){
                            $service_charges_tax_rate=$taxRates[$product->vendor->service_charges_tax_id]['tax_rate'];
                     }
-                } 
-              
+                }
+
             if($product->service_charge_amount && $service_charges_tax_rate)
             {
                 $service_charge_tax = ($product->service_charge_amount * $service_charges_tax_rate) /100;
                 $taxCharges = $taxCharges + $service_charge_tax;
                 $product->total_tags_price = $product->total_tags_price  + $service_charge_tax;
             }
-    
-    
+
+
             $other_taxes=$taxCharges;
             $other_taxes_string='service_charge_tax:'.($service_charge_tax??0).',product_tax_fee:'.($product_tax??0);
             $product->total_other_taxes = $other_taxes??0;
@@ -483,11 +483,11 @@ class PickupDeliveryController extends BaseController{
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
         }
-    
+
     }
 
 
-    
+
     /**
      * list of vehicles details
     */
@@ -614,7 +614,7 @@ class PickupDeliveryController extends BaseController{
         try {
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
-           
+
             if($order_place['data']['recurring_booking_time'])
             {
                 DB::commit();
@@ -624,8 +624,8 @@ class PickupDeliveryController extends BaseController{
                 ]);
             }
 
- 
-          
+
+
             if($order_place && $order_place['status'] == 200){
                 if (($request->payment_option_id == 1) || ($request->payment_option_id == 42) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) || (( $request->has('is_postpay')) && ($request->is_postpay==1))){
                     $data = [];
@@ -634,7 +634,7 @@ class PickupDeliveryController extends BaseController{
                     if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                         // DB::commit();
                         $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
-            
+
 
                     }else{
                         DB::rollback();
@@ -648,8 +648,8 @@ class PickupDeliveryController extends BaseController{
                         $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
                         $order_place['data']['user_name'] = $user->email;
                         $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
-            
-                        
+
+
                         // return  $order_place;
                     }
                     else{
@@ -662,7 +662,7 @@ class PickupDeliveryController extends BaseController{
                 DB::rollback();
                 return $order_place;
             }
-                
+
             DB::commit();
             // if(@$order_place['data']['recurring_booking_time']!=null)
             // {
@@ -690,7 +690,7 @@ class PickupDeliveryController extends BaseController{
                }
 
                return  $order_place;
-            
+
         }
         catch(\Exception $e){
             DB::rollback();
@@ -780,13 +780,13 @@ class PickupDeliveryController extends BaseController{
                     $data['message'] =  'Your phone is not verified.';
                     return $data;
                 }
-            }  
+            }
             $cart = Product::where('id', $request->product_id)->first();
             if ($cart) {
                 $loyalty_points_used = 0;
-                $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();               
+                $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
                 if ($order_loyalty_points_earned_detail) {
-                    $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;                    
+                    $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
                     if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
                         $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
                     }
@@ -912,7 +912,7 @@ class PickupDeliveryController extends BaseController{
                 if ($request->other_taxes) {
                     $payable_amount = $payable_amount + $request->other_taxes;
                 }
-             
+
                 $vendor_taxable_amount += $request->other_taxes;
                 $total_amount += $variant->price;
                 $order_product = new OrderProduct;
@@ -954,7 +954,7 @@ class PickupDeliveryController extends BaseController{
                     }
                 }
 
- 
+
 
                 $coupon_id = null;
                 $coupon_name = null;
@@ -1000,17 +1000,17 @@ class PickupDeliveryController extends BaseController{
                         $order_vendor->admin_commission_fixed_amount = $vendor_info->commission_fixed_per_order;
                     }
                 }
-                
+
                 $order_status = new VendorOrderStatus();
                 $order_status->order_id = $order->id;
                 $order_status->vendor_id = $vendor_id;
                 $order_status->order_status_option_id = 1;
                 $order_status->order_vendor_id = $order_vendor->id;
                 $order_status->save();
-                
+
                 $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
-                
-                
+
+
                 $order->total_amount = $total_amount;
                 $order->total_discount = $total_discount;
                 $order->taxable_amount = $taxable_amount;
@@ -1020,13 +1020,13 @@ class PickupDeliveryController extends BaseController{
                         $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
                     }
                 }
-                
+
                 $order->total_delivery_fee = $total_delivery_fee;
                 $order->loyalty_points_used = $loyalty_points_used;
                 $order->loyalty_amount_saved = $loyalty_amount_saved;
                 $order->total_toll_amount    = $total_toll_amount;
                 $order->total_service_fee    = $total_service_fee;
-                
+
                 $vendor_payable_amount = $vendor_payable_amount - $loyalty_amount_saved ?? 0;
                 $order_vendor->payable_amount = $vendor_payable_amount;
                 if ($product['taxCategory']) {
@@ -1034,11 +1034,11 @@ class PickupDeliveryController extends BaseController{
                         $rate                  = round($tax_rate_detail->tax_rate);
                         $tax_amount            = ($price_in_dollar_compare * $rate) / 100;
                         $product_tax           = $payable_amount * $rate / 100;
-                        $payable_amount        = $payable_amount + $product_tax;                       
-                        $taxable_amount        = $taxable_amount + $product_tax;                       
+                        $payable_amount        = $payable_amount + $product_tax;
+                        $taxable_amount        = $taxable_amount + $product_tax;
                     }
                 }
-                $order_vendor->taxable_amount = $taxable_amount ?? 0;                
+                $order_vendor->taxable_amount = $taxable_amount ?? 0;
                 $order_vendor->save();
 
                 $now = Carbon::now()->toDateTimeString();
@@ -1047,7 +1047,7 @@ class PickupDeliveryController extends BaseController{
                 ->where('user_id', $user->id)
                 ->where('end_date', '>', $now)
                 ->orderBy('end_date', 'desc')->first();
-                
+
                 if ($user_subscription) {
                     foreach ($user_subscription->features as $feature) {
                         if ($feature->feature_id == 2) {
@@ -1059,14 +1059,14 @@ class PickupDeliveryController extends BaseController{
                 }else{
                     $order->payable_amount = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved + $total_toll_amount + $total_service_fee;
                 }
-                
+
                 // $order->payable_amount = $request->remaing_amount;
                 $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                 $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
                 if (isset($request->transaction_id) && (!empty($request->transaction_id))) {
                     $order->payment_status = 1;
                 }
-                
+
                 $wallet_amount_used = 0;
                 $ex_gateways_wallet = [4,36,40,41,22]; // stripe,mycash,userede,openpay,ccavenue
                 if ($user->balanceFloat > 0) {
@@ -1074,7 +1074,7 @@ class PickupDeliveryController extends BaseController{
                     $wallet_amount_used = $user->balanceFloat;
                     if ($wallet_amount_used > $order->payable_amount) {
                         $wallet_amount_used = $order->payable_amount;
-                    }                    
+                    }
                     $order->wallet_amount_used = $wallet_amount_used;
                     // Deduct wallet amount if payable amount is successfully done on gateway
                     if (($wallet_amount_used > 0) && (! in_array($request->payment_option_id, $ex_gateways_wallet))) {
@@ -1196,7 +1196,7 @@ class PickupDeliveryController extends BaseController{
                 $dynamic = (!empty($order_vendor->web_hook_code)) ? $order_vendor->web_hook_code : uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
                 $client_do = Client::where('code',$unique)->first();
-                
+
                 if ($request->payment_option_id == 1 && $order->payable_amount >0) {
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount - $order->wallet_amount_used;
@@ -1333,8 +1333,9 @@ class PickupDeliveryController extends BaseController{
                     'dispatcher_status_option_id' =>  1,
                     'vendor_id' =>  $vendor]);
 
-                    if ($request->payment_option_id == 2){
-                        $wal =   $wallet->forceWithdrawFloat($order->payable_amount, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
+                    $ex_gateways_wallet = [4,36,40,41,22]; // stripe,mycash,userede,openpay,ccavenue
+                    if (in_array($order->payment_option_id, $ex_gateways_wallet )){
+                        $wal =   $wallet->forceWithdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
                     }
                 }
                 return $response;
@@ -1448,6 +1449,7 @@ class PickupDeliveryController extends BaseController{
 
     public function postVerifyPromoCode(Request $request){
         try {
+            $user = Auth::user();
             $validator = $this->validatePromoCode();
             if($validator->fails()){
                 return $this->errorResponse($validator->messages(), 422);
@@ -1460,6 +1462,22 @@ class PickupDeliveryController extends BaseController{
             if(!$cart_detail){
                 return $this->errorResponse(__('Invalid Promocode Id'), 422);
             }
+
+            if($cart_detail->first_order_only == 1){
+                $orders_count = Order::where('user_id', $user->id)->count();
+                if($orders_count > 0){
+                    return $this->errorResponse('Coupon Code apply only first order.', 422);
+                }
+            }
+            $order_vendor_user_promo_count = OrderVendor::where(['coupon_id' => $request->coupon_id])->count();
+            if($order_vendor_user_promo_count >= $cart_detail->limit_total){
+                return $this->errorResponse(__('Coupon Code limit has been reached.'), 422);
+            }
+            $order_vendor_user_promo_count = OrderVendor::where(['user_id' => $user->id, 'coupon_id' => $request->coupon_id])->count();
+            if($order_vendor_user_promo_count >= $cart_detail->limit_per_user){
+                return $this->errorResponse(__('Coupon Code already applied.'), 422);
+            }
+
             if($cart_detail->promo_type_id == 2){
                 $cart_detail['new_amount'] = $cart_detail->amount;
                 if($cart_detail['new_amount'] < 0)
@@ -1531,7 +1549,7 @@ class PickupDeliveryController extends BaseController{
         ]);
         $product_id = $order->products[0]['product_id'];
         $productData = Product::with(['category.categoryDetail','taxCategory.taxRate'])->whereId($product_id)->first();
-        
+
         $loyalty_amount_saved = 0;
         $total_service_fee = 0;
         $total_toll_amount = 0;
@@ -1540,22 +1558,22 @@ class PickupDeliveryController extends BaseController{
         if ($loyalty_card) {
             $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
         }
-       
+
         $loyalty_points_used = 0;
-        $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();      
+        $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
         if ($order_loyalty_points_earned_detail) {
-            $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;         
+            $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
             if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
                 $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
             }
         }
-        
+
         $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
         $payable_amount= 0;
         $vendor_payable_amount=0;
         $taxable_amount = 0;
         $tax_amount = 0;
-        
+
         $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
         $divider = isset($divider) ? $divider : 1;
         $price_in_currency = $order->subtotal_amount / $divider;
@@ -1564,7 +1582,7 @@ class PickupDeliveryController extends BaseController{
         $payable_amount = $payable_amount + $quantity_price;
         $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
         $vendor_payable_amount = $vendor_payable_amount - $loyalty_amount_saved ?? 0;
-        
+
         if ($productData['taxCategory']) {
             foreach ($productData['taxCategory']['taxRate'] as $tax_rate_detail) {
                 $rate                  = round($tax_rate_detail->tax_rate); // 2
@@ -1574,35 +1592,35 @@ class PickupDeliveryController extends BaseController{
                 $taxable_amount        = $taxable_amount + $product_tax;
             }
         }
-        
-        $order->tax_rate =  $tax_amount;        
-        // $order->subtotal_amount = $order->subtotal_amount + $tax_amount;      
-        $order->loyalty_amount_saved = $loyalty_amount_saved ?? 0;        
-        $order->payable_amount =  $order->payable_amount + $tax_amount - $order->orderDetail['subscription_discount'];       
+
+        $order->tax_rate =  $tax_amount;
+        // $order->subtotal_amount = $order->subtotal_amount + $tax_amount;
+        $order->loyalty_amount_saved = $loyalty_amount_saved ?? 0;
+        $order->payable_amount =  $order->payable_amount + $tax_amount - $order->orderDetail['subscription_discount'];
         // $order->total_tags_price = decimal_format($product->total_tags_price + $taxable_amount);
-        
+
         // $product->payable_amount =  $payable_amount;
-        
-        // $product->taxable_amount =  $taxable_amount;       
-        $now = Carbon::now()->toDateTimeString();       
-        $userid = Auth::user()->id;      
-        $subscriptionInvoiceUser = SubscriptionInvoicesUser::with('features')->whereUserId($userid)->where('end_date', '>', $now)        
-        ->orderBy('end_date', 'desc')->first();       
-        if($subscriptionInvoiceUser){            
-            $percentValue = $subscriptionInvoiceUser->features[0]['percent_value'];          
-            if(!empty($percentValue)){               
-                $calulateSubscription = ($percentValue / 100)* $response['order']['base_price'];               
-                $subscriptionPercentage = $percentValue;                
-                $subscriptionAmount = $calulateSubscription;               
-                $totalTagPriceWithSubscription = $response['order']['base_price'] - $calulateSubscription;               
-                $order->subscriptionPercentage = $percentValue;               
-                $order->subscriptionAmount = decimal_format($calulateSubscription);               
-                $order->payable_amount = decimal_format($totalTagPriceWithSubscription)+ $order->service_fee_percentage_amount- $loyalty_amount_saved??0.00;                
+
+        // $product->taxable_amount =  $taxable_amount;
+        $now = Carbon::now()->toDateTimeString();
+        $userid = Auth::user()->id;
+        $subscriptionInvoiceUser = SubscriptionInvoicesUser::with('features')->whereUserId($userid)->where('end_date', '>', $now)
+        ->orderBy('end_date', 'desc')->first();
+        if($subscriptionInvoiceUser){
+            $percentValue = $subscriptionInvoiceUser->features[0]['percent_value'];
+            if(!empty($percentValue)){
+                $calulateSubscription = ($percentValue / 100)* $response['order']['base_price'];
+                $subscriptionPercentage = $percentValue;
+                $subscriptionAmount = $calulateSubscription;
+                $totalTagPriceWithSubscription = $response['order']['base_price'] - $calulateSubscription;
+                $order->subscriptionPercentage = $percentValue;
+                $order->subscriptionAmount = decimal_format($calulateSubscription);
+                $order->payable_amount = decimal_format($totalTagPriceWithSubscription)+ $order->service_fee_percentage_amount- $loyalty_amount_saved??0.00;
             }
         }
         $order->wallet_amount_used = 0.00;
-        if(isset($order->orderDetail->wallet_amount_used)){           
-            $order->wallet_amount_used = isset($order->orderDetail)?decimal_format($order->orderDetail->wallet_amount_used):0.00;           
+        if(isset($order->orderDetail->wallet_amount_used)){
+            $order->wallet_amount_used = isset($order->orderDetail)?decimal_format($order->orderDetail->wallet_amount_used):0.00;
         }
         if(isset($order->orderDetail->scheduled_date_time)){
             $order->orderDetail->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);
@@ -1620,10 +1638,10 @@ class PickupDeliveryController extends BaseController{
             }
             if($order->orderDetail->total_amount > 0 && isset($preferences) && $preferences->tip_before_order == 1){
                 $response['tips'] = array(
-                    ['label' => '5%', 'value' => decimal_format(0.05 * $order->orderDetail->total_amount)],                    
-                    ['label' => '10%', 'value' => decimal_format(0.1 * $order->orderDetail->total_amount)],                    
-                    ['label' => '15%', 'value' => decimal_format(0.15 * $order->orderDetail->total_amount)]                    
-                );               
+                    ['label' => '5%', 'value' => decimal_format(0.05 * $order->orderDetail->total_amount)],
+                    ['label' => '10%', 'value' => decimal_format(0.1 * $order->orderDetail->total_amount)],
+                    ['label' => '15%', 'value' => decimal_format(0.15 * $order->orderDetail->total_amount)]
+                );
             }
             $response['order_details'] = $order->toArray();
             $response['order_driver_rating'] = $order_driver_rating;
