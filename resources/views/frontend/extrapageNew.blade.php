@@ -348,7 +348,7 @@
                                         @if(isset($vendor_registration_document->primary->slug) && !empty($vendor_registration_document->primary->slug))
                                             @if(strtolower($vendor_registration_document->file_type) == 'selector')
                                             <div class="col-md-6 mb-3" id="{{$vendor_registration_document->primary->slug??''}}Input">
-                                                <label for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}</label>
+                                                <label for="">{{$vendor_registration_document->primary ? __($vendor_registration_document->primary->name) : ''}}</label>
                                                 <select class="form-control {{ (!empty($vendor_registration_document->is_required))?'required':''}}" name="{{$vendor_registration_document->primary->slug}}"  id="input_file_selector_{{$vendor_registration_document->id}}">
                                                     <option value="" >{{__('Please Select '). ($vendor_registration_document->primary ? $vendor_registration_document->primary->name : '') }}</option>
                                                     @foreach ($vendor_registration_document->options as $key =>$value )
@@ -359,7 +359,7 @@
                                             </div>
                                             @else
                                                 <div class="col-md-6 mb-3" id="{{$vendor_registration_document->primary->slug??''}}Input">
-                                                    <label for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}</label>
+                                                    <label for="">{{$vendor_registration_document->primary ? __($vendor_registration_document->primary->name) : ''}}</label>
                                                     @if(strtolower($vendor_registration_document->file_type) == 'text')
                                                     <input id="input_file_logo_{{$vendor_registration_document->id}}" type="text" name="{{$vendor_registration_document->primary->slug}}" class="form-control {{ (!empty($vendor_registration_document->is_required))?'required':''}}">
                                                     <span class="invalid-feedback" id="{{$vendor_registration_document->primary->slug??''}}_error"><strong></strong></span>

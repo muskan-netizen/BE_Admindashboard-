@@ -517,9 +517,9 @@ class UserhomeController extends FrontController
                 
                 $this->loc_key = $this->loc_key.":hyperlocal:".$vendor_type.":".$client_preferences->client_code;
                 $banners = $this->getBannersForHomePage($client_preferences, 'banners', $latitude, $longitude);
-                    $cacheKey = $this->loc_key.":{$latitude}:{$longitude}";
+                $cacheKey = $this->loc_key.":{$latitude}:{$longitude}";
                     
-                    $find_key = $this->isPointInRadius($latitude, $longitude, $this->radius, $this->loc_key);
+                $find_key = $this->isPointInRadius($latitude, $longitude, $this->radius, $this->loc_key);
                 $mobile_banners = $this->getBannersForHomePage($client_preferences, 'mobile_banners', $latitude, $longitude);
             } else {
                 $this->loc_key = $this->loc_key.':'.$vendor_type.':'.$client_preferences->client_code;
@@ -533,6 +533,8 @@ class UserhomeController extends FrontController
 
             if ($this->additionalPreference['is_cache_enable_for_home'] == 1 && @$find_key['data']) {
                 $homeData = $find_key['data'];
+                // Logging the retrieved data
+             
                 echo $homeData;
                 exit;
             } else {
@@ -664,6 +666,7 @@ class UserhomeController extends FrontController
                     $this->storeLocations($locations,$html,$this->loc_key);
                 }else{
                     Redis::set($this->loc_key, json_encode($html));
+                
                     Redis::expire($this->loc_key, $this->cache_minutes);
                 }
 

@@ -1455,6 +1455,23 @@ ul.header-dropdown.d-none.d-sm-inline li {
 /*hotfix product page css*/
 
 @media (max-width:767px) {
+    body.al_body_template_one .categories_menu {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        width: max-content !important;
+    }
+    body.al_body_template_one .section-b-space .container .row .col-lg-3 >.dashboard-left {
+        position: fixed;
+        top: 0;
+        z-index:999;
+    }
+    .account-sidebar a {
+        font-size: 12px;
+    }
+    body.al_body_template_one .main-menu.al_template_one_menu {
+        background-color: #f5f5f5;
+    }
     .product_tag_filter {
         width: 100%;
         margin-left: 6px;
@@ -1578,5 +1595,7 @@ ul.header-dropdown.d-none.d-sm-inline li {
         top: 160px;
         max-width: 100%;
         z-index: 1;
+        right: -95px;
+        top: 35px !important;
     }
     }

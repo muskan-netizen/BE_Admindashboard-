@@ -5965,6 +5965,7 @@ body .status_box label {
         left: 0;
         /* background: var(--top-header-color) !important; */
         background: #fff;
+        /* background: var(--top-header-color) !important; */
         position: fixed;
         -webkit-transition: all .5s ease-in-out;
         -moz-transition: all .5s ease-in-out;
@@ -17140,12 +17141,17 @@ body .status_box label {
         }
 
         @media (max-width: 576px) {
-            .top-header .header-dropdown .mobile-account .onhover-show-div,
-            .top-header .header-dropdown .mobile-wishlist .onhover-show-div {
-                left: auto;
-                height: 100%;
-                max-height: 100%;
-                min-height: 125px;
+            .top-header .header-dropdown .mobile-account .onhover-show-div, .top-header .header-dropdown .mobile-wishlist .onhover-show-div {
+                    left: auto;
+                    height: 100%;
+                    max-height: 100%;
+                    min-height: 87px;
+                    width: auto !important;
+                    min-width: 96px;
+            }
+                
+            section.wrapper-main.py-lg-5.py-3.d-flex.align-items-center {
+                padding-top: 80px !important;
             }
             .onhover-dropdown:before {
                 right: 10px;
@@ -17207,6 +17213,11 @@ body .status_box label {
         }
 
         @media (max-width:767px) {
+
+            section.wrapper-main.pt-lg-3.alSectionTop.d-flex.align-items-center {
+                margin-top: 80px;
+            }
+
             .footer-theme .sub-title .contact-list i {
                 position: relative !important;
                 margin-right: 10px;
@@ -18999,4 +19010,3 @@ section#alTaxiBookingWrapper .address-form .pool_radio_controls.text-center labe
         line-height: 22px;
     }
 }
-

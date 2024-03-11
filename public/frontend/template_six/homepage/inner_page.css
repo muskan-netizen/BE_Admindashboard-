@@ -2282,7 +2282,7 @@ ol.breadcrumb {
 .radio-btns.long-radio input[type="radio"]+label .customCheckbox {
     width:100%;
     vertical-align: middle;
-    white-space: nowrap;
+    white-space: normal;
     border-radius: 50px;
     height: auto;
     line-height: normal;

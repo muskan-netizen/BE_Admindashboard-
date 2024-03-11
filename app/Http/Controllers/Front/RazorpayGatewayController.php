@@ -74,7 +74,8 @@ class RazorpayGatewayController extends FrontController
     }
 
     public function razorpayCompletePurchase(Request $request)
-    { 
+    {
+
         try {
             $user = Auth::user();
             $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
@@ -88,8 +89,20 @@ class RazorpayGatewayController extends FrontController
             $orderData = [
                 'amount'          => (int)$amount,
                 'currency'        => 'INR'
-            ];
-            $payment = $this->api->payment->fetch($request->razorpay_payment_id)->capture($orderData);            
+            ];   
+            
+            $payment = $this->api->payment->fetch($request->razorpay_payment_id);
+            // $payment = $this->api->payment->fetch($request->razorpay_payment_id)->capture($orderData);
+
+            // \Log::info('razor pa2222y status');
+            // \Log::info([$payment]);
+            // if($payment['status'] != 'captured') {
+            //     $payment = $this->api->payment->fetch($request->razorpay_payment_id)->capture($orderData);
+            //     \Log::info('razor paymen1111t22 status');
+            //     \Log::info([$payment]);
+            // }
+           
+
             // $capture = $payment->capture(['amount'=>$payment['amount']]);
             if ($payment['status'] == 'captured') {
                 $response =  $this->razorpayNotify($payment, $amount/100, $request, $orderData);
@@ -98,6 +111,7 @@ class RazorpayGatewayController extends FrontController
             }
             return $this->successResponse($response);
         } catch (\Exception $ex) {
+            \Log::info('error response'.$ex->getMessage().'---'.$ex->getLine());
             return $this->errorResponse($ex->getMessage(), 400);
         }
     }
@@ -113,11 +127,14 @@ class RazorpayGatewayController extends FrontController
                 $order->save();
                 $payment_exists = Payment::where('transaction_id', $transactionId)->first();
                 if (!$payment_exists) {
+                    $user = Auth::user();
+
                     $payment = new Payment();
                     $payment->date = date('Y-m-d');
                     $payment->order_id = $order->id;
                     $payment->transaction_id = $transactionId;
                     $payment->balance_transaction = $amount;
+                    $payment->user_id = $user->id;
                     $payment->type = 'cart';
                     $payment->save();
 
@@ -126,7 +143,6 @@ class RazorpayGatewayController extends FrontController
                     $orderController->autoAcceptOrderIfOn($order->id);
 
                     // Remove cart
-                    $user = Auth::user();
                     $cart = Cart::where('user_id',$user->id)->select('id')->first();
                     CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                     Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);

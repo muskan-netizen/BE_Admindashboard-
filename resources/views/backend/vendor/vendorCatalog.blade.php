@@ -84,6 +84,8 @@
 @endsection
 @php
     $getAdditionalPreference = getAdditionalPreference(['is_recurring_booking', 'is_long_term_service', 'square_enable_status']);
+    $productsNom = getNomenclatureName('Products', true);
+    $productsNom = ($productsNom=="Products")?__('Products'):__($productsNom);
 @endphp
 @section('content')
     <div class="container-fluid">
@@ -141,7 +143,7 @@
                                                     <span data-plugin="counterup"
                                                         id="total_earnings_by_vendors">{{ $product_count }}</span>
                                                 </h3>
-                                                <p class="text-muted font-15 mb-0">{{ __('Total Products') }}</p>
+                                                <p class="text-muted font-15 mb-0">{{ __('Total ') }} {{ __($productsNom)}}</p>
                                             </div>
                                         </div>
                                         <div class="col-sm-6 col-md-3 col-lg mb-3 mb-md-0">
@@ -151,7 +153,7 @@
                                                     <span data-plugin="counterup"
                                                         id="total_order_count">{{ $published_products }}</span>
                                                 </h3>
-                                                <p class="text-muted font-15 mb-0">{{ __('Published Products') }}</p>
+                                                <p class="text-muted font-15 mb-0">{{ __('Published ') }} {{ __($productsNom)}}</p>
                                             </div>
                                         </div>
                                         @if ($client_preference_detail->business_type != 'taxi')
@@ -173,7 +175,7 @@
                                                         <span data-plugin="counterup"
                                                             id="total_delivery_fees">{{ $new_products }}</span>
                                                     </h3>
-                                                    <p class="text-muted font-15 mb-0">{{ __('New Products') }}</p>
+                                                    <p class="text-muted font-15 mb-0">{{ __('New ') }} {{ __($productsNom)}}</p>
                                                 </div>
                                             </div>
                                             <div class="col-sm-6 col-md-3 col-lg mb-3 mb-md-0">
@@ -183,7 +185,7 @@
                                                         <span data-plugin="counterup"
                                                             id="total_delivery_fees">{{ $featured_products }}</span>
                                                     </h3>
-                                                    <p class="text-muted font-15 mb-0">{{ __('Featured Products') }}</p>
+                                                    <p class="text-muted font-15 mb-0">{{ __('Featured ') }} {{ __($productsNom)}}</p>
                                                 </div>
                                             </div>
                                         @endif

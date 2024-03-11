@@ -7,13 +7,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class AddonSet extends Model
 {
 	use SoftDeletes;
-	
+
 	protected $fillable = ['title','min_select','max_select','position','status','is_core','vendor_id', 'square_modifier_id'];
-	
+
     public function translation(){
 	    return $this->hasMany('App\Models\AddonSetTranslation' , 'addon_id', 'id')
 	    ->join('client_languages', 'addon_set_translations.language_id', 'client_languages.language_id')
-	    ->select('addon_set_translations.title', 'addon_set_translations.addon_id', 'addon_set_translations.language_id')->where('client_languages.is_active', 1); 
+	    ->select('addon_set_translations.title', 'addon_set_translations.addon_id', 'addon_set_translations.language_id')->where('client_languages.is_active', 1);
 	}
 
 	  public function primary(){
@@ -21,7 +21,7 @@ class AddonSet extends Model
 	  }
 
 	  public function option(){
-	    return $this->hasMany('App\Models\AddonOption', 'addon_id', 'id')->select('id', 'title', 'addon_id', 'position', 'price', 'square_modifier_option_id'); 
+	    return $this->hasMany('App\Models\AddonOption', 'addon_id', 'id')->select('id', 'title', 'addon_id', 'position', 'price', 'square_modifier_option_id');
 	  }
 
 	public function translation_one()
