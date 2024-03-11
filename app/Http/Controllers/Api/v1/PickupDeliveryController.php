@@ -132,6 +132,16 @@ class PickupDeliveryController extends BaseController{
                     $tax_amount = 0;
             if(!empty($products)){
                 foreach ($products as $key => $product) {
+                    $total_price = 0 ;
+                    $payable_amount= 0;
+                    $vendor_payable_amount=0;
+                    $taxable_amount = 0;
+                    $tax_amount = 0;
+                    $response['tips'] = [];
+                    $payable_amount= 0;
+                    $vendor_payable_amount=0;
+                    $taxable_amount = 0;
+                    $tax_amount = 0;
                     $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
                     $product->service_charge_amount  = 0.00;
                     if($product->vendor->fixed_service_charge)
