@@ -2148,4 +2148,67 @@ if (!function_exists('recurringCalculationFunction')) {
             return false;
         }
     }
+
+    if (!function_exists('productPriceAfterVendorDiscount')) 
+    {
+         function productPriceAfterVendorDiscount($vendorData,$product_discount_amount,$doller_compare,$cart)
+        {
+            $allProductsSum = 0;
+            $cart_products = CartProduct::with(['product.variant', 'addon.option'])
+            ->where('vendor_id', $vendorData->vendor_id)
+            ->where('cart_id', $vendorData->cart_id)
+            ->get();
+            foreach ($cart_products as $cart_product) {
+                // Calculate total price for the product variant
+                $total_price =$cart_product->pvariant->actual_price ?? $cart_product->pvariant->price??0;
+                // Calculate the total price of the product (variant price * quantity)
+                $allProductsSum += $total_price * $cart_product->quantity;
+                // Calculate the total price of the addons for the product
+                $product_addon_price = 0;
+                foreach ($cart_product->addon as $addon) {
+                    $addon_option = $addon->option;
+                    if ($addon_option) {
+                        $addon_price = $addon_option->price * $cart_product->quantity;
+                        $product_addon_price += $addon_price;
+                    }
+                }
+                // Add the total addon price to the overall sum
+                $allProductsSum += $product_addon_price;
+            }
+            $PromoDelete = 0;
+            $data['vendor_discount_amount'] = 0;
+            $data['deliveryfeeOnCoupon'] = 0;
+            if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) 
+            {
+                if ( $PromoDelete !=1) 
+                {
+                        $minimum_spend = 0;
+                        if (isset($vendorData->coupon->promo->minimum_spend)) {
+                            $minimum_spend = $vendorData->coupon->promo->minimum_spend * $doller_compare;
+                        }
+                        $maximum_spend = 0;
+                        if (isset($vendorData->coupon->promo->maximum_spend)) {
+                            $maximum_spend = $vendorData->coupon->promo->maximum_spend * $doller_compare;
+                        }
+                        if( ($minimum_spend <= $allProductsSum ) && ($maximum_spend >= $allProductsSum))
+                        {
+                                if ($vendorData->coupon->promo->promo_type_id == 2) {
+                                    $data['vendor_discount_amount'] = $vendorData->coupon->promo->amount;
+                                } else {
+                                    $data['vendor_discount_amount'] = ($product_discount_amount * $vendorData->coupon->promo->amount / 100);
+                                }
+                                if ($vendorData->coupon->promo->allow_free_delivery == 1) {
+                                    $data['deliveryfeeOnCoupon'] = 1;
+                                }
+                        }else{
+                            $cart->coupon()->delete();
+                            $vendorData->coupon()->delete();
+                            unset($vendorData->coupon);
+                           return $data;
+                        }
+                } 
+            }
+            return $data??0;
+        }
+    }
 }

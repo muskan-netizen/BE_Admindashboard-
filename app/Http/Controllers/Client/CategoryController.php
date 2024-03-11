@@ -33,6 +33,8 @@ class CategoryController extends BaseController
     public function index()
     {
 
+
+       
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $celebrity_check = ClientPreference::first()->value('celebrity_check');
 
@@ -56,13 +58,14 @@ class CategoryController extends BaseController
         }
 
         $categories = Category::with('translation_one','type')->where('id', '>', '1')->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
-
+      
         if ($celebrity_check == 0)
             $categories = $categories->where('type_id', '!=', 5);   # if celebrity mod off .
-
+          
         $categories = $categories->get();
         if ($categories) {
             $build = $this->buildTree($categories->toArray());;
+             
             $tree = $this->printTree($build);
         }
         $tags = Tag::with('primary')->latest()->get();
@@ -77,6 +80,8 @@ class CategoryController extends BaseController
             ->orderBy('is_primary', 'desc')->get();
         $addon_sets = AddonSet::with('option')->orderBy('id', 'desc')->get();
         $clientCurrency = ClientCurrency::select('currency_id')->where('is_primary', 1)->with('currency')->first();
+        
+       
         return view('backend.catalog.index')->with(['clientCurrency' => $clientCurrency, 'categories' => $categories, 'addon_sets' => $addon_sets ,'html' => $tree,  'languages' => $langs, 'variants' => $variants, 'brands' => $brands, 'build' => $build, 'tags'=>$tags,'facilties'=>$facilties,'client_languages'=>$langs, 'attributes'=>$attributes]);
     }
 
