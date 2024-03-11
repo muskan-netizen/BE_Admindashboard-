@@ -132,6 +132,16 @@ class PickupDeliveryController extends BaseController{
                     $tax_amount = 0;
             if(!empty($products)){
                 foreach ($products as $key => $product) {
+                    $total_price = 0 ;
+                    $payable_amount= 0;
+                    $vendor_payable_amount=0;
+                    $taxable_amount = 0;
+                    $tax_amount = 0;
+                    $response['tips'] = [];
+                    $payable_amount= 0;
+                    $vendor_payable_amount=0;
+                    $taxable_amount = 0;
+                    $tax_amount = 0;
                     $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
                     $product->service_charge_amount  = 0.00;
                     if($product->vendor->fixed_service_charge)
@@ -1323,8 +1333,9 @@ class PickupDeliveryController extends BaseController{
                     'dispatcher_status_option_id' =>  1,
                     'vendor_id' =>  $vendor]);
 
-                    if ($request->payment_option_id == 2){
-                        $wal =   $wallet->forceWithdrawFloat($order->payable_amount, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
+                    $ex_gateways_wallet = [4,36,40,41,22]; // stripe,mycash,userede,openpay,ccavenue
+                    if (in_array($order->payment_option_id, $ex_gateways_wallet )){
+                        $wal =   $wallet->forceWithdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
                     }
                 }
                 return $response;
