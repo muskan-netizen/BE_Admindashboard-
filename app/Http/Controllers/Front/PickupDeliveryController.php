@@ -222,7 +222,7 @@ class PickupDeliveryController extends FrontController{
 
         }
         // $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
-       
+
         $product->original_tags_price = decimal_format($tags_price['delivery_fee']);
         $product->tags_price = decimal_format($tags_price['delivery_fee']);
         if(!empty($request->rental_hour))
@@ -236,7 +236,7 @@ class PickupDeliveryController extends FrontController{
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
         $product->duration = decimal_format($tags_price['duration']);
         $product->min_tags_price = decimal_format($tags_price['min_delivery_fee']);
-        
+
         //for cab pooling
 
         $loyalty_amount_saved = 0;
@@ -791,7 +791,7 @@ class PickupDeliveryController extends FrontController{
                     'message' => 'Recurring Order placed successfully.'
                 ]);
             }
-             
+
             if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                 $data = [];
                 $order = $order_place['data'];
@@ -1442,10 +1442,10 @@ class PickupDeliveryController extends FrontController{
                     'dispatcher_status_option_id' =>  1,
                     'vendor_id' =>  $vendor]);
 
-                    if ($request->payment_option_id == 2){
-                        $wal =   $wallet->forceWithdrawFloat($order->payable_amount, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
+                    $ex_gateways_wallet = [4,36,40,41,22]; // stripe,mycash,userede,openpay,ccavenue
+                    if (in_array($order->payment_option_id, $ex_gateways_wallet )){
+                        $wal =   $wallet->forceWithdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
                     }
-                 return $response;
                 }
                 return $response;
             }
@@ -1457,10 +1457,7 @@ class PickupDeliveryController extends FrontController{
             }
     }
 
-
-
-
-      /**
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -1510,6 +1507,7 @@ class PickupDeliveryController extends FrontController{
 
     public function postVerifyPromoCode(Request $request){
         try {
+            $user = Auth::user();
             $validator = $this->validatePromoCode();
             if($validator->fails()){
                 return $this->errorResponse($validator->messages(), 422);
@@ -1519,11 +1517,28 @@ class PickupDeliveryController extends FrontController{
                 return response()->json(['error' => 'Invalid vendor id.'], 404);
             }
 
+
+
+
             $cart_detail = Promocode::where('id', $request->coupon_id)->first();
             if(!$cart_detail){
                 return $this->errorResponse('Invalid Promocode Id', 422);
             }
 
+            if($cart_detail->first_order_only == 1){
+                $orders_count = Order::where('user_id', $user->id)->count();
+                if($orders_count > 0){
+                    return $this->errorResponse('Coupon Code apply only first order.', 422);
+                }
+            }
+            $order_vendor_user_promo_count = OrderVendor::where(['coupon_id' => $request->coupon_id])->count();
+            if($order_vendor_user_promo_count >= $cart_detail->limit_total){
+                return $this->errorResponse(__('Coupon Code limit has been reached.'), 422);
+            }
+            $order_vendor_user_promo_count = OrderVendor::where(['user_id' => $user->id, 'coupon_id' => $request->coupon_id])->count();
+            if($order_vendor_user_promo_count >= $cart_detail->limit_per_user){
+                return $this->errorResponse(__('Coupon Code already applied.'), 422);
+            }
             if($cart_detail->promo_type_id == 2){
                 $cart_detail['new_amount'] = $cart_detail->amount;
                 if($cart_detail['new_amount'] < 0)
@@ -1537,7 +1552,7 @@ class PickupDeliveryController extends FrontController{
                 $cart_detail['currency_symbol'] = Session::get('currencySymbol');
             }
             return $this->successResponse($cart_detail, 'Promotion Code Used Successfully.', 201);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }

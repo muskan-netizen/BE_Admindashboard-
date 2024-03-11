@@ -65,40 +65,39 @@ trait Borzoe{
     }
 
     public function placeOrderToBorzoApi($vendor_id, $order_id){
-        $this->brozoConfig();
-        $order = Order::find($order_id);
-        $customer = User::find(auth()->id());
-        $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
-        $amountPay = $order->ordervendor->where('vendor_id',$vendor_id)->value('payable_amount')??0;
-        $vendor_details = Vendor::find($vendor_id);
-        $url = $this->api_url.'create-order';
-
-            $data = [
-                'matter' => 'Documents',
-                'points' => [
-                    [
-                        'address' => $vendor_details->address,
-                        'contact_person' => [
-                            'phone' => $vendor_details->phone_no,
+                $this->brozoConfig();
+                $order = Order::find($order_id);
+                $customer = User::findOrFail($order->user_id);
+                $cus_address = UserAddress::where('id', $order->address_id)->orderBy('is_primary', 'desc')->first();
+                $amountPay = $order->ordervendor->where('vendor_id',$vendor_id)->value('payable_amount')??0;
+                $vendor_details = Vendor::findOrFail($vendor_id);
+                $url = $this->api_url.'create-order';
+                    $data = [
+                        'matter' => 'Documents',
+                        'points' => [
+                            [
+                                'address' => $vendor_details->address,
+                                'contact_person' => [
+                                    'phone' => $vendor_details->phone_no,
+                                ],
+                            ],
+                            [
+                                'address' => $cus_address->address,
+                                'contact_person' => [
+                                    'phone' => $customer->phone_number,
+                                ],
+                            ],
                         ],
-                    ],
-                    [
-                        'address' => $cus_address->address,
-                        'contact_person' => [
-                            'phone' => $customer->phone_number,
-                        ],
-                    ],
-                ],
-            ];
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-            curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-DV-Auth-Token: '.$this->api_key.'']);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            $response = curl_exec($ch);
-            curl_close($ch);
-            return $response;
+                    ];
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $url);
+                    curl_setopt($ch, CURLOPT_POST, 1);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-DV-Auth-Token: '.$this->api_key.'']);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    $response = curl_exec($ch);
+                    curl_close($ch);
+                    return $response;
     }
 
     public function cancleOrderToBorzoApi($vendor_id, $order_id){
