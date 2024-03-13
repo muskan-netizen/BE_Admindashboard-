@@ -1422,8 +1422,6 @@ trait CartManagerV2
                             $subscription_discount_vendor   = $subscription_discount_arr['vendor'];
                             $subscription_discount_delivery = $subscription_discount_arr['delivery_discount'];
                         }
-
-                        // \Log::info($deliveryfee_ifnot_discounted);
                         // add total delivery fee
                         // if($vendorData->vendor->delivery_charges_tax_id)
                         $total_deliver_charges +=  $deliveryfee_ifnot_discounted;
@@ -1434,7 +1432,7 @@ trait CartManagerV2
                         $newRentalPrice = $payable_amount;
 
 
-                        $payable_amount = $sub_total_vendor + $deliveryfee_ifnot_discounted + $security_amount;
+                        $payable_amount = $payable_amount + $deliveryfee_ifnot_discounted + $security_amount;
                         // $subtotal_amount = $sub_total + $deliveryfee_ifnot_discounted;
                         $subtotal_amount = $payable_amount;
                         $payable_amount = $payable_amount + $taxable_amount;
@@ -1461,6 +1459,7 @@ trait CartManagerV2
                             $rental_price = $rental_price + $total_service_fee;
                         }
 
+                        \Log::info($payable_amount);
 
 
                 $vendorData->coupon_amount_used = decimal_format($coupon_amount_used);
@@ -1773,7 +1772,7 @@ trait CartManagerV2
             $cart->address_id = $address_id??'';
             $cart->bid_total_discount = $bid_total_discount??0;
             $total_gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount + $total_container_charges);
-            $gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount + $total_container_charges);
+          //  $gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount + $total_container_charges);
             $other_taxes = array_sum($taxCharges);
             $other_taxes_string = 'tax_fixed_fee:' . $taxCharges['total_fixed_fee_tax'] . ',tax_service_charges:' . $taxCharges['total_service_fee'] . ',tax_delivery_charges:' . $taxCharges['deliver_fee_charges'] . ',tax_markup_fee:' . $taxCharges['total_markup_fee_tax'] . ',product_tax_fee:' . $total_taxable_amount;;
 
