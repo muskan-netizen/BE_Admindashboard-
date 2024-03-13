@@ -1459,8 +1459,6 @@ trait CartManagerV2
                             $rental_price = $rental_price + $total_service_fee;
                         }
 
-                        \Log::info($payable_amount);
-
 
                 $vendorData->coupon_amount_used = decimal_format($coupon_amount_used);
                 $vendorData->service_fee_percentage_amount = decimal_format($vendor_service_fee_percentage_amount);
