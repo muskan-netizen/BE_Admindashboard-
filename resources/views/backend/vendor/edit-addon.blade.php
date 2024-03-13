@@ -71,7 +71,7 @@
                 </table>
             </div>
             <div class="col-md-12">
-                <button type="button" class="btn btn-info waves-effect waves-light addOptionRow-edit-Addon">{{ __('Add Option') }}</button>
+                <button type="button" class="btn btn-info waves-effect waves-light addOptionRow-edit">{{ __('Add Option') }}</button>
             </div>
         </div>
         <div class="row">
