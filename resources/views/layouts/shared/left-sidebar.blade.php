@@ -198,11 +198,6 @@
                                                 </a>
                                             </li>
                                             @if(@auth()->user()->can('accounting-orders') || Auth::user()->is_superadmin == 1)
-                                                @php
-                                                    $ordermenu = getNomenclatureName('Orders', true);
-                                                    $ordermenulabel = ($ordermenu=="Orders")?__('Orders'):__($ordermenu);
-
-                                                @endphp
                                                 <li>
                                                     <a href="{{route('account.orders')}}">{{ __($ordermenulabel) }}</a>
                                                 </li>
