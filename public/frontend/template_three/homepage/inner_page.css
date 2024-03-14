@@ -411,6 +411,12 @@ body .create_box a.btn.btn-solid.mt-2 {
     background: var(--theme-deafult)
 }
 
+.al_body_template_three .payment-promo-container {
+    margin-top: 15px;
+    position: relative;
+    bottom: unset;
+    width: 100%;
+}
 .step-indicator .step-icon-order {
     height: 30px;
     width: 30px;
@@ -2679,6 +2685,7 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
         position: absolute;
         width: 400px;
         top: 50px;
+        overflow-y: auto;
     }
 }
 

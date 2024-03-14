@@ -21,10 +21,15 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="page-title-box">
-
                 @php
-                $vendors = getNomenclatureName('vendors', true);
-                $newvendors = ($vendors === "vendors") ? __('vendors') : $vendors ;
+                    $vendors = getNomenclatureName('vendors', true);
+                    $newvendors = ($vendors === "vendors") ? __('vendors') : $vendors ;
+                    $ordersNom = getNomenclatureName('Orders', true);
+                    $ordersNom = ($ordersNom=="Orders")?__('Orders'):__($ordersNom);
+                    $productsNom = getNomenclatureName('Products', true);
+                    $productsNom = ($productsNom=="Products")?__('Products'):__($productsNom);
+                    $OpenNom = getNomenclatureName('Open', true);
+                    $OpenNom = ($OpenNom=="Open")?__('Open'):__($OpenNom);
                 @endphp
                 @php
                     $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'gofrugal_enable_status']);
@@ -75,7 +80,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                                     <i class="mdi mdi-store-24-hour text-primary mdi-24px"></i>
                                     <span data-plugin="counterup" id="total_order_count">{{$available_vendors_count}}</span>
                                 </h3>
-                                <p class="text-muted font-15 mb-0"> {{ __('Open') }} {{getNomenclatureName('vendors', true)}}</p>
+                                <p class="text-muted font-15 mb-0"> {{ __($OpenNom) }} {{getNomenclatureName('vendors', true)}}</p>
                             </div>
                         </div>
                         <div class="col-6 col-md-3 mb-3 mb-md-0">
@@ -84,7 +89,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                                     <i class="fas fa-money-check-alt text-primary"></i>
                                     <span data-plugin="counterup" id="total_cash_to_collected">{{$vendors_product_count}}</span>
                                 </h3>
-                                <p class="text-muted font-15 mb-0">{{ __('Total Products') }}</p>
+                                <p class="text-muted font-15 mb-0">{{ __('Total '.$productsNom) }}</p>
                             </div>
                         </div>
                         <div class="col-6 col-md-3 mb-3 mb-md-0">
@@ -93,7 +98,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                                     <i class="fas fa-money-check-alt text-primary"></i>
                                     <span data-plugin="counterup" id="total_delivery_fees">{{$vendors_active_order_count}}</span>
                                 </h3>
-                                <p class="text-muted font-15 mb-0">{{ __('Total Active Orders') }}</p>
+                                <p class="text-muted font-15 mb-0">{{ __('Total Active '.$ordersNom) }}</p>
                             </div>
                         </div>
                     </div>
@@ -153,9 +158,9 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                                                     <th>{{ __('Offers') }}</th>
                                                     <th class="text-center">{{ __('Can Add') }} <br> {{ __('Category') }}</th>
                                                     <th class="text-center">{{ __('Commission') }} <br> {{ __('Percentage') }}</th>
-                                                    <th class="text-center">{{ __('Products') }}</th>
-                                                    <th class="text-center">{{ __('Orders') }}</th>
-                                                    <th class="text-center">{{ __('Active') }} <br> {{ __('Orders') }}</th>
+                                                    <th class="text-center">{{ __(getNomenclatureName('Products', true)) }}</th>
+                                                    <th class="text-center">{{ __(getNomenclatureName('Orders', true)) }}</th>
+                                                    <th class="text-center">{{ __('Active') }} <br> {{ __(getNomenclatureName('Orders', true)) }}</th>
                                                     {{-- <th class="text-center">{{ __('Manager') }}</th> --}}
                                                     <th class="text-center">{{ __('Action') }}</th>
                                                 </tr>

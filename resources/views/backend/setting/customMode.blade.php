@@ -38,7 +38,7 @@
             </span>
         </div>
     </div>
-   
+
 {{-- @endif --}}
  <div class="col-md-4">
         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
@@ -904,5 +904,19 @@
         </span>
         <input type="hidden" @if (@$getAdditionalPreference['cart_cms_page_status'] == 1) value="1" @else value="0" @endif
             name="cart_cms_page_status" id="cart_cms_page_status" />
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="document_report_switch" class="mr-2 mb-0">{{ __('Upload document report by vendor') }}<small
+                class="d-block pr-5">{{ __('Enable upload report in vendor.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="document_report"
+                id="document_report_switch" class="form-control checkbox_change"
+                data-className="document_report" data-color="#43bee1"
+                @if (getAdditionalPreference(['document_report'])['document_report']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (getAdditionalPreference(['document_report'])['document_report'] == 1) value="1" @else value="0" @endif
+            name="document_report" id="document_report" />
     </div>
 </div>
