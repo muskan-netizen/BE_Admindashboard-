@@ -889,13 +889,13 @@ class CartController extends BaseController
                 }
                 else {
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
-                       
+
                         if ($address_id > 0) {
                             $serviceArea = $vendorData->vendor->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
                                 $query->select('vendor_id')
                                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
                             })->where('id', $vendorData->vendor_id)->get();
-                           
+
                         }
                     }
                 }
@@ -1233,7 +1233,7 @@ class CartController extends BaseController
                                             $coupon_product_discount = $coupon_product_discount + $opt_quantity_price;
                                     }
                                 }
-                                $order_sub_total = $order_sub_total + $prod->pvariant->price;
+                                $order_sub_total = $order_sub_total + $prod->pvariant->price* $prod->quantity;
                             }else{
                                 $order_sub_total = round($order_sub_total  + $prod->pvariant->price*$prod->quantity,2);
                             }
@@ -1282,7 +1282,7 @@ class CartController extends BaseController
                                         'sku' => ucfirst($prod->pvariant->sku),
                                     );
                                 }
-                            }else{  
+                            }else{
                                  //Find vendor Product Discount here
                                  $productPriceAfterVendorDiscount  = productPriceAfterVendorDiscount($prod,$quantity_price,$clientCurrency->doller_compare,$cart);
                                  $quantity_price = $quantity_price - $productPriceAfterVendorDiscount['vendor_discount_amount'];
@@ -1511,8 +1511,8 @@ class CartController extends BaseController
                         $taxable_amount -= $discount;
                     }*/
                 }
-              
-                $vendorData->isDeliverable = 1;  
+
+                $vendorData->isDeliverable = 1;
                 if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)&&($action == 'delivery')) {
                     if (isset($serviceArea)) {
                         if ($serviceArea->isEmpty()) {
@@ -1532,7 +1532,7 @@ class CartController extends BaseController
                     $vendorData->delivery_types = '';
                  }
             } else{
-             
+
                 if (isset($serviceArea)) {
                     if ($serviceArea->isEmpty()) {
                         $vendorData->isDeliverable = 0;
@@ -1543,7 +1543,7 @@ class CartController extends BaseController
                     }
                 }
              }
-                   
+
 
                 $payable_amount = $payable_amount + $vendorTotalDeliveryFee ;
 
@@ -1646,7 +1646,7 @@ class CartController extends BaseController
                     $totalFreeDeliveryCharges +=$vendorTotalDeliveryFee;
                     $vendorTotalDeliveryFee = 0;
                 }
-              
+
                 $totalDeliveryCharges+=$vendorTotalDeliveryFee;
 
             //All other tax calculations
@@ -1847,8 +1847,8 @@ class CartController extends BaseController
             ['label' => 'Container fee tax', 'value' => decimal_format($container_charges_tax)],
             ['label' => "Total ".@$taxData[0]['identifier']." amount", 'value' => decimal_format($total_taxable_amount)]
         );
-      
-        
+
+
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);
         $cart->total_markup_charges = decimal_format($total_markup_charges);
@@ -1911,15 +1911,15 @@ class CartController extends BaseController
         // if(!empty($total_service_fee)){
         //     $cart->total_payable_amount  += $total_service_fee;
         // }
-     
 
-      
+
+
 
         // if(!empty($totalDeliveryCharges)){
         //     $cart->total_payable_amount  += $totalDeliveryCharges;
         // }
 
-        
+
         $wallet_amount_used = 0;
         if (isset($user)) {
             if ($user->balanceFloat > 0) {
@@ -1988,7 +1988,7 @@ class CartController extends BaseController
         }
 
         $total_payable_amount_calc_tip = $cart->total_payable_amount - $total_taxable_amount;
-        
+
         $cart->tip = array(
             ['label' => '5%', 'value' => decimal_format(0.05 * $total_payable_amount_calc_tip)],
             ['label' => '10%', 'value' => decimal_format(0.1 * $total_payable_amount_calc_tip)],
@@ -1999,7 +1999,7 @@ class CartController extends BaseController
             $cart->total_payable_amount = $rental_price;
         }
 
-       
+
         return $cart;
         }catch(\Exception $ex){
             return [];
