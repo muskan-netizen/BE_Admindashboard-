@@ -410,6 +410,7 @@ class BaseController extends Controller{
                         ->orderBy('categories.parent_id', 'asc')
                         ->whereNull('categories.vendor_id')
                         ->withCount('products')
+                        ->with('products','products.media.image')
                         ->orderBy('categories.position', 'asc')
                         ->groupBy('id');
 
@@ -426,7 +427,9 @@ class BaseController extends Controller{
         if($categories){
             $categories = $this->buildTree($categories->toArray());
         }
+
         return $categories;
+        
     }
 
     public function subCategoryNav($lang_id, $vends=[],$type = 'delivery', $cid) {

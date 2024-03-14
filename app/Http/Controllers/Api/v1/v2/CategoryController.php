@@ -257,6 +257,7 @@ class CategoryController extends BaseController
             }
             return $vendorData;
         } elseif (strtolower($type) == 'subcategory') {
+            
             $category_details = [];
             $category_list = Category::with([
                 'tags', 'type'  => function ($q) {
@@ -312,17 +313,17 @@ class CategoryController extends BaseController
                 ->join('product_translations', 'product_translations.product_id', '=', 'products.id') // Or whatever the join logic is
                 ->withCount('OrderProduct');
             
-                $sess_vendors = [];
-                if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                    $user = Auth::user();
-                    $sess_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
-                }
-                if(!empty($ses_vendors)){
-                    $vendor_ids = $sess_vendors;
-                }else{
-                    $vendor_ids = $vendors;
-                }
-                $products = $products->whereIn('products.vendor_id', $vendor_ids);
+                // $sess_vendors = [];
+                //  if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                //      $user = Auth::user();
+                //      $sess_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
+                // }
+                // if(!empty($ses_vendors)){
+                //     $vendor_ids = $sess_vendors;
+                // }else{
+                //     $vendor_ids = $vendors;
+                // }
+                $products = $products->whereIn('products.vendor_id', $vendors);
                 
             $products = $products->orderBy('product_translations.title', 'asc');
             
