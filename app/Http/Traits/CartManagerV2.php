@@ -1434,7 +1434,7 @@ trait CartManagerV2
                         $newRentalPrice = $payable_amount;
 
 
-                        $payable_amount = $sub_total_vendor + $deliveryfee_ifnot_discounted + $security_amount;
+                        $payable_amount = $payable_amount + $deliveryfee_ifnot_discounted + $security_amount;
                         // $subtotal_amount = $sub_total + $deliveryfee_ifnot_discounted;
                         $subtotal_amount = $payable_amount;
                         $payable_amount = $payable_amount + $taxable_amount;
@@ -1773,7 +1773,7 @@ trait CartManagerV2
             $cart->address_id = $address_id??'';
             $cart->bid_total_discount = $bid_total_discount??0;
             $total_gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount + $total_container_charges);
-            $gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount + $total_container_charges);
+            // $gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount + $total_container_charges);
             $other_taxes = array_sum($taxCharges);
             $other_taxes_string = 'tax_fixed_fee:' . $taxCharges['total_fixed_fee_tax'] . ',tax_service_charges:' . $taxCharges['total_service_fee'] . ',tax_delivery_charges:' . $taxCharges['deliver_fee_charges'] . ',tax_markup_fee:' . $taxCharges['total_markup_fee_tax'] . ',product_tax_fee:' . $total_taxable_amount;;
 
@@ -1788,7 +1788,7 @@ trait CartManagerV2
             $cart->dropoffSlotsCnt = count((array)$dropoffSlots);
             $cart->total_service_fee = decimal_format($total_service_fee);
             $cart->loyalty_amount = decimal_format($loyalty_amount_saved);
-            $gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount - $cart->total_service_fee + $total_container_charges);
+            $gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $wallet_amount_used - $total_taxable_amount - $cart->total_service_fee + $total_container_charges);
             $cart->gross_amount = ($gross_amount < 0) ? decimal_format(0) : decimal_format($gross_amount);
             $cart->total_gross_amount = ($total_gross_amount < 0) ? decimal_format(0) : decimal_format($total_gross_amount);
             $cart->new_gross_amount = decimal_format($total_payable_amount + $total_discount_amount);
