@@ -23,6 +23,7 @@ class PermissionMiddleware
                 $checkPermissionEnable = @getAdditionalPreference(['is_role_and_permission_enable'])['is_role_and_permission_enable'];
                 if($checkPermissionEnable)
                 {
+                   
                         $guard = $guard ?? config('auth.defaults.guard');
                         $user = auth()->user();
                         $authGuard = app('auth')->guard($guard);
@@ -34,11 +35,14 @@ class PermissionMiddleware
                         $check = explode('@',$pageUrl);
                         $page = $check[0];
                         $permissions = [];
+                        
+                      
                         if(isset($permissionArray[$page]) && count($permissionArray[$page])>0)
                         {
                             $permissions =  $permissionArray[$check[0]];
                         }else{
-                            if(@$user->is_superadmin || @$user->is_admin){
+                            if(@$user->is_superadmin=1 || @$user->is_admin=1){
+                                Log::info('inside');
                                 return $next($request);
                             }
                             throw UnauthorizedException::forPermissions($permissions);
@@ -60,6 +64,7 @@ class PermissionMiddleware
     public function permissionUser($user)
     {
         $permissionArray = array();
+      
         foreach ($user->roles as $role) {
             foreach ($role->permissions as $key=> $perm) {
                 $permissionArray[$perm->controller][] = $perm->name;
