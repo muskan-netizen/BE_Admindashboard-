@@ -1046,15 +1046,6 @@ $timezone = Auth::user()->timezone;
                 </p>
                 @endif
             </div>
-
-            @if(!empty($order->dispatch_traking_url))
-            <div class="card-body">
-                <h4 class="header-title mb-3">{{ __('Track Order') }}</h4>
-                <a href="{{ $order->dispatch_traking_url }}" target="_blank">
-                    {{ $order->dispatch_traking_url }}
-                </p>
-            </div>
-            @endif
             @if ($getAdditionalPreference['blockchain_route_formation'] == 1)
 
             <div class="card-body">
