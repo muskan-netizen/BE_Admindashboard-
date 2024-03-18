@@ -4,6 +4,7 @@
     var idealBank = {};
     var ajaxCall = 'ToCancelPrevReq';
     var credit_wallet_url = "{{route('user.creditWallet')}}";
+    var payment_paypal_transaction = "{{route('payment.paypal.transaction')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var create_payphone_url = "{{route('payphone.createHash')}}";
@@ -26,6 +27,7 @@
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
     var pyment_totalpay_url= "{{ route('make.payment') }}";
+    var payment_thawani_url= "{{ route('pay-by-thawanipg') }}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var wallet_payment_options_url = "{{route('wallet.payment.option.list')}}";
     var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";

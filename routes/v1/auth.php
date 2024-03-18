@@ -161,7 +161,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('payment/sdk_complete/{gateway?}','Api\v1\PaymentOptionController@sdkResponsePayment');
         Route::post('payment/sdk_failed/{gateway?}','Api\v1\PaymentOptionController@sdkFailedPayment');
-
         //azulpay
         Route::match(['get','post'],'payment/azulpay','Api\v1\AzulPaymentController@beforePayment');
         Route::get('user/get-user-cards','Api\v1\ProfileController@getUserCards');
@@ -181,7 +180,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('order/vendorReached', 'Api\v1\OrderController@sendVendorReachedLocation');
 
         Route::post('user/saveVenderBankDetails', 'Api\v1\VendorController@saveVenderBankDetails');
-        
+
          // Notification Api
          Route::get('notification-list', 'Api\v1\OrderController@notificationList');
          Route::post('delete-notification', 'Api\v1\OrderController@deleteNotification');
@@ -192,7 +191,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('get-card-details', 'Api\v1\CardController@cardDetails');
         Route::post('delete-card', 'Api\v1\CardController@deleteCard');
 
-        // Stripe Customer Card Saved Routes  
+        // Stripe Customer Card Saved Routes
         Route::post('save-card', 'Api\v1\StripeController@saveCardStripe');
         Route::post('payment-intent', 'Api\v1\StripeGatewayController@createPaymentIntent');
 

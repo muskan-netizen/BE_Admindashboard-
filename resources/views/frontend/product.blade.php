@@ -110,7 +110,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 }
 
 
-  
+
     </style>
 
 @endsection
@@ -345,15 +345,15 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             @endif
                                             @endif
                                         </div>
-                                        
+
                                     @if(!empty($product->translation) && isset($product->translation->first()->body_html))
                                         <div class="border-product al_disc">
                                             <h6 class="product-title">{{__('Product Details')}}</h6>
-                                            
+
                                             <?php
                                             $content = strip_tags($product->translation->first()->body_html); // Strip HTML tags
                                             $maxContentLength = 200; // Set the maximum length (adjust as needed)
-                                            
+
                                             if (strlen($content) > $maxContentLength) {
                                                 $content = substr($content, 0, $maxContentLength) . '...';
                                                 $fullContent = $product->translation->first()->body_html;
@@ -362,7 +362,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 $readMore = false;
                                             }
                                             ?>
-                                            
+
                                             <p>
                                                 <span id="productContent"><?= $content ?></span>
                                                 @if ($readMore)
@@ -371,8 +371,8 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                   </span>
                                                 @endif
                                               </p>
-                                              
-                                              
+
+
 
                                         </div>
                                     @endif
@@ -394,14 +394,14 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     @endif
                                     @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
 
-                                     
+
 
                                      @if($product->category->categoryDetail->type_id == 13)
                                      <div class="border-product al_disc">
                                         <h6 class="product-title">{{__('Price')}}</h6>
                                         <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->price)}}</p>
                                     </div>
-                                     
+
                                      @endif
                                      @if($product->category->categoryDetail->type_id == 10)
 
@@ -420,10 +420,10 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                         </div>
                                     </div>
                                      @endif
-                               
-                                 
+
+
                                     @endif
-                                        
+
                                         @if( is_category_p2p($product->category) || is_attribute_enabled())
                                             @if( !empty($attr_array) )
                                                 @foreach($attr_array as $attr_key => $attr_val)
@@ -452,7 +452,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                             <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a> */ ?>
                                                             <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}"><i class="fa fa-comments" aria-hidden="true"></i></a>
                                                             {{-- {{__('Chat')}} --}}
-                                                        
+
                                                     @endif
                                                     @if(getAdditionalPreference(['call_button'])['call_button'])
                                                         <a class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></a>
@@ -469,7 +469,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
 
                                             </div>
                                         @endif
-                                       
+
                                         @if(!empty($product->variantSet))
                                             @include('frontend.product-part.product-variant')
                                         @endif
@@ -481,15 +481,17 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             <input type="text" class="form-control" name="booking_availability" id="range-datepicker" placeholder="{{date('Y-m-d')}}">
                                             @endif
                                         </div>
-                                        
+
 
                                             @if($product->is_recurring_booking == 1)
                                                  @include('frontend.product-part.recurring-booking')
                                             @endif
-                                            @if(@getAdditionalPreference(['is_rental_weekly_monthly_price'])['is_rental_weekly_monthly_price'] && $product->category->categoryDetail->type_id == 10 && Session::get('vendorType') == 'rental')
+                                            @if(@getAdditionalPreference(['is_rental_weekly_monthly_price'])==1)
                                                 @include('frontend.product-part.booking-slot-p2p-rental')
                                             @elseif($product->category->categoryDetail->type_id == 10 && Session::get('vendorType') == 'car_rental')
                                                 @include('frontend.product-part.booking-slot')
+                                                @elseif($product->category->categoryDetail->type_id == 10 && Session::get('vendorType') == 'rental')
+                                                @include('frontend.product-part.booking')
                                             @endif
 
 
@@ -884,9 +886,9 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 </li>
                                                 @endif
 
-                                                @if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'] && 
+                                                @if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'] &&
                                                 (in_array($product->category->category_id,getVendorAdditionalPreference($product->vendor_id,'compare_categories'))))
-                                                
+
                                                 <li class="nav-item ml-3"><a class="nav-link {{(count($rating_details)>0)?'':'active'}}" id="compare-product-tab" data-toggle="tab" href="#compare-product" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Compare products')}}</a>
                                                     <div class="material-border"></div>
                                                 </li>
@@ -915,7 +917,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                                     </div>
                                                                 </div>
                                                                 <div class="star review-author">
-                                                                    <p> 
+                                                                    <p>
                                                                         <i class="fa fa-star{{ $rating->rating >= 1 ? '' : '-o' }}" aria-hidden="true"></i>
                                                                         <i class="fa fa-star{{ $rating->rating >= 2 ? '' : '-o' }}" aria-hidden="true"></i>
                                                                         <i class="fa fa-star{{ $rating->rating >= 3 ? '' : '-o' }}" aria-hidden="true"></i>
@@ -1499,7 +1501,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
              var name = $(this).find(".changeVariant").attr("vid");
             $(`.var_${name}`).removeClass("radio-active");
             $(this).children().last().addClass("radio-active");
- 
+
         });
     });
 </script>
@@ -1513,7 +1515,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     var add_to_cart_url = "{{ route('addToCart') }}";
     $(document).on('click', '.changeVariant', function() {
         var $this = $(this);
-         
+
         // var data_id = $(this).attr('data-variant-id');
         // // Set session variable
         // sessionStorage.setItem('selected_variant', data_id);
@@ -1569,19 +1571,19 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
             },
             success: function(response) {
                 if(response.status == "Success"){
-                    if(response.html != ''){
-                        $("#variant_options").html('');
-                        $("#variant_options").html(response.html);
-                        $('#prod_variant_id').val(response.selected_variant.product_variant_id);                     
-                    }
+                    // if(response.html != ''){
+                    //     $("#variant_options").html('');
+                    //     $("#variant_options").html(response.html);
+                        $('#prod_variant_id').val(response.selected_variant.product_variant_id);
+                    //}
 
                     if(response.selected_variant.price != null){
                         let price = parseFloat(response.selected_variant.price);
-                        let compare_at_price = parseFloat(response.selected_variant.compare_at_price);  
+                        let compare_at_price = parseFloat(response.selected_variant.compare_at_price);
                         $('.product_fixed_price').html(price.toFixed(2));
                         $('.product_original_price').html(compare_at_price.toFixed(2));
                     }
-                   
+
                 }
                 // Handle the successful response
             },
@@ -1672,7 +1674,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     //         },
     //     });
     // }
-    
+
     function checkAddOnPrice()
     {
         price  = 0;
@@ -1744,9 +1746,9 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
 
 
         var enableDates = {!! $productAvailability !!};
-     
-        
-        
+
+
+
         if (typeof enableDates === 'string') {
             enableDates = enableDates.split(',').map(function(dateString) {
                 return dateString.trim();
@@ -1766,9 +1768,9 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                 const startDate = selectedDates[0];
                 const endDate = selectedDates[selectedDates.length - 1];
                 const days = Math.round((endDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
-                
 
-              
+
+
                 let dailyRate;
                 if (days < 7) {
                     dailyRate = {{$product->variant[0]->price}};
@@ -1779,7 +1781,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                 }
                 const totalAmount = days * dailyRate ;
 
-             
+
                 // Update values in the template
                 $(".summary-box").show();
                 $(".days-count").text(days);
@@ -1896,8 +1898,8 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                 $(this).find('img').addClass("active");
             });
         });
-        
-        
+
+
         $(document).on("click",".color_name",function(){
         	if($(this).hasClass("ellipsis")){
         		$(this).removeClass("ellipsis");

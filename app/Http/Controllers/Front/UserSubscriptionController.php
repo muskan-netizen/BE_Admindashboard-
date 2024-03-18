@@ -189,7 +189,7 @@ class UserSubscriptionController extends FrontController
                                 ->where('user_id', Auth::user()->id)
                                 ->where('end_date', '>=', $now )
                                 ->orderBy('end_date', 'desc')->first();
-        if( ($userActiveSubscription) && ($userActiveSubscription->plan->slug != $slug) ){
+        if( ($userActiveSubscription) && isset($userActiveSubscription->plan) && ($userActiveSubscription->plan->slug != $slug) ){
             return $this->errorResponse(__('You cannot buy two subscriptions at the same time'), 402);
         }
         return $this->successResponse('', 'Processing...');

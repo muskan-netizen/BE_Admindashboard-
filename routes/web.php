@@ -58,3 +58,9 @@ Route::get('/switch/admin/language',function(Request $request){
 });
 
 Route::get('/share','HomeController@share')->name('share_link');
+
+Route::get('/manifest', function () {
+
+    return response()->json(config('manifest'));
+});
+

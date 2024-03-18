@@ -36,11 +36,14 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::any('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
 	Route::any('webhook/ship-rocket', 'ShiprocketController@shiprocketWebhook')->name('webshiprocket');
 	Route::any('webhook/dunzo', 'DunzoController@dunzoWebhook')->name('dunzoWebhook');
+	Route::any('webhook/d4bdunzo','D4BDunzoController@d4bdunzoWebhook')->name('d4bdunzoWebhook');
 	Route::any('webhook/ahoy', 'AhoyController@ahoyWebhook')->name('ahoyWebhook');
 	Route::any('webhook/roadie', [RoadieController::class, 'roadieWebhook'])->name('roadieWebhook');
 	Route::get('webhook/user_rating', 'Front\UserRatingController@userRatingWebhook')->name('user_rating_webhook');
     Route::any('livee/success','LiveePaymentController@afterPayment')->name('livee.payment');
     Route::any('webhook/success-page','Front\MpesaSafariController@successPage')->name('safari.payment');
+    Route::any('webhook/borzoe', 'Client\BorzoeDeliveryController@borzoeWebhook')->name('borzoeWebhook');
+
 
 	// order dispatcher order web hooks
 	Route::get('dispatch-order-status-update/{id?}', 'Front\DispatcherController@dispatchOrderStatusUpdate')->name('dispatch-order-update'); // Order Status update Dispatch
@@ -96,6 +99,7 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//lalMoves Test Route
 	Route::match(['get', 'post'], 'order/lalamoves/quotation', 'Front\LalaMovesController@quotation')->name('order.lalamoves.quotation');
+	Route::match(['get','post'],'order/d4bdunzo/quotation','Front\D4BDunzoController@quotation')->name('order.d4bdunzo.quotation');
 
 	Route::match(['get', 'post'], 'order/lalamoves/place-order', 'Front\LalaMovesController@placeOrder')->name('order.lalamoves.place_order');
 
@@ -164,6 +168,14 @@ Route::group(['middleware' => ['domain']], function () {
 	// Mobbex
 	Route::post('payment/mobbex', 'Front\MobbexGatewayController@mobbexPurchase')->name('payment.mobbexPurchase');
 	Route::post('payment/mobbex/notify', 'Front\MobbexGatewayController@mobbexNotify')->name('payment.mobbexNotify');
+
+
+	//icici payment routes
+	Route::post('payment/gateway/icici', 'Front\IciciPaymentController@payByIcici')->name('payment.payByIcici');
+	Route::post('payment/webhook/icici', 'Front\IciciPaymentController@successPage')->name('payment.icici.success');
+	Route::post('payment/success/icici', 'Front\IciciPaymentController@successPage')->name('payment.icici.success');
+	Route::post('payment/icici-transection-status', 'Front\IciciPaymentController@iciciTransactionStatus')->name('payment.iciciTransactionStatus');
+	Route::post('payment/icici-success', 'Front\IciciPaymentController@iciciTransactionStatus')->name('transaction.icici.success');
 
 
 	//Skip Cash
@@ -275,7 +287,11 @@ Route::group(['middleware' => ['domain']], function () {
      //totalpay
      Route::post('/make-payment','Front\TotalpayController@makePayment')->name('make.payment');
      Route::get('/success-totalpay', 'Front\TotalpayController@paymentSuccessTotalpay');
-
+	//thawani Payment Gateway
+	Route::post('/pay-by-thawanipg', 'Front\ThawaniPaymentController@paybythawanipg')->name('pay-by-thawanipg');
+    Route::get('/after-payment/{transaction_id}', 'Front\ThawaniPaymentController@afterpayment')->name('after.payment');
+    // Route::post('/pay-by-thawanipg', 'Api\v1\ThawaniPaymentController@paybythawanipg')->name('pay-by-thawanipg');
+    // Route::get('/after-payment/{transaction_id}', 'Api\v1\ThawaniPaymentController@afterpayment')->name('after.payment');
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
 	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');
 
@@ -429,7 +445,8 @@ Route::group(['middleware' => ['domain']], function () {
 	]);
 	Route::get('/autocomplete-search', 'Front\SearchController@postAutocompleteSearch')->name('autocomplete');
 	Route::get('/search-all/{keyword}', 'Front\SearchController@showSearchResults')->name('showSearchResults');
-	 Route::get('/', 'Front\UserhomeController@index')->name('userHome');
+	Route::get('/', 'Front\UserhomeController@index')->name('userHome');
+
 	// Route::get('/', 'Front\YachtController@yacht')->name('userHome');
 	Route::any('products-searchResults', 'Front\YachtController@productsSearchResult')->name('productSearch');
 	Route::get('/setSessionIndex', 'Front\UserhomeController@setSessionIndex')->name('setSessionIndex');
@@ -537,7 +554,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
 	Route::get('category-products/{cat_id}/{vendor_id}', 'Front\VendorController@vendorAllProducts')->name('products');
-	
+
 	Route::post('/updateCartSlot', 'Front\CartController@updateCartSlot')->name('updateCartSlot');
 
 	Route::post('/updateCartBookingSlot', 'Front\CartController@updateCartBookingSlot')->name('updateCartBookingSlot');
@@ -680,7 +697,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::post('update-product-replace', 'Front\ReturnOrderController@updateProductReplace')->name('update.order.replace');
 
 	});
-	
+
 	// Rental Extend Routes
 	Route::group(['prefix' => 'extend-durartion'], function () {
 		Route::get('get-order-vendor-product-duration-data-in-model', 'Front\ExtendOrderController@getOrderProductDurationDatainModel')->name('getOrderProductDurationDatainModel');

@@ -120,7 +120,7 @@ class CategoryController extends FrontController{
             $vendorIds = $vendors;
         }else{
             $vendorIds = array();
-            $vendorList = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'name')->where('status', '!=', $this->field_status);
+            $vendorList = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->select('id', 'name')->where('status', '!=', $this->field_status);
             if(!empty($vendorType)){
                 $vendorList= $vendorList->where($vendorType, 1);
             }
@@ -131,21 +131,21 @@ class CategoryController extends FrontController{
                 }
             }
         }
-        $variantSets = ProductVariantSet::with(['options' => function($zx) use($langId){
-                            $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id');
-                            $zx->select('variant_options.*', 'vt.title');
-                            $zx->where('vt.language_id', $langId);
-                        }
-                    ])->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id')
-                    ->join('variant_translations as vt','vt.variant_id','vr.id')
-                    ->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title')
-                    ->where('vt.language_id', $langId)
-                    ->where('vr.status', 1)
-                    ->whereIn('product_variant_sets.product_id', function($qry) use($category){
-                        $qry->select('product_id')->from('product_categories')
-                            ->where('category_id', $category->id);
-                        })
-                    ->groupBy('product_variant_sets.variant_type_id')->get();
+        // $variantSets = ProductVariantSet::with(['options' => function($zx) use($langId){
+        //                     $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id');
+        //                     $zx->select('variant_options.*', 'vt.title');
+        //                     $zx->where('vt.language_id', $langId);
+        //                 }
+        //             ])->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id')
+        //             ->join('variant_translations as vt','vt.variant_id','vr.id')
+        //             ->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title')
+        //             ->where('vt.language_id', $langId)
+        //             ->where('vr.status', 1)
+        //             ->whereIn('product_variant_sets.product_id', function($qry) use($category){
+        //                 $qry->select('product_id')->from('product_categories')
+        //                     ->where('category_id', $category->id);
+        //                 })
+        //             ->groupBy('product_variant_sets.variant_type_id')->get();
                  //   pr($variantSets);
         $redirect_to = $category->type->redirect_to;
 
@@ -277,7 +277,7 @@ class CategoryController extends FrontController{
             $vendorIds = $vendors;
         }else{
             $vendorIds = array();
-            $vendorList = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'name')->where('status', '!=', $this->field_status);
+            $vendorList = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->select('id', 'name')->where('status', '!=', $this->field_status);
             if(!empty($vendorType)){
                 $vendorList= $vendorList->where($vendorType, 1);
             }
@@ -305,7 +305,6 @@ class CategoryController extends FrontController{
                     ->groupBy('product_variant_sets.variant_type_id')->get();
                  //   pr($variantSets);
         $redirect_to = $category->type->redirect_to;
-
         $listData = $this->listData($langId, $category->id, $redirect_to,$vendorIds,false);
 
         $maxPrice = DB::select("SELECT MAX(product_variants.price) as max_price FROM product_variants INNER JOIN products ON products.id = product_variants.product_id WHERE product_variants.status = 1 AND products.is_live = 1 AND products.category_id = ?", [$category->id])[0]->max_price;
@@ -419,7 +418,7 @@ class CategoryController extends FrontController{
         if(strtolower($type) == 'vendor'){
             //$preferences= ClientPreference::first();
             $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'): ClientPreference::first();;
-            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->with('products')->select('vendors.id', 'name', 'banner','is_show_vendor_details' ,'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'vendor_templete_id');
+            $vendorData = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->with('products')->select('vendors.id', 'name', 'banner','is_show_vendor_details' ,'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'vendor_templete_id');
 
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $latitude = Session::get('latitude') ?? $preferences->Default_latitude;
@@ -431,9 +430,8 @@ class CategoryController extends FrontController{
                     cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
                     sin( radians(' . $latitude . ') ) *
                     sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->orderBy('vendorToUserDistance', 'ASC');
-
-                $vendors= $this->getServiceAreaVendors();
-                $vendorData= $vendorData->whereIn('vendors.id', $vendors);
+                // $vendors= $this->getServiceAreaVendors();
+                $vendorData= $vendorData->whereIn('vendors.id', $vendorIds);
             }
             $vendorData = $vendorData->whereHas('getAllCategory' , function ($q)use($category_id){
                 $q->where('category_id', $category_id)->where('status', 1);
@@ -485,7 +483,6 @@ class CategoryController extends FrontController{
             $celebs = Celebrity::orderBy('name', 'asc')->paginate($pagiNate);
             return $celebs;
         }else{
-
             $user = Auth::user();
             if ($user) {
                 $column = 'user_id';
@@ -515,7 +512,7 @@ class CategoryController extends FrontController{
                         ->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating', 'products.inquiry_only','products.minimum_order_count','products.batch_count','products.updated_at')
                         ->where('products.is_live', 1)
                         ->where('products.category_id', $category_id);
-            if (!empty($vendors) && !in_array(strtolower($type), ['rental service', 'p2p'])) {
+            if (!in_array(strtolower($type), ['rental service', 'p2p'])) {
                 $products = $products->whereIn('products.vendor_id', $vendors);
             }
             $maxPrice = 0;
@@ -581,7 +578,7 @@ class CategoryController extends FrontController{
         foreach($category->childs as $key => $child){
             $child->translation_name = ($child->translation->first()) ? $child->translation->first()->name : $child->slug;
         }
-        $vendor = Vendor::select('id', 'name')->where('slug', $slug2)->where('status', 1)->firstOrFail();
+        $vendor = Vendor::vendorOnline()->select('id', 'name')->where('slug', $slug2)->where('status', 1)->firstOrFail();
         if($category && $request->ajax() )
         {
             $vendor_id = isset($vendor) ?  $vendor->id : '';

@@ -99,10 +99,12 @@ class CategoryController extends BaseController
 
     public function listData($langId, $category_id, $type = '', $userid, $product_list, $mod_type, $mode_of_service = null, $limit = 12, $page = 1)
     {
-
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area')->where('id', '>', 0)->first();
+
+
+        $user = Auth::user();
+        $ses_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
         if ($type == 'vendor' && $product_list == 'false') {
-            $user = Auth::user();
             $vendor_ids = [];
             $vendor_categories = VendorCategory::where('category_id', $category_id)->where('status', 1)->get();
             foreach ($vendor_categories as $vendor_category) {
@@ -110,8 +112,8 @@ class CategoryController extends BaseController
                     $vendor_ids[] = $vendor_category->vendor_id;
                 }
             }
-            $vendorData = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude');
-            $ses_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
+            $vendorData = Vendor::vendorOnline()->select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude');
+           
 
            
 
@@ -167,7 +169,7 @@ class CategoryController extends BaseController
             }
             return $vendorData;
         } elseif ($type == 'vendor' && $product_list == 'true') {
-            $vendor_ids = Vendor::where('status', 1)->pluck('id')->toArray();
+            $vendor_ids = Vendor::where('status', 1)->whereIn('id', $ses_vendors)->pluck('id')->toArray();
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $products = Product::has('vendor')->with([
                 'category.categoryDetail', 'category.categoryDetail.translation' => function ($q) use ($langId) {
@@ -239,7 +241,7 @@ class CategoryController extends BaseController
                     $vendor_ids[] = $vendor_category->vendor_id;
                 }
             }
-            $vendorData = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id');
+            $vendorData = Vendor::vendorOnline()->select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id');
             if(isset($preferences->pickup_delivery_service_area) && ($preferences->pickup_delivery_service_area == 1)){
 
                 if (!empty($pickup_latitude) && !empty($pickup_longitude)) {
@@ -280,7 +282,7 @@ class CategoryController extends BaseController
             }
             return $category_details;
         } elseif ($type == 'product' || $type == 'appointment' || $type == 'on demand service' || strtolower($type) == 'laundry' || $type = 'rental service') {
-            $vendors = Vendor::where('status', 1)->pluck('id')->toArray();
+            $vendors = Vendor::where('status', 1)->whereIn('id', $ses_vendors)->pluck('id')->toArray();
             
 
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
@@ -310,17 +312,17 @@ class CategoryController extends BaseController
                 ->join('product_translations', 'product_translations.product_id', '=', 'products.id') // Or whatever the join logic is
                 ->withCount('OrderProduct');
             
-                $sess_vendors = [];
-                if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                    $user = Auth::user();
-                    $sess_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
-                }
-                if(!empty($ses_vendors)){
-                    $vendor_ids = $sess_vendors;
-                }else{
-                    $vendor_ids = $vendors;
-                }
-                $products = $products->whereIn('products.vendor_id', $vendor_ids);
+                // $sess_vendors = [];
+                // if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                //     $user = Auth::user();
+                //     $sess_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
+                // }
+                // if(!empty($ses_vendors)){
+                //     $vendor_ids = $sess_vendors;
+                // }else{
+                //     $vendor_ids = $vendors;
+                // }
+                $products = $products->whereIn('products.vendor_id', $vendors);
                 
             $products = $products->orderBy('product_translations.title', 'asc');
             

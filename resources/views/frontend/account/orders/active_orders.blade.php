@@ -306,7 +306,7 @@
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-                                                                                            
+
                                                                                             @if ($order->fixed_fee_amount > 0)
                                                                                                 <li
                                                                                                     class="d-flex align-items-center justify-content-between">
@@ -364,7 +364,7 @@
                                                                                                  $vendor->taxable_amount + $vendor->service_fee_percentage_amount + $vendor->fixed_fee +
                                                                                                  $vendor->delivery_fee + $vendor->additional_price + $vendor->toll_amount-$order->wallet_amount_used;
                                                                                                     $subtotal_order_price += $product_subtotal_amount;
-                                                                                                    
+
                                                                                                 @endphp
                                                                                                 <span>{{$additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($product_subtotal_amount
                                                                                                     *
@@ -372,7 +372,6 @@
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
-
                                                                                         </ul>
                                                                                     </div>
                                                                                     <?php
@@ -529,7 +528,7 @@
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-															
+
                                                                                 @if ($order->total_container_charges > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -677,3 +676,5 @@
                                                 </div>
                                                 {{ $activeOrders->appends(['pageType' => 'activeOrders'])->links() }}
                                             </div>
+                                            <!-- Modal -->
+

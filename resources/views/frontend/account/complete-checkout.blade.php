@@ -40,6 +40,7 @@
     let action = "{{ $action }}";
     let authToken = "{{ $auth_token }}";
     let address_id = "{{ $address_id }}";
+    var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
 
     $.ajaxSetup({
         headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content') }

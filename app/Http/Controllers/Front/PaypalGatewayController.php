@@ -42,11 +42,12 @@ class PaypalGatewayController extends FrontController
     }
 
     public function paypalPurchase(Request $request)
-    {
+    { 
         try {
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
             $returnUrlParams = '?amount=' . $amount;
+            
             if ($request->has('tip')) {
                 $returnUrlParams = $returnUrlParams . '&tip=' . $request->tip;
             }
@@ -105,6 +106,7 @@ class PaypalGatewayController extends FrontController
             if ($request->has('tip')) {
                 $returnUrlParams = $returnUrlParams . '&tip=' . $request->tip;
             }
+            
             $transaction = $this->gateway->completePurchase(array(
                 'amount'                => $amount,
                 'payer_id'              => $request->PayerID,

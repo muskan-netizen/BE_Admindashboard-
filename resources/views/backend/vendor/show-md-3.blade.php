@@ -283,7 +283,7 @@ body .rating-form .btn-reset {
                 <a class="" href="{{ route('vendor.margConfig',$vendor->id) }}">
                 @php
                     $vendormenu = getNomenclatureName('Marg Configuration', true);
-                @endphp 
+                @endphp
                     <span>{{ __('Marg Configuration') }}</span>
                 </a>
             </div>
@@ -327,7 +327,7 @@ body .rating-form .btn-reset {
                     </div>
                 </div>
                 <div class="row mb-2">
-                   
+
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12">
                         <div class="form-group" id="order_pre_timeInput">
@@ -337,6 +337,13 @@ body .rating-form .btn-reset {
                                 <div class="time-sloat d-flex align-items-center"><span class="" id="Vendor_order_pre_time_show" ></span> </div>
                             </div>
                         </div>
+                    </div>
+                    @endif
+
+                    @if(@getAdditionalPreference(['vendor_online_status'])['vendor_online_status'])
+                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Online'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="is_online" class="form-control" data-color="#43bee1" @if($vendor->is_online == 1) checked @endif>
                     </div>
                     @endif
 
@@ -404,7 +411,7 @@ body .rating-form .btn-reset {
                         {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if($vendor->auto_accept_order == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
-               
+
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Need Container Charges?'),['class' => 'control-label']) !!}
@@ -427,7 +434,7 @@ body .rating-form .btn-reset {
                         {!! Form::label('title', __('Return Auto Approve'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="return_auto_approve" class="form-control" data-color="#43bee1" @if($vendor->return_auto_approve == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
-                    
+
                     @if(isset($getAdditionalPreference['is_same_day_delivery']) && $getAdditionalPreference['is_same_day_delivery'] == '1')
                         <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                             {!! Form::label('title', __('Same Day Delivery'),['class' => 'control-label']) !!}
@@ -448,8 +455,8 @@ body .rating-form .btn-reset {
                             <input type="checkbox" data-plugin="switchery" name="hyper_local_delivery" class="form-control" data-color="#43bee1" @if($vendor->hyper_local_delivery == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     @endif
-                    
-                    @if($getAdditionalPreference['is_same_day_delivery'] == '1' || $getAdditionalPreference['is_next_day_delivery'] == '1')                    
+
+                    @if($getAdditionalPreference['is_same_day_delivery'] == '1' || $getAdditionalPreference['is_next_day_delivery'] == '1')
                         <div class="col-md-12 d-none" id="cutOff_timeInput">
                             <div class="form-group">
                                 {!! Form::label('title', __('Cut Off Time'),['class' => 'control-label']) !!}
@@ -558,7 +565,7 @@ body .rating-form .btn-reset {
                             <input type="checkbox" data-plugin="switchery" name="is_vendor_instant_booking" class="form-control" data-color="#43bee1" @if($vendor->is_vendor_instant_booking == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     @endif
-                    
+
 
                     <div class="col-12">
                         <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
@@ -1668,7 +1675,7 @@ $("input[name='need_container_charges']").change(function() {
     $('body').on('click', '.add_edit_driver_review', function(event) {
             event.preventDefault();
             var id= $('#vendor_id').val();
-            var route="{{url('client/get-vendor-rating')}}/"+id 
+            var route="{{url('client/get-vendor-rating')}}/"+id
             $.get(route,
                 function(markup) {
                     console.log(markup);

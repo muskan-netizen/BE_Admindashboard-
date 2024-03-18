@@ -72,7 +72,6 @@ class RazorpayGatewayController extends BaseController
             if ($request->payment_form == 'wallet') {
                 $returnUrl = route('user.wallet');
             }
-            //$notifyUrlParams = '?gateway=paylink&amount=' . $amount . '&order=' . $order_number;
 
             $orderData = [
 
@@ -81,9 +80,9 @@ class RazorpayGatewayController extends BaseController
                 'currency'        => 'INR'
             ];
 
-            // $razorpayOrder = $this->api->order->create($orderData);
-            //dd($razorpayOrder);
-            $payment = $this->api->payment->fetch($request->razorpay_payment_id)->capture($orderData);
+            // $payment = $this->api->payment->fetch($request->razorpay_payment_id)->capture($orderData);
+            $payment = $this->api->payment->fetch($request->razorpay_payment_id);
+
 
             if ($payment['status'] == 'captured') {
                 return $this->razorpayNotify($payment, $amount, $order, $orderData);
@@ -91,29 +90,29 @@ class RazorpayGatewayController extends BaseController
                 return $this->razorpayNotify_fail($payment, $amount, $order, $orderData);
             }
         } catch (\Exception $ex) {
+            \Log::info('error response'.$ex->getMessage().'---'.$ex->getLine());
+
             return $this->errorResponse($ex->getMessage(), 400);
         }
     }
 
     public function razorpayNotify($payment, $amount, $order, $orderData)
     {
-
-
         $transactionId = $payment['id'];
-
         $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order)->first();
-
-
         if ($order) {
             $order->payment_status = 1;
             $order->save();
             $payment_exists = Payment::where('transaction_id', $transactionId)->first();
             if (!$payment_exists) {
+                $user = Auth::user();
+
                 Payment::insert([
                     'date' => date('Y-m-d'),
                     'order_id' => $order->id,
                     'transaction_id' => $transactionId,
                     'balance_transaction' => $amount,
+                    'user_id' => $user->id
                 ]);
 
                 // Auto accept order
@@ -121,7 +120,6 @@ class RazorpayGatewayController extends BaseController
                 $orderController->autoAcceptOrderIfOn($order->id);
 
                 // Remove cart
-                $user = Auth::user();
                 Cart::where('id', $user['cart_id'])->update(['schedule_type' => null, 'scheduled_date_time' => null]);
                 CartAddon::where('cart_id', $user['cart_id'])->delete();
                 CartCoupon::where('cart_id', $user['cart_id'])->delete();

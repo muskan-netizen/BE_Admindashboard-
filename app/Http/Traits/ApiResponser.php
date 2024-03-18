@@ -139,9 +139,9 @@ trait ApiResponser
 	protected function errorResponse($message = null, $code, $data = null)
 	{
 		$validCodes = range(100, 599);
-    
+
 		if (!is_int($code) || !in_array($code, $validCodes)) {
-			$code = 500; 	
+			$code = 500;
 		}
 		return response()->json([
 			'status' => 'Error',
@@ -150,7 +150,7 @@ trait ApiResponser
 			'code' => $code
 		], $code);
 	}
-	
+
 
 	protected function updateaverageRating($product_id, $message = null, $code = 200)
 	{
@@ -504,8 +504,8 @@ trait ApiResponser
 
 	protected function sendSmsNew($provider, $sms_key, $sms_secret, $sms_from, $to, $body){
         try{
-            $body = $body['body']??'';
             $template_id = $body['template_id']??''; //sms Template_id
+            $body = $body['body']??'';
             $client_preference =  getClientPreferenceDetail();
             if($client_preference->sms_provider == 1)
             {
@@ -537,6 +537,11 @@ trait ApiResponser
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->africasTalking_sms($to,$body,$crendentials);
             }
+			elseif($client_preference->sms_provider == 7) //for Vonage
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->vonage_sms($to,$body,$crendentials);
+            }
             elseif($client_preference->sms_provider == 9) //for Ethiopia
             {
             $crendentials = json_decode($client_preference->sms_credentials);
@@ -553,6 +558,7 @@ trait ApiResponser
             }
         }
         catch(\Exception $e){
+            \Log::info(['err' => $e->getMessage()]);
             return '2';
         }
         return '1';

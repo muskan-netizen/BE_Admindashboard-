@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Traits\{OrderTrait, ProductActionTrait, VendorTrait, RedisCacheTrait};
 use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference, Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, HomeProduct, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption, UserAddress};
 use Illuminate\Support\Facades\Redis;
+use GuzzleHttp\Client as GClient;
 
 /**
  * HomeController
@@ -47,14 +48,14 @@ class HomeController extends BaseController
             }
             abort(403);
         });
-        
+
     }
 
     public function config()
     {
         $this->additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating', 'is_service_product_price_from_dispatch','is_service_price_selection','is_cache_enable_for_home','cache_reset_time_for_home','cache_radius_for_home']);
         $this->cache_minutes =  ($this->additionalPreference['cache_reset_time_for_home']!='') ? $this->additionalPreference['cache_reset_time_for_home'] :  $this->cache_minutes;
-        $this->radius =  ($this->additionalPreference['cache_radius_for_home']!='') ? $this->additionalPreference['cache_radius_for_home'] :  $this->radius;       
+        $this->radius =  ($this->additionalPreference['cache_radius_for_home']!='') ? $this->additionalPreference['cache_radius_for_home'] :  $this->radius;
     }
 
 
@@ -80,7 +81,7 @@ class HomeController extends BaseController
             })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','id as is_vendor_closed' ,'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
 
 
-        
+
 
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
@@ -99,8 +100,8 @@ class HomeController extends BaseController
                     $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
                 //}
             }
-        
-            
+
+
             $venderIds  = $vendorData->where('status', 1)->pluck('id');
 
             $navCategories = $this->categoryNav($langId, $venderIds, $type , $request);
@@ -113,8 +114,8 @@ class HomeController extends BaseController
     }
     public function homepage(Request $request, $domain = '')
     {
-        try {           
-            
+        try {
+
             $this->config();
             $home = array();
             $vendor_ids = array();
@@ -131,7 +132,7 @@ class HomeController extends BaseController
             $client_config = Session::get('client_config');
             $selectedAddress = Session::get('selectedAddress');
             $_REQUEST['request_from'] = 1;
-           
+
             $type = $request->has('type') ? $request->type : 'delivery';
               Session::put('vendorType',$type);
 
@@ -175,12 +176,12 @@ class HomeController extends BaseController
                     $longitude = $clientPreferences->Default_longitude;
                 }
             }
-           
+
             if($clientPreferences->is_hyperlocal == 1) {
-                
+
                 $this->loc_key = $this->loc_key.":hyperlocal:".$type.":".$clientPreferences->client_code;
                 $cacheKey = $this->loc_key.":{$latitude}:{$longitude}";
-                
+
                 $find_key = $this->isPointInRadius($latitude, $longitude, $this->radius, $this->loc_key);
 
 
@@ -191,7 +192,7 @@ class HomeController extends BaseController
                 //$cachedResult['cacheKey'] = $cacheKey??'';
                 if ($cachedResult) {
                     $find_key['data'] = json_decode($cachedResult);
-                } 
+                }
 
             }
 
@@ -258,38 +259,38 @@ class HomeController extends BaseController
 
 
             $home_page_labels = $home_page_labels->get();
-            
+
 
             if (count($home_page_labels) == 0)
                 $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
             $request->request->add(['noTinJson' => 1]);
             /***start new  */
 
-            $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating', 'is_service_product_price_from_dispatch']);
+            $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating', 'is_service_product_price_from_dispatch','is_freelance_on_homepage']);
 
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
             $enable_layout = CabBookingLayout::where('is_active', 1)->app();
-            
+
             $enable_layout = $enable_layout->orderBy('order_by', 'asc')->pluck('slug')->toArray();
             //$homePageData = $this->postHomePageData($request);
-            
+
             if($request->action=='2'){
                 // dd('sdsd');
                 $homePageData = $this->postHomePageDataV2($request, $set_template, $enable_layout, $additionalPreference,$user);
             } else {
                 $homePageData = $this->postHomePageData($request,$additionalPreference);
             }
-            
+
             if($type == 'p2p')
             {
-                 
-                
+
+
             $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
                 $q->whereIn('type_id',$categoryTypes);
-            })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','id as is_vendor_closed' ,'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
-           
+            })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','id as is_vendor_closed' ,'closed_store_order_scheduled','delivery_fee_minimum','delivery_fee_maximum')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
+
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-               
+
                 $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
                 $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
@@ -299,14 +300,14 @@ class HomeController extends BaseController
                         cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
                         sin( radians(' . $latitude . ') ) *
                         sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating');
-                        
+
                 $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
                 $Service_area = $this->getServiceArea($latitude, $longitude, $type);
-          
+
                 $vendorData = $vendorData->whereIn('id', $ses_vendors);
                     $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
             }
-           
+
             $venderIds  = $vendorData->where('status', 1)->pluck('id');
             $navCategories = $this->categoryNav($langId, $venderIds, $type , $request);
             } else{
@@ -331,7 +332,7 @@ class HomeController extends BaseController
                 }
                 return $da;
             });
-          
+
             $user = Auth::user();
             $s3_url = '';
             if(\Config::get('filesystems.disks.s3.driver') == 's3') {
@@ -361,6 +362,11 @@ class HomeController extends BaseController
                     //'data' => json_encode($homeData)
                 ]
             ];
+
+             $get_preference = $this->checkIfLastMileOn();
+            if(!empty($get_preference) && @$additionalPreference['is_freelance_on_homepage']==1){
+                $homeData['freelance_details'] = $this->getAllAgentDetailFromDispatcher($get_preference);
+            }
             //pr($cacheKey);
             // return $this->successResponse($homeData);
 
@@ -379,10 +385,10 @@ class HomeController extends BaseController
         }
     }
 
- 
+
     public function getSubcategoryVendor(Request $request, $domain = '')
     {
-        
+
         try {
             $home = array();
             $vendor_ids = array();
@@ -428,7 +434,7 @@ class HomeController extends BaseController
 
             $cid = $request->category_id;
             $getSubCatIds = Category::where('parent_id', $cid)->pluck('id')->toArray();
-            
+
             $mobile_banners = MobileBanner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
                 ->where(function ($q) {
                     $q->whereNull('start_date_time')->orWhere(function ($q2) {
@@ -457,7 +463,7 @@ class HomeController extends BaseController
 
 
             $home_page_labels = $home_page_labels->get();
-            
+
 
             if (count($home_page_labels) == 0)
                 $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
@@ -473,7 +479,7 @@ class HomeController extends BaseController
             //$homePageData = $this->postHomePageData($request);
 
             $homePageData = $this->postHomePageDataV2($request, $set_template, $enable_layout, $additionalPreference,$user, $getSubCatIds);
-            
+
             $navCategories = $this->subCategoryNav($langId, @$homePageData['vendor_ids'], $type, $cid);
             Session::put('navCategories', $navCategories);
 
@@ -490,7 +496,7 @@ class HomeController extends BaseController
                     $da['data'] = $navCategories;
                     // dd($da[$da->slug]);
                 }
-               
+
                 return $da;
             });
 
@@ -867,7 +873,7 @@ class HomeController extends BaseController
 
         $top_rated_products = $popular_products = $selected_products = $single_category_products = $spot_light_products =  [];
 
-        //get long term service 
+        //get long term service
         $long_term_service_products = [];
         $additionalPreference = getAdditionalPreference(['is_long_term_service', 'is_token_currency_enable', 'token_currency']);
         if (@$additionalPreference['is_long_term_service'] == 1) {
@@ -885,16 +891,16 @@ class HomeController extends BaseController
             $selected_product_ids = $this->getSelectedProducts(); // get single selected category's products
             $selected_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $selected_product_ids);
 
-            $popular_product_ids = $this->getMostPopularProducts();  // get selected products to display 
+            $popular_product_ids = $this->getMostPopularProducts();  // get selected products to display
             $popular_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $popular_product_ids);
 
-            $top_rated_products_ids = $this->getTopRatedProducts();  // get selected products to display 
+            $top_rated_products_ids = $this->getTopRatedProducts();  // get selected products to display
             $top_rated_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $top_rated_products_ids);
 
             $ordered_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $this->getLastProductOrdered(), 10);
 
 
-            
+
         }
         /**  Recent order */
         $activeOrders = [];
@@ -1039,7 +1045,7 @@ class HomeController extends BaseController
     }
     public function searchCategories($langId, $keyword, $limit, $page)
     {
-        
+
         $orderBy = "";
         foreach ($keyword as $key=>$word) {
             $orderBy .= " WHEN cts.name LIKE '$word%' THEN ".$key."  ";
@@ -1085,9 +1091,8 @@ class HomeController extends BaseController
     }
 
 
-    public function  searchVendors($langId, $keyword, $limit, $page, $action, $latitude, $longitude)
+    public function  searchVendors($langId, $keyword, $limit, $page, $action='delivery', $latitude, $longitude)
     {
-
         $orderBy = "";
         foreach ($keyword as $key=>$word) {
             $orderBy .= " WHEN name LIKE '$word%' THEN ".$key."  ";
@@ -1130,7 +1135,7 @@ class HomeController extends BaseController
 
         $vendors = $vendors->where(function ($q) use ($keyword) {
             foreach ($keyword as $word) {
-                $q->orwhere('name', 'LIKE', $word . '%')->orWhere('address', 'LIKE', $word . '%');
+                $q->orwhere('name', 'LIKE', '%'.$word . '%')->orWhere('address', 'LIKE', '%'.$word . '%');
             }
         })->where('status', 1);
         if(@$orderBy){
@@ -1175,7 +1180,7 @@ class HomeController extends BaseController
             if(@$orderBy){
                 $brands = $brands->orderByRaw("CASE ".$orderBy." ELSE 10 END, bt.title");
             }
-            
+
             // ->orderBy('brands.position', 'asc')
             // ->limit(5)->get();
             $brands = $brands->paginate($limit, $page);
@@ -1214,7 +1219,7 @@ class HomeController extends BaseController
 
             ->where(function ($q) use ($keyword) {
                 foreach ($keyword as $word) {
-                    $q->orwhere('products.sku', ' LIKE', $word . '%')->orWhere('products.url_slug', 'LIKE', $word . '%')->orWhere('pt.title', 'LIKE', $word . '%');
+                    $q->orwhere('products.sku', ' LIKE', '%'.$word . '%')->orWhere('products.url_slug', 'LIKE', '%'. $word . '%')->orWhere('pt.title', 'LIKE', '%'. $word . '%');
                 }
             })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')
             ->whereIn('vendor_id', $allowed_vendors);
@@ -1248,7 +1253,7 @@ class HomeController extends BaseController
                 array_push($results, $result);
             }
         }
-        
+
         // Add three-word combinations to the results
         for ($i = 0; $i < count($keyword); $i++) {
             for ($j = $i + 1; $j < count($keyword); $j++) {
@@ -1267,7 +1272,7 @@ class HomeController extends BaseController
         // return 1;
         try {
             $for = $request->view_type ?? 'all';
-            
+
             $keyword = $this->createSearchKeywords($request);
             // Display the results
             // print_r($keyword);
@@ -1275,14 +1280,14 @@ class HomeController extends BaseController
             $curId = Auth::user()->language;
             $limit = $request->has('limit') ? $request->limit : 10;
             $page = $request->has('page') ? $request->page : 1;
-            $action = $request->has('type') && $request->type ? $request->type : null;
+            $action = $request->has('type') && $request->type ? $request->type : 'delivery';
             // $types = ['delivery', "dine_in", "takeaway"];
 
             $latitude = $request->latitude;
             $longitude = $request->longitude;
 
 
-            
+
 
             $response = array();
             if ($for == 'all') {
@@ -1299,13 +1304,13 @@ class HomeController extends BaseController
                 if (@$searchedVendors) {
                     $response[] = $searchedVendors;
                 }
-             
+
 
                 $searchedProducts = $this->searchProduct($langId, $keyword, $limit, $page, $action, $latitude, $longitude);
                 if (@$searchedProducts) {
                     $response[] = $searchedProducts;
                 }
-                
+
                 return $this->successResponse($response);
             } elseif ($for == 'product') {
                 $searchedProducts = $this->searchProduct($langId, $keyword, $limit, $page, $action, $latitude, $longitude);
@@ -1404,7 +1409,7 @@ class HomeController extends BaseController
         $long_term_service_products = [];
         $recently_viewed = [];
         $banners = [];
-        
+
         $p_dim = '260/260';
         if (isset($set_template)  && $set_template->template_id == 3){
             $p_dim = '300/300';
@@ -1433,7 +1438,7 @@ class HomeController extends BaseController
         $language_id = Session::get('customerLanguage');
         if (is_null($language_id)) {
             $local = ($request->hasHeader('language')) ? $request->header('language') : 1;
-        
+
             $language_id = $local;
         }
 
@@ -1447,16 +1452,16 @@ class HomeController extends BaseController
         $slugs = array("featured_products", "vendors", "new_products", "on_sale", "brands", "best_sellers", "recent_orders", "banner", "selected_products", "trending");
 
         $results = DB::select("
-            SELECT 
-                cab_booking_layout_transaltions.title, 
-                cab_booking_layout_transaltions.cab_booking_layout_id, 
-                cab_booking_layouts.slug 
-            FROM 
-                cab_booking_layout_transaltions 
-                INNER JOIN 	cab_booking_layouts ON cab_booking_layout_transaltions.cab_booking_layout_id = 	cab_booking_layouts.id 
-            WHERE 
-                cab_booking_layout_transaltions.language_id = ? 
-                AND cab_booking_layout_transaltions.title IS NOT NULL 
+            SELECT
+                cab_booking_layout_transaltions.title,
+                cab_booking_layout_transaltions.cab_booking_layout_id,
+                cab_booking_layouts.slug
+            FROM
+                cab_booking_layout_transaltions
+                INNER JOIN 	cab_booking_layouts ON cab_booking_layout_transaltions.cab_booking_layout_id = 	cab_booking_layouts.id
+            WHERE
+                cab_booking_layout_transaltions.language_id = ?
+                AND cab_booking_layout_transaltions.title IS NOT NULL
                 AND 	cab_booking_layouts.slug IN (" . implode(',', array_fill(0, count($slugs), '?')) . ")
         ", array_merge([$language_id], $slugs));
        // pr($results);
@@ -1520,10 +1525,10 @@ class HomeController extends BaseController
 
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
-      
+
         if ($preferences) {
             // check vendor Subscription0
-           
+
             if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
                 $selectedAddress = $preferences->Default_location_name;
                 $latitude = $preferences->Default_latitude??null;
@@ -1541,13 +1546,13 @@ class HomeController extends BaseController
         if ($request->rating) {
             $preferences->rating = $request->rating;
         }
-        
+
         if(count($vendor_ids) > 0){
             $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids,null,$this->venderFilterOpenClose,$this->venderFilterbest,$request->nearest_vendor);
         }
-        
+
         $trendingVendors = [];
-        if (in_array('trending_vendors', $enable_layout)) {  # if enable trending_vendors section in 
+        if (in_array('trending_vendors', $enable_layout)) {  # if enable trending_vendors section in
             $now = Carbon::now()->toDateTimeString();
             $trending_vendors = SubscriptionInvoicesVendor::whereHas('features', function ($query) {
                 $query->where(['subscription_invoice_features_vendor.feature_id' => 1]);
@@ -1558,13 +1563,13 @@ class HomeController extends BaseController
             if(count($trending_vendors) > 0){
                 $trendingVendors = $this->getVendorForHomePage($preferences, "trending_vendors", $timezone, 0, $request->type, $language_id, $latitude, $longitude, $trending_vendors);
             }
-        } 
-        
+        }
+
         if (($latitude) && ($longitude)) {
             Session::put('vendors', $vendor_ids);
-            
+
         }
-        
+
         //get Most Selling Vendors
         $mostSellingVendors = []; //best_sellers
         if (in_array('best_sellers', $enable_layout)) {
@@ -1577,32 +1582,32 @@ class HomeController extends BaseController
         }
         //pr($mostSellingVendors);
         $on_sale_product_details =$on_sale_products = [];
-        if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in 
+        if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in
             $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', 'on_sale', $request->type,$on_sale_title, $p_dim, $getSubCatIds);
         }
         $new_product_details =$new_products = [];
-        if (in_array('new_products', $enable_layout)) {  # if enable new_products section in 
+        if (in_array('new_products', $enable_layout)) {  # if enable new_products section in
             $new_products = $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type,$new_products_title,$p_dim, $getSubCatIds);
         }
         $feature_product_details = $feature_products = [];
-      
+
         if (in_array('featured_products', $enable_layout)) {  # if enable featured_products section in
             $feature_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type, $featured_products_title,$p_dim, $getSubCatIds);
-        } 
+        }
 
         if (in_array('banner', $enable_layout)) {  # if enable banner section in
             $cab_booking_layouts = CabBookingLayout::with('banner_image')->where('slug','banner')->get();
-            
+
             foreach($cab_booking_layouts as $bkey => $bval){
                 if(count($bval->banner_image) > 0)
                 $banners[$bval->banner_image[0]->cab_booking_layout_id] = $bval->banner_image[0]->banner_image_url;
             }
-        } 
-        
+        }
+
         $top_rated_products = '';
-         //get long term service 
+         //get long term service
         $long_term_service_products =[];
-        if( in_array('long_term_service', $enable_layout) && @$additionalPreference['is_long_term_service'] == 1 && count($vendor_ids) > 0){ # if enable long_term_service section in 
+        if( in_array('long_term_service', $enable_layout) && @$additionalPreference['is_long_term_service'] == 1 && count($vendor_ids) > 0){ # if enable long_term_service section in
             $long_term_service_products = $this->longTermServiceProducts($vendor_ids, $additionalPreference, $language_id, $currency_id,'', $request->type,$p_dim);
         }
         //pr($set_template->template_id);
@@ -1617,10 +1622,10 @@ class HomeController extends BaseController
             //$selected_product_ids = $this->getSelectedProducts(); // get single selected category's products
             $selected_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'selected_products', $request->type, $featured_products_title,$p_dim, $getSubCatIds);
 
-            //$popular_product_ids = $this->getMostPopularProducts();  // get selected products to display 
+            //$popular_product_ids = $this->getMostPopularProducts();  // get selected products to display
             $popular_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'popular_products', $request->type, $featured_products_title,$p_dim, $getSubCatIds);
 
-            //$top_rated_products_ids = $this->getTopRatedProducts();  // get selected products to display 
+            //$top_rated_products_ids = $this->getTopRatedProducts();  // get selected products to display
             $top_rated_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'top_rated_products', $request->type, $featured_products_title,$p_dim, $getSubCatIds);
 
            // $ordered_products = $this->vendorProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $this->getLastProductOrdered(), 10);
@@ -1629,7 +1634,7 @@ class HomeController extends BaseController
         //}
         /**  Recent order */
         $activeOrders = [];
-        if (in_array('recent_orders', $enable_layout)) {  # if enable recent_orders section in 
+        if (in_array('recent_orders', $enable_layout)) {  # if enable recent_orders section in
             $user = Auth::user();
 
             if ($user) {
@@ -1679,7 +1684,7 @@ class HomeController extends BaseController
         /**  Recent order end */
 
         /**  Get cities */
-        if (in_array('cities', $enable_layout)) {   # if enable recent_orders section in 
+        if (in_array('cities', $enable_layout)) {   # if enable recent_orders section in
             if($preferences->is_hyperlocal==1){
                 $this->getCities_v2($language_id);
             }
@@ -1688,8 +1693,8 @@ class HomeController extends BaseController
 
 
         /** Respose data */
-      
-        
+
+
             $data = [
                 'vendor_ids'=>$vendor_ids,
                 'brands' => $brands,
@@ -1714,5 +1719,41 @@ class HomeController extends BaseController
             ];
             //pr( $data);
             return $data ;
+    }
+  # check if last mile delivery on
+  public function checkIfLastMileOn()
+  {
+      $preference = ClientPreference::first();
+      if ( !empty($preference->dispacher_home_other_service_key) && !empty($preference->dispacher_home_other_service_key_code) && !empty($preference->dispacher_home_other_service_key_url))
+          return $preference;
+      else
+          return false;
+  }
+
+    public function getAllAgentDetailFromDispatcher($data)
+    {
+
+        try {
+                $client = new GClient([
+                    'headers' => [
+                        'personaltoken' => $data['dispacher_home_other_service_key'],
+                        'shortcode'     => $data['dispacher_home_other_service_key_code'],
+                        'content-type'  => 'application/json'
+                    ]
+                ]);
+
+                $url = $data['dispacher_home_other_service_key_url']. '/api/get/all_agent_detail';
+                $res = $client->get($url );
+                $response = json_decode($res->getBody(), true);
+
+                if ($response && $response['status'] === 200) {
+                    return $response['data'];
+                }
+                return [];
+
+        } catch (\Exception $e) {
+           // Log::info($e->getMessage());
+            return [];
+        }
     }
 }

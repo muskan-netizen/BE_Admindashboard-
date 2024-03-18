@@ -48,7 +48,7 @@ $is_map_search_perticular_country = getMapConfigrationPreference();
                 <span></span>
             </div>
         </div> --}}
-        <div class="col d-flex align-items-center justify-content-between justify-content-lg-end">        
+        <div class="col d-flex align-items-center justify-content-between justify-content-lg-end">
             <ul class="top-site-links d-flex align-items-center p-0 mb-0 mr-lg-2 mr-auto">
                 <li class="AlSpinnerCustom">
                     <!-- spinner Start -->
@@ -97,9 +97,9 @@ $is_map_search_perticular_country = getMapConfigrationPreference();
                         </label>
                     </li>
                 @endif
-                
 
-                
+
+
                 <li class="m-hide"><label class="site-name m-0">{{ucFirst($clientData->custom_domain)}}</label></li>
                 <li class="m-hide"><a href="{{route('userHome')}}" target="_blank"><i class="fa fa-globe" aria-hidden="true"></i><span class="align-middle">{{ __("View Website") }}</span></a></li>
             @if(App\Services\InventoryService::checkIfInventoryOn())
@@ -216,7 +216,7 @@ $is_map_search_perticular_country = getMapConfigrationPreference();
                     <a class="nav-link dropdown-toggle nav-user mr-0 waves-effect waves-light" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
 
                         <span class="pro-user-name ml-1">
-                            <img src="{{$urlImg}}" alt="">
+                            <img style="height: 32px; width:86.48px" src="{{$urlImg}}" alt="">
                             <!-- <b class="text-capitalize">{{ auth()->user()->name }} <i class="mdi mdi-chevron-down"></i></b> -->
                         </span>
                     </a>

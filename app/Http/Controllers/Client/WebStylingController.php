@@ -421,7 +421,6 @@ class WebStylingController extends BaseController{
      * @return \Illuminate\Http\Response
      */
     public function updateWebStylesNew(Request $request){
-        // dd($request->all());
         if($request->has('home_labels')){
             foreach (@$request->home_labels as $key => $value) {
                 $home_translation = CabBookingLayoutTranslation::where('language_id', $request->languages[$key])->where('cab_booking_layout_id', $request->home_labels[$key])->first();
@@ -445,8 +444,7 @@ class WebStylingController extends BaseController{
         {
             //For webside type = 0
             $this->updateSelectedProductstoDb($home_translation->cab_booking_layout_id,$request,'0');
-        }  
-        
+        }
 
         foreach ($request->pickup_labels as $key => $value) {
 
@@ -510,6 +508,16 @@ class WebStylingController extends BaseController{
                 $cate->banner_image_url  = $url;
                 $cate->type  = 1;
                 $cate->save();
+            }
+
+            if(isset($request->banner_url[$value]) && !empty($request->banner_url[$value])){
+                CabBookingLayoutBanner::updateOrCreate(
+                    ['cab_booking_layout_id' => $value],
+                    [
+                        'banner_url' => $request->banner_url[$value],
+                        'type' => 1
+                    ]
+                );
             }
         }
 
