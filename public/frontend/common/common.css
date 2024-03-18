@@ -1178,6 +1178,11 @@ span.org_price.ml-1.font-14 {
     color: #fff !important;
 }
 
+
+.dark .displayProducts h4 {
+    color: #ffffff !important;
+}
+
 .slick-next:before,
 .slick-prev:before {
     font-family: 'FontAwesome';

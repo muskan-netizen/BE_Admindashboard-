@@ -1003,6 +1003,10 @@ body.al_body_template_eight .category-related-product .product-card-box .media-b
     color: var(--theme-deafult);
 }
 
+body.dark.al_body_template_eight .category-related-product .product-card-box .media-body.align-self-start .al_clock b {
+    color: #ffffff;
+}
+
 body.al_body_template_eight .collection-wrapper.al h2 {
     font-size: 24px;
     margin-top: 0;
@@ -1385,6 +1389,10 @@ body.al_body_template_eight.homeHeader .collection-product-wrapper .col-md-3.col
     margin-bottom: 25px;
     background: #fff;
     /* padding: 0; */
+}
+
+body.dark.al_body_template_eight.homeHeader .collection-product-wrapper .col-md-3.col-6.col-grid-box{
+    background: #545454 !important;
 }
 
 body.al_body_template_eight div#show-map-modal .modal-full-width {

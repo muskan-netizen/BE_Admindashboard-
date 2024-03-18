@@ -113,7 +113,7 @@ if(session()->has('applocale')){
                                 @if(Auth::user())
                                 @if(@auth()->user()->can('dashboard-view') || Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                                     <li>
-                                        <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                                        <a href="{{route('client.dashboard')}}" data-lng="en">{{getNomenclatureName('Control Panel', true)}}</a>
                                     </li>
                                     @endif
                                     <li>
@@ -251,7 +251,7 @@ if(session()->has('applocale')){
                                 @if(Auth::user())
                                     @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                                     <li>
-                                        <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                                        <a href="{{route('client.dashboard')}}" data-lng="en">{{getNomenclatureName('Control Panel', true)}}</a>
                                     </li>
                                     @endif
                                     <li>
