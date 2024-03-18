@@ -53,7 +53,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     <div class="row ">
         <div class="col-md-12">
             <div class="page-title-box dashboard_order_title mt-2 d-md-flex align-items-center justify-content-between">
-                <h4 class="page-title">{{ __('Orders') }}</h4>
+                @php
+                    $ordermenu = getNomenclatureName('Orders', true);
+                    $ordermenulabel = ($ordermenu=="Orders")?__('Orders'):__($ordermenu);
+                @endphp
+                <h4 class="page-title">{{ __($ordermenulabel) }}</h4>
                 <div class="float-right">
                     <div class="row d-flex justify-content-between">
                         <div class="col-sm-4 mb-1">

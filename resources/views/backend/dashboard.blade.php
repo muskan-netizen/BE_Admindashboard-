@@ -102,7 +102,12 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                             <div class="float-right">
                                 <i class="mdi mdi-cart-plus widget-icon"></i>
                             </div>
-                            <h5 class="" title="Number of Orders">{{ __('Orders') }}</h5>
+                            @php
+                                $ordermenu = getNomenclatureName('Orders', true);
+                                $ordermenulabel = ($ordermenu=="Orders")?__('Orders'):__($ordermenu);
+
+                            @endphp
+                            <h5 class="" title="Number of Orders">{{ __($ordermenulabel) }}</h5>
                             <h3 class="mt-3 mb-3" id="total_orders">0</h3>
                             <p class="mb-0" id="orders_change">
                             </p>
@@ -118,7 +123,12 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                             <div class="float-right">
                                 <i class="mdi mdi-account-multiple widget-icon"></i>
                             </div>
-                            <h5 class="" title="Number of Vendors">{{ __('Vendors') }}</h5>
+                            @php
+                                $vendormenu = getNomenclatureName('Vendors', true);
+                                $vendormenulabel = ($vendormenu=="Vendors")?__('Vendors'):__($vendormenu);
+
+                            @endphp
+                            <h5 class="" title="Number of Vendors">{{ __($vendormenulabel) }}</h5>
                             <h3 class="mt-3 mb-3" id="total_vendors">0</h3>
                             <p class="mb-0" id="orders_vendor">
                             </p>
@@ -171,7 +181,12 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                             <div class="float-right">
                                 <i class="mdi mdi-pulse widget-icon"></i>
                             </div>
-                            <h5 class="" title="Number of Growth">{{ __('Products') }}</h5>
+                            @php
+                                $productmenu = getNomenclatureName('Products', true);
+                                $productmenulabel = ($productmenu=="Products")?__('Products'):__($productmenu);
+
+                            @endphp
+                            <h5 class="" title="Number of Growth">{{ __($productmenulabel) }}</h5>
                             <h3 class="mt-3 mb-3" id="total_products">+ 0</h3>
                             <p class="mb-0" id="products_change">
                             </p>
