@@ -1821,10 +1821,6 @@ class OrderController extends FrontController
 
     public function orderSave($request, $paymentStatus)
     {
-
-
-
-
         try {
             $latitude = '';
             $longitude = '';
@@ -2800,22 +2796,17 @@ class OrderController extends FrontController
                 if (@$getAdditionalPreference['is_rental_weekly_monthly_price']) {
                     $payable_amount = $request->total_amount;
                 }
-                // dump("+Container_charges ".$vendor_total_container_charges."/- ---".$payable_amount);
-
-                // echo "vendor_total_container_charges: ".$vendor_total_container_charges."payable_amount: ".$payable_amount."<br>";
 
                 $coupon_id = null;
                 $coupon_name = null;
                 $actual_amount = $vendor_amount;
                 if ($vendor_cart_product->coupon) {
                     $coupon_id = $vendor_cart_product->coupon->promo->id;
-
                     if ($vendor_cart_product->coupon->promo->paid_by_vendor_admin == 0) {
                         $coupon_paid_by = 0;
                     }
 
                     $coupon_name = $vendor_cart_product->coupon->promo->name;
-
                     // -------------Coupon Related discount calculations start here----------------------
                     // ----fixed amount----------
                     if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
@@ -2825,7 +2816,7 @@ class OrderController extends FrontController
                         $vendor_discount_amount += $amount;
                     } else {
                         // ----Percent amount----------
-                        $percentage_amount = ($vendor_payable_amount * $vendor_cart_product->coupon->promo->amount / 100);
+                        $percentage_amount = ($actual_amount * $vendor_cart_product->coupon->promo->amount / 100);
                         $total_discount += $percentage_amount;
                         $vendor_payable_amount -= $percentage_amount;
                         $vendor_discount_amount += $percentage_amount;
@@ -2836,9 +2827,9 @@ class OrderController extends FrontController
                         $total_discount += $delivery_fee;
                         $deliveryfeeOnCoupon = 1;
                     }
+
                     // -------------Coupon Related discount calculations Ends here----------------------
                 }
-
                 // End applying service fee on vendor products total
                 // $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
                 $OrderVendor->service_fee_percentage_amount = $vendor_service_fee_percentage_amount;

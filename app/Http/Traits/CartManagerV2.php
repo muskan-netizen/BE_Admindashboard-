@@ -1375,7 +1375,7 @@ trait CartManagerV2
                         //     $total_taxable_amount -=  $discountTax;
                         // }
                         $coupon_amount_used = $promo_discount_amount;
-
+                        $discount_amount = $promo_discount_amount;
 
                         $promoCodeController = new PromoCodeController();
                         $promoCodeRequest = new Request();
@@ -1401,7 +1401,6 @@ trait CartManagerV2
                                 $error_message = __('Products for this vendor are not deliverable at your area. Please change address or remove product.');
                             }
                         }
-
 
                         if(!isset($serviceArea)){
                             $vendorData->service_area_empty = 1;
@@ -1551,8 +1550,6 @@ trait CartManagerV2
                 $total_subscription_discount_delivery  = $total_subscription_discount_delivery + $subscription_discount_delivery;
                 $vendorData->is_promo_code_available = $is_promo_code_available;
 
-
-
                 $taxChargeable['deliveryCharges'] = $total_deliver_charges;
                 $taxChargeable['vendor_service_fee_percentage_amount'] = $total_service_fee;
                 $taxChargeable['total_fixed_fee_amount'] = $total_fixed_fee_amount;
@@ -1595,7 +1592,7 @@ trait CartManagerV2
 
             $cart->total_subscription_discount = decimal_format(($total_subscription_discount_admin + $total_subscription_discount_vendor + $total_subscription_discount_delivery) ?? 0);
 
-            // $total_payable_amount = $total_payable_amount - $total_discount_amount;
+            $total_payable_amount = $total_payable_amount - $total_discount_amount;
             if ($loyalty_amount_saved > 0) {
                 if ($loyalty_amount_saved > $total_payable_amount) {
                     $loyalty_amount_saved =  $total_payable_amount;
