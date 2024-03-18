@@ -1667,9 +1667,9 @@ body.al_body_template_eight section.section-b-space {
     padding-top: 10px !important;
 }
 
-body.al_body_template_eight section.cab-banner-area.alTaxiBannerStart {
+/* body.al_body_template_eight section.cab-banner-area.alTaxiBannerStart {
     display: none;
-}
+} */
 
 body.al_body_template_eight .category-block {
     background-color: #fff;
@@ -2139,6 +2139,7 @@ article#page-container section .vendors section h2.h2-heading{margin-bottom: 20p
         margin-top: 0;
         display: inline-block;
     }
+    .al_body_template_eight article#page-container section .vendors section h2.h2-heading{width: 100%}
     .al_body_template_eight section#homepage_recently_viewed h2.h2-heading {
         padding: 30px 0;
     }

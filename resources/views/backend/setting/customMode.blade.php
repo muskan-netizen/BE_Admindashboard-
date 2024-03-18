@@ -38,7 +38,7 @@
             </span>
         </div>
     </div>
-   
+
 {{-- @endif --}}
  <div class="col-md-4">
         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
@@ -835,8 +835,88 @@
 
 <div class="col-md-4 ">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_freelance_on_homepage" class="mr-2 mb-0">{{ __('Enable Freelancer Location in Homepage') }}<small
+                class="d-block pr-5">{{ __('Enable Freelancer Location in Homepage.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_freelance_on_homepage"
+                id="is_freelance_on_homepage_switch" class="form-control checkbox_change"
+                data-className="is_freelance_on_homepage" data-color="#43bee1"
+                @if (@$getAdditionalPreference['is_freelance_on_homepage']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_freelance_on_homepage'] == 1) value="1" @else value="0" @endif
+            name="is_freelance_on_homepage" id="is_freelance_on_homepage" />
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_enable_compare_product" class="mr-2 mb-0">Bulk Order Product<small class="d-block pr-5">Enable Bulk Order Product Recomended For ECommerce.</small></label>
         <span> <input type="checkbox" data-plugin="switchery" name="is_corporate_user" id="is_corporate_user_switch" class="form-control checkbox_change" data-classname="is_corporate_user" data-color="#43bee1"   @if (@$getAdditionalPreference['is_corporate_user']) checked='checked' @endif ></span>
         <input type="hidden" @if (@$getAdditionalPreference['is_corporate_user'] == 1) value="1" @else value="0" @endif name="is_corporate_user" id="is_corporate_user">
+    </div>
+</div>
+<div class="col-md-4">
+    <div class="form-group d-flex justify-content-between mb-3">
+        <label for="enable_pwa_switch" class="mr-2 mb-0">{{ __('Enable PWA') }}</label>
+        <input type="hidden" @if (@$getAdditionalPreference['enable_pwa'] == 1) value="1" @else value="0" @endif name="enable_pwa" id="enable_pwa">
+
+        <span><input type="checkbox" data-plugin="switchery" name="enable_pwa_switch" id="enable_pwa_switch"
+                class="form-control" data-color="#43bee1"
+                @if (@$getAdditionalPreference['enable_pwa'] == 1) checked='checked' @endif></span>
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="vendor_online_status_switch" class="mr-2 mb-0">{{ __('Vendor Online Status Enable/Disable') }}<small
+                class="d-block pr-5">{{ __('Change Online Status In Vendor App Enable/Disable.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="vendor_online_status"
+                id="vendor_online_status_switch" class="form-control checkbox_change"
+                data-className="vendor_online_status" data-color="#43bee1"
+                @if (@$getAdditionalPreference['vendor_online_status']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['vendor_online_status'] == 1) value="1" @else value="0" @endif
+            name="vendor_online_status" id="vendor_online_status" />
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="distance_matrix_app_switch" class="mr-2 mb-0">{{ __('Google Matrix with Only App') }}<small
+                class="d-block pr-5">{{ __('Change Google Matrix Api /AppDisable.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="distance_matrix_app_status"
+                id="distance_matrix_app_switch" class="form-control checkbox_change"
+                data-className="distance_matrix_app_status" data-color="#43bee1"
+                @if (@$getAdditionalPreference['distance_matrix_app_status']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['distance_matrix_app_status'] == 1) value="1" @else value="0" @endif
+            name="distance_matrix_app_status" id="distance_matrix_app_status" />
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="cart_cms_page_switch" class="mr-2 mb-0">{{ __('Cart CMS Pages') }}<small
+                class="d-block pr-5">{{ __('Show CMS pages on cart page for all modules') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="cart_cms_page_status"
+                id="cart_cms_page_switch" class="form-control checkbox_change"
+                data-className="cart_cms_page_status" data-color="#43bee1"
+                @if (@$getAdditionalPreference['cart_cms_page_status']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['cart_cms_page_status'] == 1) value="1" @else value="0" @endif
+            name="cart_cms_page_status" id="cart_cms_page_status" />
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="document_report_switch" class="mr-2 mb-0">{{ __('Upload document report by vendor') }}<small
+                class="d-block pr-5">{{ __('Enable upload report in vendor.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="document_report"
+                id="document_report_switch" class="form-control checkbox_change"
+                data-className="document_report" data-color="#43bee1"
+                @if (getAdditionalPreference(['document_report'])['document_report']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (getAdditionalPreference(['document_report'])['document_report'] == 1) value="1" @else value="0" @endif
+            name="document_report" id="document_report" />
     </div>
 </div>

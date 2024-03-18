@@ -3502,7 +3502,7 @@ body[dir=rtl] .alFourThLogo {
     }
     .al_body_template_four .cardbanner,
     .al_desktop_banner {
-        height: 290px
+        max-height: 290px
     }
     .grid-row.grid-4-4 {
         grid-gap: 40px;
@@ -3821,7 +3821,7 @@ body[dir=rtl] .alFourThLogo {
     }
     .al_body_template_four .cardbanner,
     .al_desktop_banner {
-        height: 200px
+        max-height: 200px
     }
     .slick-slider .img-outer-box {
         height: 90px

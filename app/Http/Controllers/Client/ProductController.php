@@ -291,7 +291,7 @@ class ProductController extends BaseController
                 }
             }
         }
-        
+
 
 
         $otherProducts                      = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
@@ -309,7 +309,7 @@ class ProductController extends BaseController
         $agent_dispatcher_tags = [];
         $agent_dispatcher_on_demand_tags = [];
         $pro_tags = [];
-        
+
         if(isset($product->category->categoryDetail)){
             switch($product->category->categoryDetail->type_id){
                 case 7:
@@ -355,7 +355,7 @@ class ProductController extends BaseController
         $allRoles = Role::where('status',1);
         $roles = $allRoles->where('is_enable_pricing',1)->get();
         $allRoles = $allRoles->get();
-        
+
 
         $selectedRoles = [];
         if($getAdditionalPreference['is_free_delivery_by_roles'] == 1){
@@ -413,7 +413,7 @@ class ProductController extends BaseController
             if ($validation->fails()) {
                 return redirect()->back()->withInput()->withErrors($validation);
             }
-            
+
             $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
 
@@ -492,7 +492,7 @@ class ProductController extends BaseController
                 }
 
             }
-          
+
             $product->sku = $request->sku;
             $product->markup_price = $request->markup_price;
             $product->url_slug = $request->url_slug;
@@ -533,7 +533,7 @@ class ProductController extends BaseController
 
             // product pickup date by vendor vendor FramMeat priyal by sohail
             $product->product_pickup_date  = isset($request->product_pickup_date) ? $request->product_pickup_date : '';
-           
+
             $product->is_product_instant_booking   = ($request->has('is_product_instant_booking') && $request->is_product_instant_booking == 'on') ? 1 : 0;
 
             $product->service_charges_tax = ($request->has('service_charges_tax') && $request->service_charges_tax == 'on') ? 1 : 0;
@@ -577,15 +577,15 @@ class ProductController extends BaseController
             $product->travel_mode_id = ($request->has('travel_mode')) ? $request->travel_mode : 0;
             $product->toll_pass_id = ($request->has('toll_passes')) ? $request->toll_passes : 0;
             $product->emission_type_id = ($request->has('emission_type')) ? $request->emission_type : 0;
-            
+
             $product->security_amount = ($request->has('security_amount')) ? $request->security_amount : null;
             $product->is_recurring_booking        = $request->is_recurring_booking == 'on' ? 1 : 0;
 
             $product->same_day_delivery = ($request->has('same_day_delivery') && $request->same_day_delivery == 'on') ? 1 : 0;
-            
+
             $product->next_day_delivery = ($request->has('next_day_delivery') && $request->next_day_delivery == 'on') ? 1 : 0;
             $product->hyper_local_delivery = ($request->has('hyper_local_delivery') && $request->hyper_local_delivery == 'on') ? 1 : 0;
-            
+
             $product->is_slot_from_dispatch        = ($request->has('is_slot_from_dispatch') && $request->is_slot_from_dispatch == 'on') ? 1 : 0;
             $product->is_show_dispatcher_agent     = ($request->has('is_show_dispatcher_agent') && $request->is_show_dispatcher_agent == 'on') ? 1 : 0;
 
@@ -835,7 +835,7 @@ class ProductController extends BaseController
                 }
 
             }
-            
+
 
             if(!empty($request->rental_protection)){
                 foreach($request->rental_protection as $rentalId){
@@ -868,7 +868,7 @@ class ProductController extends BaseController
                     ProductBookingOption::updateOrCreate($bookingOption,$bookingOption);
                 }
             }
-            
+
             DB::commit();
             $this->createOrUpdateProductInSquarePos($id);
             $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );
@@ -897,7 +897,7 @@ class ProductController extends BaseController
             if(!empty($product) && isset($product->square_item_id) && !empty($product->square_item_id)){
                 $this->deleteBatchInSquarePos([$product->square_item_id]);
             }
-            
+
             $productde = Product::productDelete($id);
             // $product = Product::find($id);
 
@@ -1244,7 +1244,7 @@ class ProductController extends BaseController
 
     public function deleteImage(Request $request, $domain = '', $pid = 0, $imgId = 0){
         $product = Product::findOrfail($pid);
-//      /   $img = VendorMedia::findOrfail($imgId);     
+//      /   $img = VendorMedia::findOrfail($imgId);
         $prodImage =  ProductImage::findOrfail($imgId);
        // $img->delete();
         if(!empty($prodImage)){
@@ -1261,7 +1261,7 @@ class ProductController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function importCsvNew(Request $request){
+    public function importCsv(Request $request){
         $validated = $request->validate([
             'product_excel' => 'required|mimes:csv,txt'
         ]);
@@ -1275,11 +1275,9 @@ class ProductController extends BaseController
             $fileModel->path = 'storage/' . $filePath;
             $fileModel->status = 1;
             $fileModel->save();
-            //  $files = CsvProductImport::where('status', 1)->where('type', 0)->first();
-            //foreach ($files as $file) {
             if (File::exists($fileModel->storage_url)) {
                 $csv = file($fileModel->storage_url);
-                $chunks = array_chunk($csv, 1000);
+                $chunks = array_chunk($csv, 2000);
                 $header = [];
                 $flag = 0;
                 foreach ($chunks as $key => $chunk) {
@@ -1288,22 +1286,20 @@ class ProductController extends BaseController
                         $header = $data[0];
                         unset($data[0]);
                     }
-                    $flag = ProductImportCsvJob::dispatch($fileModel->vendor_id, $fileModel->id, json_encode($data), $header);
+                    $flag = ProductImportCsvJob::dispatch($fileModel->vendor_id, $fileModel->id, $data, $header)->onQueue('csv_import');
                 }
                 if ($flag) {
                     unlink($fileModel->storage_url);
                 }
             }
-            //  }
-            
             return response()->json([
                 'status' => 'success',
                 'message' => 'Product import file uploaded successfully!'
             ]);
         }
     }
-    
-    public function importCsv(Request $request){
+
+    public function importCsvOld(Request $request){
         $validated = $request->validate([
             'product_excel' => 'required|mimes:csv,txt'
         ]);
@@ -1414,7 +1410,7 @@ class ProductController extends BaseController
         ];
         try {
             $dispatch_domain = $this->checkIfOnDemandOn();
-            
+
                 if ($dispatch_domain && $dispatch_domain != false) {
                     $retResponse['is_onDemand_enable'] = 1;
                     $unique = Auth::user()->code;
@@ -1428,7 +1424,7 @@ class ProductController extends BaseController
                             $res = $client->get($url.'/api/get-agent-tags?email_set='.$email);
                             $response = json_decode($res->getBody(), true);
                             if($response && $response['message'] == 'success'){
-                                
+
                                 $retResponse['tags'] = $response['tags'];
                             }
                 }
@@ -1668,7 +1664,7 @@ class ProductController extends BaseController
     {
         try{
             if($request->has('product_id') && $request->has('variant_id')){
-                
+
                 $productVariantByRole = [];
                 $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
                 if($roles){

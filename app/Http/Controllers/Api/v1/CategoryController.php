@@ -92,7 +92,6 @@ class CategoryController extends BaseController
          
         if ($type == 'vendor' && $product_list == 'false') {
          
-            $user = Auth::user();
             $vendor_ids = [];
             $vendor_categories = VendorCategory::where('category_id', $category_id)->where('status', 1)->get();
        
@@ -104,7 +103,7 @@ class CategoryController extends BaseController
           
             //return $vendor_categories;
 
-            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->with('vendor_promo')->select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude');
+            $vendorData = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->with('vendor_promo')->select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude');
             
             $ses_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
 
@@ -186,8 +185,9 @@ class CategoryController extends BaseController
             }
             return $vendorData;
         } elseif ($type == 'vendor' && $product_list == 'true') {
-            $vendor_ids = Vendor::byVendorSubscriptionRule($preferences)->where('status', 1);
-           
+            $latitude = !empty($request->latitude) ? $request->latitude : $preferences->Default_latitude;
+            $longitude = !empty($request->longitude) ? $request->longitude : $preferences->Default_longitude;
+            $vendor_ids = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->where('status', 1);
             $vendor_ids =  $vendor_ids->pluck('id')->toArray();
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $products = Product::has('vendor')->with([
@@ -245,7 +245,6 @@ class CategoryController extends BaseController
                     }
                 }
             }
-
             $vendorDistance[] = [];
             if (!empty($products)) {
                  foreach ($products as $key => $product) {
@@ -276,7 +275,7 @@ class CategoryController extends BaseController
                     $vendor_ids[] = $vendor_category->vendor_id;
                 }
             }
-            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id');
+            $vendorData = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id');
          
             if(isset($preferences->pickup_delivery_service_area) && ($preferences->pickup_delivery_service_area == 1)){
 
@@ -320,7 +319,13 @@ class CategoryController extends BaseController
             }
             return $category_details;
         } elseif ($type == 'product' || $type == 'on demand service' || $type == 'laundry') {
-            $vendor_ids = Vendor::byVendorSubscriptionRule($preferences)->where('status', 1);
+
+            $latitude = !empty($request->latitude) ? $request->latitude : $preferences->Default_latitude;
+            $longitude = !empty($request->longitude) ? $request->longitude : $preferences->Default_longitude;
+
+
+            $vendor_ids = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->where('status', 1);
+            
             $vendor_ids =  $vendor_ids->pluck('id')->toArray();
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $products = Product::has('vendor')->with([
@@ -352,8 +357,12 @@ class CategoryController extends BaseController
                     $q->where('language_id', $langId);
                 }
             ])->select('products.category_id', 'mode_of_service', 'products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.tags','products.is_recurring_booking')
-                ->where('products.category_id', $category_id)->where('products.is_live', 1)->where('mode_of_service', $mode_of_service)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit, $page);
+            ->where('products.category_id', $category_id)->where('products.is_live', 1)
+            ->where('mode_of_service', $mode_of_service)
+            ->whereIn('products.vendor_id', $vendor_ids)
+            ->paginate($limit, $page);
                 
+
             if (!empty($products)) {
                 foreach ($products as $key => $product) {
                     foreach ($product->addOn as $key => $value) {
@@ -427,9 +436,11 @@ class CategoryController extends BaseController
                             $product->lineOfSightDistance =$vendorDistance[$product->vendor_id]->lineOfSightDistance??0;
                             $product->timeofLineOfSightDistance =$vendorDistance[$product->vendor_id]->timeofLineOfSightDistance??0;
                         }
+                    
                 }
-            }
 
+            }
+             
             $listData = $products;
             return $listData;
         }

@@ -550,7 +550,7 @@ class ReturnOrderController extends BaseController{
                     $vendor_return_payment->total_return_amount = $return_response['vendor_return_amount'];
                     $vendor_return_payment->save();
                     DB::commit();
-                    //           $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
+                              $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
                     return response()->json([
                         'status' => 'success',
                         'message' => __('Order Cancelled Successfully.')

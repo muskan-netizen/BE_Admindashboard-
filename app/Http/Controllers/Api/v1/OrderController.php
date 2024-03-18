@@ -6,10 +6,11 @@ use App\Http\Controllers\AhoyController;
 use DB;
 use Carbon\{Carbon,CarbonPeriod};
 use Illuminate\Http\Request;
-use App\Http\Traits\{ApiResponser,OrderTrait,CartManager,DispatcherSlot, MargTrait, VendorTrait};
+use App\Http\Traits\{ApiResponser, Borzoe, OrderTrait,CartManager,DispatcherSlot, MargTrait, VendorTrait};
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Client\ShippoController;
+use App\Http\Controllers\D4BDunzoController;
 use App\Http\Controllers\DunzoController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\Front\QuickApiController;
@@ -20,6 +21,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
+use App\Http\Controllers\Client\BorzoeDeliveryController;
 use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption,Bid, CartBookingOption, CartRentalProtection, Notification, OrderNotificationsLogs, ProcessorProduct,OrderFiles, OrderVendorProduct, ProductAvailability, VendorMargConfig};
 
 use App\Models\AutoRejectOrderCron;
@@ -27,7 +29,7 @@ use App\Models\AutoRejectOrderCron;
 use App\Models\{VendorOrderCancelReturnPayment};
 class OrderController extends BaseController
 {
-    use ApiResponser,CartManager,OrderTrait,DispatcherSlot,VendorTrait,MargTrait;
+    use ApiResponser,CartManager,OrderTrait,DispatcherSlot,VendorTrait,MargTrait,Borzoe;
     /**
      * Display a listing of the resource.
      *
@@ -131,7 +133,7 @@ class OrderController extends BaseController
             $longitude = '';
             $Order_bid_discount = 0;
             $daysCnt ='';
-
+            $totalFreeDeliveryCharges = 0;
             if ($user) {
                 DB::beginTransaction();
 
@@ -556,7 +558,7 @@ class OrderController extends BaseController
                             }
 
 
-                            $taxable_amount += $product_taxable_amount;
+                            // $taxable_amount += $product_taxable_amount;
                             $vendor_taxable_amount +=  decimal_format($taxable_amount);
                             //$total_amount += ($vendor_cart_product->quantity * $variant->price) + ($vendor_cart_product->quantity * $variant->container_charges);
                             $variant_price = $variant->price;
@@ -879,7 +881,6 @@ class OrderController extends BaseController
 
                         $actual_amount = $vendor_payable_amount;
 
-
                         if ($vendor_cart_product->coupon && !empty($vendor_cart_product->coupon->promo)) {
                             $coupon_id = $vendor_cart_product->coupon->promo->id;
 
@@ -914,6 +915,7 @@ class OrderController extends BaseController
                                 $vendor_discount_amount = $vendor_discount_amount +  $delivery_fee;
                                 $vendor_payable_amount = $vendor_payable_amount - $delivery_fee;
                                 $total_discount += $delivery_fee;
+                                $totalFreeDeliveryCharges += $delivery_fee;
                                 $deliveryfeeOnCoupon = 1;
                             }
                             if(isset($rate) && $total_discount > 0 ){
@@ -947,7 +949,6 @@ class OrderController extends BaseController
                         $total_delivery_fee += $delivery_fee;
                         $vendor_payable_amount += $delivery_fee;
                         $vendor_payable_amount += $vendor_taxable_amount;
-
 
                         // check if is_tax_price_inclusive is on than no tax
                         if (! $additionalPreferences->is_tax_price_inclusive) {
@@ -1054,7 +1055,7 @@ class OrderController extends BaseController
                         $order->total_amount = ($total_amount + $total_container_charges) - $Order_bid_discount??0;
                     }
                     $order->total_discount = $total_discount;
-                    $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
+                    $payable_amount = $payable_amount + $total_delivery_fee - $total_discount -$totalFreeDeliveryCharges;
 
 
                     if ($loyalty_amount_saved > 0) {
@@ -1346,8 +1347,9 @@ class OrderController extends BaseController
                     }elseif($request->shipping_delivery_type=='M'){
                         //Create Shipping place order request for Shiprocket
                         $order_ship = $this->placeOrderRequestAhoy($request);
+                    }elseif($request->shipping_delivery_type=='D4'){
+                        $order_ship = $this->placeOrderRequestD4B($request);
                     }
-
                 }
 
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id]);
@@ -1358,7 +1360,29 @@ class OrderController extends BaseController
              } catch(\Exception $e){
              DB::rollback();
             }
+
         }
+    }
+
+
+    /// ******************  check If any D4b Mile on   ************************ ///////////////
+    public function placeOrderRequestD4B($request)
+    {
+        $ship = new D4BDunzoController();
+        //Create Shipping place order request for Shiprocket
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+        $order_d4dunzo = $ship->createOrderRequestD4BDunzo($checkOrder->user_id,$checkdeliveryFeeAdded);
+        }
+        if ($order_d4dunzo['state'] == 'created'){
+            $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+            ->update([
+                'web_hook_code' => $order_d4dunzo['task_id'],
+                ]);
+            return 1;
+        }
+        return 2;
     }
 
     /// ******************  check If any Product Last Mile on   ************************ ///////////////
@@ -1761,7 +1785,7 @@ class OrderController extends BaseController
                 'user_icon' => $customer->image,
                 'order_pre_time'=>$vendor_details->order_pre_time,
                 'app_call' => 1,
-
+                'tip_amount'=>$order->tip_amount??0
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1898,7 +1922,9 @@ class OrderController extends BaseController
                 'dbname' => $client->database_name,
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
-                'user_icon' => $customer->image
+                'user_icon' => $customer->image,
+                'tip_amount'=>$order->tip_amount??0
+
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -2082,7 +2108,9 @@ class OrderController extends BaseController
                  'dbname' => $client->database_name,
                  'order_id' => $order->id,
                  'customer_id' => $order->user_id,
-                 'user_icon' => $customer->image
+                 'user_icon' => $customer->image,
+                 'tip_amount'=>$order->tip_amount??0
+
              ];
             if($order_vendor->is_restricted == 1)
             {
@@ -2393,8 +2421,8 @@ class OrderController extends BaseController
                 $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
                 $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
                 $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
-                $order->payable_amount = $order->total_price;
-                $order->payable_amount = decimal_format($order->total_price - $order->orderDetail->wallet_amount_used);
+                
+                $order->payable_amount = decimal_format($order->orderDetail->payable_amount);
                 if(checkColumnExists('orders', 'is_postpay')){
                     $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
                 }
@@ -2960,9 +2988,9 @@ class OrderController extends BaseController
                }
            }
 
-            // $order['user_document_value'] =  $user_docs;
-           $order->taxable_amount =  decimal_format($total_other_taxes??0);
-           $order->total_other_taxes =  decimal_format($total_other_taxes??0);
+             // $order['user_document_value'] =  $user_docs;
+            $order->taxable_amount =  decimal_format($total_other_taxes??0);
+            $order->total_other_taxes =  decimal_format($total_other_taxes??0);
             $order['user_document_list'] =  $user_registration_documents;
             $order['category_KYC_document'] = $category_KYC_document??null;
             $order->slot_based_Price =  $slot_based_Price??0;
@@ -3784,7 +3812,9 @@ class OrderController extends BaseController
                     }elseif($orderData->shipping_delivery_type=='L'){
                         //Create Shipping place order request for Lalamove
                         //$orderPlaced = $this->placeOrderRequestlalamove($request);
-                    }elseif ($orderData->shipping_delivery_type == 'K') {
+                    } elseif ($orderData->shipping_delivery_type == 'B') {
+                        $orderPlaced = $this->placeOrderRequestBorzoeApi($request);
+                    } elseif ($orderData->shipping_delivery_type == 'K') {
                         //Create Shipping place order request for Kwik
                         $orderPlaced = $this->placeOrderRequestKwikApi($request);
 
@@ -3832,6 +3862,10 @@ class OrderController extends BaseController
                             //Cancel Shipping place order request for KwikApi
                             $lala = new QuickApiController();
                             $order_lalamove = $lala->cancelOrderRequestKwikApi($request->order_id,$request->vendor_id);
+                        }elseif ($orderData->shipping_delivery_type == 'B') {
+                            //Cancel Shipping place order request for Borzoe
+                            // $borzoe = new BorzoeDeliveryController();
+                            $order_lalamove = $this->cancleOrderToBorzoApi($request->vendor_id, $request->order_id);
                         }elseif($orderData->shipping_delivery_type=='SR'){
                             //Cancel Shipping place order request for Shiprocket
                             $ship = new ShiprocketController();
@@ -5164,6 +5198,33 @@ class OrderController extends BaseController
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
-
+    
+    /**
+     * placeOrderRequestBorzoeApi
+     *
+     * @param  mixed $request
+     * @return void
+     */
+    public function placeOrderRequestBorzoeApi($request)
+    {
+        $borzoe = new BorzoeDeliveryController();
+        //Create Shipping place order request for Borzoe delivery
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
+            $order_ship = $this->placeOrderToBorzoApi($request->vendor_id, $request->order_id);
+        }
+        $orderDetails = json_decode($order_ship);
+        if ($order_ship) {
+             OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'borzoe_order_id' => $orderDetails->order->order_id,
+                    'borzoe_order_name'=> $orderDetails->order->order_name,
+                    'dispatch_traking_url' => $orderDetails->order->points[0]->tracking_url??null,
+                ]);
+            return 1;
+        }
+        return false;
+    }
 
 }

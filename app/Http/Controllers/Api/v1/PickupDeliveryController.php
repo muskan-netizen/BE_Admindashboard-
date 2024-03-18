@@ -132,6 +132,16 @@ class PickupDeliveryController extends BaseController{
                     $tax_amount = 0;
             if(!empty($products)){
                 foreach ($products as $key => $product) {
+                    $total_price = 0 ;
+                    $payable_amount= 0;
+                    $vendor_payable_amount=0;
+                    $taxable_amount = 0;
+                    $tax_amount = 0;
+                    $response['tips'] = [];
+                    $payable_amount= 0;
+                    $vendor_payable_amount=0;
+                    $taxable_amount = 0;
+                    $tax_amount = 0;
                     $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
                     $product->service_charge_amount  = 0.00;
                     if($product->vendor->fixed_service_charge)
@@ -225,7 +235,7 @@ class PickupDeliveryController extends BaseController{
                     // $product->price_in_dollar_compare = $price_in_dollar_compare;
                     $product->tax_rate =  $tax_amount;
                     $product->total_tags_price = decimal_format($product->total_tags_price + $taxable_amount);
-                    $product->tags_price = decimal_format($product->tags_price + $product->tax_rate);
+                    $product->tags_price = decimal_format($product->tags_price);
                     // $product->payable_amount =  $payable_amount;
                     $product->taxable_amount =  $taxable_amount;
                     $product->wallet_amount_used = "0.00";
@@ -1566,7 +1576,7 @@ class PickupDeliveryController extends BaseController{
         }
         
         $order->tax_rate =  $tax_amount;        
-        $order->subtotal_amount = $order->subtotal_amount + $tax_amount;      
+        // $order->subtotal_amount = $order->subtotal_amount + $tax_amount;      
         $order->loyalty_amount_saved = $loyalty_amount_saved ?? 0;        
         $order->payable_amount =  $order->payable_amount + $tax_amount - $order->orderDetail['subscription_discount'];       
         // $order->total_tags_price = decimal_format($product->total_tags_price + $taxable_amount);
@@ -1594,6 +1604,9 @@ class PickupDeliveryController extends BaseController{
         if(isset($order->orderDetail->wallet_amount_used)){           
             $order->wallet_amount_used = isset($order->orderDetail)?decimal_format($order->orderDetail->wallet_amount_used):0.00;           
         }
+        if(isset($order->orderDetail->scheduled_date_time)){
+            $order->orderDetail->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);
+        }
         $order->payable_amount = decimal_format($order->payable_amount - $order->wallet_amount_used);
         if($response->status() == 200){
             $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order->order_id ,'vendor_id' =>$order->vendor_id ])->latest()->first();
@@ -1602,6 +1615,9 @@ class PickupDeliveryController extends BaseController{
             $order->dispatcher_status_type=  $type ?  $type->type :1;
             $response = $response->json();
             $response['tips'] = [];
+            if(isset($response) && isset( $response['order'] ) &&  !empty($response['order']['scheduled_date_time'])){
+                $response['order']['scheduled_date_time'] = dateTimeInUserTimeZone($response['order']['scheduled_date_time'], $user->timezone);
+            }
             if($order->orderDetail->total_amount > 0 && isset($preferences) && $preferences->tip_before_order == 1){
                 $response['tips'] = array(
                     ['label' => '5%', 'value' => decimal_format(0.05 * $order->orderDetail->total_amount)],                    

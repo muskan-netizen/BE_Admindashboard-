@@ -191,7 +191,6 @@ class AddonSetController extends BaseController
     }
     
     public function deleteAddonOption(Request $request, $domain = '') {
-        //pr($request->all());
         $addonOptions = AddonOption::find($request->option_id);
         //pr( $addonOptions);
         if($addonOptions){
@@ -206,9 +205,7 @@ class AddonSetController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function destroy($domain = '', $id){
-        $aos = AddonSet::where('id', $id)->first();
-        $aos->status = 2;
-        $aos->save();
+        AddonSet::where('id', $id)->delete();
         return redirect()->back()->with('success', 'Addon set deleted successfully!');
     }
 }

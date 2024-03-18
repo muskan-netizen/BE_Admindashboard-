@@ -343,21 +343,21 @@ class BaseController extends Controller{
             'types.title as redirect_to',
             'categories.type_id'
         );
-    
+
                     // if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
                     //     $categories->whereIn('categories.type_id',[10] );
                     // }else{
                         $categories->whereIn('categories.type_id',$categoryTypes );
                     // }
-        
+
                 $categories =  $categories->distinct('categories.slug');
-                         
+
         $status = $this->field_status;
         $include_categories = [4,8]; // type 4 for brands
         if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
             $include_categories[] = 10;
         }
-        
+
         $celebrity_check = 0;
         if ($preferences) {
             if((isset($preferences->celebrity_check)) && ($preferences->celebrity_check == 1)){
@@ -376,8 +376,8 @@ class BaseController extends Controller{
                 //                         });
                 //                 });
                 //         });
- 
-               
+
+
                 $categories = $categories->when($vends, function ($query) use($vends , $include_categories) {
                     $query->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
                             ->where(function ($q1) use ($vends , $include_categories) {
@@ -388,20 +388,20 @@ class BaseController extends Controller{
                                     });
                             });
                     });
-                    
+
            }
         }
 
-        
-    
-        
+
+
+
         $categories = $categories
                         ->where('categories.id', '>', '1')
                         ->whereNotNull('categories.type_id');
         if($celebrity_check == 0){
             $categories = $categories->where('categories.type_id', '!=', 5);
         }
-     
+
         $categories = $categories->where('categories.is_visible', 1)
                         ->where('categories.status', '!=', $status)
                         ->where('categories.is_core', 1)
@@ -413,15 +413,15 @@ class BaseController extends Controller{
                         ->orderBy('categories.position', 'asc')
                         ->groupBy('id');
 
-                           
+
         if(@$request['category_limit'] && $request['category_limit'] > 0){
             $categories = $categories->take($request['category_limit'])->get();
         }else{
-           
+
             $categories = $categories->get();
         }
-       
-        
+
+
         // dd($categories);
         if($categories){
             $categories = $this->buildTree($categories->toArray());
@@ -608,7 +608,7 @@ class BaseController extends Controller{
         $latitude = ($user->latitude) ? $user->latitude : $lat;
         $longitude = ($user->longitude) ? $user->longitude : $lng;
         $vendorType = $user->vendorType ? $user->vendorType : $type;
-        $serviceAreaVendors = Vendor::select('id', 'show_slot');
+        $serviceAreaVendors = Vendor::vendorOnline()->select('id', 'show_slot');
         $vendors = [];
         if($vendorType){
             $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
@@ -926,14 +926,14 @@ class BaseController extends Controller{
         return $amount;
     }
 
-   
+
     public function checkIfLastMileDeliveryOn()
     {
 
         $preference = ClientPreference::first();
-     
+
         if( isset($preference)  && $preference->business_type == 'taxi'){
-        
+
                 if($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
                 return $preference;
                 else
@@ -1173,7 +1173,7 @@ class BaseController extends Controller{
         $latitude = ($user->latitude) ? $user->latitude : $lat;
         $longitude = ($user->longitude) ? $user->longitude : $lng;
         $vendorType = $user->vendorType ? $user->vendorType : $type;
-        $serviceAreaVendors = Vendor::select('id', 'show_slot');
+        $serviceAreaVendors = Vendor::vendorOnline()->select('id', 'show_slot');
         $vendors = [];
         if ($vendorType) {
             $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
@@ -1202,15 +1202,15 @@ class BaseController extends Controller{
                 // }
             }
         }
-    
+
         if ($serviceAreaVendors->isNotEmpty()) {
             foreach ($serviceAreaVendors as $value) {
-          
+
                 $vendors[] = $value;
             }
         }
-      
+
         return $vendors;
     }
-    
+
 }
