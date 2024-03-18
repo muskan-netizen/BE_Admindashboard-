@@ -235,7 +235,7 @@ class P2PController extends BaseController
                     $vendor_ids[] = $vendor_category->vendor_id;
                 }
             }
-            $vendorData = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id');
+            $vendorData = Vendor::vendorOnline()->select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id');
             if(isset($preferences->pickup_delivery_service_area) && ($preferences->pickup_delivery_service_area == 1)){
 
                 if (!empty($pickup_latitude) && !empty($pickup_longitude)) {
@@ -276,10 +276,9 @@ class P2PController extends BaseController
                 );
             }
             return $category_details;
-        } elseif ($type == 'product' || $type == 'appointment' || $type == 'on demand service' || strtolower($type) == 'laundry' || $type = 'rental service') {
+        } elseif ($type == 'product' || $type == 'appointment' || $type == 'on demand service' || strtolower($type) == 'laundry' || $type == 'rental service' || $type == 'p2p') {
            
             $vendor_ids = Vendor::where('status', 1)->pluck('id')->toArray();
-                
            
             if (!empty($request->latitude) && !empty($request->longitude)) {
             
@@ -324,7 +323,7 @@ class P2PController extends BaseController
             
           
             
-            $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
+            $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency ?? 1)->first();
             $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
             $now = Carbon::now();
             $products = Product::has('vendor')->with(['ProductAttribute',
@@ -342,16 +341,19 @@ class P2PController extends BaseController
                 }, 'inwishlist' => function ($qry) use ($userid) {
                     $qry->where('user_id', $userid);
                 }
-            ])->whereHas('product_availability', function ($q) use ($now, $vendorIds) {
-                // $q->where(function($qq) use ($now, $vendorIds){
-                //     $qq->where('date_time', '>', $now);
-                //     $qq->where('not_available', 0);
-                // });
-                $q->orWhereIn('vendor_id', $vendorIds);
+            ])->where(function($q)use($now, $vendorIds,$type){
+                if ($type != 'p2p') {
+                $q->whereHas('product_availability', function ($q) use ($now, $vendorIds) {
+                    // $q->where(function($qq) use ($now, $vendorIds){
+                    //     $qq->where('date_time', '>', $now);
+                    //     $qq->where('not_available', 0);
+                    // });
+                    $q->orWhereIn('vendor_id', $vendorIds);
+                });
+                }
             })->where('products.category_id', $category_id)
                 ->where('products.is_live', 1); 
 
-                
             if(!empty($vendorIds))
             {
 

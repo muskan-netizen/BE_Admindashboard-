@@ -66,7 +66,7 @@
                         $currYear = substr($currYear, -2);
                     @endphp
                     <p>&copy; {{$prevYear}}-{{$currYear}} | {{ __("All rights reserved") }}</p>
-                    
+
                 </td>
             </tr>
         </table>

@@ -149,7 +149,8 @@ class PaymentOptionController extends BaseController
                         case 'stripe':
                             $validatedData = $request->validate([
                                 'stripe_api_key' => 'required',
-                                'stripe_publishable_key' => 'required'
+                                'stripe_publishable_key' => 'required',
+                                'stripe_webhook_signature' => 'required'
                             ], [
                                 'stripe_api_key.required' => 'Stripe secret key field is required'
                             ]);
@@ -157,7 +158,8 @@ class PaymentOptionController extends BaseController
                             if ($request->stripe_api_key != 'admin@640') {
                                 $stripe_arr = array(
                                     'api_key' => $request->stripe_api_key,
-                                    'publishable_key' => $request->stripe_publishable_key
+                                    'publishable_key' => $request->stripe_publishable_key,
+                                    'webhook_signature' =>  $request->stripe_webhook_signature
                                 );
                                 if (isset($request->stripe_client_id)) {
                                     $stripe_arr['client_id'] = $request->stripe_client_id;
@@ -824,7 +826,19 @@ class PaymentOptionController extends BaseController
                                         'totalpay_MerchantId' => $request->totalpay_MerchantId,
                                         'totalpay_password' => $request->totalpay_password,
                                     ));
-                                    break;
+                        break;
+                        case 'thawani':
+                                    $validatedData = $request->validate([
+                                    'thawani_Apikey' => 'required',
+                                    'thawani_publishKey' => 'required',
+                                    
+                                    
+                                    ]);
+                                    $json_creds = json_encode(array(
+                                    'thawani_Apikey' => $request->thawani_Apikey,
+                                    'thawani_publishKey' => $request->thawani_publishKey,
+                                    ));
+                        break;
                     }
                 }
             }

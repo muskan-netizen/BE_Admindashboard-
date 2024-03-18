@@ -51,7 +51,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('user/registration/document', 'Api\v1\HomeController@UserRegistrationDocument');
 
         Route::post('/cart/updateCartWalletAmount', 'Api\v1\CartController@updateCartWalletAmount');
-        
+
         Route::post('product/inquiry', 'Api\v1\ProductInquiryController@store');
         Route::post('cart/add', 'Api\v1\CartController@add');
         Route::post('checkProductAvailibility', 'Api\v1\RentalProductController@checkProductAvailibility');
@@ -123,8 +123,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('order-tracking', 'Api\v1\OrderController@OrderTracking');
 
-        Route::post('upload-cart-file', 'Api\v1\CartController@uploadOrderFile'); 
-        Route::get('remove-cart-file', 'Api\v1\CartController@RemoveOrderFile'); 
+        Route::post('upload-cart-file', 'Api\v1\CartController@uploadOrderFile');
+        Route::get('remove-cart-file', 'Api\v1\CartController@RemoveOrderFile');
         // get slot from dispatcher
         Route::post('getslotsFormDispatcher', 'Api\v1\AppointmentController@getSlotFromDispatchDemand');
         // get GerenalSlot slot from dispatcher
@@ -132,7 +132,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::get('home-restaurents', 'Api\v1\HomeController@homeRestaurents');
         Route::get('category-restaurents/{category_id}', 'Api\v1\HomeController@categoryRestaurents');
-        
+
         Route::get('allergic-items', 'Api\v1\AllergicItemController@index');
 
     });

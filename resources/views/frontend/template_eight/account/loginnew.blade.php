@@ -106,14 +106,19 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                         </div>
                         </form>
                     </div>
-                    <div class="col-md-12">
+                    {{-- <div class="col-md-12">
                         <div class="divider_line mt-3">
                             <span>OR</span>
                         </div>
-                    </div>
+                    </div> --}}
                         <div class="col-md-12">
                             @if(session('preferences'))
                             @if(@session('preferences')->fb_login == 1 || @session('preferences')->twitter_login == 1 || @session('preferences')->google_login == 1 || @session('preferences')->apple_login == 1)
+
+                            <div class="divider_line mt-3">
+                                <span>OR</span>
+                            </div>
+                            
                             <ul class="social-media-links d-flex align-items-center justify-content-center mb-4 mt-3">
                                 @if(@session('preferences')->google_login == 1)
                                 <li>

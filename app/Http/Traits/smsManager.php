@@ -17,7 +17,6 @@ trait smsManager{
             $to_number = substr($to, 1);
             $endpoint = $api_url.'?apikey='.$crendentials->api_key.'&senderid='.$crendentials->sender_id.'&number='.$to_number.'&message='.$message.'&format=json&template_id='.$templates_id;
             $response=$this->getGuzzle($endpoint);
-            \Log::info(['response mTalkz_sms ', $response]);
             return $response;
     }
 

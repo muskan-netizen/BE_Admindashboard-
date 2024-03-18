@@ -34,6 +34,7 @@ function  layoutMode(){
         autoplay: !0,
         autoplaySpeed: 3e3,
         responsive: [
+            { breakpoint: 1530, settings: { slidesToShow: 4, slidesToScroll: 3 } },
             { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
             { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
             { breakpoint:  480, settings: { slidesToShow: 2, slidesToScroll: 1 } },
@@ -72,6 +73,7 @@ function  layoutMode(){
         responsive: [
             { breakpoint: 1920, settings: { slidesToShow: 8, slidesToScroll: 2 } },
             { breakpoint: 1530, settings: { slidesToShow: 6, slidesToScroll: 7 } },
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 7 } },
             { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
             { breakpoint:  480, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
@@ -111,7 +113,7 @@ function  layoutMode(){
             {breakpoint: 991,settings: {slidesToShow: 4,slidesToScroll: 1}},
             {breakpoint: 767,settings: {slidesToShow: 3,slidesToScroll: 1}},
             {breakpoint: 576,settings: {slidesToShow: 2,slidesToScroll: 1}},
-            {breakpoint: 480,settings: {slidesToShow: 1,slidesToScroll: 1}},
+            {breakpoint: 420,settings: {slidesToShow: 1,slidesToScroll: 1}},
             {breakpoint: 360,settings: {slidesToShow: 1,slidesToScroll: 1}}
         ]
     };
@@ -127,6 +129,8 @@ function  layoutMode(){
         responsive: [
             { breakpoint: 1920, settings: { slidesToShow: 8, slidesToScroll: 8 } },
             { breakpoint: 1530, settings: { slidesToShow: 7, slidesToScroll: 7 } },
+            { breakpoint: 1200, settings: { slidesToShow: 5, slidesToScroll: 5 } },
+            { breakpoint: 1024, settings: { slidesToShow: 4, slidesToScroll: 5 } },
             { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
@@ -143,6 +147,7 @@ function  layoutMode(){
         responsive: [
             { breakpoint: 1920, settings: { slidesToShow: 5, slidesToScroll: 5 } },
             { breakpoint: 1530, settings: { slidesToShow: 4, slidesToScroll: 4 } },
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
             { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
@@ -161,6 +166,7 @@ function  layoutMode(){
         responsive: [
             { breakpoint: 1920, settings: { slidesToShow: 6, slidesToScroll: 6 } },
             { breakpoint: 1530, settings: { slidesToShow: 5, slidesToScroll: 5 } },
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
             { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
@@ -195,6 +201,7 @@ function  layoutMode(){
         responsive: [
             { breakpoint: 1920, settings: { slidesToShow: 6, slidesToScroll: 2 } },
             { breakpoint: 1530, settings: { slidesToShow: 4, slidesToScroll: 2 } },
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 2 } },
             { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
             { breakpoint:  480, settings: { slidesToShow: 2, slidesToScroll: 1 } }
         ],
@@ -212,6 +219,7 @@ function  layoutMode(){
         responsive: [
             { breakpoint: 1920, settings: { slidesToShow: 5, slidesToScroll: 5 } },
             { breakpoint: 1530, settings: { slidesToShow: 4, slidesToScroll: 4 } },
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 4 } },
             { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
             { breakpoint:  480, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
@@ -395,6 +403,15 @@ function  layoutMode(){
             dots: false,
             responsive: [
               {
+                breakpoint: 1200,
+                settings: {
+                  slidesToShow: 3,
+                  slidesToScroll: 1,
+                  infinite: true,
+                  dots: false
+                }
+              },
+              {
                 breakpoint: 991,
                 settings: {
                   slidesToShow: 3,
@@ -412,7 +429,7 @@ function  layoutMode(){
                 }
               },
               {
-                breakpoint: 480,
+                breakpoint: 420,
                 settings: {
                   slidesToShow:1,
                   slidesToScroll: 1,

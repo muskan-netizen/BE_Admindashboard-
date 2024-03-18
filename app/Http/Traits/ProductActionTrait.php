@@ -14,23 +14,18 @@ use Carbon\CarbonPeriod;
 
 trait ProductActionTrait{
 
-    
+
 
     public function getRandomVendorIdsForHomePage($preferences, $type, $is_admin_vendor_rating = 0, $latitude, $longitude,$action='2')
     {
-        try 
+        try
         {
-            $vendors = Vendor::select('id')->where('status', 1)->where($type, 1);
-          
+            $vendors = Vendor::vendorOnline()->select('id')->where('status', 1)->where($type, 1);
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-
-             
                     $point = new Point($longitude, $latitude);
                     $vendors->whereHas('serviceArea', function ($query) use ($point) {
                         $query->whereRaw("ST_Contains(service_areas.polygon, ST_GeomFromText(?))", [$point->toWKT()]);
                     });
-           
-                
             }
 
             if($is_admin_vendor_rating == 1){
@@ -47,7 +42,7 @@ trait ProductActionTrait{
 
     public function getLastProductOrdered()
     {
-        try 
+        try
         {
             $user_id = Auth::user()->id;
             // $user_id = 233;
@@ -82,7 +77,7 @@ trait ProductActionTrait{
             $return = $query->orderBy('updated_at','DESC')->pluck('product_id');
             if(sizeof($return) > 0){
                 $return = $return->toArray();
-            } 
+            }
             return $return;
         } catch (\Exception $e) {
             return response()->json([
@@ -90,8 +85,8 @@ trait ProductActionTrait{
                 'message' => $e->getMessage(),
             ]);
         }
-      
-       
+
+
     }
     /**
      * RecentView
@@ -120,17 +115,17 @@ trait ProductActionTrait{
             ProductRecentlyViewed::updateOrCreate(
                     $update_by
                 ,$RecentlyViewed);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage(),
             ]);
         }
-    
-      
+
+
     }
-    
+
     /**
      * LoginActionRecentView
      *
@@ -220,7 +215,7 @@ trait ProductActionTrait{
                         $multiply = Session::get('currencyMultiplier') ?? 1;
                         $title = $value->translation->first() ? $value->translation->first()->title : $value->sku;
                         $value->image_url = $value->media->first() ? $value->media->first()->image->path['proxy_url'] . $p_dim . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
-                        
+
                         $value->title = Str::limit($title, 18, '..');
                         $value->averageRating = number_format($value->averageRating, 1, '.', '');
                         $value->inquiry_only = $value->inquiry_only;
@@ -234,7 +229,7 @@ trait ProductActionTrait{
                 }else{
                     $products  =  $products->take(10)->inRandomOrder()->get();
                 }
-               
+
                 $productArray = [];
                 if (!empty($products)) {
 
@@ -258,10 +253,10 @@ trait ProductActionTrait{
                             'price_numeric' =>@$value->variant->first()->price * $multiply,
                             'category' => (@$value->category->categoryDetail->translation) ? @$value->category->categoryDetail->translation->first()->name : @$value->category->categoryDetail->slug
                         );
-                        
+
                     }
                 }
-            
+
             return $productArray;
         } catch (\Exception $e) {
             return response()->json([
@@ -269,7 +264,7 @@ trait ProductActionTrait{
                 'message' => $e->getMessage(),
             ]);
         }
-       
+
     }
 
      public function longTermServiceProducts($long_term_vendors, $additionalPreference, $langId, $currency = '', $where = '', $type,$p_dim ='260/100',$requestFrom='web' )
@@ -290,19 +285,19 @@ trait ProductActionTrait{
             },
         ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','is_long_term_service')
         ->whereHas('LongTermProducts.product', function($q){$q->where('is_live',1); });
-       
+
         if ($where !== '') {
             $products = $products->where($where, 1);
         }
-     
-       
+
+
         $products = $products->whereHas('vendor', function($q) use ($type,$venderIds){
                     $q->where('status',1);
                     $q->whereIn('id',$venderIds);
                     $q->where($type, 1);
                 })->take(10)->inRandomOrder()->get();
-     
-       
+
+
         $return = [];
         if (!empty($products)) {
             // return response from to app
@@ -314,7 +309,7 @@ trait ProductActionTrait{
                 }
                 return $products;
             }
-            
+
             foreach ($products as $key => $value) {
                 $multiply = Session::get('currencyMultiplier') ?? 1;
                 $title = $value->translation->first() ? $value->translation->first()->title : $value->sku;
@@ -335,15 +330,15 @@ trait ProductActionTrait{
             }
         }
        return $return;
-        
+
     }
 
     public function getProductsId($type='', $vendorWhereIN = '', $whereProductType = '')
     {
-        try 
+        try
         {
             $product_ids = [];
-            
+
             $single_category_products = [];
 
             if (($type == 'single_category_products' || $type == 'selected_products')) {
@@ -369,32 +364,32 @@ trait ProductActionTrait{
                 if($type != 'all'){
                     $completeWhere = ' AND `products`.`'.$type.'` = 1';
                 }
-                $raw_query = "SELECT 
+                $raw_query = "SELECT
                     `products`.`id`
-                    FROM 
+                    FROM
                         `products` LEFT JOIN   `categories` as `categories` ON `products`.`category_id` = `categories`.`id`  AND `categories`.`type_id` != 7
-                        LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1 
-                    WHERE 
-                        `products`.`deleted_at` IS NULL 
-                            AND `vendors`.`status` = 1 
+                        LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1
+                    WHERE
+                        `products`.`deleted_at` IS NULL
+                            AND `vendors`.`status` = 1
                             AND `products`.`is_live` = 1
 
                             $completeWhere
-                                        
-                            $vendorWhereIN 
+
+                            $vendorWhereIN
 
                             $whereProductType
-                        
+
                             GROUP BY `products`.`id`
 
                             ORDER BY RAND() LIMIT 6";
-                
+
                 $products = DB::select( DB::raw($raw_query));
-                
+
                 $products = collect($products);
                 $product_ids = $products->pluck('id')->toArray();
             }
-            
+
             return $product_ids;
         }
         catch (\Exception $e) {
@@ -404,7 +399,7 @@ trait ProductActionTrait{
 
     public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type = '',$Products_title = '', $p_dim = '',$getSubCatIds='', $preferences = NULL, $categoryTypes = NULL)
     {
-        try 
+        try
         {
            // pr($venderIds);
             $vendorWhereIN = ' ';
@@ -420,17 +415,18 @@ trait ProductActionTrait{
            $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
 
             if($where!=='all' && $where!=='on_sale'){
-                
+
                     if($where =='single_category_products' || $where == 'selected_products' || $where == 'popular_products' || $where == 'top_rated_products' ||  $where == 'recent_viewed'){
                         $single_category_product_ids = $this->getProductsId($where);
-                        if(!empty($single_category_product_ids)){
+
+                        if(count($single_category_product_ids) > 0){
                             $single_category_product_ids = @implode(',',$single_category_product_ids);
                             if($single_category_product_ids){
                                 $completeWhere = ' AND  `products`.`id` IN  ('.$single_category_product_ids.')';
                             }
-                        
-                
-                        }    
+
+
+                        }
                     } else {
                         $completeWhere = ' AND `products`.'.$where.' = 1';
                     }
@@ -446,45 +442,46 @@ trait ProductActionTrait{
             }else{
                 $categoryTypesArray = @getServiceTypesCategory($type, $preferences);
             }
-            
+
             if(!empty($categoryTypesArray)){
                 $categoryTypesArray = implode(',',$categoryTypesArray);
                 $whereProductType = ' and `categories`.`type_id`  IN ('.$categoryTypesArray.') ';
             }
-            
+
             if (is_array($getSubCatIds) && count($getSubCatIds) > 0) {
                 $subCatIdsArray = implode(',',$getSubCatIds);
                 $getSubCatIdsIn = " AND `products`.`category_id` IN ($subCatIdsArray)";
             }
 
-            
+
             $single_category_product_ids = $this->getProductsId($where, $vendorWhereIN, $whereProductType);
-            if(!empty($single_category_product_ids)){
+
+            if(count($single_category_product_ids) > 0){
                 $single_category_product_ids = @implode(',',$single_category_product_ids);
                 if($single_category_product_ids){
                     $completeWhere = ' AND  `products`.`id` IN  ('.$single_category_product_ids.')';
                 }
-            }    
-            
+            }
 
-            $raw_query = "SELECT 
-            `products`.`id`, 
-            `products`.`sku`, 
-            `products`.`url_slug`, 
-            `products`.`weight_unit`, 
-            `products`.`weight`, 
-            `products`.`vendor_id`, 
-            `products`.`has_variant`, 
-            `products`.`has_inventory`, 
-            `products`.`sell_when_out_of_stock`, 
-            `products`.`requires_shipping`, 
-            `products`.`Requires_last_mile`, 
-            `products`.`inquiry_only`, 
-            `products`.`updated_at`, 
+
+            $raw_query = "SELECT
+            `products`.`id`,
+            `products`.`sku`,
+            `products`.`url_slug`,
+            `products`.`weight_unit`,
+            `products`.`weight`,
+            `products`.`vendor_id`,
+            `products`.`has_variant`,
+            `products`.`has_inventory`,
+            `products`.`sell_when_out_of_stock`,
+            `products`.`requires_shipping`,
+            `products`.`Requires_last_mile`,
+            `products`.`inquiry_only`,
+            `products`.`updated_at`,
             `products`.`is_featured`,
-            `products`.`is_new`,  
-            `products`.`category_id`,  
-            `products`.`calories`,  
+            `products`.`is_new`,
+            `products`.`category_id`,
+            `products`.`calories`,
             `categories`.`id` as `category_id` ,
             `categories`.`type_id`,
             `product_images`.`media_id`,
@@ -502,7 +499,7 @@ trait ProductActionTrait{
             `category_translation`.`meta_keywords` as `category_meta_keyword` ,
             `category_translation`.`meta_description` as `category_meta_description`,
             CAST((`products`.`averageRating`) AS DECIMAL(2,1)) AS averageRating,
-            CASE 
+            CASE
                 when `product_variant`.`compare_at_price` > 0 then CAST((`product_variant`.`compare_at_price` - `product_variant`.`price`)/`product_variant`.`compare_at_price`*100 as decimal(12,2))
                 else 0
             end as discount_percentage,
@@ -510,12 +507,12 @@ trait ProductActionTrait{
             `vendors`.`id` as `vendor_id`,
             `vendors`.`slug` as `vendor_slug`,
             IFNULL(`products`.`is_long_term_service`, 0) AS `is_long_term_service`,
-            
+
              -- Retrieve product attributes as a JSON object
              (
-                SELECT JSON_OBJECTAGG(`key_name`, 
+                SELECT JSON_OBJECTAGG(`key_name`,
                     CASE
-                        WHEN `pa`.`attribute_option_id` = `pa`.`key_value` 
+                        WHEN `pa`.`attribute_option_id` = `pa`.`key_value`
                         THEN (SELECT `title` FROM `attribute_options` WHERE `id` = `pa`.`attribute_option_id`)
                         ELSE `pa`.`key_value`
                     END
@@ -524,25 +521,25 @@ trait ProductActionTrait{
                 WHERE `pa`.`product_id` = `products`.`id`
             ) AS `product_attributes`
 
-            
-            FROM `products` 
+
+            FROM `products`
             LEFT JOIN   `categories` as `categories` ON `products`.`category_id` = `categories`.`id`  AND `categories`.`type_id` != 7
-            LEFT JOIN   `product_images` as `product_images` ON `product_images`.`product_id` = `products`.`id` 
-            LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1 
+            LEFT JOIN   `product_images` as `product_images` ON `product_images`.`product_id` = `products`.`id`
+            LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1
             LEFT JOIN   `vendor_media` as `vendor_media` ON `vendor_media`.`id` = `product_images`.`media_id`
             LEFT JOIN   `product_translations` as `product_translation` ON `product_translation`.`product_id` = `products`.`id` AND `product_translation`.`language_id` = $langId
             LEFT JOIN   `product_variants` as `product_variant` ON `product_variant`.`product_id` = `products`.`id`
             LEFT JOIN   `category_translations` as `category_translation` ON `category_translation`.`category_id` = `products`.`category_id` AND `category_translation`.`language_id` = $langId
-            
-            WHERE 
-            `products`.`deleted_at` IS NULL 
-            AND `vendors`.`status` = 1 
+
+            WHERE
+            `products`.`deleted_at` IS NULL
+            AND `vendors`.`status` = 1
             AND `products`.`is_live` = 1
             $whereComparePriceNotNull
             $completeWhere
             $vendorWhereIN
             $getSubCatIdsIn
-            $whereProductType 
+            $whereProductType
             GROUP BY `products`.`id`
             ORDER BY RAND() LIMIT 6";
 
@@ -554,23 +551,23 @@ trait ProductActionTrait{
             // }
 
             // $returnArray = $products;
-          
 
-         
+
+
             return $returnArray;
         }
         catch (\Exception $e) {
             return [];
         }
     }
-    
+
     public function getEvenOddTime($time) {
         return ($time % 5 === 0) ? $time : ($time - ($time % 5));
     }
     public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL,$venderFilterOpenClose=null,$venderFilterbest=null,$nearest_vendor=0)
     {
         // pr('sd');
-        try 
+        try
         {
             $mytime = Carbon::now()->setTimezone($timezone);
             $current_time = $mytime->toTimeString();
@@ -581,18 +578,19 @@ trait ProductActionTrait{
                 $latitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_latitude) : 0;
                 $longitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_longitude) : 0;
             }
-            
-            $selectQuery = "`vendors`.`id`, 
-                `vendors`.`name`,  
-                `vendors`.`address`, 
-                `vendors`.`order_pre_time`, 
-                `vendors`.`logo`, 
-                `vendors`.`banner`, 
-                `vendors`.`slug`, 
+
+            $selectQuery = "`vendors`.`id`,
+                `vendors`.`name`,
+                `vendors`.`address`,
+                `vendors`.`order_pre_time`,
+                `vendors`.`logo`,
+                `vendors`.`banner`,
+                `vendors`.`slug`,
                 `vendors`.`show_slot`,
                 `vendors`.`admin_rating`,
                 `vendors`.`rating`,
                 `vendors`.`closed_store_order_scheduled`,
+                `vendors`.`delivery_fee_minimum`,
                 (
                     SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
                     FROM user_vendor_wishlists
@@ -606,35 +604,35 @@ trait ProductActionTrait{
                 (SELECT count(`order_vendors`.`id`) FROM `order_vendors` WHERE `order_vendors`.`vendor_id` = `vendors`.`id`) AS `selling_count`,
                 (SELECT CONCAT(`vendor_slot_dates`.`start_time`, '##', `vendor_slot_dates`.`end_time`) FROM `vendor_slot_dates` WHERE `vendor_slot_dates`.`vendor_id` = `vendors`.`id` LIMIT 0,1) AS `slotdate_start_end_time`,
                 (SELECT CONCAT(`vendor_slots`.`start_time`, '##', `vendor_slots`.`end_time`) FROM `vendor_slots` WHERE `vendor_slots`.`vendor_id` = `vendors`.`id` AND `vendor_slots`.`start_time` < CAST('".$current_time."' AS time) AND `vendor_slots`.`end_time` > CAST('".$current_time."' AS time)  LIMIT 0,1) AS `slot_start_end_time`,
-                6371 * acos(cos(radians(" . $latitude . ")) 
-                                            * cos(radians(`vendors`.`latitude`)) 
-                                            * cos(radians(`vendors`.`longitude`) - radians(" . $longitude . ")) 
-                                            + sin(radians(" .$latitude. ")) 
+                6371 * acos(cos(radians(" . $latitude . "))
+                                            * cos(radians(`vendors`.`latitude`))
+                                            * cos(radians(`vendors`.`longitude`) - radians(" . $longitude . "))
+                                            + sin(radians(" .$latitude. "))
                                             * sin(radians(`vendors`.`latitude`))) AS `lineOfSightDistance`
                 ";
-        
+
                 $joinQuery  = " LEFT JOIN `vendor_categories` ON `vendor_categories`.`vendor_id`= `vendors`.`id` ";
                 $joinQuery .= " LEFT JOIN `categories` ON `categories`.`id`= `vendor_categories`.`category_id` ";
                 $joinQuery .= " LEFT JOIN `category_translations` ON `category_translations`.`category_id`= `categories`.`id` AND `category_translations`.`language_id` = $language_id ";
                 $whereQuery  = " where `vendors`.`status` = 1 AND `vendor_categories`.`status` = 1";
 
             $whereInQuery = '';
-            
+
             if(!empty($vendor_ids)){
                 $whereInQuery = " AND `vendors`.`id` IN (".implode(',', $vendor_ids).") ";
             }
-            
-            $mainQuery = "SELECT $selectQuery FROM `vendors` $joinQuery $whereQuery $whereInQuery";
-            
 
-            
+            $mainQuery = "SELECT $selectQuery FROM `vendors` $joinQuery $whereQuery $whereInQuery";
+
+
+
             $mainQuery .= " GROUP BY `vendors`.`id` ORDER BY `lineOfSightDistance` ASC";
 
             //------based on hyper location------------
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                 $unit_abbreviation = ($distance_unit == 'mile') ? 'miles' : 'km';
-                $distance_to_time_multiplier = ($preferences->distance_to_time_multiplier > 0) ? $preferences->distance_to_time_multiplier : 2;            
+                $distance_to_time_multiplier = ($preferences->distance_to_time_multiplier > 0) ? $preferences->distance_to_time_multiplier : 2;
             }
 
             if ($vendor_title == "best_sellers") {
@@ -648,22 +646,22 @@ trait ProductActionTrait{
                     $mainQuery.= " ORDER BY admin_rating DESC";
                 }
             }
-            
+
             if (($latitude) && ($longitude) && $nearest_vendor == 1) {
                 $mainQuery.= " ORDER BY `lineOfSightDistance` ASC";
             }
-            
+
 
             if ($preferences->rating == 'asc' || $preferences->rating == 'desc') {
                 $mainQuery.= " ORDER BY `rating` ".$preferences->rating;
             }
-            
+
             //if(!empty($set_template) && $set_template->template_id != 3){
                 $mainQuery .= " LIMIT 10";
             //}
-                        
+
             $vendors = DB::select( DB::raw($mainQuery),['user_id' => Auth::id()]);
-            
+
             $vendor_ids = [];
             $user = Auth::user();
             $timezone = isset($user) && $user->timezone ?  $user->timezone : 'Asia/Kolkata';
@@ -675,9 +673,9 @@ trait ProductActionTrait{
                 $vendor_ids[] = $value->id;
                 // get or update rating
                 $value->vendorRating = number_format($value->rating, 1);
-                
-                
-                if(($preferences) && ($preferences->is_hyperlocal == 1)) 
+
+
+                if(($preferences) && ($preferences->is_hyperlocal == 1))
                 {
                     if($type == 'delivery')
                     {
@@ -687,7 +685,7 @@ trait ProductActionTrait{
                     }
                     $pretime = $this->getEvenOddTime($pretime);
                     $value->deliveryTime = $pretime;
-                    
+
                     if($pretime >= 60){
                         $value->timeofLineOfSightDistance =  '~ '.$this->vendorTime($pretime) .' '. __('hour');
                     }else{
@@ -695,7 +693,7 @@ trait ProductActionTrait{
                     }
                     $value->lineOfSightDistance = $value->lineOfSightDistance.' '.$unit_abbreviation;
                 }
-                
+
                 $value->type_title = $value->categoriesList;
 
                 $value->is_vendor_closed = 0;
@@ -761,8 +759,8 @@ trait ProductActionTrait{
             if($venderFilterOpenClose === 1 || $venderFilterOpenClose === 0){
                 $filteredArray = array_filter($vendors, function($item) use ($keyToFilter, $valueToFilter) {
                     return isset($item->$keyToFilter) && $item->$keyToFilter == $valueToFilter;
-                });  
-                $filtered = array_values($filteredArray);                    
+                });
+                $filtered = array_values($filteredArray);
             }else {
                 $filtered = $vendors;
             }
@@ -775,24 +773,24 @@ trait ProductActionTrait{
 
     public function getBrandsForHomePage($language_id, $field_status)
     {
-        try 
-        {            
+        try
+        {
             $frontController = new FrontController();
-            $navCategories = $frontController->categoryNav($language_id,true);         
-            $category_ids = implode(",", $navCategories);            
+            $navCategories = $frontController->categoryNav($language_id,true);
+            $category_ids = implode(",", $navCategories);
             $redirect_url = route('brandDetail', "brands_id");
             $mainQuery = "SELECT `br`.`id`,
-            `br`.`image`, 
-            `br`.`title`, 
+            `br`.`image`,
+            `br`.`title`,
             REPLACE('".$redirect_url."', 'brands_id', `br`.`id`) AS `redirect_url`,
             (CASE WHEN `bt`.`title` IS NULL THEN `br`.`title` ELSE `bt`.`title` END) AS `translation_title`
-            FROM `brands` AS `br` 
+            FROM `brands` AS `br`
             LEFT JOIN `brand_categories` AS `bc` on `bc`.`brand_id` = `br`.id
-            LEFT JOIN `brand_translations` AS `bt` ON `bt`.`brand_id` = `br`.`id` AND `bt`.`language_id` = $language_id 
+            LEFT JOIN `brand_translations` AS `bt` ON `bt`.`brand_id` = `br`.`id` AND `bt`.`language_id` = $language_id
 
             WHERE `br`.`status` !=$field_status AND `bc`.`category_id` in ($category_ids)
             GROUP BY `br`.`id`";
-        
+
             $brands = DB::select( DB::raw($mainQuery));
             return $brands;
         }
@@ -804,7 +802,7 @@ trait ProductActionTrait{
 
     public function getBannersForHomePage($client_preferences, $banner_type, $latitude, $longitude)
     {
-        try 
+        try
         {
             $carbon_now = Carbon::now();
 
@@ -820,12 +818,12 @@ trait ProductActionTrait{
                 $type                           = 2;
             }
 
-            $mainQuery = "SELECT 
+            $mainQuery = "SELECT
                 `ba`.`image`,
                 `ba`.`name`,
-                `ba`.`link`, 
-                `ba`.`link_url`, 
-                `ct`.`slug` AS `category_slug`, 
+                `ba`.`link`,
+                `ba`.`link_url`,
+                `ct`.`slug` AS `category_slug`,
                 `vn`.`slug` AS `vendor_slug`
                 FROM $banner_table AS `ba`";
 
@@ -840,10 +838,10 @@ trait ProductActionTrait{
                 //$mainQuery .= " HAVING (SELECT `id` FROM `$banner_service_areas_table` AS `bsa` where `ba`.`id` = `bsa`.`banner_id` AND EXISTS (select `id` from `$service_area_for_banners_table` AS `safb` WHERE `bsa`.`service_area_id` = `safb`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)')) and `type` = $type) > 0) > 0 ";
                 $mainQuery .= " HAVING (SELECT `id` FROM `$banner_service_areas_table` AS `bsa` where `ba`.`id` = `bsa`.`banner_id` AND EXISTS (select `id`,'polygon' from `$service_area_for_banners_table` AS `safb` WHERE `bsa`.`service_area_id` = `safb`.`id` AND ST_Contains(safb.polygon, ST_GeomFromText('".$point->toWKT()."')) and `type` = $type) > 0) > 0 ";
             }
-            
+
             $mainQuery.= " ORDER BY `ba`.`sorting` ASC";
-            
-        
+
+
             $banners = DB::select( DB::raw($mainQuery));
             return $banners;
         }
@@ -854,7 +852,7 @@ trait ProductActionTrait{
 
     public function getVendorIds($preferences, $latitude, $longitude, $vendor_ids=[], $enable_vendor_title)
     {
-        try 
+        try
         {
             if($enable_vendor_title == "trending_vendors")
             {
@@ -863,11 +861,11 @@ trait ProductActionTrait{
                 if(!empty($vendor_ids)){
                     $whereIn = " AND `siv`.`vendor_id` IN (".implode(',', $vendor_ids).") ";
                 }
-                $raw_query = "SELECT `siv`.`vendor_id` FROM `subscription_invoices_vendor` AS `siv`  
-                JOIN `subscription_invoice_features_vendor` AS `sifv` ON `sifv`.`subscription_invoice_id` = `siv`.`id` 
-                WHERE `sifv`.`feature_id` = 1 
+                $raw_query = "SELECT `siv`.`vendor_id` FROM `subscription_invoices_vendor` AS `siv`
+                JOIN `subscription_invoice_features_vendor` AS `sifv` ON `sifv`.`subscription_invoice_id` = `siv`.`id`
+                WHERE `sifv`.`feature_id` = 1
                 $whereIn
-                AND `siv`.`end_date` >= $now 
+                AND `siv`.`end_date` >= $now
                 GROUP BY `siv`.`vendor_id`";
                 $vendors = DB::select( DB::raw($raw_query));
                 $vendors = collect($vendors);
@@ -884,8 +882,8 @@ trait ProductActionTrait{
 
     public function vendorProducts_2($enable_layout, $venderIds, $langId, $currency = 'USD', $type = '', $p_dim = '', $preferences = NULL, $categoryTypes = NULL)
     {
-        try 
-        { 
+        try
+        {
             $vendorWhereIN = ' ';
             $whereProductType = ' ';
             $where = array('on_sale' => 'all', 'new_products' => 'is_new', 'featured_products' => 'is_featured');
@@ -903,7 +901,7 @@ trait ProductActionTrait{
             }else{
                 $categoryTypesArray = @getServiceTypesCategory($type, $preferences);
             }
-            
+
             if(!empty($categoryTypesArray)){
                 $categoryTypesArray = implode(',',$categoryTypesArray);
                 $whereProductType = ' and `categories`.`type_id` IN ('.$categoryTypesArray.')';
@@ -922,14 +920,14 @@ trait ProductActionTrait{
                         if($single_category_product_ids){
                             $completeWhere = ' AND  `products`.`id` IN  ('.$single_category_product_ids.')';
                         }
-                    } 
-                    $raw_query = (($raw_query=="")?'':$raw_query." UNION ALL ")." SELECT 
-                    `products`.`id`, 
-                    `products`.`sku`, 
-                    `products`.`url_slug`, 
-                    `products`.`weight_unit`, 
-                    `products`.`weight`, 
-                    `products`.`vendor_id`, 
+                    }
+                    $raw_query = (($raw_query=="")?'':$raw_query." UNION ALL ")." SELECT
+                    `products`.`id`,
+                    `products`.`sku`,
+                    `products`.`url_slug`,
+                    `products`.`weight_unit`,
+                    `products`.`weight`,
+                    `products`.`vendor_id`,
                     `products`.`category_id`,
                     '".$enable_layout1."' AS `product_type`,
                     '".$image_url."' AS `d_image_url`,
@@ -940,50 +938,50 @@ trait ProductActionTrait{
                     `product_variant`.`price` as `price_numeric`,
                     `category_translation`.`name` as `category_name` ,
                     CAST((`products`.`averageRating`) AS DECIMAL(2,1)) AS averageRating,
-                    CASE 
+                    CASE
                         when `product_variant`.`compare_at_price` > 0 then CAST((`product_variant`.`compare_at_price` - `product_variant`.`price`)/`product_variant`.`compare_at_price`*100 as decimal(12,2))
                         else 0
                     end as discount_percentage,
                     `vendors`.`name` as `vendor_name`,
                     `vendors`.`slug` as `vendor_slug`,
-    
+
                     IFNULL(`products`.`is_long_term_service`, 0) AS `is_long_term_service`
-                    FROM 
+                    FROM
                         `products` LEFT JOIN   `categories` as `categories` ON `products`.`category_id` = `categories`.`id`  AND `categories`.`type_id` != 7
-                        LEFT JOIN   `product_images` as `product_images` ON `product_images`.`product_id` = `products`.`id` 
-                        LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1 
+                        LEFT JOIN   `product_images` as `product_images` ON `product_images`.`product_id` = `products`.`id`
+                        LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1
                         LEFT JOIN   `vendor_media` as `vendor_media` ON `vendor_media`.`id` = `product_images`.`media_id`
                         LEFT JOIN   `product_translations` as `product_translation` ON `product_translation`.`product_id` = `products`.`id` AND `product_translation`.`language_id` = $langId
                         LEFT JOIN   `product_variants` as `product_variant` ON `product_variant`.`product_id` = `products`.`id`
                         LEFT JOIN   `category_translations` as `category_translation` ON `category_translation`.`category_id` = `products`.`category_id` AND `category_translation`.`language_id` = $langId
-                        
-                    WHERE 
-                        `products`.`deleted_at` IS NULL 
-                            AND `vendors`.`status` = 1 
+
+                    WHERE
+                        `products`.`deleted_at` IS NULL
+                            AND `vendors`.`status` = 1
                             AND `products`.`is_live` = 1
                             AND (`products`.`vendor_id` IS NULL OR `products`.`vendor_id` != $vendor_id)
                             $completeWhere
-                                        
-                            $vendorWhereIN 
-    
-                            $whereProductType 
-                            
+
+                            $vendorWhereIN
+
+                            $whereProductType
+
                             ";
                 }
             }
 
             $products       = DB::select( DB::raw($raw_query));
-            
+
             $returnArray    = collect($products)->unique(function ($item)
                             {
                                 return $item->id . $item->product_type;
                             });
-            
+
             return $returnArray;
         }
         catch (\Exception $e) {
             return [];
         }
     }
-    
+
 }

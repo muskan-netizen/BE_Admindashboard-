@@ -27,3 +27,9 @@ ul.social-links.d-flex li a {
 @media(max-width:767px){
 .tap-top{width: 35px;height: 35px;line-height: 35px;}
 }
+
+body.al_body_template_eight .payment-card-bottom ul li a img {
+    width: 50px;
+    height: 40px;
+    object-fit: cover;
+}

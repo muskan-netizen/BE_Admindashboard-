@@ -96,7 +96,7 @@ class InventoryController extends Controller
     {
         try{
            
-                $vendors = Vendor::select('id', 'name')->where('status', 1)->get();;
+                $vendors = Vendor::vendorOnline()->select('id', 'name')->where('status', 1)->get();;
                 return response()->json([
                     'status' => 200,
                     'message' => 'fetched succesfully',

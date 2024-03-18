@@ -13,7 +13,7 @@
     </div>
   </div>
 @php
-    $mapKey = '1234';
+    $mapKey = 'AIzaSyD0edfD0pDgXVYBT65c8qczFdsx9j24PyY';
     $theme = Session::get('preferences');
 
     if($theme && !empty($theme->map_key)){
@@ -327,6 +327,7 @@ if($showSubscriptionPlanPopUp == 1){
     var razorpay_complete_payment_url = "{{ route('payment.razorpayCompletePurchase') }}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
     var pyment_totalpay_url= "{{ route('make.payment') }}";
+    var payment_thawani_url= "{{ route('pay-by-thawanipg') }}";
     var featured_product_language = "{{ __('Featured Product') }}";
     var new_product_language = "{{ __('New Product') }}";
     var on_sale_product_language = "{{ __('On Sale') }}";
@@ -488,25 +489,23 @@ if($showSubscriptionPlanPopUp == 1){
     //        $('article#content-wrap').css('padding-bottom',footer_height);
     //    }, 500);
     //});
-    @if(isset($set_template)  && $set_template->template_id ==3 && \Request::route()->getName()=='categoryDetail')
-    function changeImage(image2, check) {
-       var image = $(image2).children('.nav-cate-img').children("img");
-       var  icon = image.attr('data-icon');
-       var  icon_two = image.attr('data-icon_two');
-       if(check == 1)
-       {
-            setTimeout(function () {
-                image.attr('data-src',icon_two);
-                image.attr('src',icon_two);
-            },200);
-       }else if(check == 0){
-            setTimeout(function () {
-                image.attr('data-src',icon);
-                image.attr('src',icon);
-            },200);
-
-       }
-    }
+    @if(isset($set_template)  && $set_template->template_id ==3)
+        function changeImage(image, check) {
+            var  icon = $(image).attr('data-icon');
+            var  icon_two = $(image).attr('data-icon_two');
+            if(check == 1)
+            {
+                setTimeout(function () {
+                    $(image).attr('data-src',icon_two);
+                    $(image).attr('src',icon_two);
+                },200);
+            }else if(check == 0){
+                setTimeout(function () {
+                    $(image).attr('data-src',icon);
+                    $(image).attr('src',icon);
+                },200);
+            }
+        }
     @endif
 
     if((stop_accepting_orders == 1) && ((window.location.pathname == '/') || (window.location.pathname == '/viewcart'))){

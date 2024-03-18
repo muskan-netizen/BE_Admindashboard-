@@ -638,7 +638,7 @@
 					<div class="col-12">
 						<div class="recent-orders product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 							@foreach ($homePageData[$homePageLabel->slug] as $order )
-						
+								@include('frontend.home_page_3.recent_order')
 							@endforeach
 						</div>
 					</div>

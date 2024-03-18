@@ -19,7 +19,7 @@
                 <div class="card widget-inline">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-6 col-md-4 mb-3 mb-md-0">
+                            <div class="col-6 col-md-3 mb-3 mb-md-0">
                                 <div class="text-center">
                                     <h3>
                                         <i class="fas fa-money-check-alt text-primary"></i>
@@ -28,7 +28,18 @@
                                     <p class="text-muted font-15 mb-0">{{ __('Total Order Value') }}</p>
                                 </div>
                             </div>
-                            <div class="col-6 col-md-4 mb-3 mb-md-0">
+
+                            <div class="col-6 col-md-3 mb-3 mb-md-0">
+                                <div class="text-center">
+                                    <h3>
+                                        <i class="fas fa-money-check-alt text-primary"></i>
+                                        <span data-plugin="counterup" id="total_earnings_by_vendors">{{$total_available_value}}</span>
+                                    </h3>
+                                    <p class="text-muted font-15 mb-0">{{ __('Total Available Funds') }}</p>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-md-3 mb-3 mb-md-0">
                                 <div class="text-center">
                                     <h3>
                                         <i class="fas fa-money-check-alt text-primary"></i>
@@ -37,7 +48,7 @@
                                     <p class="text-muted font-15 mb-0"> {{ __('Pending Payout Value') }}</p>
                                 </div>
                             </div>
-                            <div class="col-6 col-md-4 mb-3 mb-md-0">
+                            <div class="col-6 col-md-3 mb-3 mb-md-0">
                                 <div class="text-center">
                                     <h3>
                                         <i class="fas fa-money-check-alt text-primary"></i>

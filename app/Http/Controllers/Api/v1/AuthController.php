@@ -71,7 +71,7 @@ class AuthController extends BaseController
         }
 
     }else{
-      
+
         $user  = User::with('country')->where('phone_number', $loginReq->email)->first();
         if (!$user) {
             $errors['error'] = __('Invalid phone number');
@@ -82,7 +82,7 @@ class AuthController extends BaseController
         $loginReq->merge(['type'=>'phone','dial_code'=>$loginReq->dialCode,'phone_number'=>$loginReq->email,'sendSms'=>1]);
         $this->sendToken($loginReq);
     }
-        
+
         $user = Auth::user();
         $prefer = ClientPreference::select('theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
         $verified['is_email_verified'] = $user->is_email_verified;
@@ -117,7 +117,7 @@ class AuthController extends BaseController
         if(!empty($loginReq->is_vendor_app)){
             $fromVendorAppLogin = 1;
         }
-        
+
         if (!empty($loginReq->fcm_token)) {
             $device = UserDevice::updateOrCreate(
                 ['device_token' => $loginReq->fcm_token],
@@ -336,7 +336,7 @@ class AuthController extends BaseController
                 $rules[$user_registration_document->primary->slug] = 'required';
             }
         }
-        
+
         if( (empty($signReq->email)) && (empty($signReq->phone_number)) ){
             $rules['email']  = 'required';
             $rules['phone_number']  = 'required';
@@ -345,7 +345,7 @@ class AuthController extends BaseController
             if(!empty($signReq->email) && ($preferences->verify_email == 0)){
                 $rules['email'] = 'email|unique:users';
             }
-            
+
             if(!empty($signReq->phone_number) && ($preferences->verify_phone == 0)){
                 $rules['phone_number'] = 'string|min:7|max:15|unique:users';
             }
@@ -392,6 +392,11 @@ class AuthController extends BaseController
         $user->phone_token_valid_till = $sendTime;
         $user->email_token_valid_till = $sendTime;
         $user->timezone = $client_timezone;
+
+        if ($signReq->hasFile('image')) {
+            $file = $signReq->file('image');
+            $user->image = Storage::disk('s3')->put($this->folderName, $file,'public');
+        }
         $user->save();
         // user upload document
         if ($user_registration_documents->count() > 0) {
@@ -443,13 +448,13 @@ class AuthController extends BaseController
         if(@$signReq->kyc){
             InfluencerTrait::saveKycData($signReq, $user_id);
         }
-        
+
         $user_registration_documents = UserRegistrationDocuments::with(['user_document' =>function($q) use($user_id){
             $q->where('user_id', $user_id);
         },'primary'])->get();
         $response['user_document'] = $user_registration_documents;
         $response['app_hash_key'] = (!empty($signReq->app_hash_key))?$signReq->app_hash_key:'';
-      
+
         //end user upload document
         $wallet = $user->wallet;
         $userRefferal = new UserRefferal();
@@ -549,9 +554,11 @@ class AuthController extends BaseController
                     }
                 }
             }
+
             $checkSystemUser = $this->checkCookies($user->id);
             $response['status'] = 'Success';
             $response['name'] = $user->name;
+            $response['source'] = $user->image;
             $response['id'] = $user->id;
             $response['auth_token'] =  $token;
             $response['email'] = $user->email;
@@ -649,12 +656,12 @@ class AuthController extends BaseController
 
                 $user->is_admin = 1;
                 $user->save();
-            
+
                 // Create vendor with default images
                 $vendor = new Vendor();
                 $vendor->logo = 'default/default_logo.png';
                 $vendor->banner = 'default/default_image.png';
-            
+
                 $vendor->status = 1;
                 $vendor->name = $user->name;
                 $vendor->p2p = 1;
@@ -662,7 +669,7 @@ class AuthController extends BaseController
                 $vendor->phone_no = $user->phone_number ?? '';
                 $vendor->slug = Str::slug($user->name, "-");
                 $vendor->save();
-                        
+
                 UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
                 $user->createPermissionsUser();
 
@@ -671,14 +678,14 @@ class AuthController extends BaseController
                 if( !empty($p2p_type) ) {
                     $category_id = Category::where('type_id', $p2p_type->id)->get();
                     $categories_ids = [];
-                    
+
                     if( !empty($category_id) ) {
                         foreach($category_id as $key => $val) {
                             $categories_ids[] = $val->id;
                         }
                     }
                     $signReq->request->add(['selectedCategories'=> $categories_ids]);
-                    
+
                 }
 
                 $this->addDataSaveVendor($signReq, $vendor->id);
@@ -693,8 +700,8 @@ class AuthController extends BaseController
                 }
                 $provider = $prefer->sms_provider;
                // $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
-                // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');              
-                // $keyData = ['{user_name}'=>ucwords($user->name)]; 
+                // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');
+                // $keyData = ['{user_name}'=>ucwords($user->name)];
                 // $body = sendSmsTemplate('user-signup-sms',$keyData);
                 // $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
             }
@@ -733,9 +740,9 @@ class AuthController extends BaseController
                     $provider = $data->sms_provider;
                     $to = '+' . $request->dial_code . $request->phone_number;
                    // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
-                    $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$otp]; 
+                    $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$otp];
                     $body = sendSmsTemplate('verify-account',$keyData);
-                    if (!empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
+                    if (!empty($provider)) {
                         if(getUserToken($data)['status']){
                             $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
                         }else{
@@ -1092,7 +1099,7 @@ class AuthController extends BaseController
             if( getClientPreferenceDetail()->p2p_check ) {
                 $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
                 $data['vendor_id'] = $vendorUser->vendor_id ?? '';
-                
+
              }
             $checkSystemUser = $this->checkCookies($user->id);
             $data['id'] = $user->id;
@@ -1171,6 +1178,7 @@ class AuthController extends BaseController
                     'app_template_id',
                     'web_template_id'
                     )->first();
+
                 $phone_number = preg_replace('/\D+/', '', $username);
                 $dialCode = $request->dialCode;
                 $fullNumber = $request->full_number;
@@ -1202,13 +1210,11 @@ class AuthController extends BaseController
                     $to = '+' . $dialCode . $phone_number;
                 }
 
-                $keyData = ['{user_name}'=>auth()->user()->name??'','{otp_code}'=>$phoneCode,'{app_hash_key}'=>$request->app_hash_key??''];
-                $body = sendSmsTemplate('verify-account',$keyData);
                 $provider = $prefer->sms_provider;
                 $body = "Please enter OTP " . $phoneCode . " to verify your account.";
                 $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$phoneCode];
                 $body = sendSmsTemplate('verify-account',$keyData);
-                if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
+                if (!empty($provider)) {
                     if(getUserToken($prefer)['status']){
                         $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                     }else{
@@ -1284,7 +1290,7 @@ class AuthController extends BaseController
                 if(!empty($request->is_vendor_app)){
                     $fromVendorAppLogin = 1;
                 }
-                
+
                 if (!empty($request->fcm_token)) {
                     $device = UserDevice::updateOrCreate(
                         ['device_token' => $request->fcm_token],
@@ -1337,9 +1343,9 @@ class AuthController extends BaseController
                    $data['vendor_id'] = $vendorUser->vendor_id ?? '';
                 }
 
-                   
-                
-                    
+
+
+
                 $checkSystemUser = $this->checkCookies($user->id);
                 $data['id'] = $user->id;
                 $data['name'] = $user->name;
@@ -1392,7 +1398,7 @@ class AuthController extends BaseController
             if ($currentTime > $user->phone_token_valid_till) {
                 return $this->errorResponse(__('OTP has been expired.'), 404);
             }
-            
+
             if($currentTime <= $user->phone_token_valid_till && $user->phone_token == $request->verifyToken){
                 if($user->status==0)
                 {
@@ -1401,14 +1407,14 @@ class AuthController extends BaseController
                 if($user->status==2)
                 {
                     return $this->errorResponse(__('User is Blocked.'), 404);
-                } 
+                }
                 if($user->status==3)
                 {
                     return $this->errorResponse(__('User is Inactive.'), 404);
                 }
             }
-            
-            
+
+
             $request->request->add(['phone_number' => $phone_number]);
             return $this->proceedToPhoneLogin($request);
         } catch (\Exception $ex) {
@@ -1746,16 +1752,18 @@ class AuthController extends BaseController
                     return response()->json(['massage' => __('User not found!')], 200);
                 }
                 User::where('id', $user->id)->update([
-                    'email' => $user->email.'_'.$user->id."_D",  
-                    'phone_number' => $user->phone_number.'_'.$user->id."_D",  
-                    'auth_token' =>'',  
-                    'system_id' =>'',  
-                    'remember_token' => '',  
-                    'facebook_auth_id' => '',  
-                    'twitter_auth_id' => '',  
-                    'google_auth_id' => '',  
-                    'apple_auth_id' => '' 
+                    'email' => $user->email.'_'.$user->id."_D",
+                    'phone_number' => $user->phone_number.'_'.$user->id."_D",
+                    'auth_token' =>'',
+                    'system_id' =>'',
+                    'remember_token' => '',
+                    'facebook_auth_id' => '',
+                    'twitter_auth_id' => '',
+                    'google_auth_id' => '',
+                    'apple_auth_id' => '',
+                    'status' => 3,
                     ]);
+
                 $user->delete();
                 DB::commit(); //Commit transaction after all the operations
                 return response()->json(['massage' => __('User Deleted Successfully')], 200);
@@ -1764,7 +1772,7 @@ class AuthController extends BaseController
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['massage' => __('Something went wrong!')], 400);
-            
+
         }
 
     }
@@ -1778,7 +1786,7 @@ class AuthController extends BaseController
 
         $request->merge(["return_json"=>1]);
         $VendorConfigrespons = $VendorController->updateConfig($request,'',$vendor_id)->getData();//$this->updateConfig($vendor_id);
-       
+
         if($request->has('can_add_category')){
             $vendor->add_category = $request->can_add_category == 'on' ? 1 : 0;
         }

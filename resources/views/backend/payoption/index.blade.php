@@ -74,6 +74,7 @@ Options']) @section('css')
                 $api_access_token = (isset($creds->api_access_token)) ? $creds->api_access_token : '';
                 $api_secret_key = (isset($creds->api_secret_key)) ? $creds->api_secret_key : '';
                 $publishable_key = (isset($creds->publishable_key)) ? $creds->publishable_key : '';
+				$webhook_signature = (isset($creds->webhook_signature)) ? $creds->webhook_signature : '';
                 $secret_key = (isset($creds->secret_key)) ? $creds->secret_key : '';
                 $public_key = (isset($creds->public_key)) ? $creds->public_key : '';
                 $private_key = (isset($creds->private_key)) ? $creds->private_key : '';
@@ -171,6 +172,19 @@ Options']) @section('css')
                 //Totalpay
                 $totalpay_MerchantId = (isset($creds->totalpay_MerchantId)) ? $creds->totalpay_MerchantId:'';
 				$totalpay_password = (isset($creds->totalpay_password)) ? $creds->totalpay_password:'';
+				//thawani payment Gateway
+				$thawani_Apikey=(isset($creds->thawani_Apikey))?$creds->thawani_Apikey: '';
+				$thawani_publishKey=(isset($creds->thawani_publishKey))?$creds->thawani_publishKey: '';
+
+
+				//icici payment Gateway
+				$icici_merchant_id = (isset($creds->icici_merchant_id)) ? $creds->icici_merchant_id : '';
+				$icici_sub_merchant_id = (isset($creds->icici_sub_merchant_id)) ? $creds->icici_sub_merchant_id : '';
+                $icici_merchant_name = (isset($creds->icici_merchant_name)) ? $creds->icici_merchant_name : '';
+				$icici_sub_merchant_name = (isset($creds->icici_sub_merchant_name)) ? $creds->icici_sub_merchant_name : '';
+				$icici_merchant_encryption_file = (isset($creds->icici_merchant_encryption_file)) ? $creds->icici_merchant_encryption_file : '';
+				$icici_merchant_key_file = (isset($creds->icici_merchant_key_file)) ? $creds->icici_merchant_key_file : '';
+				
 				if(strtolower($opt->code) == 'obo') {
 					$opt->title = "O'Pay";
 				}
@@ -376,6 +390,15 @@ Options']) @section('css')
 										__("Publishable Key") }}</label> <input type="password"
 										name="stripe_publishable_key" id="stripe_publishable_key"
 										class="form-control" value="{{$publishable_key}}" @if($opt->status
+									== 1) required @endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="stripe_webhook_signature" class="mr-3">{{
+										__("Webhook_signature") }}</label> <input type="password"
+										name="stripe_webhook_signature" id="stripe_webhook_signature"
+										class="form-control" value="{{$webhook_signature}}" @if($opt->status
 									== 1) required @endif>
 								</div>
 							</div>
@@ -1723,6 +1746,9 @@ Options']) @section('css')
 						@endphp
 					@endif
                     @if ( (strtolower($opt->code) == 'obo') )
+					@php
+						$gateway="O'Pay";
+					@endphp
                     <div class="mt-2" id="obo_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">
                             <div class="col-12">
@@ -1853,29 +1879,121 @@ Options']) @section('css')
                     </div>
                     @endif
                     @if ( (strtolower($opt->code) == 'totalpay') )
-                    <div class="mt-2" id="totalpay_fields_wrapper" @if($opt->
-                        status != 1) style="display:none" @endif>
-                        <div class="row">
-                        <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="totalpay_MerchantId" class="mr-3">{{ __("Merchant ID") }}</label>
-                                    <input type="text" name="totalpay_MerchantId" id="totalpay_MerchantId"
-                                        class="form-control" value="{{$totalpay_MerchantId}}" @if($opt->status
-                                    == 1) required @endif>
-                                </div>
-                            </div>
+						<div class="mt-2" id="totalpay_fields_wrapper" @if($opt->
+							status != 1) style="display:none" @endif>
+							<div class="row">
+							<div class="col-12">
+									<div class="form-group mb-2">
+										<label for="totalpay_MerchantId" class="mr-3">{{ __("Merchant ID") }}</label>
+										<input type="text" name="totalpay_MerchantId" id="totalpay_MerchantId"
+											class="form-control" value="{{$totalpay_MerchantId}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+								</div>
 
-                            <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="totalpay_password" class="mr-3">{{ __("Password") }}</label>
-                                    <input type="text" name="totalpay_password" id="totalpay_password"
-                                        class="form-control" value="{{$totalpay_password}}" @if($opt->status
-                                    == 1) required @endif>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endif
+								<div class="col-12">
+									<div class="form-group mb-2">
+										<label for="totalpay_password" class="mr-3">{{ __("Password") }}</label>
+										<input type="text" name="totalpay_password" id="totalpay_password"
+											class="form-control" value="{{$totalpay_password}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+								</div>
+							</div>
+						</div>
+                    @endif
+					@if ((strtolower($opt->code) == 'thawani') )
+							<div class="mt-2" id="thawani_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+								<div class="row">
+									<div class="col-12">
+										<div class="form-group mb-2">
+											<label for="thawani_Apikey" class="mr-3">{{ __("Secret Key") }}</label>
+												<input type="password" name="thawani_Apikey" id="thawani_Apikey" class="form-control" value="{{$thawani_Apikey}}" @if($opt->status == 1) required @endif>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-12">
+										<div class="form-group mb-2">
+											<label for="thawani_publishKey" class="mr-3">{{ __("Publishable Key") }}</label>
+												<input type="password" name="thawani_publishKey" id="thawani_publishKey" class="form-control" value="{{$thawani_publishKey}}" @if($opt->status == 1) required @endif>
+										</div>
+									</div>
+								</div>
+								
+							</div>
+					@endif
+
+					@if ((strtolower($opt->code) == 'icici') )
+					<div class="mt-2" id="icici_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="icici_merchant_id" class="mr-3">{{ __("Merchant Id")
+										}}</label> <input type="text" name="icici_merchant_id"
+										id="icici_merchant_id" class="form-control"
+										value="{{$icici_merchant_id}}" @if($opt->status == 1) required @endif>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="icici_sub_merchant_id" class="mr-3">{{ __("Sub Merchant Id")
+										}}</label> <input type="text" name="icici_sub_merchant_id"
+										id="icici_sub_merchant_id" class="form-control"
+										value="{{$icici_sub_merchant_id}}" @if($opt->status == 1) required
+									@endif>
+								</div>
+							</div>
+						</div>
+                        <div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="icici_merchant_name" class="mr-3">{{ __("Merchant Name")
+										}}</label> <input type="text" name="icici_merchant_name"
+										id="icici_merchant_name" class="form-control"
+										value="{{$icici_merchant_name}}" @if($opt->status == 1) required @endif>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="icici_sub_merchant_name" class="mr-3">{{ __("Sub Merchant Name")
+										}}</label> <input type="text" name="icici_sub_merchant_name"
+										id="icici_sub_merchant_name" class="form-control"
+										value="{{$icici_sub_merchant_name}}" @if($opt->status == 1) required
+									@endif>
+								</div>
+							</div>
+						</div>
+
+                        <div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="icici_merchant_encryption_file" class="mr-3">{{ __("Merchant Encryption File")
+										}}</label> <input type="text" name="icici_merchant_encryption_file"
+										id="icici_merchant_encryption_file" class="form-control"
+										value="{{$icici_merchant_encryption_file}}" @if($opt->status == 1) required
+									@endif>
+								</div>
+							</div>
+						</div>
+
+                        <div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="icici_merchant_key_file" class="mr-3">{{ __("Sub Merchant Key File")
+										}}</label> <input type="text" name="icici_merchant_key_file"
+										id="icici_merchant_key_file" class="form-control"
+										value="{{$icici_merchant_key_file}}" @if($opt->status == 1) required
+									@endif>
+								</div>
+							</div>
+						</div>
+					</div>
+					@endif
 
 
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 use DB;
 use Image;
 use File;
+use PDF;
 use Artisan;
 use App\Models\Product;
 use App\Models\Category;
@@ -53,7 +54,7 @@ class ProductImportController extends Controller{
                 'message' => 'Woocommerce Detail Saved Successfully!'
             ]);
         } catch (Exception $e) {
-            
+
         }
     }
     public function getProductImportViaWoocommerce(Request $request){
@@ -110,5 +111,14 @@ class ProductImportController extends Controller{
             $random_string = substr(md5(microtime()), 0, 14);
         }
         return $random_string;
+    }
+
+    public function importErrorLogs(Request $request,$domain = '',$id)
+    {
+        $csvProducts = CsvProductImport::where('id', $id)->orderBy('id','DESC')->first();
+        view()->share(['csv' => $csvProducts]);
+        $pdf = PDF::loadView('backend.vendor.errorLog');
+        $pdfName = date('YmdHis')."_error_logs.pdf";
+        return $pdf->download($pdfName);
     }
 }
