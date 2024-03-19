@@ -109,9 +109,9 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     public function rules($id = ''){
         $rules = array(
             'name'          => 'required|string|min:3|max:50',
-            'email'         => 'required|email|max:50||unique:users',
+            'email'         => 'required|email|max:50|unique:users,email,NULL,id,deleted_at,NULL',
             'password'      => 'required|string|min:6|max:50',
-            'phone_number'  => 'required|string|min:7|max:15|unique:users',
+            'phone_number'  => 'required|string|min:7|max:15|unique:users,phone_number,NULL,id,deleted_at,NULL',
         );
         $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
         foreach ($user_registration_documents as $user_registration_document) {
@@ -174,7 +174,7 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     public function authentication_logs(){
         return $this->hasMany('Yadahan\AuthenticationLog\AuthenticationLog', 'authenticatable_id');
     }
-    
+
     public function createPermissionsUser(){
         $id = $this->id;
         $permission_details = PermissionsOld::select('id as permission_id',\DB::raw("$id as user_id"))->whereIn('id', [1,2,3,12,17,18,19,20,21])->get()->toArray();

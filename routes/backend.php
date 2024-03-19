@@ -51,13 +51,13 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('/webhook/set','AhoyController@setWebhook')->name('setWebhook');
         Route::any('/logout', 'Auth\LoginController@logout')->name('client.logout');
         Route::get('profile', 'Client\UserController@profile')->name('client.profile');
-        
-        
+
+
         Route::get('notifications/list', 'Client\DashBoardController@notificationList')->name('noti.list');
         Route::get('role/add', 'Client\RolePermissionController@indexRole')->name('roles');
         Route::post('role/save', 'Client\RolePermissionController@saveRole')->name('save.roles');
         Route::POST('role/getRole', 'Client\RolePermissionController@getRole')->name('get.role');
-        
+
         Route::POST('role/getRolePermission', 'Client\RolePermissionController@getRolePermission')->name('get.role.permission');
         Route::post('role/savePermissions', 'Client\RolePermissionController@saveRolePermissions')->name('save.role.permissions');
 
@@ -66,10 +66,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('permission/add', 'Client\RolePermissionController@indexPermission')->name('permissions');
         Route::post('permission/save', 'Client\RolePermissionController@savePermission')->name('save.permission');
         Route::post('permission/assign', 'Client\RolePermissionController@assignPermission')->name('assign.permissions');
-        
+
         Route::POST('role/getRolePermission', 'Client\RolePermissionController@getRolePermission')->name('get.role.permission');
         Route::post('role/savePermissions', 'Client\RolePermissionController@saveRolePermissions')->name('save.role.permissions');
-        
+
         Route::get('dashboard', 'Client\DashBoardController@index')->name('client.dashboard');
         Route::get('dashboard_old', 'Client\DashBoardController@dashboard_old')->name('client.dashboard_old');
         Route::get('dashboard/filter', 'Client\DashBoardController@postFilterData')->name('client.dashboard.filter');
@@ -122,7 +122,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('account/vendor/payout/requests', [VendorPayoutController::class, 'vendorPayoutRequests'])->name('account.vendor.payout.requests');
         Route::get('vendor/bid/requests/{id?}', [VendorBidController::class, 'bidRequests'])->name('vendor.bid.request');
         Route::get('vendor/bid/product-search/{id?}', [VendorBidController::class, 'search'])->name('searchProduct'); //vendor product search
-        
+
 
         Route::POST('vendor/bid/store', [VendorBidController::class, 'storeBidRequests'])->name('vendor.bid.store');
         Route::get('account/vendor/payout/requests/filter', [VendorPayoutController::class, 'vendorPayoutRequestsFilter'])->name('account.vendor.payout.requests.filter');
@@ -166,7 +166,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('updatePreferenceAdditional/{code}', 'Client\ClientPreferenceController@updatePreferenceAdditional')->name('configure.updatePreferenceAdditional');
         Route::get('deleteKeysContainingWord/{code}', 'Client\ManageCacheController@deleteKeysContainingWord')->name('configure.deleteKeysContainingWord');
 
-        
+
         Route::post('referandearnUpdate/{code}', 'Client\ClientPreferenceController@referandearnUpdate')->name('referandearn.update');
         Route::post('updateDomain/{code}', 'Client\ClientPreferenceController@postUpdateDomain')->name('client.updateDomain');
         Route::resource('banner', 'Client\BannerController');
@@ -217,7 +217,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('category/delete/{id}', 'Client\CategoryController@destroy');
         Route::resource('variant', 'Client\VariantController');
         Route::post('variant/order', 'Client\VariantController@updateOrders')->name('variant.order');
-        Route::post('variant/delete-option', 'Client\VariantController@deleteVariantOption')->name('variant.delete.option');        
+        Route::post('variant/delete-option', 'Client\VariantController@deleteVariantOption')->name('variant.delete.option');
         Route::get('variant/cate/{cid}', 'Client\VariantController@variantbyCategory');
         Route::resource('brand', 'Client\BrandController');
         Route::post('brand/order', 'Client\BrandController@updateOrders')->name('brand.order');
@@ -297,6 +297,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::POST('vendor/importglobalproducts', 'Client\VendorController@importGlobalProducts')->name('import.global.product');
         Route::post('vendor/status/update', 'Client\VendorController@postUpdateStatus')->name('vendor.status');
         Route::get('user/filterdata', 'Client\UserController@getFilterData')->name('user.filterdata');
+
+        Route::get('vendor-payment-report', 'Client\VendorController@vendorPaymentReport')->name('vendorPaymentReport');
+        Route::post('vendor-report-export', 'Client\VendorController@vendorReportExport')->name('vendorReportExport');
+
         Route::resource('vendor', 'Client\VendorController');
         Route::get('vendor/categories/{id}', 'Client\VendorController@vendorCategory')->name('vendor.categories');
         Route::get('getInvetoryToken', 'Client\VendorController@getInvetoryToken')->name('getInvetoryToken');
@@ -341,7 +345,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('seller/catalogs/{id}', 'Client\SellerController@sellerCatalog')->name('seller.catalogs');
 
         Route::resource('pincode', 'Client\PincodeController');
-        
+
         Route::get('pincodeData', 'Client\PincodeController@pincodeData')->name('pincode.pincodeData');
 
         Route::resource('delivery-slot', 'Client\DeliverySlotController');
@@ -391,6 +395,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('order/updateReport', 'Client\OrderController@uploadReport')->name('order.upload.report');
         Route::get('orderReport/delete/{id}', 'Client\OrderController@deleteReport')->name('order.report.delete');
         Route::post('order/delay_time', 'Client\OrderController@addExtraPrepTimeToOrder')->name('order.delay_time');
+        Route::post('order/upload/documents/{order_id}/{vendor_id}', 'Client\OrderController@orderDocument')->name('orderDocument');
+        Route::get('order/delete/documents/{id}', 'Client\OrderController@deleteDocument')->name('deleteDocument');
 
 
         Route::post('admin/company', 'Client\CompanyController@store')->name('company.add');
@@ -400,7 +406,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('admin/updateCompany/{id}', 'Client\CompanyController@update')->name('company.update');
 
         Route::get('orders/getBlockchainOrderDetail', 'Client\OrderController@getBlockchainOrderDetail')->name('orders.getBlockchainOrderDetail');
-        
+
         // Admin Service Area Routes
         Route::post('admin/serviceArea', 'Client\AdminServiceAreaController@store')->name('admin.serviceArea');
         Route::get('admin/serviceArea', 'Client\AdminServiceAreaController@index')->name('admin.serviceArea.index');
@@ -425,6 +431,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('product/sku/validate', 'Client\ProductController@validateSku')->name('product.sku.validate');
         Route::get('product/add/{vendor_id}', 'Client\ProductController@create')->name('product.add');
         Route::post('product/getImages', 'Client\ProductController@getImages')->name('productImage.get');
+        Route::get('product/import-error/{id}', 'Client\ProductImportController@importErrorLogs')->name('productImport.error');
         Route::post('product/deleteVariant', 'Client\ProductController@deleteVariant')->name('product.deleteVariant');
         Route::post('product/images', 'Client\ProductController@images')->name('product.images');
         Route::post('product/translation', 'Client\ProductController@translation')->name('product.translation');
@@ -449,6 +456,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::resource('deliveryoption', 'Client\DeliveryOptionController');
         Route::resource('verifyoption','Client\VerificationController');
         Route::post('delivery/dunzo', 'Client\DeliveryOptionController@dunzo')->name('delivery.dunzo');
+        Route::post('delivery/d4b_dunzo', 'Client\DeliveryOptionController@d4b_dunzo')->name('delivery.d4b_dunzo');
         Route::post('delivery/roadie', 'Client\DeliveryOptionController@roadie')->name('delivery.roadie');
         Route::post('delivery/ahoy', 'Client\DeliveryOptionController@ahoy')->name('delivery.ahoy');
         Route::post('delivery/last_mile_delivery','Client\DeliveryOptionController@last_mile_delivery')->name('delivery.last_mile_delivery');
@@ -464,6 +472,11 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('kwikapi/updateAll', 'Client\DeliveryOptionController@updateKwikapi')->name('kwikapi.updateAll');
         Route::post('payoutUpdateAll', 'Client\PaymentOptionController@payoutUpdateAll')->name('payoutOption.payoutUpdateAll');
         Route::post('shipengine/updateAll', 'Client\DeliveryOptionController@updateShipEngine')->name('shipengine.updateAll');
+        Route::post('borzoe/updateAll', 'Client\DeliveryOptionController@updateBorzoe')->name('borzoe.updateAll');
+        Route::get('borzoe', 'Client\BorzoeDeliveryController@borzoe')->name('borzoe');
+        Route::get('borzoe/delivery', 'Client\BorzoeDeliveryController@borzoeDelivery')->name('borzoeDelivery');
+
+
         Route::resource('inquiry', 'Client\ProductInquiryController');
         Route::get('inquiry/filter', [ProductInquiryController::class, 'show'])->name('inquiry.filter');
 
@@ -512,7 +525,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         Route::get('vendor-marg-config/{vendor_id}',  'Client\ClientPreferenceController@vendorMargConfig')->name("vendor.margConfig");
         Route::post('vendor-marg-config-update/{vendor_id}',  'Client\ClientPreferenceController@vendorMargConfigUpdate')->name("vendorMargConfig.update");
-        
+
         Route::get('reports/productperformance', 'Client\ReportController@productPerformance')->name('report.productperformance');
         Route::post('reports/searchproduct', 'Client\ReportController@getOrdersListAjax')->name('report.searchproduct');
         Route::post('reports/productreport', 'Client\ReportController@getProductReportAjax')->name('report.loadproductreport');
@@ -607,12 +620,12 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
                 Route::get('getUploadedData', 'Client\InfluencerUserController@getUploadedData')->name('getUploadedData');
                 Route::get('getkycData', 'Client\InfluencerUserController@getkycData')->name('getkycData');
                 Route::post('approveReject', 'Client\InfluencerUserController@approveReject')->name('approveReject');
-               
+
             });
         });
         Route::prefix('influencer-refer-earn')->group(function () {
-            
-            
+
+
             Route::name('influencer-refer-earn.')->group(function () {
                 Route::get('index', 'Client\InfluencerReferAndEarnController@index')->name('index');
                 Route::get('create', 'Client\InfluencerReferAndEarnController@create')->name('create');
@@ -683,19 +696,19 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
             Route::post('package/updateStatus/{slug}', 'Client\MealSubscriptionController@updateSubscriptionPlanStatus')->name('mealSubscription.plan.updateStatus');
             Route::get('package/edit/{slug}', 'Client\MealSubscriptionController@editSubscriptionPlan')->name('mealSubscription.plan.edit');
             Route::get('package/delete/user/{slug}', 'Client\MealSubscriptionController@deleteSubscriptionPlan')->name('mealSubscription.plan.delete');
-        Route::group(['prefix' => 'rental-protection/'], function () {        
+        Route::group(['prefix' => 'rental-protection/'], function () {
             Route::get('', [RentalProtectionController::class, 'index'])->name('rental.protection');
             Route::match(['put', 'post'],'store/{id?}', [RentalProtectionController::class, 'store'])->name('rental.protection.store');
             Route::get('{id}/edit', [RentalProtectionController::class, 'edit'])->name('rental.protection.edit');
             Route::delete('delete/{id}', [RentalProtectionController::class, 'delete'])->name('rental.protection.delete');
         });
-        Route::group(['prefix' => 'booking-option/'], function () {     
+        Route::group(['prefix' => 'booking-option/'], function () {
             Route::get('', [BookingOptionController::class, 'index'])->name('booking.option');
             Route::match(['put', 'post'],'store/{id?}', [BookingOptionController::class, 'store'])->name('booking.option.store');
             Route::get('{id}/edit', [BookingOptionController::class, 'edit'])->name('booking.option.edit');
             Route::delete('delete/{id}', [BookingOptionController::class, 'delete'])->name('booking.option.delete');
         });
-        Route::group(['prefix' => 'destination/'], function () {     
+        Route::group(['prefix' => 'destination/'], function () {
             Route::get('', [DestinationController::class, 'index'])->name('destinations');
             Route::match(['put', 'post'],'store/{id?}', [DestinationController::class, 'store'])->name('destination.store');
             Route::get('{id}/edit', [DestinationController::class, 'edit'])->name('destination.edit');

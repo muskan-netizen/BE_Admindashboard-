@@ -35,7 +35,8 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                     @endif
                     @if(@session('preferences')->apple_login == 1)
                     <li>
-                        <a href="javascript::void(0);">
+                        {{-- <a href="javascript::void(0);"> --}}
+                            <a href="{{url('auth/apple')}}">
                             <img src="{{asset('front-assets/images/apple.svg')}}">
                         </a>
                     </li>

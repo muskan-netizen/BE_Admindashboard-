@@ -34,7 +34,7 @@ use Log;
 use App\Http\Traits\ProductActionTrait;
 use App\Observers\OrderObserver;
 use App\Observers\UserObserver;
-
+use Illuminate\Validation\Rule;
 class CustomerAuthController extends FrontController
 {
     use ApiResponser;
@@ -71,7 +71,7 @@ class CustomerAuthController extends FrontController
 
         $notification_content = NotificationTemplate::where('id', 3)->first();
         if($notification_content){
-           
+
             $data = [
                 "registration_ids" => $token,
                 "notification" => [
@@ -138,7 +138,7 @@ class CustomerAuthController extends FrontController
         }else{
             $register_page = "account.registernew";
         }
-        
+
         $allergic_items = AllergicItem::get();
         //echo $register_page; die;
         if (!Session::get('referrer')) {
@@ -184,7 +184,7 @@ class CustomerAuthController extends FrontController
             }
             $this->checkCookies($userid);
             $user_cart = Cart::where('user_id', $userid)->first();
-           
+
             if ($user_cart) {
                 $unique_identifier_cart = Cart::where('unique_identifier', session()->get('_token'))->first();
                 if ($unique_identifier_cart) {
@@ -239,7 +239,7 @@ class CustomerAuthController extends FrontController
                         'phone_number'  => 'numeric|min:10|max:10'
                     ]);
                 }
-                
+
             }
             else{
 
@@ -253,13 +253,18 @@ class CustomerAuthController extends FrontController
 
                 if(!empty($req->phone_number) && isset($preferences) && ($preferences->verify_phone == 0)){
                     $validator = $req->validate([
-                        'phone_number' => 'string|min:7|max:15|unique:users'
+                        'phone_number' => ['string','min:7','max:15',
+                        Rule::unique('users')->where(function ($query)  use ($req){
+                            return $query->where('phone_number', $req->phone_number)
+                            ->where('dial_code', $req->dialCode);
+                        })],
+                        'dialCode' => 'required',
                     ]);
                 }
             }
-            
+
             $getAdditionalPreference = getAdditionalPreference(['is_user_pre_signup']);
-            
+
             $user = new User();
             $county = Country::where('code', strtoupper($req->countryData))->first();
             $client_timezone = Client::where('id', '>', 0)->value('timezone');
@@ -271,13 +276,13 @@ class CustomerAuthController extends FrontController
             $user->status = 1;
             $user->role_id = 1;
             $user->name = $req->name;
-            
+
             if(isset($getAdditionalPreference) && ($getAdditionalPreference['is_user_pre_signup'] == 1))
             {
                 $user->is_presignup = 1;
             }else{
                 $user->is_presignup = 0;
-                
+
             }
             $user->email = $email;
             $user->is_email_verified = 0;
@@ -309,7 +314,7 @@ class CustomerAuthController extends FrontController
                 }
                 UserAllergicItem::insert($data);
             }
-            
+
             // Save User Kyc Details
             if(@$req->kyc){
                 InfluencerTrait::saveKycData($req, $user->id);
@@ -401,7 +406,7 @@ class CustomerAuthController extends FrontController
                 if( getClientPreferenceDetail()->p2p_check ) {
 
                     $user->assignRole(4); // by default make this user as vendor
-                    
+
                     $user->is_admin = 1;
                     $user->save();
 
@@ -423,16 +428,16 @@ class CustomerAuthController extends FrontController
                     if( !empty($p2p_type) ) {
                         $category_id = Category::where('type_id', $p2p_type->id)->get();
                         $categories_ids = [];
-                        
+
                         if( !empty($category_id) ) {
                             foreach($category_id as $key => $val) {
                                 $categories_ids[] = $val->id;
                             }
                         }
                         $req->request->add(['selectedCategories'=> $categories_ids]);
-                        
+
                     }
-                    
+
                     $this->addDataSaveVendor($req, $vendor->id);
                 }
 
@@ -450,18 +455,18 @@ class CustomerAuthController extends FrontController
                         }
                         $provider = $prefer->sms_provider;
                       //  $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
-                        // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:''); 
+                        // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');
                         $keyData = ['{user_name}'=>ucwords($user->name)];
-                        $body = sendSmsTemplate('user-signup-sms',$keyData);              
+                        $body = sendSmsTemplate('user-signup-sms',$keyData);
                         $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
-    
+
                         if( $prefer->verify_phone == 1 ){
                             $response['send_otp'] = 1;
                             $to = '+'.$user->dial_code.$user->phone_number;
                             $provider = $prefer->sms_provider;
                             //$body = "Dear ".ucwords($user->name).", Please enter OTP ".$phoneCode." to verify your account.";
                             $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$phoneCode];
-                            $body = sendSmsTemplate('verify-account',$keyData); 
+                            $body = sendSmsTemplate('verify-account',$keyData);
                             $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                         }
                     }
@@ -550,27 +555,27 @@ class CustomerAuthController extends FrontController
             }
 
             if($this->checkTemplateForAction(8)){
-               
+
                 $this->LoginActionRecentView($userid);
             }
-            
+
             //Login Observer
             UserObserver::signIn(auth()->user());
-            
+
             $message = ('Logged in successfully');
             $redirect_to = '';
-     
+
             if(session()->has('url.intended')){
-              
+
                 $redirect_to = session()->get('url.intended');
                 session()->forget('url.intended');
             }else{
-          
+
                 $redirect_to = route('user.verify');
             }
             $req->request->add(['is_phone'=>1, 'redirect_to'=>$redirect_to]);
             $response = $req->all();
-           
+
             return $this->successResponse($response, $message);
         }
         else {
@@ -582,19 +587,19 @@ class CustomerAuthController extends FrontController
     {
         try {
             $username = $request->username;
-    
+
             // Define regular expressions for phone and email validation
             $phone_regex = '/^[0-9\-\(\)\/\+\s]*$/';
             $email_regex = '/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/';
-    
+
             if (preg_match($phone_regex, $username)) {
                 // Handle phone number validation and existence check
                 $phone_number = preg_replace('/\D+/', '', $username);
                 $dialCode = $request->dialCode;
-    
+
                 // Check if the user exists based on phone number and dial code
                 $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
-    
+
                 if ($user) {
                     // User with the provided phone number exists
                    return $this->successResponse(null,'user exists');
@@ -605,10 +610,10 @@ class CustomerAuthController extends FrontController
             } elseif (preg_match($email_regex, $username)) {
                 // Handle email validation and existence check
                 $username = str_ireplace(' ', '', $username);
-    
+
                 // Check if the user exists based on email
                 $user = User::where('email', $username)->first();
-    
+
                 if ($user) {
                     // User with the provided email exists
                     return $this->successResponse(null,'user exists',200);
@@ -624,7 +629,7 @@ class CustomerAuthController extends FrontController
             return response()->json(['message' => $ex->getMessage()], $ex->getCode());
         }
     }
-    
+
     /*** Login user via username ***/
     public function loginViaUsername(Request $request, $domain = ''){
         try{
@@ -636,7 +641,6 @@ class CustomerAuthController extends FrontController
 
             if(preg_match($phone_regex, $username))
             {
-            
                 $validator = Validator::make($request->all(), [
                     'username'  => 'required',
                     'dialCode'  => 'required',
@@ -644,7 +648,7 @@ class CustomerAuthController extends FrontController
                 ]);
 
                 if($validator->fails()){
-                    
+
                     foreach($validator->errors()->toArray() as $error_key => $error_value){
                         $errors['error'] = __($error_value[0]);
                         return response()->json($errors, 422);
@@ -652,7 +656,7 @@ class CustomerAuthController extends FrontController
                 }
                 $prefer = ClientPreference::select('sms_credentials','mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',
                     'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
-                
+
                 $phone_number = preg_replace('/\D+/', '', $username);
                 $dialCode = $request->dialCode;
                 $fullNumber = $request->full_number;
@@ -718,14 +722,14 @@ class CustomerAuthController extends FrontController
             }
             elseif (preg_match($email_regex, $username))
             {
-                
-                
+
+
                 $validator = Validator::make($request->all(), [
                     'username'  => 'required'
                 ]);
 
                 if($validator->fails()){
-                  
+
                     foreach($validator->errors()->toArray() as $error_key => $error_value){
                         $errors['error'] = __($error_value[0]);
                         return response()->json($errors, 422);
@@ -753,15 +757,15 @@ class CustomerAuthController extends FrontController
                         }
                     }
                     if($Authuser->is_superadmin == 1 || $Authuser->is_admin == 1){
-                       
+
                         Auth::logout();
                         Auth::attempt(['email' => $username, 'password' => $request->password, 'status' => 1]);
                     }
                     $this->checkCookies($userid);
                     $user_cart = Cart::where('user_id', $userid)->first();
-                    
+
                     if ($user_cart) {
-                        
+
                         $unique_identifier_cart = Cart::where('unique_identifier', session()->get('_token'))->first();
                         if ($unique_identifier_cart) {
                             $unique_identifier_cart_products = CartProduct::where('cart_id', $unique_identifier_cart->id)->get();
@@ -779,21 +783,21 @@ class CustomerAuthController extends FrontController
                             $unique_identifier_cart->delete();
                         }
                     } else {
-                       
+
                         Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $userid, 'created_by' => $userid, 'unique_identifier' => '']);
                     }
-                 
-                    
+
+
                     if($this->checkTemplateForAction(8)){
-                    
+
                         $this->LoginActionRecentView($userid);
                     }
-            
+
                     $message = 'Logged in successfully';
                     $redirect_to = '';
-                    
+
                     if(session()->has('url.intended')){
-                        
+
                         $redirect_to = session()->get('url.intended');
                         session()->forget('url.intended');
                     }else{
@@ -805,7 +809,7 @@ class CustomerAuthController extends FrontController
                 }
                 $checkEmail = User::where('email', $username)->first();
                 if ($checkEmail) {
-                  
+
                     if($checkEmail->status != 1){
                         if(session()->get("locale") == "ar"){
                             return $this->errorResponse(__('أنت غير مخول للوصول إلى هذا الحساب'), 404);
@@ -1054,8 +1058,8 @@ class CustomerAuthController extends FrontController
             }
             $vendor = new Vendor();
             $count = 0;
-            
-           
+
+
             $single_vendor_type = "delivery";
             if($client_preference){
                 foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
@@ -1073,7 +1077,7 @@ class CustomerAuthController extends FrontController
                 foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
                     $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
                     $vendor->$VendorTypesName = ($request->has($VendorTypesName) && $request->$VendorTypesName == 'on') ? 1 : 0;
-                    
+
                 }
             }
             else{
@@ -1106,11 +1110,11 @@ class CustomerAuthController extends FrontController
             $vendor->is_seller = $request->vendor_type ?? 0;
             $vendor->save();
             if($request->vendor_type == 0){
-                $permission_details = PermissionsOld::whereIn('id', [1,2,3,12,17,18,19,20,21]);    
+                $permission_details = PermissionsOld::whereIn('id', [1,2,3,12,17,18,19,20,21]);
             }else{
                 $permission_details = PermissionsOld::whereIn('id', [1,2,12,17,18,19,20,21,28]);
             }
-            $permission_details = $permission_details->get();   
+            $permission_details = $permission_details->get();
             if ($vendor_registration_documents->count() > 0) {
                 foreach ($vendor_registration_documents as $vendor_registration_document) {
                     $doc_name = str_replace(" ", "_", $vendor_registration_document->primary->slug);
@@ -1141,11 +1145,11 @@ class CustomerAuthController extends FrontController
             }
             // vendor additional data
             $this->addDataSaveVendor($request , $vendor->id);
-             
+
             if($this->checkTemplateForAction(8)){
                 $this->LoginActionRecentView($user->id);
             }
-            
+
             // Add vendor additional data
             $additionalData = [];
             if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == 1){
@@ -1165,7 +1169,7 @@ class CustomerAuthController extends FrontController
             // dd($additionalData);
             if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == 1 || @$getAdditionalPreference['is_baking_details_required_for_vendor_registration'] == 1){
                 $saveVendorAdditionalInfo = VendorAdditionalInfo::updateOrCreate(
-                    ['vendor_id'=> $vendor->id], 
+                    ['vendor_id'=> $vendor->id],
                     $additionalData
                 );
             }

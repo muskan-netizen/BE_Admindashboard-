@@ -10,6 +10,7 @@
     @endphp
     @foreach ($product->variantSet as $key => $variant)
         @php
+            // dd($product->variantSet->toArray());
             $lastIndex = count($product->variantSet) - 1;
         @endphp
         @if ($variant->type == 1 || $variant->type == 2)
@@ -32,8 +33,8 @@
                                     <input id="lineRadio-{{ $opt_id }}" name="{{ 'var_' . $var_id }}"
                                     vid="{{ $var_id }}" data-option-title="{{ $variant->title }}"
                                     optid="{{ $opt_id }}" value="{{ $opt_id }}" type="radio"
-                                    class="{{ $key != $t_var - 1 ? 'changeVariant' : '' }} dataVar{{ $var_id }} changeVariant"
-                                    {{ $checked }} data-row-key = {{$key}}>
+                                    class="selected_variant {{ $key != $t_var - 1 ? 'changeVariant' : '' }} dataVar{{ $var_id }} changeVariant"
+                                    {{ $checked }} data-row-key = {{$key}} data-varient-id="{{$optn->product_variant_id}}">
                                 @if ($variant->type == 2)
                                     <span
                                         class="color_var var_{{ $var_id }} @if ($checked == 'checked') var-active radio-active @endif"

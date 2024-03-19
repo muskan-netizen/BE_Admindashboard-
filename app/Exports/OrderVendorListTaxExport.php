@@ -43,7 +43,7 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
         if(isset($this->data->date_range)){
             $date = explode(' to ',$this->data->date_range);
             $dateF = $date[0];
-            $dateT = !empty($date[1]) ?$date[1]: $date[0];  
+            $dateT = !empty($date[1]) ?$date[1]: $date[0];
             $dateF = Carbon::parse($dateF, $timezone)->setTimezone('UTC');
             $dateT = Carbon::parse($dateT, $timezone)->setTimezone('UTC')->addDays(1);
             $vendor_orders = $vendor_orders->whereBetween('created_at',[$dateF, $dateT]);
@@ -93,17 +93,17 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
             $vendor_order->total_amount = (double)$tip + (double)$vendor_order->payable_amount;
             $vendor_order->cash_payment = 0;
             if ($vendor_order->orderDetail->payment_option_id == 1) {
-                $vendor_order->cash_payment = $vendor_order->payable_amount + $vendor_order->taxable_amount;
+                $vendor_order->cash_payment = $vendor_order->payable_amount;
             }
             if(!empty($vendor_order->orderDetail)){
                 $vendor_order->taxable_amount  =   (float) array_sum(explode(":", $vendor_order->orderDetail->total_other_taxes));
             }else{
                 $vendor_order->taxable_amount = $vendor_order->orderDetail->total_other_taxes_amount;
             }
-   
+
             $vendor_order->taxable_amount  = round($vendor_order->taxable_amount,2);
-            $vendor_order->cash_payment  = $vendor_order->cash_payment + $vendor_order->taxable_amount;
-           
+            $vendor_order->cash_payment  = $vendor_order->cash_payment;
+
             $vendor_order->order_status = $order_status;
             $revenue = $vendor_order->admin_commission_percentage_amount + $vendor_order->admin_commission_fixed_amount + $vendor_order->total_markup_price;
             $vendor_order->online_payment = isset($vendor_order->payment) ? $vendor_order->payment->balance_transaction :'';
@@ -217,8 +217,8 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 ($order_vendors->orderDetail && $order_vendors->orderDetail->paymentOption) ? $order_vendors->orderDetail->paymentOption->title : '',
                 $order_vendors->order_status,
                 $order_vendors->orderDetail->shipping_delivery_type == 'L' ?'Lalamove' :'Dispatcher',
-                $order_vendors->orderDetail ? ($order_vendors->orderDetail->address)? $order_vendors->orderDetail->address->house_number.','.$order_vendors->orderDetail->address->city.', '.$order_vendors->orderDetail->address->state : '' : '',
                 $order_vendors->vendor ? $order_vendors->vendor->address ?? '' : '',
+                $order_vendors->orderDetail ? (($order_vendors->orderDetail->address)?$order_vendors->orderDetail->address->fullAddress : '') : '',
             ];
         }else{
             return [
@@ -240,14 +240,15 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 decimal_format($order_vendors->fixed_fee),
                 $order_vendors->orderDetail ? $order_vendors->orderDetail->tip_amount : '',
                 decimal_format($order_vendors->taxable_amount),
-                $order_vendors->vendor_amount,
+                $order_vendors->vendor_amount = 20.12,
                 decimal_format($order_vendors->admin_commission_fixed_amount),
                 decimal_format($order_vendors->admin_commission_percentage_amount),
                 decimal_format($order_vendors->total_amount),
                ($order_vendors->orderDetail && $order_vendors->orderDetail->paymentOption)? $order_vendors->orderDetail->paymentOption->title : '',
                 $order_vendors->order_status,
                 $order_vendors->orderDetail->shipping_delivery_type == 'L' ?'Lalamove' :'Dispatcher',
-                $order_vendors->orderDetail ? ($order_vendors->orderDetail->address)? $order_vendors->orderDetail->address->house_number.','.$order_vendors->orderDetail->address->city.', '.$order_vendors->orderDetail->address->state : '' : '',
+                $order_vendors->vendor ? $order_vendors->vendor->address ?? '' : '',
+                $order_vendors->orderDetail ? (($order_vendors->orderDetail->address)?$order_vendors->orderDetail->address->fullAddress : '') : '',
             ];
 
         }

@@ -165,7 +165,7 @@
                                                 @endforeach
                                             </div>
                                         </div>
-                                        
+
                                         <div class="col-md-4 mt-md-0 mt-sm-2">
                                             <ul class="price_box_bottom m-0 p-0">
 
@@ -478,7 +478,7 @@
                                     <span>-{{ $clientCurrency->currency->symbol }}{{ decimal_format($order->total_discount_calculate) }}</span>
                                 </li>
                             @endif
-                            
+
                             @if ($order->rental_protection_amount > 0 || $order->rental_protection_amount < 0)
                                 <li class="d-flex align-items-center justify-content-between">
                                     <label class="m-0">{{ __('Rental Protection Amount') }}</label>
@@ -522,9 +522,13 @@
         </div>
     @endforeach
 @else
+@php
+    $ordersNom = getNomenclatureName('Orders', true);
+    $ordersNom = ($ordersNom=="Orders")?__('Orders'):__($ordersNom);
+@endphp
 <div class="error-msg mt-3">
     <img class="mb-2" src="{{asset('images/no-order.svg')}}">
-    <p>{{ __("You don't have orders right now.") }}</p>
+    <p>{{ __("You don't have ".$ordersNom." right now.") }}</p>
 </div>
 @endif
 

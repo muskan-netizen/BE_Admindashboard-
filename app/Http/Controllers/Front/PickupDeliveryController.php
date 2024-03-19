@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{AddonOption, Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, ClientPreferenceAdditional, OrderProductAddon, PaymentOption, PickDropDriverBid, TaxRate, UserBidRideRequest, UserDevice};
+use App\Models\{AddonOption, Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, ClientPreferenceAdditional, OrderProductAddon, PaymentOption, PickDropDriverBid, TaxRate, UserBidRideRequest, UserDevice,EmailTemplate};
 use App\Http\Traits\{ApiResponser, GuzzleHttpTrait, OrderTrait, PaymentTrait};
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
@@ -59,7 +59,6 @@ class PickupDeliveryController extends FrontController{
     public function getOrderTrackingDetails(Request $request, $domain = ''){
 
         $order = OrderVendor::with('orderDetail')->where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first()->toArray();
-
        $response = Http::get($request->new_dispatch_traking_url);
 
         if(count($order) > 0) {
@@ -124,6 +123,9 @@ class PickupDeliveryController extends FrontController{
         if(count($locations) > 0){
             $pickup_latitude = $locations[0] ? $locations[0]->latitude : '';
             $pickup_longitude = $locations[0] ? $locations[0]->longitude : '';
+            $dropoff_latitude = $locations[1] ? $locations[1]->latitude : '';
+            $dropoff_longitude = $locations[1] ? $locations[1]->longitude : '';
+
         }
         $vendor_categories = VendorCategory::where('category_id', $category_id)->where('status', 1)->get();
         foreach ($vendor_categories as $vendor_category) {
@@ -138,9 +140,9 @@ class PickupDeliveryController extends FrontController{
 
         if(isset($preferences->pickup_delivery_service_area) && ($preferences->pickup_delivery_service_area == 1)){
 
-            if (!empty($pickup_latitude) && !empty($pickup_longitude)) {
-                $vendors = $vendors->whereHas('serviceArea', function ($query) use ($pickup_latitude, $pickup_longitude) {
-                    $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))");
+            if (!empty($pickup_latitude) && !empty($pickup_longitude) && !empty($dropoff_latitude) && !empty($dropoff_longitude)) {
+                $vendors = $vendors->whereHas('serviceArea', function ($query) use ($pickup_latitude, $pickup_longitude,$dropoff_latitude,$dropoff_longitude) {
+                    $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))")->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$dropoff_latitude." ".$dropoff_longitude.")'))");
                 });
             }
         }
@@ -219,13 +221,11 @@ class PickupDeliveryController extends FrontController{
             $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
 
         }
-
-
         // $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
 
         $product->original_tags_price = decimal_format($tags_price['delivery_fee']);
         $product->tags_price = decimal_format($tags_price['delivery_fee']);
-        if(isset($request->rental_hour))
+        if(!empty($request->rental_hour))
         {
         $product->tags_price = decimal_format($request->rental_hour * $product->per_hour_price);
         $product->distance =  $product->km_included;
@@ -233,11 +233,7 @@ class PickupDeliveryController extends FrontController{
         else{
             $product->distance = decimal_format($tags_price['distance']);
         }
-
-
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
-
-
         $product->duration = decimal_format($tags_price['duration']);
         $product->min_tags_price = decimal_format($tags_price['min_delivery_fee']);
 
@@ -732,9 +728,6 @@ class PickupDeliveryController extends FrontController{
                 }
 
                 $response = json_decode($res->getBody(), true);
-                //pr($response);
-                \Log::info('response');
-                \Log::info($response);
                 if($response && $response['message'] == 'success'){
                     return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?((!empty($product) && $product->is_toll_tax == 1)?$response['toll_fee']:0.00):0.00, 'distance' => isset($response['total_distance']) ? $response['total_distance'] : 0, 'duration' => isset($response['total_duration']) ? $response['total_duration'] :0, 'min_delivery_fee' => isset($response['total_minimum']) ? $response['total_minimum'] : 0);
                 }else{
@@ -836,19 +829,19 @@ class PickupDeliveryController extends FrontController{
 
             DB::commit();
             //Send message if ride is booked for friend
-                if(@$request->share_ride_users && count($request->share_ride_users)>0)
+            if(@$request->share_ride_users && count($request->share_ride_users)>0)
+            {
+                $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
+                foreach($share_ride_users as $share_ride_users)
                 {
-                    $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
-                    foreach($share_ride_users as $share_ride_users)
-                    {
 
-                        $share_ride_users = (object)$share_ride_users;
-                        $dialCode = empty($share_ride_users->dial_code) ? '+91' : null;
-                        $phone = $dialCode.$share_ride_users->phone_number;
-                        $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$request_to_dispatch['dispatch_traking_url']??null;
-                        $send = $this->sendSms('', '', '', '', $phone, $msg);
-                    }
+                    $share_ride_users = (object)$share_ride_users;
+                    $dialCode = empty($share_ride_users->dial_code) ? '+91' : null;
+                    $phone = $dialCode.$share_ride_users->phone_number;
+                    $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$request_to_dispatch['dispatch_traking_url']??null;
+                    $send = $this->sendSms('', '', '', '', $phone, $msg);
                 }
+            }
 
 
              //Send sendNotificationToCustomer
@@ -862,7 +855,7 @@ class PickupDeliveryController extends FrontController{
              return  $order_place;
 
 
-        }catch(\Exception $e){
+        } catch(\Exception $e) {
             DB::rollback();
             return response()->json([
                 'status' => 'error',
@@ -870,6 +863,7 @@ class PickupDeliveryController extends FrontController{
             ]);
         }
     }
+
     // order update for pickup delivery
     public function orderUpdateAfterPaymentPickupDelivery($request){
 
@@ -879,7 +873,6 @@ class PickupDeliveryController extends FrontController{
             $order = Order::where('order_number',$order_number)->with('orderLocation')->first();
 
            if($order && $order->orderLocation){
-
             if (($request->has('transaction_id')) && (!empty($request->transaction_id))) {
                 $order->payment_status = 1;
             }

@@ -32,7 +32,7 @@ class FrontController extends Controller
     protected function sendSms($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
         try{
             $client_preference =  getClientPreferenceDetail();
-           
+
             if($client_preference->sms_provider == 1)
             {
                 if(!empty($client_preference->sms_secret) && !empty($client_preference->sms_from)){
@@ -210,7 +210,7 @@ class FrontController extends Controller
     public function categoryNav($lang_id,$only_id = false)
     {
         return $this->categoryNavOld($lang_id,$only_id);
-
+        
         $preferences = session()->get('preferences');
         $vendorType = session()->get('vendorType');
         $categoryTypes = getServiceTypesCategory($vendorType) ;
@@ -218,20 +218,20 @@ class FrontController extends Controller
         $status = $this->field_status;
         $include_categories = [4, 8]; // type 4 for brands
         $celebrity_check = 0;
-        
+
         // Check if celebrity_check is set in preferences
         if ($preferences && isset($preferences->celebrity_check) && $preferences->celebrity_check == 1) {
             $celebrity_check = 1;
             $include_categories[] = 5; // type 5 for celebrity
         }
 
-        
+
         // Check if request_from is set and get vendors accordingly
         if (isset($_REQUEST['request_from']) && $_REQUEST['request_from'] == 1) {
-            
+
             $vendors = $this->getServiceAreaVendors();
         } else {
-            
+
             $vendors = (session()->has('vendors')) ? session()->get('vendors') : $this->getServiceAreaVendors();
         }
 
@@ -281,7 +281,7 @@ class FrontController extends Controller
             }
     });
 
-  
+
 
         return $categories;
     }
@@ -314,14 +314,14 @@ class FrontController extends Controller
                 } else {
                     $vendors = (Session::has('vendors')) ? Session::get('vendors') : $this->getServiceAreaVendors();
                 }
-                // $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
-                //     ->where(function ($q1) use ($vendors , $include_categories) {
-                //         $q1->whereIn('vct.vendor_id', $vendors)
-                //             ->where('vct.status', 1)
-                //             ->orWhere(function ($q2) use($include_categories) {
-                //                 $q2->whereIn('categories.type_id', $include_categories);
-                //             });
-                //     });
+                $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
+                    ->where(function ($q1) use ($vendors , $include_categories) {
+                        $q1->whereIn('vct.vendor_id', $vendors)
+                            ->where('vct.status', 1)
+                            ->orWhere(function ($q2) use($include_categories) {
+                                $q2->whereIn('categories.type_id', $include_categories);
+                            });
+                    });
         }
         $categories = $categories->leftjoin('types', 'types.id', 'categories.type_id')
                                 ->where('categories.id', '>', '1')
@@ -329,7 +329,7 @@ class FrontController extends Controller
          if($celebrity_check == 0){
             $categories = $categories->where('categories.type_id', '!=', 5);
         }
-        
+
         $categories = $categories->where('categories.id', '>', '1')
                                // ->whereNotNull('categories.type_id')
                                 //->whereNotIn('categories.type_id', [7])
@@ -358,9 +358,9 @@ class FrontController extends Controller
     public function fixedFee($lang_id){
         if(Nomenclature::where('label','Fixed Fee')->exists()){
             $nomenclatures_translation_id=Nomenclature::where('label','Fixed Fee')->first()->id;
-            return NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->exists() ? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->first()->name : "Fixed Fee Per Order";
+            return NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->exists() ? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->first()->name : "Fixed Fee";
         }else{
-            return "Fixed Fee Per Order";
+            return "Fixed Fee";
         }
     }
 
@@ -368,7 +368,7 @@ class FrontController extends Controller
     {
         $branch = array();
         foreach ($elements as $element) {
-            
+
             if ($element['parent_id'] == $parentId) {
                 $children = $this->buildTree($elements, $element['id']);
                 if ($children) {
@@ -430,7 +430,7 @@ class FrontController extends Controller
             $vendorType = "rental";
         }
         $preferences = Session::has('preferences') ? Session::get('preferences') : $client_preferences;
-        $serviceAreaVendors = Vendor::select('id', 'show_slot');
+        $serviceAreaVendors = Vendor::vendorOnline()->select('id', 'show_slot');
         $vendors = [];
         if($vendorType){
             $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
@@ -477,7 +477,7 @@ class FrontController extends Controller
     public function getServiceAreaVendorsWithoutHyperlocal($latitude, $longitude){
         $vendorType = Session::get('vendorType');
         $preferences = Session::has('preferences') ? Session::get('preferences') : ClientPreference::where('id', '>', 0)->first();;
-        $serviceAreaVendors = Vendor::select('id', 'show_slot');
+        $serviceAreaVendors = Vendor::vendorOnline()->select('id', 'show_slot');
         $vendors = [];
         if($vendorType){
             $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
@@ -505,7 +505,7 @@ class FrontController extends Controller
         $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
         $image_fit = \Config::get('app.FIT_URl');
         $default_url = $image_fit .'300/300'. $image_path.'@webp';
-       
+
         if ($this->imageExists($default_url)) {
             return $default_url;
         } else {
@@ -972,7 +972,7 @@ class FrontController extends Controller
                     $vendor_longitude =  $productDetail->vendor ? $productDetail->vendor->longitude : 76.80350870;
                     $unique = Client::first()->code;
                     $email =  $unique.$productDetail->vendor_id."_royodispatch@dispatch.com";
-    
+
                     $location[] = array(
                         'latitude' =>  $vendor_latitude,
                         'longitude' => $vendor_longitude
@@ -1411,14 +1411,14 @@ class FrontController extends Controller
         return $result;
 
     }
-    
+
     public function sendWalletNotification($user_id,$order_number)
     {
         $firebaseToken = UserDevice::select('device_token')->whereNotNull('device_token')->where('user_id',$user_id)->orderBy('id','desc')->limit(1)->pluck('device_token')->toArray();
         if(!empty($firebaseToken)){
             $preference = ClientPreference::select('fcm_server_key')->first();
             $fcm_server_key = !empty($preference->fcm_server_key)? $preference->fcm_server_key : 'null';
-            
+
             $data = [
                 "registration_ids" => $firebaseToken,
                 "notification" => [

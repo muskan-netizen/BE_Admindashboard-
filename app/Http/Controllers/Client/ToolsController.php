@@ -71,7 +71,7 @@ class ToolsController extends BaseController
 
     public function storeData(Request $request)
     {
-        try {            
+        try {
             $rule = array(
                 'copy_to' => 'required',
                 'copy_from' => 'required'
@@ -80,7 +80,7 @@ class ToolsController extends BaseController
             if ($validation->fails()) {
                 return redirect()->back()->withInput()->withErrors($validation);
             }
-            
+
             $toolExist = CopyTool::where(['copy_to' => $request->copy_to,'copy_from' => $request->copy_from])->first();
             if(!empty($toolExist)){
                 return redirect()->back()->with('error', 'Request for copy this catalog is already exists');
@@ -90,7 +90,7 @@ class ToolsController extends BaseController
             $tool->copy_from = $request->copy_from;
             $tool->save();
             return redirect()->back()->with('success', 'Catalog data saved successfully!');
-            
+
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -104,7 +104,7 @@ class ToolsController extends BaseController
      */
     public function store($copy_to,$copy_from)
     {
-        try {                
+        try {
             $from_vendor = $this->vendorObj->getById($copy_from);
             $from_products = $this->productObj->getByVendorId($copy_from);
             $client = $this->clientObj->getClient();
@@ -199,7 +199,7 @@ class ToolsController extends BaseController
     }
     public function addProduct($from_product, $copy_to, $copy_from, $product_sku)
     {
-        $category_id = null;        
+        $category_id = null;
         $product = $from_product;
         $product = $product->replicate();
         $product->vendor_id = $copy_to;
@@ -226,7 +226,7 @@ class ToolsController extends BaseController
             $product->category_id = $category_id;
             $product->save();
         }
-        
+
         foreach ($from_product->addOn as $addOn) {
             $addOn_id = $addOn->addon_id;
             $check_addon = $this->addOnSetObj->checkAddon($addOn->addOnName, $copy_to);
@@ -257,7 +257,7 @@ class ToolsController extends BaseController
                     $new_faqTran->product_faq_id = $new_faq->id;
                     $new_faqTran->save();
                 }
-            
+
         }
 
         foreach ($from_product->celebrities as $celebrity) {
