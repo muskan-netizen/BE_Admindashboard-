@@ -222,7 +222,7 @@ class PickupDeliveryController extends FrontController{
 
         }
         // $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
-
+       
         $product->original_tags_price = decimal_format($tags_price['delivery_fee']);
         $product->tags_price = decimal_format($tags_price['delivery_fee']);
         if(!empty($request->rental_hour))
@@ -236,7 +236,7 @@ class PickupDeliveryController extends FrontController{
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
         $product->duration = decimal_format($tags_price['duration']);
         $product->min_tags_price = decimal_format($tags_price['min_delivery_fee']);
-
+        
         //for cab pooling
 
         $loyalty_amount_saved = 0;
@@ -791,7 +791,7 @@ class PickupDeliveryController extends FrontController{
                     'message' => 'Recurring Order placed successfully.'
                 ]);
             }
-
+             
             if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                 $data = [];
                 $order = $order_place['data'];
