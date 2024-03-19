@@ -1752,8 +1752,8 @@ class AuthController extends BaseController
                     return response()->json(['massage' => __('User not found!')], 200);
                 }
                 User::where('id', $user->id)->update([
-                    'email' => $user->email.'_'.$user->id."_D",
-                    'phone_number' => $user->phone_number.'_'.$user->id."_D",
+                    // 'email' => $user->email.'_'.$user->id."_D",
+                    // 'phone_number' => $user->phone_number.'_'.$user->id."_D",
                     'auth_token' =>'',
                     'system_id' =>'',
                     'remember_token' => '',
@@ -1761,10 +1761,10 @@ class AuthController extends BaseController
                     'twitter_auth_id' => '',
                     'google_auth_id' => '',
                     'apple_auth_id' => '',
-                    'status' => 3,
+                    'status' => 3
                     ]);
 
-                $user->delete();
+                //$user->delete();
                 DB::commit(); //Commit transaction after all the operations
                 return response()->json(['massage' => __('User Deleted Successfully')], 200);
                 //code...
