@@ -47,7 +47,8 @@
                                         <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 32x32</label>
                                     </div>
                                 </div>
-                                @if($themeId==4 || $themeId==5)
+                                
+                                @if($themeId==4 || $themeId==5 || $themeId==6)
                                 <div class="col-md-4 col-6 mb-3">
                                     <h4 class="header-title">{{ __("Sign In/Up Image") }}</h4>
                                     <div class="mb-0 text-left alDropFile">

@@ -4110,7 +4110,7 @@ body.al_body_template_one .footer-theme .sub-title li {
     margin: 10px 0;
 }
 .al_body_template_six .product-right .product-buttons .btn-outline, .product-right .product-buttons .btn-solid {
-    margin: 0 0 10px !important;
+    margin: 10px 0 10px !important;
 }
 .al_body_template_six .btn-wrapper.d-flex.align-items-center {
     display: block !important;
