@@ -5991,3 +5991,6 @@ ul.productVariants li.row.otherSize .checkround{opacity: 0;}
     align-items: center;
     justify-content: space-between;
 }
+#header_cart_main_ul{
+    padding: 15px;
+}

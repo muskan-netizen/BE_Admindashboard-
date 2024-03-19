@@ -10,7 +10,7 @@ use App\Models\Country;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Http\Traits\{ApiResponser,ProductTrait,CartManager, CartManagerV2};
+use App\Http\Traits\{ApiResponser,ProductTrait,CartManager, CartManagerV2,Borzoe};
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +33,7 @@ use Log;
 
 class CartController extends BaseController
 {
-    use ApiResponser,ProductTrait, CartManager, CartManagerV2;
+    use ApiResponser,ProductTrait, CartManager, CartManagerV2,Borzoe;
 
     private $field_status = 2;
 
@@ -2046,7 +2046,8 @@ class CartController extends BaseController
             if (!empty($deliver_response_array[0])){
                 $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format(($deliver_response_array[0]['delivery_fee']*$totalRoute), 2, '.', ''):'0.00';
                 $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
-                $option[] = array(
+                if ($deliver_charge > 0) {
+                    $option[] = array(
                     'type'=>'D',
                     'courier_name'=>__('Dispatcher'),
                     'rate' => $deliver_charge,
@@ -2058,6 +2059,30 @@ class CartController extends BaseController
                     'code' => 'D_0'
                 );
             }
+            }
+
+
+                 //Borzoe Delivery changes code
+                 $borzoe_deliver_fee = $this->borzoeDelivery($vendorData->vendor_id);
+                 $deliverFee = json_decode($borzoe_deliver_fee);
+                 $borzoe_deliver_fee = $deliverFee->order->payment_amount;
+                 if ($borzoe_deliver_fee > 0) {
+                     $borzoe_deliver_fee = decimal_format($borzoe_deliver_fee);
+                     $optionBorzoeApi[] = array(
+                         'type' => 'B',
+                         'courier_name' => __('Borzoe'),
+                         'rate' => $borzoe_deliver_fee,
+
+                         'courier_company_id' => 0,
+                         'etd' => 0,
+                         'etd_hours' => 0,
+                         'duration' => 0,
+                         'estimated_delivery_days' => 0,
+                         'code' => 'B_0'
+                     );
+                     $option = array_merge($option, $optionBorzoeApi);
+                 }
+                 //End Borzoe Delivery changes code
 
 
         //Lalamove Delivery changes code

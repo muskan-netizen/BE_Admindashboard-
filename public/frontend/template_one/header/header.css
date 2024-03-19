@@ -27,7 +27,7 @@ article#page-container {
     /* overflow: hidden; */
 }
 .section-b-space .container .row .col-lg-3 >.dashboard-left {
-    position: sticky;
+    /* position: sticky; */
     top: 160px;
 }
 .al_body_template_one .container {
@@ -513,6 +513,20 @@ body.al_body_template_one .main-menu .menu-right .icon-nav li ul.onhover-show-di
     }
 }
 @media (max-width:991px) {
+    .dashboard-left{
+        top: 72px;
+    }
+    .section-b-space .container .row .col-lg-3 >.dashboard-left {
+        padding: 0;
+        top:70px;
+    }
+    .account-sidebar {
+        width: 30%;
+    }
+    
+    .section-b-space .container .row .col-lg-3 >.dashboard-left {
+        z-index: 99;
+    }
     .al_count_tabs.my-1 {
         max-width: 400px;
         border-radius: 50px;
@@ -1544,7 +1558,6 @@ ul.header-dropdown.d-none.d-sm-inline li {
     to {opacity: 1;}
 }
 
-
 @media (max-width: 767px){
     body.al_body_template_one section.cab-banner-area.alTaxiBannerStart {
     padding: 5rem 0 !important;
@@ -1556,6 +1569,15 @@ ul.header-dropdown.d-none.d-sm-inline li {
     }
     body.al_body_template_one .cab-booking-header ul.onhover-show-div {
         bottom: 0px !important;
+        right: 0 !important;
+        top: 23px !important;
+        left: 0;
+    }
+    .section-b-space .container .row .col-lg-3 >.dashboard-left {
+        position: sticky;
+        top: 160px;
+        max-width: 100%;
+        z-index: 1;
         right: -95px;
         top: 35px !important;
     }

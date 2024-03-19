@@ -132,6 +132,16 @@ class PickupDeliveryController extends BaseController{
                     $tax_amount = 0;
             if(!empty($products)){
                 foreach ($products as $key => $product) {
+                    $total_price = 0 ;
+                    $payable_amount= 0;
+                    $vendor_payable_amount=0;
+                    $taxable_amount = 0;
+                    $tax_amount = 0;
+                    $response['tips'] = [];
+                    $payable_amount= 0;
+                    $vendor_payable_amount=0;
+                    $taxable_amount = 0;
+                    $tax_amount = 0;
                     $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
                     $product->service_charge_amount  = 0.00;
                     if($product->vendor->fixed_service_charge)
@@ -1609,6 +1619,9 @@ class PickupDeliveryController extends BaseController{
         $order->wallet_amount_used = 0.00;
         if(isset($order->orderDetail->wallet_amount_used)){
             $order->wallet_amount_used = isset($order->orderDetail)?decimal_format($order->orderDetail->wallet_amount_used):0.00;
+        }
+        if(isset($order->orderDetail->scheduled_date_time)){
+            $order->orderDetail->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);
         }
         if(isset($order->orderDetail->scheduled_date_time)){
             $order->orderDetail->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);

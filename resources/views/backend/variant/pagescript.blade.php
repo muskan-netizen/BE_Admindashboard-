@@ -10,7 +10,7 @@
         e.preventDefault();
 
         var uri = "{{route('category.create')}}";
-       
+
         var id = $(this).attr('dataid');
         if(id > 0){
             uri = "<?php echo url('client/category'); ?>" + '/' + id + '/edit';
@@ -49,8 +49,8 @@
                 }
 
                 $('.dropify').dropify();
-                $('.selectize-select').selectize(); 
-                
+                $('.selectize-select').selectize();
+
             },
             error: function (data) {
                 console.log('data2');
@@ -75,7 +75,7 @@
         }
     });
 
-    $(document).on('click', '.addCategorySubmit', function(e) { 
+    $(document).on('click', '.addCategorySubmit', function(e) {
         e.preventDefault();
         var form =  document.getElementById('addCategoryForm');
         var formData = new FormData(form);
@@ -84,7 +84,7 @@
 
     });
 
-    $(document).on('click', '.editCategorySubmit', function(e) { 
+    $(document).on('click', '.editCategorySubmit', function(e) {
         e.preventDefault();
         var form =  document.getElementById('editCategoryForm');
         var formData = new FormData(form);
@@ -114,7 +114,7 @@
 
                 if (response.status == 'success') {
                     $(".modal .close").click();
-                    location.reload(); 
+                    location.reload();
                 } else {
                     $(".show_all_error.invalid-feedback").show();
                     $(".show_all_error.invalid-feedback").text(response.message);
@@ -144,7 +144,7 @@
         });
     }
 
-    
+
 
     $("#banner-datatable tbody").sortable({
         placeholder : "ui-state-highlight",
@@ -194,7 +194,7 @@
                                             row['en'] = '';
                                             row['fr'] = '';
                                             row['nl'] = '';
-                    
+
                     row['notRequired'] = '';
 
                     if (isNullOptionRow) {
@@ -232,7 +232,7 @@
         e.preventDefault();
 
         var uri = "{{route('variant.create')}}";
-       
+
         var id = $(this).attr('dataid');
         if(id > 0){
             uri = "<?php echo url('client/variant'); ?>" + '/' + id + '/edit';
@@ -253,13 +253,13 @@
                     $('#editVariantmodal #editVariantBox').html(data.html);
 
                 }else{
-                    
+
                     $('#addVariantmodal #AddVariantBox').html(data.html);
                 }
 
                 $('.dropify').dropify();
-                $('.selectize-select').selectize(); 
-                
+                $('.selectize-select').selectize();
+
             },
             error: function (data) {
                 console.log('data2');

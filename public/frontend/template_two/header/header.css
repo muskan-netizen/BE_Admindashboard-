@@ -1,3 +1,9 @@
+header.site-header.fixed-bar .top-header {
+    display: none;
+}
+header.site-header.fixed-bar{
+    padding-top: 5px;
+}
 .section-b-space .container .row .col-lg-3 >.dashboard-left {
     position: sticky;
     top: 170px;
@@ -501,6 +507,9 @@ body.al_body_template_two .search_bar.menu-right ul.d-flex.align-items-center {
 }
 .al_body_template_two .search_bar.menu-right .icon-nav{
     font-size:12px; 
+}
+.dark .top-header .header-dropdown .onhover-dropdown .onhover-show-div li a{
+    color: #cbcbcb !important;
 }
 /*hotfix product page css*/
 @media (max-width:767px) {

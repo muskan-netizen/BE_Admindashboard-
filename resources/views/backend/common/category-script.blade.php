@@ -55,7 +55,7 @@
                         $('.editcatmodal').css('display','none');
                     }else{
                         $('.editcatmodal').css('display','');
-                    }                    
+                    }
                     setTimeout(function() {
                         $('input[name="type_id"]:checked').trigger('change');
                         $('input[name="warning_page_id"]:checked').trigger('change');
@@ -172,7 +172,7 @@
                 }
             },
             error: function(response) {
-                
+
             }
         });
     });
@@ -211,7 +211,7 @@
                 } else if (response.status == 'error1') {
                     $("#p-error1").empty();
                     $("#p-error").empty();
-                    $("#p-error1").append("*!Cannot create a sub-category of product type of category.");                   
+                    $("#p-error1").append("*!Cannot create a sub-category of product type of category.");
                     $("#p-error").append("*!Cannot create a sub-category of product type of category.");
                     $(".show_all_error.invalid-feedback").show();
                 } else if (response.status == 'error2') {
@@ -226,6 +226,7 @@
             error: function(response) {
                 if (response.status === 422) {
                     let errors = response.responseJSON.errors;
+                    console.log('errors', errors);
                     Object.keys(errors).forEach(function(key) {
                         if (key == 'name.0') {
                             var valiField = 'nameInput' + type;
@@ -233,7 +234,7 @@
                             $("#nameInput" + type + " span.invalid-feedback").children("strong").text('The default language name field is required.');
                             $("#nameInput" + type + " span.invalid-feedback").show();
                         } else {
-                            var valiField = key + 'Input' + type;
+                            var valiField = key + 'Input' + type + 'Edit';
                             $("#" + valiField + " input").addClass("is-invalid");
                             $("#" + valiField + " span.invalid-feedback").children("strong").text(errors[key][0]);
                             $("#" + valiField + " span.invalid-feedback").show();
@@ -263,10 +264,10 @@
                 {
                     $.ajax({
                         type: "GET",
-                        url: destroy_url,                        
+                        url: destroy_url,
                         success: function(response) {
                             $.NotificationApp.send("Success", "Category deleted successfully!", "top-right", "#5ba035", "success");
-                            window.location.reload();                                                        
+                            window.location.reload();
                         }
                     });
                 }

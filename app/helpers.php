@@ -67,7 +67,7 @@ if (!function_exists('getAdditionalPreference')) {
         $return = [];
         $dbreturn= [];
         if(sizeof($key)){
-            	
+
             $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
             // $cacheKey = 'client_preferences_additional_'.json_encode($key);
 
@@ -132,7 +132,7 @@ if (!function_exists('getVendorAdditionalPreference')) {
 
         }else{
             $data =$vendorInfo->first();
-        }   
+        }
 
         return $data??[];
     }
@@ -194,11 +194,11 @@ if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
 if (!function_exists('sendFcmCurlRequest')) {
     function sendFcmCurlRequest($data ,$fcm_server_key = '')
     {
-   
+
         $fcm_server_key = ($fcm_server_key =='') ? ClientPreference::select('fcm_server_key')->first()->fcm_server_key :  $fcm_server_key ;
 
          if (!empty($fcm_server_key )) {
-           
+
             $headers = [
                 'Authorization: key='.$fcm_server_key ,
                 'Content-Type: application/json',
@@ -215,7 +215,7 @@ if (!function_exists('sendFcmCurlRequest')) {
             //     die('Oops! FCM Send Error: ' . curl_error($ch));
             // }
             curl_close($ch);
-       
+
             return $result;
         } else {
             return false;
@@ -244,9 +244,9 @@ if (! function_exists('sendNotificationToCustomer')) {
                 ],
                 "priority" => "high"
             ];
-                    
+
             $response = sendFcmCurlRequest($data,$client_preferences->fcm_server_key);
-            $result = json_decode($response); 
+            $result = json_decode($response);
             return $result;
         }
     }
@@ -379,13 +379,15 @@ if (!function_exists('generateWalletTransactionReference')) {
 if (!function_exists('getNomenclatureName')) {
     function getNomenclatureName($searchTerm, $plural = true)
     {
+        // $searchTerm = "Appointment";
         $result = Nomenclature::with(['translations' => function ($q) {
             $q->where('language_id', session()->get('customerLanguage'));
         }])->where('label', 'LIKE', "%{$searchTerm}%")->first();
         if ($result) {
             $searchTerm = $result->translations->count() != 0 ? $result->translations->first()->name : ucfirst($searchTerm);
         }
-        return $plural ? $searchTerm : rtrim($searchTerm, 's');
+        // return $plural ? $searchTerm : rtrim($searchTerm, 's');
+        return $searchTerm;
     }
 }
 
@@ -802,12 +804,12 @@ if (!function_exists('showSlot')) {
                         if (!in_array($new_slot, $slotss)) {
                             $slotss[] = $new_slot;
                         }
-                        
+
                     } else {
                         $slotss[] = [];
                     }
                 }
-          
+
 
                 $arr = array();
                 $count = count($slotss);
@@ -876,7 +878,7 @@ if (!function_exists('showNumericPrice')) {
                 }else{
                     $amount =  decimal_format($price * $multiply);
                 }
-    
+
                 return $amount??0;
         }
     }
@@ -1331,8 +1333,8 @@ if (!function_exists('getServiceTypesCategory')) {
             if($client_preference ==NULL){
                 $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
             }
-            
-            
+
+
 
             $types =   Type::query();
 
@@ -1355,10 +1357,10 @@ if (!function_exists('getServiceTypesCategory')) {
             ];
             $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
             if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
-              
+
                 $alltypes['p2p'] = ['p2p', 'rental_service'];
             }
-            
+
             if ($vendorType == 'delivery' || $vendorType == 'dine_in' || $vendorType == 'takeaway' || $vendorType == 'rental' || $vendorType == 'pick_drop' || $vendorType == 'on_demand' || $vendorType == 'laundry' || $vendorType == 'appointment' || $vendorType == 'p2p' || $vendorType == 'car_rental') {
                 $service_types = $alltypes[$vendorType];
             }
@@ -1370,7 +1372,7 @@ if (!function_exists('getServiceTypesCategory')) {
             if($client_preference->business_type == 'p2p' && @$getAdditionalPreference['is_rental_weekly_monthly_price']){
                 $service_types = $alltypes['p2p'];
             }
-          
+
             /* if ($vendorType == "delivery" || $vendorType == "dine_in" || $vendorType == "takeaway") {
                 $service_types = ['products_service'];
             } elseif ($vendorType == "rental") {
@@ -1383,8 +1385,8 @@ if (!function_exists('getServiceTypesCategory')) {
                 $service_types = ['laundry_service'];
             } elseif ($vendorType == "appointment") {
                 $service_types = ['appointment_service'];
-            } 
-            
+            }
+
             elseif ($vendorType == "p2p") {
                 $service_types = ['p2p'];
             }*/
@@ -1406,9 +1408,9 @@ if (!function_exists('getServiceTypesCategory')) {
                 $service_types = ['p2p'];
             } */
             $types =  $types->whereIn('service_type', $service_types);
-           
+
             $types_id = $types->pluck('id')->toArray();
-           
+
             return $types_id ;
         } catch (\Throwable $th) {
            return [];
@@ -1602,7 +1604,7 @@ if (!function_exists('checkTableExists')) {
 if (!function_exists('inventorySyncOnOff')) {
     function inventorySyncOnOff($vendor_id, $client_preferences)
     {
-        if (!empty($vendor_id)) 
+        if (!empty($vendor_id))
         {
             $client = new \GuzzleHttp\Client([
                 'headers' => [
@@ -1638,7 +1640,7 @@ if( !function_exists('clientPrefrenceModuleStatus') ) {
 if( !function_exists('p2p_module_status') ) {
     function p2p_module_status() {
         $additional_preference = getAdditionalPreference(['is_attribute']);
-        
+
         if(clientPrefrenceModuleStatus('p2p_check') && $additional_preference['is_attribute']) {
             return true;
         }
@@ -1879,7 +1881,7 @@ if (!function_exists('GerenalSlot')) {
                     $key++;
                     //Condition to get slots from next available time on current datetime according to start time set while creating slots in vendor configuration
                   //  $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
-                
+
                     $ReturnArray[$key]['name'] = date('h:i A',$StartTime).' - '.date('h:i A', $endtm);
                     $ReturnArray[$key]['value'] = date("G:i", $StartTime).'-'.date("G:i", $endtm);
                 }
@@ -1893,7 +1895,7 @@ if (!function_exists('GerenalSlot')) {
 
             $StartTime += $AddMins;
             $endtm = 0;
-           
+
         }
         return $ReturnArray;
     }
@@ -1917,7 +1919,7 @@ if (!function_exists('weekDaysArray')) {
         foreach($days as $key=> $day)
         {
             if(in_array($key,$daysArray)){
-                $daysArrayName[] = $day; 
+                $daysArrayName[] = $day;
             }
         }
         return implode(',',$daysArrayName);
@@ -1954,7 +1956,7 @@ if (!function_exists('getDaysArrayBetweenTwoDates')) {
 
 if( !function_exists('get_file_path') ) {
     function get_file_path($url,$type="FILL_URL",$height="260",$width="260")  {
-        
+
         $img = 'default/default_image.png';
       if(!empty($url)){
         $img = $url;
@@ -1969,12 +1971,12 @@ if( !function_exists('get_file_path') ) {
       } else {
         $return_url  = $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
       }
-   
+
       //pr($values);
     //   $img = 'default/default_image.png';
     //   if(!empty($value)){
     //     $img = $value;
-    //     $values['is_original'] = true; 
+    //     $values['is_original'] = true;
     //   }
     //   $ex = checkImageExtension($img);
     //   $values['proxy_url'] = \Config::get('app.IMG_URL1');
@@ -1992,30 +1994,30 @@ if (!function_exists('getUserToken')) {
         $data['otp'] = rand(100000, 999999);
         $data['status'] = true;
         if(!empty($credential) && isset($credential->sms_credentials)){
-            
+
             $credentials = json_decode($credential->sms_credentials);
             if (isset($credentials->static_otp) && $credentials->static_otp == '1') {
                 $data['otp'] = '123456';
                 $data['status'] = false;
             }
-        } 
+        }
             return $data;
     }
 }
 
-if (!function_exists('getOnDemandPricingRule')) {    
+if (!function_exists('getOnDemandPricingRule')) {
     /**
      * getOnDemandPricingRule
      *
-     * @param  mixed $vendorType = user selected vendor mode 
+     * @param  mixed $vendorType = user selected vendor mode
      * @param  mixed $userSelection =  user selected pricing geting from vendor or freelancer
-     * @param  mixed $is_service_product_price_from_dispatch custoom mode selecter by admin 
+     * @param  mixed $is_service_product_price_from_dispatch custoom mode selecter by admin
      * @param  mixed $is_service_price_selection custoom mode selecter by admin  $is_service_product_price_from_dispatch = 0,$is_service_price_selection = 0,
      * @return void
      */
     function getOnDemandPricingRule($vendorType = "on_demand",$userSelection = "vendor",$additionalPreference)
     {
-       
+
         $is_service_product_price_from_dispatch = @$additionalPreference['is_service_product_price_from_dispatch'] ?? 0;
         $is_service_price_selection             = @$additionalPreference['is_service_price_selection'] ?? 0;
         $return['is_price_from_freelancer'] = 0;
@@ -2036,7 +2038,7 @@ if (!function_exists('getOnDemandPricingRule')) {
     }
 
 }
-if (!function_exists('getDatesBetweenTwoDates')) { 
+if (!function_exists('getDatesBetweenTwoDates')) {
     function getDatesBetweenTwoDates($start_date, $end_date)
     {
         $period = CarbonPeriod::create($start_date, $end_date);
@@ -2055,7 +2057,7 @@ if(!function_exists('getDaysBetweenTwoDates')){
 }
 
 }
-if (!function_exists('recurringCalculationFunction')) {    
+if (!function_exists('recurringCalculationFunction')) {
     function recurringCalculationFunction($request)
     {
         $recurringformPost = (object)$request->recurringformPost;
@@ -2069,17 +2071,17 @@ if (!function_exists('recurringCalculationFunction')) {
         $endDate = $recurringformPost->endDate;
 
         $selectedCustomdates = [];
-        
+
         if($recurringformPost->action=='2' || $recurringformPost->action=='1'){
             $startDate = $recurringformPost->startDate;
             $endDate = $recurringformPost->endDate;
-            
+
             if($recurringformPost->action=='1'){
                 $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
             } else {
                 $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate,$recurringformPost->weekDay);
             }
-            
+
             $daysCnt =count($selectedCustomdates);
             $selectedCustomdates = implode(',',$selectedCustomdates);
         }elseif($recurringformPost->action=='3'){
@@ -2102,7 +2104,7 @@ if (!function_exists('recurringCalculationFunction')) {
             } else {
                 $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate,$recurringformPost->weekDay,'A');
             }
-            
+
             $daysCnt =count($selectedCustomdates);
             $selectedCustomdates = implode(',',$selectedCustomdates);
         }
@@ -2144,6 +2146,69 @@ if (!function_exists('recurringCalculationFunction')) {
                 return true;
             }
             return false;
+        }
+    }
+
+    if (!function_exists('productPriceAfterVendorDiscount')) 
+    {
+         function productPriceAfterVendorDiscount($vendorData,$product_discount_amount,$doller_compare,$cart)
+        {
+            $allProductsSum = 0;
+            $cart_products = CartProduct::with(['product.variant', 'addon.option'])
+            ->where('vendor_id', $vendorData->vendor_id)
+            ->where('cart_id', $vendorData->cart_id)
+            ->get();
+            foreach ($cart_products as $cart_product) {
+                // Calculate total price for the product variant
+                $total_price =$cart_product->pvariant->actual_price ?? $cart_product->pvariant->price??0;
+                // Calculate the total price of the product (variant price * quantity)
+                $allProductsSum += $total_price * $cart_product->quantity;
+                // Calculate the total price of the addons for the product
+                $product_addon_price = 0;
+                foreach ($cart_product->addon as $addon) {
+                    $addon_option = $addon->option;
+                    if ($addon_option) {
+                        $addon_price = $addon_option->price * $cart_product->quantity;
+                        $product_addon_price += $addon_price;
+                    }
+                }
+                // Add the total addon price to the overall sum
+                $allProductsSum += $product_addon_price;
+            }
+            $PromoDelete = 0;
+            $data['vendor_discount_amount'] = 0;
+            $data['deliveryfeeOnCoupon'] = 0;
+            if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) 
+            {
+                if ( $PromoDelete !=1) 
+                {
+                        $minimum_spend = 0;
+                        if (isset($vendorData->coupon->promo->minimum_spend)) {
+                            $minimum_spend = $vendorData->coupon->promo->minimum_spend * $doller_compare;
+                        }
+                        $maximum_spend = 0;
+                        if (isset($vendorData->coupon->promo->maximum_spend)) {
+                            $maximum_spend = $vendorData->coupon->promo->maximum_spend * $doller_compare;
+                        }
+                        if( ($minimum_spend <= $allProductsSum ) && ($maximum_spend >= $allProductsSum))
+                        {
+                                if ($vendorData->coupon->promo->promo_type_id == 2) {
+                                    $data['vendor_discount_amount'] = $vendorData->coupon->promo->amount;
+                                } else {
+                                    $data['vendor_discount_amount'] = ($product_discount_amount * $vendorData->coupon->promo->amount / 100);
+                                }
+                                if ($vendorData->coupon->promo->allow_free_delivery == 1) {
+                                    $data['deliveryfeeOnCoupon'] = 1;
+                                }
+                        }else{
+                            $cart->coupon()->delete();
+                            $vendorData->coupon()->delete();
+                            unset($vendorData->coupon);
+                           return $data;
+                        }
+                } 
+            }
+            return $data??0;
         }
     }
 }
