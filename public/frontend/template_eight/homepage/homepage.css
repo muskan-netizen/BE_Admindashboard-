@@ -1301,7 +1301,16 @@ article#page-container section .vendors section a {
    line-height: 20px;
 }
 .al_body_template_eight .main-product {
-    padding:0px 0 !important;
+    padding:0px 0 60px !important;
+}
+
+.render_full_featured_products h2,
+#banner6 h2, #banner10  h2 {
+    margin-bottom: 20px;
+}
+
+#banner6, #banner10 {
+    padding-top: 40px !important;
 }
 
 section.home-headings {
@@ -1537,7 +1546,10 @@ section.suppliers-section.container.vender_slider .supplier-rating h5 {
     font-size:24px;
     font-weight: 500;
 }
-.al_body_template_eight .render_full_spotlight_deals h2.h2-heading{font-size: 30px;}
+.al_body_template_eight .render_full_spotlight_deals h2.h2-heading{
+    font-size: 24px;
+    margin-bottom: 20px;
+}
 body.al_body_template_eight.homeHeader .common-banner img {
     height: 500px !important;
     width: 100% !important;
@@ -1770,7 +1782,7 @@ body.dark.al_body_template_eight section.container.popular-brands.left-shape_.po
 }
 
 body.dark.al_body_template_eight article#page-container section .vendors section {
-    padding: 20px 0 0 !important;
+    padding: 20px 0 60px !important;
     margin-bottom: 0!important;
 }
 

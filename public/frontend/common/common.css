@@ -400,6 +400,11 @@ span.file-icon::before {
     color: var(--theme-deafult)
 }
 
+.dark .minus,
+.dark .plus {
+    color: #ffffff !important;
+}
+
 .categories-product-list .number {
     border: .5px solid #ed5a6b;
     border-radius: 8px

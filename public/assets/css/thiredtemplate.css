@@ -743,7 +743,7 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0 {
 
     .minus,
     .plus {
-        padding: 0 2px;
+        padding: 0 10px;
     }
 
     .number input {

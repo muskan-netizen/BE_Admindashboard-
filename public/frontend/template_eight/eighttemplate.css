@@ -2688,6 +2688,9 @@ body.al_body_template_eight .categories-product-list .col-sm-6.offset-sm-3 {
         color: var(--theme-deafult) !important;
         font-weight: 600;
     }
+    .dark .p2p_single_slider .col .deals-product .supplier-rating a {
+        color: #ffffff !important;
+    }
     .al_body_template_eight .best-seller-full h2.h2-heading {
         margin: 26px 0px !important;
     }
@@ -4014,6 +4017,7 @@ border-radius: 0 !important;
 @media screen and (max-width:375px){
     .al_body_template_eight #our_vendor_main_div .vendors section .top-heading h2.h2-heading{font-size: 14px !important;}
     .al_body_template_eight article#page-container section .vendors section a{font-size: 14px !important;}
+    .al_body_template_eight.dark article#page-container section .vendors section a{color: #ffffff !important;}
 }
 
 .alSpaCityBox{position: relative;padding-bottom: 100%;overflow: hidden;border-radius: 15px 15px 0 0;margin-bottom: 10px;}
