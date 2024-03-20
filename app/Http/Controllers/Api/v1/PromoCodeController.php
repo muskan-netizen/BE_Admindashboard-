@@ -243,6 +243,11 @@ class PromoCodeController extends Controller{
                 return $this->errorResponse('Coupon Code already applied.', 422);
             }
 
+            $order_vendor_user_promo_count = OrderVendor::where(['coupon_id' => $request->coupon_id])->count();
+            if($order_vendor_user_promo_count >= $promo_code->limit_total){
+                return $this->errorResponse(__('Coupon Code limit has been reached.'), 422);
+            }
+
             $cart_coupon_detail = CartCoupon::where('cart_id', $request->cart_id)->where('vendor_id', $request->vendor_id)->where('coupon_id', $request->coupon_id)->first();
             if($cart_coupon_detail){
                 return $this->errorResponse(__('Coupon Code already applied.'), 422);
@@ -312,7 +317,7 @@ class PromoCodeController extends Controller{
                 return $this->errorResponse(__('Invalid Cart Id'), 422);
             }
             $promo_code = Promocode::where('name', $request->promocode)->first();
-            
+
             if(!$promo_code){
                 return $this->errorResponse('Invalid Promocode Id', 422);
             }elseif(isset($request->amount) && $request->amount < $promo_code->minimum_spend){
@@ -321,6 +326,11 @@ class PromoCodeController extends Controller{
             $order_vendor_user_promo_count = OrderVendor::where(['user_id' => $user->id, 'coupon_code' => $request->promocode])->count();
             if($order_vendor_user_promo_count >= $promo_code->limit_per_user){
                 return $this->errorResponse('Coupon Code already applied.', 422);
+            }
+
+            $order_vendor_user_promo_count = OrderVendor::where(['coupon_id' => $request->promocode])->count();
+            if($order_vendor_user_promo_count >= $promo_code->limit_total){
+                return $this->errorResponse(__('Coupon Code limit has been reached.'), 422);
             }
 
             $now = Carbon::now()->toDateTimeString();

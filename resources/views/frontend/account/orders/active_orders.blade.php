@@ -196,12 +196,23 @@
                                                                                             @endif
 
                                                                                             @if (!empty($vendor->dispatch_traking_url))
-                                                                                                <li>
-                                                                                                    <img src="{{ asset('assets/images/order-icon.svg') }}"
-                                                                                                        alt="">
-                                                                                                    <a class="alOrderDetailsLink"  href="{{ route('front.booking.details', $order->order_number) }}"
-                                                                                                    target="_blank">{{ __('Details') }}</a>
-                                                                                                </li>
+                                                                                                @if ($vendor->shipping_delivery_type == 'B')
+                                                                                                    <h5 class="m-0">{{ __('Track Order') }}</h5>
+                                                                                                    <li>
+                                                                                                        @php
+                                                                                                            $track = explode('/', $vendor->dispatch_traking_url);
+                                                                                                            $track_code = end($track);
+                                                                                                        @endphp
+                                                                                                        <a href="{{ $vendor->dispatch_traking_url }}" target="_blank" class="track_url">#{{ $track_code }}</a>
+                                                                                                    </li>
+                                                                                                @else
+                                                                                                    <li>
+                                                                                                        <img src="{{ asset('assets/images/order-icon.svg') }}"
+                                                                                                            alt="">
+                                                                                                        <a class="alOrderDetailsLink"  href="{{ route('front.booking.details', $order->order_number) }}"
+                                                                                                        target="_blank">{{ __('Details') }}</a>
+                                                                                                    </li>
+                                                                                                @endif
                                                                                             @endif
 
                                                                                             @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))

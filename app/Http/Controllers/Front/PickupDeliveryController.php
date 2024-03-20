@@ -1441,11 +1441,10 @@ class PickupDeliveryController extends FrontController{
                     'order_id' =>  $order->id,
                     'dispatcher_status_option_id' =>  1,
                     'vendor_id' =>  $vendor]);
-
-                    if ($request->payment_option_id == 2){
-                        $wal =   $wallet->forceWithdrawFloat($order->payable_amount, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
+                    $ex_gateways_wallet = [4,36,40,41,22]; // stripe,mycash,userede,openpay,ccavenue
+                    if (in_array($order->payment_option_id, $ex_gateways_wallet )){
+                        $wal =   $wallet->forceWithdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
                     }
-                 return $response;
                 }
                 return $response;
             }
@@ -1510,6 +1509,7 @@ class PickupDeliveryController extends FrontController{
 
     public function postVerifyPromoCode(Request $request){
         try {
+            $user = Auth::user();
             $validator = $this->validatePromoCode();
             if($validator->fails()){
                 return $this->errorResponse($validator->messages(), 422);
@@ -1522,6 +1522,23 @@ class PickupDeliveryController extends FrontController{
             $cart_detail = Promocode::where('id', $request->coupon_id)->first();
             if(!$cart_detail){
                 return $this->errorResponse('Invalid Promocode Id', 422);
+            }
+
+            if($cart_detail->first_order_only == 1){
+                $orders_count = Order::where('user_id', $user->id)->count();
+                if($orders_count > 0){
+                    return $this->errorResponse('Coupon Code apply only first order.', 422);
+                }
+            }
+
+            $order_vendor_user_promo_count = OrderVendor::where(['coupon_id' => $request->coupon_id])->count();
+            if($order_vendor_user_promo_count >= $cart_detail->limit_total){
+                return $this->errorResponse(__('Coupon Code limit has been reached.'), 422);
+            }
+
+            $order_vendor_user_promo_count = OrderVendor::where(['user_id' => $user->id, 'coupon_id' => $request->coupon_id])->count();
+            if($order_vendor_user_promo_count >= $cart_detail->limit_per_user){
+                return $this->errorResponse(__('Coupon Code already applied.'), 422);
             }
 
             if($cart_detail->promo_type_id == 2){
