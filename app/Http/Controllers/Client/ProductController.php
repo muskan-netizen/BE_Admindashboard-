@@ -430,7 +430,7 @@ class ProductController extends BaseController
                 $product_category->save();
             }
             if ($product->is_live == 0) {
-                CartProduct::where(['product_id',$id])->delete();
+                CartProduct::where(['product_id' => $id])->delete();
                 $product->publish_at = ($request->is_live == 1) ? date('Y-m-d H:i:s') : '';
             }
             // foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id', 'length', 'breadth', 'height', 'packaging_weight', 'packaging_weight_unit', 'packaging_length', 'packaging_breadth', 'packaging_height') as $k => $val) {
