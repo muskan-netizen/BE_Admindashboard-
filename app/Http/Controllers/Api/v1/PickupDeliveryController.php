@@ -1623,9 +1623,7 @@ class PickupDeliveryController extends BaseController{
         if(isset($order->orderDetail->scheduled_date_time)){
             $order->orderDetail->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);
         }
-        if(isset($order->orderDetail->scheduled_date_time)){
-            $order->orderDetail->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);
-        }
+
         $order->payable_amount = decimal_format($order->payable_amount - $order->wallet_amount_used);
         if($response->status() == 200){
             $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order->order_id ,'vendor_id' =>$order->vendor_id ])->latest()->first();
