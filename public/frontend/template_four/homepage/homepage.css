@@ -35,7 +35,6 @@ body.al_body_template_four .row.mb-md-1.alFourTemplateCartButtons.mt-2.pt-2 {
     margin-bottom: 20px !important;
 }
 
-
 /* cab booking code css */
 
 .cab-booking {
@@ -4062,7 +4061,7 @@ body[dir=rtl] .alFourThLogo {
         margin-top: 30px !important;
     }
     .vendors h2.h2-heading.mb-3{font-size: 20px;}
-    
+
 }
 
 @media(max-width:576px) {
@@ -4294,7 +4293,7 @@ body.al_body_template_four .vendor-signup  input#phone {
     border-radius: 0 !important;
     font-size: 16px
 }
-/* 
+/*
 body.al_body_template_four .inner_spacing.w-100 label.mb-0 {
     font-size: 16px;
     width: 100%;
@@ -4378,7 +4377,7 @@ body[dir=rtl] .al_searchType button i {
   body[dir=rtl] .footer-theme .sub-title li {text-align: right;}
   body[dir=rtl] #wallet_topup_form .form-group {text-align: right;}
   body[dir=rtl]  #wallet_topup_form h5 { text-align: right;}
-  body[dir=rtl] form#wallet_transfer_form {text-align: right;}  
+  body[dir=rtl] form#wallet_transfer_form {text-align: right;}
 
 
  /*---vendor form page arabic language  css start here----*/

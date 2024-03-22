@@ -51,10 +51,10 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
             <div class="container p-0">
                 <div class="row">
                         <div class="col-12">
-                            @include('frontend.vendor-category-topbar-banner')   
+                            @include('frontend.vendor-category-topbar-banner')
                         </div>
                         @include('frontend.vendor-details-in-banner')
-                       
+
                 </div>
 
                 <div class="position-relative container">
@@ -177,7 +177,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
 
                                                                             </h5>
                                                                             <div class="product_variant_quantity_wrapper">
-                                                                               
+
                                                                                     @php
                                                                                         $data = $prod;
                                                                                         $productVariantInCart = 0;
@@ -236,7 +236,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                                                                                             @if( $is_service_product_price_from_dispatch_forOnDemand ==1)
                                                                                                 <a class="btn btn-solid btn btn-solid view_on_demand_price"  style="display:none;" id="add_button_href{{$cartProductId}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
                                                                                             @else
-                                                                                            
+
                                                                                                 {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
                                                                                                 <a class="add-cart-btn add_vendor_product as"
                                                                                                     style="display:none;"
@@ -254,8 +254,8 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                                                                                                     @endif
                                                                                                 </a>
                                                                                             @endif
-                                                                                                
-                                                                                            @if(isset($data->category_type_id) && (!in_array($data->category_type_id,$category_type_idForNotShowshPlusMinus))) 
+
+                                                                                            @if(isset($data->category_type_id) && (!in_array($data->category_type_id,$category_type_idForNotShowshPlusMinus)))
                                                                                                 <div class="number"
                                                                                                     id="show_plus_minus{{ $cartProductId }}">
                                                                                                     <span
@@ -301,12 +301,12 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                                                                                         @else
                                                                                             @if ( (in_array($data->category_type_id,[12,8]))  || ($prod->has_inventory == 0 || ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1)))
                                                                                                 @if(   $is_service_product_price_from_dispatch_forOnDemand ==1)
-                                                                                                    <a class="btn btn-solid btn btn-solid view_on_demand_price"  id="add_button_href{{$data->id }}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
-                                                                                                @else 
+                                                                                                    <a class="btn btn-solid btn btn-solid view_on_demand_price"  id="add_button_href{{$data->id }}" data-variant_id = {{ isset($data->variant[0])?$data->variant[0]->id:0.00 }} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
+                                                                                                @else
                                                                                                     {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
                                                                                                     <a class="add-cart-btn add_vendor_product"
                                                                                                         id="aadd_button_href{{ $data->id }}"
-                                                                                                        data-variant_id="{{ $data->variant[0]->id }}"
+                                                                                                        data-variant_id="{{ isset($data->variant[0])?$data->variant[0]->id:0.00 }}"
                                                                                                         data-add_to_cart_url="{{ route('addToCart') }}"
                                                                                                         data-vendor_id="{{ $data->vendor_id }}"
                                                                                                         data-product_id="{{ $data->id }}"
@@ -388,7 +388,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                                                                     @endif
 
                                                                     <p class="mb-1 product_price ">
-                                                                        @if($is_service_product_price_from_dispatch_forOnDemand !=1) 
+                                                                        @if($is_service_product_price_from_dispatch_forOnDemand !=1)
                                                                         {{-- price  not showing in vencor type in on demand and get price from dispatche--}}
                                                                             {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,',') }}
                                                                             @if (@$prod->variant[0]->compare_at_price > 0)
@@ -506,13 +506,13 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
 
                         <span class="ellips"><%= vendor_product.quantity %>x <%=
                         vendor_product.product.translation_one ? translationOneTitle :  vendor_product.product.sku %></span>
-                        
+
                             <% if(cart_details.is_token_enable == 1) { %>
                                 <span class="alPriceValue"><i class='fa fa-money mr-1' aria-hidden='true'></i><%=  Helper.formatPrice(vendor_product.quantity_price * cart_details.tokenAmount) %></span>
                                 <% }else{ %>
                                 <span>{{ Session::get('currencySymbol') }}<%=  Helper.formatPrice(vendor_product.quantity_price) %></span>
                             <% } %>
-                        
+
                         <a class="action-icon remove_product_via_cart text-danger" style="cursor: pointer;" data-product="<%= vendor_product.id %>" data-product_id="<%= vendor_product.product_id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
                                 <i class="fa fa-trash-o" aria-hidden="true"></i>
                             </a>
@@ -576,7 +576,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
             <% }); %>
 
             <h5 class="d-flex align-items-center justify-content-between pb-2">{{ __('PRICE DETAILS') }} </h5>
-            
+
             <% if(cart_details.total_service_fee > 0){ %>
             <li class="p-0 alSixCart">
                 <div class='media-body'>
@@ -697,7 +697,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                     <% }else{ %>
                         <span class="org_price ml-1 font-14">{{ Session::get('currencySymbol') }}<%= variant.compare_at_price %></span>
                     <% } %>
-                
+
             <% } %>
         <% } %>
     </script>
@@ -1190,8 +1190,8 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
         }
 
         function vendorProductsSearchResults(id = '') {
-            
-           
+
+
             let keyword = $("#vendor_search_box").val();
             let order_type = $("#order_type").val();
             var checkboxesChecked = [];

@@ -201,6 +201,11 @@ $timezone = Auth::user()->timezone;
         font-size: 18px !important;
         font-weight: 400;
     }
+    .status_box li a {
+	color: #6180cc !important;
+    font-size:14px !important;
+}
+
 </style>
 <section class="section-b-space order-page">
     <div class="container">
@@ -1157,8 +1162,8 @@ $(document).delegate(".order_placed_btn_pending", "click", function() {
         document.getElementById(element.id).value = finalVal;
     }
 }
-       
-        $('.recurringBtn').click(function() 
+
+        $('.recurringBtn').click(function()
         {
             var date = $(this).attr('data-recurring_day_data');
             var slot = $(this).attr('data-recurring_slot');

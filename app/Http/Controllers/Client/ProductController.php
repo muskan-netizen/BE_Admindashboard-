@@ -432,7 +432,6 @@ class ProductController extends BaseController
             if ($product->is_live == 0) {
                 $product->publish_at = ($request->is_live == 1) ? date('Y-m-d H:i:s') : '';
             }
-            // dd($request->all());
             // foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id', 'length', 'breadth', 'height', 'packaging_weight', 'packaging_weight_unit', 'packaging_length', 'packaging_breadth', 'packaging_height') as $k => $val) {
             //     $product->{$k} = $val;
             // }
@@ -549,8 +548,9 @@ class ProductController extends BaseController
             $product->fixed_fee_tax = $request->fixed_fee_tax == 'on' ? 1 : 0;
             $product->fixed_fee_tax_id=$request->fixed_fee_tax_id != 0 && $product->fixed_fee_tax !=0 ? $request->fixed_fee_tax_id:0;
 
-
-
+            if ($request->is_live == 0) {
+                CartProduct::where(['product_id' => $id])->delete();
+            }
 
             if (empty($product->publish_at)) {
                 $product->publish_at = ($request->is_live == 1) ? date('Y-m-d H:i:s') : '';
