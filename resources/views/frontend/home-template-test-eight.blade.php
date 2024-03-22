@@ -780,7 +780,7 @@
 					<h2 class="col h2-heading mt-3"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 						@endphp </h2>
-						<a class="mt-3" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>
+						{{-- <a class="mt-3" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> --}}
 				</div>
 				<div class="row">
 					<div class="col-12">

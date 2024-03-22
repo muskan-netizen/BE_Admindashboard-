@@ -135,6 +135,12 @@ class EmailTemplateSeeder extends Seeder{
                 </tbody>
             </table>'
             ],
+            [
+                'label' => 'New Vendor Accepted',
+                'subject' => 'New Vendor Accepted',
+                'tags' => '{vendor_name}',
+                'content'=>'<table style="width: 100%; background-color:#fff;"> <thead> <tr> <th colspan="2" style="text-align: center;"> <a style="display: block;margin-bottom: 10px;" href="#"><img src="images/logo.png" alt=""> </a> <h3 style="margin: 0 0 10px;font-weight:400;">Hi {vendor_name}</h1> <p style="margin: 0 0 20px;font-weight:300;">Your account has been successfully approved. You can now login to your account and access all the features.</p><p>Thank you for joining us!</p></th> </tr> </thead>  <tr> <td colspan="2" style="padding: 0;"> <table style="width:100%;"> <tbody>  </tbody> <tfoot> <tr> <td colspan="2" style="background-color: #8142ff;color: #fff; border-top: 1px solid rgb(221 221 221 / 41%);text-align: center;"> <b>Powered By Royo</b> </td> </tr> </tfoot> </table> </td> </tr> </tbody> </table> </td> </tr> </tbody></table>'
+            ],
         ];
 
         foreach ($create_array as $key => $array) {
