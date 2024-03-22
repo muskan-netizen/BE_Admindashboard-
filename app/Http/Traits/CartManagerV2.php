@@ -308,7 +308,7 @@ trait CartManagerV2
         $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency', 'is_price_by_role', 'is_service_product_price_from_dispatch', 'agent_commison', 'service_amount_percentage', 'agent_commison_amount_percentage']);
         $client_timezone = DB::table('clients')->first('timezone');
         $user_timezone = $client_timezone->timezone ?? 'Asia/Kolkata';
-
+        $taxable_amount = 0;
         $giftCardUsed = 0;
         $giftCardAmount = 0;
         $security_amount = 0.00;
