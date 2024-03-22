@@ -2825,7 +2825,7 @@ class OrderController extends FrontController
                         $vendor_discount_amount += $amount;
                     } else {
                         // ----Percent amount----------
-                        $percentage_amount = ($vendor_payable_amount * $vendor_cart_product->coupon->promo->amount / 100);
+                        $percentage_amount = ($actual_amount * $vendor_cart_product->coupon->promo->amount / 100);
                         $total_discount += $percentage_amount;
                         $vendor_payable_amount -= $percentage_amount;
                         $vendor_discount_amount += $percentage_amount;
@@ -3911,11 +3911,11 @@ class OrderController extends FrontController
 
             if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
+                $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used + $order->tip_amount;
             } else {
                 if ($order->is_postpay == 1 && $order->payment_status == 0) {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
+                    $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used + $order->tip_amount;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
