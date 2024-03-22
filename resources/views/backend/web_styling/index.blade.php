@@ -505,7 +505,7 @@
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
                                 @endif
-
+                                
                                 @if($home_page_label->slug == 'selected_products')
                                 <a class="action-icon" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
                                     <div class="col pl-1">
@@ -513,7 +513,7 @@
                                             <option value="">{{ __("Select Product") }}</option>
                                             @if(@$select_products)
                                                 @foreach($select_products as $product)
-                                                    <option value="{{$product->id}}" @if(in_array($product->id, $selected_ids)) selected @endif>{{$product->title}}</option>
+                                                    <option value="{{$product->id}}" @if(!empty($selected_ids) && in_array($product->id, $selected_ids)) selected @endif>{{$product->title}}</option>
                                                 @endforeach
                                             @endif
                                         </select>
