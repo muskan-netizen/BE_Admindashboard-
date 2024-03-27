@@ -463,8 +463,7 @@ class OrderController extends BaseController
 
                             $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $price_container_charges;
                             $vendor_markup_amount = $vendor_markup_amount + $variant->markup_price;
-                            // $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
-                            $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
+                            $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                             $only_products_amount += $quantity_price;
                             $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
 
