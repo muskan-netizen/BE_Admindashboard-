@@ -904,7 +904,7 @@ class OrderController extends BaseController
                                 $vendor_discount_amount += $coupon_discount_amount;
                             } else {
                                 //----Percent amount----------
-                                $coupon_discount_amount = ($only_products_amount * $vendor_cart_product->coupon->promo->amount / 100);
+                                $coupon_discount_amount = ($actual_amount * $vendor_cart_product->coupon->promo->amount / 100);
                                 $final_coupon_discount_amount = $coupon_discount_amount * $clientCurrency->doller_compare;
                                 $total_discount += $final_coupon_discount_amount;
                                 $vendor_payable_amount -= $final_coupon_discount_amount;
