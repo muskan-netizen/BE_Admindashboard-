@@ -84,7 +84,8 @@ use App\Models\{
     CartRentalProtection,
     OrderNotificationsLogs,
     ProductAvailability,
-    ClientPreferenceAdditional
+    ClientPreferenceAdditional,
+    OrderVendorProduct
 };
 use App\Models\ProductVariantSet;
 use GuzzleHttp\Client as GCLIENT;
@@ -3917,7 +3918,12 @@ class OrderController extends FrontController
             if (!empty($dispatch_domain->last_mile_team)) {
                 $team_tag = $dispatch_domain->last_mile_team;
             }
-
+            $order_vendor_products=OrderVendorProduct::where('order_id',$order->id)->first();
+            $product=Product::where('id',$order_vendor_products->product_id)->first();
+            if (!empty($product->Requires_last_mile) && ($product->Requires_last_mile == 1) ) {
+                $checkLastMile = 1;
+                    $lastMileDate['tags'] = $product->tags;
+            }
             if (isset($order->scheduled_date_time) && !empty($order->scheduled_date_time)) {
                 $task_type = 'schedule';
                 $schedule_time = $order->scheduled_date_time ?? null;
@@ -3974,6 +3980,7 @@ class OrderController extends FrontController
                 'cash_to_be_collected' => $payable_amount ?? 0.00,
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
+                'order_agent_tag' => $lastMileDate['tags']   ,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'is_restricted' => $order_vendor->is_restricted,
