@@ -7,14 +7,15 @@
 @section('content')
 @php
 $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
+$signUpImage = $preferences->signup_image ?? null;
 @endphp
 <section class="wrapper-main py-lg-5 py-3 d-flex align-items-center main-login-page">
     <div class="container">
         <div class="row align-items-center h-100" id="login-section">  
-            <div class="col-md-6 p-0"> 
+            <div class="col-md-6 p-0">
                 <div class="login_img">
-                    <img src="{{asset('images/template-8/login-img.png')}}" class="img-fluid">
-                </div>  
+                    <img src="{{ $signUpImage ? $signUpImage['proxy_url'].'400/400'.$signUpImage['image_path'] : asset('images/template-8/login-img.png') }}" class="img-fluid">
+                </div>
             </div>
             <div class="col-lg-6 pl-3 mb-lg-0 mb-3 text-center pb-sm-0 border-right">
                 <h3 class="mb-2">{{ __('Login To Your Account') }}</h3>
@@ -139,7 +140,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                                 @endif
                                 @if(@session('preferences')->apple_login == 1)
                                 <li>
-                                    <a href="javascript::void(0);">
+                                    <a href="{{url('auth/apple')}}">
                                         <img src="{{asset('front-assets/images/apple.svg')}}">
                                     </a>
                                 </li>

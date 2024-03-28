@@ -743,7 +743,7 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0 {
 
     .minus,
     .plus {
-        padding: 0 2px;
+        padding: 0 10px;
     }
 
     .number input {
@@ -875,9 +875,9 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0 {
         border-radius: 20px
     }
 
-    .collection-collapse-block {
+    .dark .collection-collapse-block {
         padding: 15px 10px;
-        background-color: #fff
+        background-color: #545454;
     }
 
     .collection-collapse-block-content {
