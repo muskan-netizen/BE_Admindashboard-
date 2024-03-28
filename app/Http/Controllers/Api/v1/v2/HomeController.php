@@ -1583,7 +1583,7 @@ class HomeController extends BaseController
         //pr($mostSellingVendors);
         $on_sale_product_details =$on_sale_products = [];
         if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in
-            $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', 'on_sale', $request->type,$on_sale_title, $p_dim, $getSubCatIds);
+            $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'INR', 'on_sale', $request->type,$on_sale_title, $p_dim, $getSubCatIds);
         }
         $new_product_details =$new_products = [];
         if (in_array('new_products', $enable_layout)) {  # if enable new_products section in
