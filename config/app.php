@@ -73,7 +73,7 @@ return [
 
     'AWS_BUCKET_CHAT' => env('AWS_BUCKET_CHAT',''),
 
-    'supported_languages' => ['1' => 'en', '8' => 'ar', '47' => 'fr', '51' => 'de', '148' => 'es', '152' => 'sv','173' => 'vi','128' => 'pt','144'=>'sk','40'=>'nl'],
+    'supported_languages' => ['1' => 'en', '8' => 'ar', '47' => 'fr', '51' => 'de', '148' => 'es', '152' => 'sv','173' => 'vi','128' => 'pt','144'=>'sk','40'=>'nl', '57'=>'he', '169'=>'uk'],
 
 
     /*
