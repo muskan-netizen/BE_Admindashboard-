@@ -542,6 +542,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('estimation-list', 'Front\EstimationController@estimationList')->name('estimationList'); // Added by Ovi
 	Route::get('brand/{id?}', 'Front\BrandController@brandProducts')->name('brandDetail');
 	Route::post('brand/filters/{id}', 'Front\BrandController@brandFilters')->name('brandProductFilters');
+	Route::get('brands/all', 'Front\BrandController@viewAll')->name('brand.all');
 	Route::get('celebrity/{slug?}', 'Front\CelebrityController@celebrityProducts')->name('celebrityProducts');
 	Route::get('auth/{driver}', 'Front\FacebookController@redirectToSocial');
 	Route::get('auth/callback/{driver}', 'Front\FacebookController@handleSocialCallback');

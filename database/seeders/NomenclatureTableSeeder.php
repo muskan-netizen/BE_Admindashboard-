@@ -32,5 +32,11 @@ class NomenclatureTableSeeder extends Seeder
         if(!NomenClature::where(['label'=>'Products'])->exists()){
             NomenClature::Create(['label'=>'Products']);
         }
+        if(!NomenClature::where(['label'=>'Include Gift'])->exists()){
+            NomenClature::Create(['label'=>'Include Gift']);
+        }
+        if(!NomenClature::where(['label'=>'Control Panel'])->exists()){
+            NomenClature::Create(['label'=>'Control Panel']);
+        }
     }
 }
