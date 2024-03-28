@@ -143,7 +143,7 @@ a.backArroww.position-absolute {
 .dark .custom-select {
     background-color: transparent;
     color: #fff;
-    border-color: #444242 !important
+    /* border-color: #444242 !important; */
 }
 
 body.dark {

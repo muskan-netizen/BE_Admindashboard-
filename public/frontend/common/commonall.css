@@ -1130,7 +1130,7 @@ height: 100% !important;
 
 .al_body_template_eight .similar-products-vitamin .product-card-box .img-outer-box {
     height:100%;
-    min-height: 300px !important;
+    min-height: 350px !important;
 }
 .al_body_template_three .product-image img .img-fluid.blur-up .lazyloaded {
     height: 100%!important;
@@ -1356,7 +1356,7 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 24 24"><path fill="%23fff" d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>');
 }
 .dark  div#login-section .btn {
-    color: #000!important;
+    color: #fff!important;
 }
 
 .al_body_template_four .vendor-description .vendor-info li.d-block{

@@ -47,7 +47,8 @@
                                         <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 32x32</label>
                                     </div>
                                 </div>
-                                @if($themeId==4 || $themeId==5)
+                                
+                                @if($themeId==4 || $themeId==5 || $themeId==6)
                                 <div class="col-md-4 col-6 mb-3">
                                     <h4 class="header-title">{{ __("Sign In/Up Image") }}</h4>
                                     <div class="mb-0 text-left alDropFile">
@@ -504,7 +505,7 @@
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
                                 @endif
-
+                                
                                 @if($home_page_label->slug == 'selected_products')
                                 <a class="action-icon" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
                                     <div class="col pl-1">
@@ -512,7 +513,7 @@
                                             <option value="">{{ __("Select Product") }}</option>
                                             @if(@$select_products)
                                                 @foreach($select_products as $product)
-                                                    <option value="{{$product->id}}" @if(in_array($product->id, $selected_ids)) selected @endif>{{$product->title}}</option>
+                                                    <option value="{{$product->id}}" @if(!empty($selected_ids) && in_array($product->id, $selected_ids)) selected @endif>{{$product->title}}</option>
                                                 @endforeach
                                             @endif
                                         </select>
