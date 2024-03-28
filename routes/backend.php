@@ -46,9 +46,9 @@ Route::get('admin/wrong/url', 'Auth\LoginController@wrongurl')->name('wrong.clie
 
 // ADMIN LANGUAGE SWITCH
 Route::group(['middleware' => 'adminLanguageSwitch'], function () {
-    Route::group(['middleware' => ['ClientAuth', 'database','permission'], 'prefix' => '/client'], function () {
+    Route::group(['middleware' => ['ClientAuth', 'database', 'permission'], 'prefix' => '/client'], function () {
 
-        Route::post('/webhook/set','AhoyController@setWebhook')->name('setWebhook');
+        Route::post('/webhook/set', 'AhoyController@setWebhook')->name('setWebhook');
         Route::any('/logout', 'Auth\LoginController@logout')->name('client.logout');
         Route::get('profile', 'Client\UserController@profile')->name('client.profile');
 
@@ -83,7 +83,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('cms/page/update', [PageController::class, 'update'])->name('cms.page.update');
         Route::post('cms/page/create', [PageController::class, 'store'])->name('cms.page.create');
         Route::post('cms/page/delete', [PageController::class, 'destroy'])->name('cms.page.delete');
-        Route::post('cms/page/ordering',[PageController::class, 'saveOrderOfPage'])->name('cms.page.saveOrderOfPage');
+        Route::post('cms/page/ordering', [PageController::class, 'saveOrderOfPage'])->name('cms.page.saveOrderOfPage');
         Route::get('cms/emails', [EmailController::class, 'index'])->name('cms.emails');
         Route::get('cms/emails/{id}', [EmailController::class, 'show'])->name('cms.emails.show');
         Route::post('cms/emails/update', [EmailController::class, 'update'])->name('cms.emails.update');
@@ -454,18 +454,18 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::resource('payoption', 'Client\PaymentOptionController');
         Route::resource('shipoption', 'Client\ShippingOptionController');
         Route::resource('deliveryoption', 'Client\DeliveryOptionController');
-        Route::resource('verifyoption','Client\VerificationController');
+        Route::resource('verifyoption', 'Client\VerificationController');
         Route::post('delivery/dunzo', 'Client\DeliveryOptionController@dunzo')->name('delivery.dunzo');
         Route::post('delivery/d4b_dunzo', 'Client\DeliveryOptionController@d4b_dunzo')->name('delivery.d4b_dunzo');
         Route::post('delivery/roadie', 'Client\DeliveryOptionController@roadie')->name('delivery.roadie');
         Route::post('delivery/ahoy', 'Client\DeliveryOptionController@ahoy')->name('delivery.ahoy');
-        Route::post('delivery/last_mile_delivery','Client\DeliveryOptionController@last_mile_delivery')->name('delivery.last_mile_delivery');
-        Route::resource('tools','Client\ToolsController');
-        Route::post('tools/copy-catalog','Client\ToolsController@storeData')->name('tools.storeData');
-        Route::get('database-logs','Client\ToolsController@databaseAuditingLogs')->name('databaseAuditingLogs'); // Added By Ovi
-        Route::get('database-log/{table_name}','Client\ToolsController@singleDatabaseAuditingLogs')->name('singleDatabaseAuditingLogs'); // Added By Ovi
-        Route::post('tools/tax','Client\ToolsController@taxCopy')->name('tools.taxCopy');
-        Route::post('tool/uploadImage','Client\ToolsController@uploadImage')->name('tools.uploadImage');
+        Route::post('delivery/last_mile_delivery', 'Client\DeliveryOptionController@last_mile_delivery')->name('delivery.last_mile_delivery');
+        Route::resource('tools', 'Client\ToolsController');
+        Route::post('tools/copy-catalog', 'Client\ToolsController@storeData')->name('tools.storeData');
+        Route::get('database-logs', 'Client\ToolsController@databaseAuditingLogs')->name('databaseAuditingLogs'); // Added By Ovi
+        Route::get('database-log/{table_name}', 'Client\ToolsController@singleDatabaseAuditingLogs')->name('singleDatabaseAuditingLogs'); // Added By Ovi
+        Route::post('tools/tax', 'Client\ToolsController@taxCopy')->name('tools.taxCopy');
+        Route::post('tool/uploadImage', 'Client\ToolsController@uploadImage')->name('tools.uploadImage');
         Route::post('updateAll', 'Client\PaymentOptionController@updateAll')->name('payoption.updateAll');
         Route::post('shippment/updateAll', 'Client\ShippingOptionController@updateAll')->name('shipoption.updateAll');
         Route::post('shippo/updateAll', 'Client\ShippoController@updateAll')->name('shippo.updateAll');
@@ -523,8 +523,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
             Route::post('updateCreateVendorInDispatchAppointment', 'Client\VendorController@updateCreateVendorInDispatchAppointment')->name('update.Create.Vendor.In.Dispatch.Appointment');
         });
 
-        Route::get('vendor-marg-config/{vendor_id}',  'Client\ClientPreferenceController@vendorMargConfig')->name("vendor.margConfig");
-        Route::post('vendor-marg-config-update/{vendor_id}',  'Client\ClientPreferenceController@vendorMargConfigUpdate')->name("vendorMargConfig.update");
+        Route::get('vendor-marg-config/{vendor_id}', 'Client\ClientPreferenceController@vendorMargConfig')->name("vendor.margConfig");
+        Route::post('vendor-marg-config-update/{vendor_id}', 'Client\ClientPreferenceController@vendorMargConfigUpdate')->name("vendorMargConfig.update");
 
         Route::get('reports/productperformance', 'Client\ReportController@productPerformance')->name('report.productperformance');
         Route::post('reports/searchproduct', 'Client\ReportController@getOrdersListAjax')->name('report.searchproduct');
@@ -653,10 +653,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('/hubspot/create-contact', 'Hubspot\HubspotApiController@create');
         /** end */
         // long term Serive by harbans :)
-        Route::post('long_term_service/store',             'Client\LongTermServiceController@store')->name("long_term_service.store");
-        Route::get('long_term_service/index/{vendor_id}',  'Client\LongTermServiceController@index')->name("long_term_service.index");
-        Route::get('long_term_service/edit/{id}',          'Client\LongTermServiceController@edit')->name('long_term_service.edit');
-        Route::get('long_term_service/delete/{id}',        'Client\LongTermServiceController@destroy')->name("long_term_service.destroy");
+        Route::post('long_term_service/store', 'Client\LongTermServiceController@store')->name("long_term_service.store");
+        Route::get('long_term_service/index/{vendor_id}', 'Client\LongTermServiceController@index')->name("long_term_service.index");
+        Route::get('long_term_service/edit/{id}', 'Client\LongTermServiceController@edit')->name('long_term_service.edit');
+        Route::get('long_term_service/delete/{id}', 'Client\LongTermServiceController@destroy')->name("long_term_service.destroy");
 
 
         /***
@@ -665,16 +665,16 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         Route::post('mtn-mom-api-key', 'Client\PaymentOptionController@MtnmomoApiKey')->name('payoption.mtn_momo_api_key');
 
-        Route::post('long_term_service/updateBooking',     'Client\LongTermServiceController@updateBooking')->name("long_term_service.updateBooking");
+        Route::post('long_term_service/updateBooking', 'Client\LongTermServiceController@updateBooking')->name("long_term_service.updateBooking");
 
         /**
          * Gift Card.
          */
-        Route::get('gitcart',         'Client\GiftCard\GiftcardController@index')->name("giftCart.index");
-        Route::post('gitcart/store',   'Client\GiftCard\GiftcardController@store')->name("giftCart.store");
-        Route::get('gitcart/show/{id}',   'Client\GiftCard\GiftcardController@edit')->name("giftCart.show");
-        Route::post('gitcart/update/{id}',   'Client\GiftCard\GiftcardController@update')->name("giftCart.update");
-        Route::get('gitcart/delete/{id}',   'Client\GiftCard\GiftcardController@destroy')->name("giftCart.destroy");
+        Route::get('gitcart', 'Client\GiftCard\GiftcardController@index')->name("giftCart.index");
+        Route::post('gitcart/store', 'Client\GiftCard\GiftcardController@store')->name("giftCart.store");
+        Route::get('gitcart/show/{id}', 'Client\GiftCard\GiftcardController@edit')->name("giftCart.show");
+        Route::post('gitcart/update/{id}', 'Client\GiftCard\GiftcardController@update')->name("giftCart.update");
+        Route::get('gitcart/delete/{id}', 'Client\GiftCard\GiftcardController@destroy')->name("giftCart.destroy");
 
         Route::get('account/redeemedcard', [GiftcardController::class, 'redeemedCard'])->name('account.redeemedcard');
         Route::get('giftcard/list/filter', [GiftcardController::class, 'filter'])->name('gift.card.list.filter');
@@ -696,39 +696,39 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
             Route::post('package/updateStatus/{slug}', 'Client\MealSubscriptionController@updateSubscriptionPlanStatus')->name('mealSubscription.plan.updateStatus');
             Route::get('package/edit/{slug}', 'Client\MealSubscriptionController@editSubscriptionPlan')->name('mealSubscription.plan.edit');
             Route::get('package/delete/user/{slug}', 'Client\MealSubscriptionController@deleteSubscriptionPlan')->name('mealSubscription.plan.delete');
-        Route::group(['prefix' => 'rental-protection/'], function () {
-            Route::get('', [RentalProtectionController::class, 'index'])->name('rental.protection');
-            Route::match(['put', 'post'],'store/{id?}', [RentalProtectionController::class, 'store'])->name('rental.protection.store');
-            Route::get('{id}/edit', [RentalProtectionController::class, 'edit'])->name('rental.protection.edit');
-            Route::delete('delete/{id}', [RentalProtectionController::class, 'delete'])->name('rental.protection.delete');
-        });
-        Route::group(['prefix' => 'booking-option/'], function () {
-            Route::get('', [BookingOptionController::class, 'index'])->name('booking.option');
-            Route::match(['put', 'post'],'store/{id?}', [BookingOptionController::class, 'store'])->name('booking.option.store');
-            Route::get('{id}/edit', [BookingOptionController::class, 'edit'])->name('booking.option.edit');
-            Route::delete('delete/{id}', [BookingOptionController::class, 'delete'])->name('booking.option.delete');
-        });
-        Route::group(['prefix' => 'destination/'], function () {
-            Route::get('', [DestinationController::class, 'index'])->name('destinations');
-            Route::match(['put', 'post'],'store/{id?}', [DestinationController::class, 'store'])->name('destination.store');
-            Route::get('{id}/edit', [DestinationController::class, 'edit'])->name('destination.edit');
-            Route::delete('delete/{id}', [DestinationController::class, 'delete'])->name('destination.delete');
+            Route::group(['prefix' => 'rental-protection/'], function () {
+                Route::get('', [RentalProtectionController::class, 'index'])->name('rental.protection');
+                Route::match (['put', 'post'], 'store/{id?}', [RentalProtectionController::class, 'store'])->name('rental.protection.store');
+                Route::get('{id}/edit', [RentalProtectionController::class, 'edit'])->name('rental.protection.edit');
+                Route::delete('delete/{id}', [RentalProtectionController::class, 'delete'])->name('rental.protection.delete');
+            });
+            Route::group(['prefix' => 'booking-option/'], function () {
+                Route::get('', [BookingOptionController::class, 'index'])->name('booking.option');
+                Route::match (['put', 'post'], 'store/{id?}', [BookingOptionController::class, 'store'])->name('booking.option.store');
+                Route::get('{id}/edit', [BookingOptionController::class, 'edit'])->name('booking.option.edit');
+                Route::delete('delete/{id}', [BookingOptionController::class, 'delete'])->name('booking.option.delete');
+            });
+            Route::group(['prefix' => 'destination/'], function () {
+                Route::get('', [DestinationController::class, 'index'])->name('destinations');
+                Route::match (['put', 'post'], 'store/{id?}', [DestinationController::class, 'store'])->name('destination.store');
+                Route::get('{id}/edit', [DestinationController::class, 'edit'])->name('destination.edit');
+                Route::delete('delete/{id}', [DestinationController::class, 'delete'])->name('destination.delete');
+            });
         });
     });
-});
 
 
-Route::get('/search11', [SearchController::class, 'search']);
+    Route::get('/search11', [SearchController::class, 'search']);
 
-Route::group(['middleware' => 'auth:client', 'prefix' => '/admin'], function () {
-    Route::get('/', 'Client\DashBoardController@index')->name('home');
-    Route::get('{first}/{second}/{third}', 'Client\RoutingController@thirdLevel')->name('third');
-    Route::get('{first}/{second}', 'Client\RoutingController@secondLevel')->name('second');
-    Route::get('{any}', 'Client\RoutingController@root')->name('any');
-});
+    Route::group(['middleware' => 'auth:client', 'prefix' => '/admin'], function () {
+        Route::get('/', 'Client\DashBoardController@index')->name('home');
+        Route::get('{first}/{second}/{third}', 'Client\RoutingController@thirdLevel')->name('third');
+        Route::get('{first}/{second}', 'Client\RoutingController@secondLevel')->name('second');
+        Route::get('{any}', 'Client\RoutingController@root')->name('any');
+    });
 
-Route::group(['prefix' => '/gofrugal'], function () {
-    Route::get('/', 'Client\GoFrugalController@index')->name('gofrugal.home');
-});
+    Route::group(['prefix' => '/gofrugal'], function () {
+        Route::get('/', 'Client\GoFrugalController@index')->name('gofrugal.home');
+    });
 
 });
