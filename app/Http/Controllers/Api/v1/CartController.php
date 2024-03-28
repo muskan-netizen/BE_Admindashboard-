@@ -1557,8 +1557,9 @@ class CartController extends BaseController
                     $vendorData->couponData = $couponData;
                 }
                 $vendor_service_fee_percentage_amount = 0;
+                
                 if($vendorData->vendor->service_fee_percent > 0){
-                    $amount_for_service = $opt_quantity_price_new + $only_products_amount;
+                    $amount_for_service =  $only_products_amount;
                     $vendor_service_fee_percentage_amount = (($amount_for_service) * $vendorData->vendor->service_fee_percent) / 100 ;
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                 }
