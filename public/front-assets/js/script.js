@@ -52,7 +52,7 @@ function  layoutMode(){
 		slidesToShow: 6,
 		slidesToScroll: 2,
         responsive: [
-            { breakpoint: 1920, settings: { slidesToShow: 8, slidesToScroll: 2 } },
+            { breakpoint: 1920, settings: { slidesToShow: 6, slidesToScroll: 2 } },
             { breakpoint: 1530, settings: { slidesToShow: 6, slidesToScroll: 3 } },
             { breakpoint: 1366, settings: { slidesToShow: 4, slidesToScroll: 2 } },
             { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 2 } },
