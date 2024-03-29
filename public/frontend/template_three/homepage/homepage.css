@@ -991,13 +991,16 @@ body.al_body_template_three .al_box_third_template {
     object-fit: cover;
         padding: 0px;
     }
-    .al_body_template_three .al_offset-top-home {
-        margin-top: 158.75px !important;
+    .al_body_template_three #myCarousel {
+        padding-top: 40px !important;
     }
+    /* .al_body_template_three .al_offset-top-home {
+        margin-top: 158.75px !important;
+    } */
     .al_body_template_three section.home-slider-wrapper {
         padding: 0 !important;
     }
     .al_body_template_three article#page-container section .vendors  section.bed-bath {
         padding: 40px 0!important;
     }
-    
+
