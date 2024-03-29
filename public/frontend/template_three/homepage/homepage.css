@@ -58,10 +58,18 @@ article#page-container {
 .home-slider-wrapper .banner-img-outer img {
     max-height: 300px;
     object-fit: cover;
-    max-width: 1370px;
+    max-width: inherit;
     border-radius: 50px
 }
-
+.home-slider-wrapper .carousel-inner {
+    border-radius: 50px;
+}
+.home-slider-wrapper .carousel-item {
+    border-radius: 50px;
+}
+.home-slider-wrapper .carousel-item.active {
+    border-radius: 50px;
+}
 article#page-container section .vendors section {
     padding: 20px 0!important;
     margin-bottom: 0!important;
