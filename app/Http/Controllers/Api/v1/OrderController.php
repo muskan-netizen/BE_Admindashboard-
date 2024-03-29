@@ -904,7 +904,7 @@ class OrderController extends BaseController
                                 $vendor_discount_amount += $coupon_discount_amount;
                             } else {
                                 //----Percent amount----------
-                                $coupon_discount_amount = ($only_products_amount * $vendor_cart_product->coupon->promo->amount / 100);
+                                $coupon_discount_amount = ($actual_amount * $vendor_cart_product->coupon->promo->amount / 100);
                                 $final_coupon_discount_amount = $coupon_discount_amount * $clientCurrency->doller_compare;
                                 $total_discount += $final_coupon_discount_amount;
                                 $vendor_payable_amount -= $final_coupon_discount_amount;
@@ -1701,13 +1701,13 @@ class OrderController extends BaseController
 
             if ($order->payment_option_id == 1 && ($order->payable_amount >0)) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
+                $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used + $order->tip_amount;
             } else {
 
                 if($order->is_postpay==1 && $order->payment_status == 0)
                 {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
+                    $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used + $order->tip_amount;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -2421,7 +2421,7 @@ class OrderController extends BaseController
                 $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
                 $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
                 $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
-                
+
                 $order->payable_amount = decimal_format($order->orderDetail->payable_amount);
                 if(checkColumnExists('orders', 'is_postpay')){
                     $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
@@ -5198,7 +5198,7 @@ class OrderController extends BaseController
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
-    
+
     /**
      * placeOrderRequestBorzoeApi
      *
