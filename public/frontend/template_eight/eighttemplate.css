@@ -1003,6 +1003,10 @@ body.al_body_template_eight .category-related-product .product-card-box .media-b
     color: var(--theme-deafult);
 }
 
+body.dark.al_body_template_eight .category-related-product .product-card-box .media-body.align-self-start .al_clock b {
+    color: #ffffff;
+}
+
 body.al_body_template_eight .collection-wrapper.al h2 {
     font-size: 24px;
     margin-top: 0;
@@ -1385,6 +1389,10 @@ body.al_body_template_eight.homeHeader .collection-product-wrapper .col-md-3.col
     margin-bottom: 25px;
     background: #fff;
     /* padding: 0; */
+}
+
+body.dark.al_body_template_eight.homeHeader .collection-product-wrapper .col-md-3.col-6.col-grid-box{
+    background: #545454 !important;
 }
 
 body.al_body_template_eight div#show-map-modal .modal-full-width {
@@ -2679,6 +2687,9 @@ body.al_body_template_eight .categories-product-list .col-sm-6.offset-sm-3 {
         font-size: 16px !important;
         color: var(--theme-deafult) !important;
         font-weight: 600;
+    }
+    .dark .p2p_single_slider .col .deals-product .supplier-rating a {
+        color: #ffffff !important;
     }
     .al_body_template_eight .best-seller-full h2.h2-heading {
         margin: 26px 0px !important;
@@ -4006,6 +4017,7 @@ border-radius: 0 !important;
 @media screen and (max-width:375px){
     .al_body_template_eight #our_vendor_main_div .vendors section .top-heading h2.h2-heading{font-size: 14px !important;}
     .al_body_template_eight article#page-container section .vendors section a{font-size: 14px !important;}
+    .al_body_template_eight.dark article#page-container section .vendors section a{color: #ffffff !important;}
 }
 
 .alSpaCityBox{position: relative;padding-bottom: 100%;overflow: hidden;border-radius: 15px 15px 0 0;margin-bottom: 10px;}

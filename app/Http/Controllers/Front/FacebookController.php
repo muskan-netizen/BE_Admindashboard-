@@ -73,11 +73,12 @@ class FacebookController extends FrontController
 
     public function redirectToSocial(Request $request, $domain = '', $redirecting = 'facebook')
     {
+        
         if($redirecting == 'apple'){
 
             return Socialite::driver("apple")->scopes(["name", "email"])->stateless()->redirect();
 
-            //return Socialite::driver("sign-in-with-apple")->redirect();
+            // return Socialite::driver("sign-in-with-apple")->redirect();
 
         }else{
             $fb = $this->configDriver($request, $domain, $redirecting);

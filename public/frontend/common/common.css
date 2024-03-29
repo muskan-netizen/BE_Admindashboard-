@@ -400,6 +400,11 @@ span.file-icon::before {
     color: var(--theme-deafult)
 }
 
+.dark .minus,
+.dark .plus {
+    color: #ffffff !important;
+}
+
 .categories-product-list .number {
     border: .5px solid #ed5a6b;
     border-radius: 8px
@@ -1176,6 +1181,11 @@ span.org_price.ml-1.font-14 {
 .dark .slick-next:before,
 .dark .slick-prev:before {
     color: #fff !important;
+}
+
+
+.dark .displayProducts h4 {
+    color: #ffffff !important;
 }
 
 .slick-next:before,
@@ -4105,7 +4115,7 @@ body.al_body_template_one .footer-theme .sub-title li {
     margin: 10px 0;
 }
 .al_body_template_six .product-right .product-buttons .btn-outline, .product-right .product-buttons .btn-solid {
-    margin: 0 0 10px !important;
+    margin: 10px 0 10px !important;
 }
 .al_body_template_six .btn-wrapper.d-flex.align-items-center {
     display: block !important;
