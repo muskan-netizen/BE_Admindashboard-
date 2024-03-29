@@ -1943,11 +1943,9 @@ $(document).ready(function () {
             data: { 'amount': amount, 'token': token, 'PayerID': payer_id },
             success: function (response) {
                 if (response.status == "Success") {
-                    if(path.indexOf("/") !== -1){ // app flow success
+                    if(path.indexOf("details") !== -1){
                         paypalDebitTransaction(amount, 3, response.data);
-                    }else if(path.indexOf("details") !== -1){
-                        paypalDebitTransaction(amount, 3, response.data);
-                    }else if(path.indexOf("cart") !== -1) {
+                    }else if (path.indexOf("cart") !== -1) {
                         placeOrder(address_id, 3, response.data, tip);
                     } else if (path.indexOf("wallet") !== -1) {
                         creditWallet(amount, 3, response.data);

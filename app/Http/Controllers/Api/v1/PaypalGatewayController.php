@@ -55,7 +55,7 @@ class PaypalGatewayController extends BaseController
             if ($request->has('reload_route')) {
                 $pickupRoute = $request->reload_route;
                 $response = $this->gateway->purchase([
-                    'currency' => $this->currency, //'USD',
+                    'currency' => $this->currency,//'USD', //
                     'amount' => $amount,
                     'cancelUrl' => url($request->cancelUrl),
                     'returnUrl' => $pickupRoute,
@@ -67,7 +67,7 @@ class PaypalGatewayController extends BaseController
                     'cancelUrl' => url($request->cancelUrl),
                     'returnUrl' => url($request->returnUrl . $returnUrlParams),
                 ])->send();
-            }
+            }  
             if ($response->isSuccessful()) {
                 return $this->successResponse($response->getData());
             } elseif ($response->isRedirect()) {
