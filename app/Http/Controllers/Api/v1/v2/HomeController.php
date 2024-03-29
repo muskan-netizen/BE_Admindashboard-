@@ -201,7 +201,7 @@ class HomeController extends BaseController
             } else {
 
 
-            $mobile_banners = MobileBanner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
+            $mobile_banners = MobileBanner::with(['category','category.type', 'vendor'])->where('status', 1)->where('validity_on', 1)
                 ->where(function ($q) {
                     $q->whereNull('start_date_time')->orWhere(function ($q2) {
                         $q2->whereDate('start_date_time', '<=', Carbon::now())
