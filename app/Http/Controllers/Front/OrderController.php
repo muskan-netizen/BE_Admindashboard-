@@ -2981,8 +2981,9 @@ class OrderController extends FrontController
             $payable_amount = $payable_amount + $tip_amount + $total_other_taxes + $security_amount;
             if($total_other_taxes < 0)
               $payable_amount += $order->taxable_amount;
-            // ---------------------------------------
-            // $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
+
+              // ---------------------------------------
+            $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
 
             // if(!empty($vendor_cart_product->recurring_booking_time)){
             //     $payable_amount = ($request->total_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
