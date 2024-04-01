@@ -1106,6 +1106,50 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             @endforeach
                         </div>
                         @endif
+                        @if($include_gift_nomenclature)
+                            <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                                <div class="col-sm-2">
+                                    <div class="form-group mb-0">
+                                        <label for="custom_domain">{{ __("Does this include a gift?") }}</label>
+                                    </div>
+                                </div>
+                                @foreach($client_languages as $k => $client_language)
+                                    <div class="col-sm-2">
+                                        <div class="form-group mb-0">
+                                            <input type="hidden" name="includeGift_language_ids[]" value="{{$client_language->langId}}">
+                                            <input type="text" name="includeGift_name[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, $include_gift_nomenclature->id)}}">
+                                            @if($k == 0 && $errors->has('includeGift_name.0'))
+                                                <span class="text-danger" role="alert">
+                                                    <strong>{{ __("The include Gift field is required.") }}</strong>
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                        @if($control_panel_nomenclature)
+                            <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                                <div class="col-sm-2">
+                                    <div class="form-group mb-0">
+                                        <label for="custom_domain">{{ __("Control Panel") }}</label>
+                                    </div>
+                                </div>
+                                @foreach($client_languages as $k => $client_language)
+                                    <div class="col-sm-2">
+                                        <div class="form-group mb-0">
+                                            <input type="hidden" name="controlPanel_language_ids[]" value="{{$client_language->langId}}">
+                                            <input type="text" name="controlPanel_name[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, $control_panel_nomenclature->id)}}">
+                                            @if($k == 0 && $errors->has('controlPanel_name.0'))
+                                                <span class="text-danger" role="alert">
+                                                    <strong>{{ __("The Control Panel field is required.") }}</strong>
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                         @if(!empty($fixed_fee->id))
                         <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">

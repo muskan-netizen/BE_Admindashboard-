@@ -2231,7 +2231,7 @@ class CartController extends FrontController
                 $mycartView = view('frontend.yacht.cart-page')->with(['cart_details' => (($cart_details) ? json_decode($cart_details) : []), 'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm, 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message, 'addons' => $addon, 'cmsPages' => $cmsPages])->render();
             } else {
 
-
+                
                 $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details) ? json_decode($cart_details) : []), 'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm, 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message, 'cmsPages' => $cmsPages])->render();
             }
 

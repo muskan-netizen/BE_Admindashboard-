@@ -9,10 +9,13 @@ use Session;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Traits\{ProductActionTrait};
 
 class BrandController extends FrontController
 {
     private $field_status = 2;
+
+    use ProductActionTrait;
     
     /**
      * Display product By Vendor
@@ -235,4 +238,16 @@ class BrandController extends FrontController
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
 
+    public function viewAll(Request $request, $domain = ''){
+        try
+        {
+            $langId = Session::get('customerLanguage');
+            $brands = $this->getBrandsForHomePage($langId, $this->field_status);
+            $navCategories = $this->categoryNav($langId);
+            return view('frontend/brand-all')->with(['brands' => $brands, 'navCategories' => $navCategories]);
+        }
+        catch (\Exception $e) {
+            return [];
+        }
+    }
 }

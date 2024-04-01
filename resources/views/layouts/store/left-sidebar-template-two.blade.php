@@ -51,7 +51,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                      <i class="fa fa-user" aria-hidden="true"></i>{{__('Account')}}
                      <ul class="onhover-show-div">
                         @if(Auth::user()->is_superadmin==1 || Auth::user()->is_admin==1)
-                        <li> <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a> </li>
+                        <li> <a href="{{route('client.dashboard')}}" data-lng="en">{{getNomenclatureName('Control Panel', true)}}</a> </li>
                         @endif
                         <li> <a href="{{route('user.profile')}}" data-lng="en">{{__('Profile')}}</a> </li>
                         <li> <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a> </li>
@@ -101,7 +101,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <i class="fa fa-user" aria-hidden="true"></i>{{__('Account')}}
                         <ul class="onhover-show-div">
                            @if(Auth::user()->is_superadmin==1 || Auth::user()->is_admin==1)
-                           <li> <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a> </li>
+                           <li> <a href="{{route('client.dashboard')}}" data-lng="en">{{getNomenclatureName('Control Panel', true)}}</a> </li>
                            @endif
                            <li> <a href="{{route('user.profile')}}" data-lng="en">{{__('Profile')}}</a> </li>
                            <li> <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a> </li>
@@ -153,7 +153,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <i class="fa fa-user" aria-hidden="true"></i>{{__('Account')}}
                         <ul class="onhover-show-div">
                            @if(Auth::user()->is_superadmin==1 || Auth::user()->is_admin==1)
-                           <li> <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a> </li>
+                           <li> <a href="{{route('client.dashboard')}}" data-lng="en">{{getNomenclatureName('Control Panel', true)}}</a> </li>
                            @endif
                            <li> <a href="{{route('user.profile')}}" data-lng="en">{{__('Profile')}}</a> </li>
                            <li> <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a> </li>
