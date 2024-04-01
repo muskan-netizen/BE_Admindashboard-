@@ -2160,3 +2160,28 @@ section#our_vendor_main_div .render_full_best_sellers {padding: 20px 0 !importan
 .dark.al_body_template_six .vendor-design_new p{
     color: #fff!important;
 }
+.al_body_template_eight.dark .product-card-box.position-relative.text-center.al_custom_vendors_sec a.spotlight-deal-btn {
+    color: #FFF !important;
+}
+    
+.product-m .slick-slide>div {
+    margin: 0 0;
+}
+    
+.al_body_template_eight.dark .product-card-box.position-relative.text-center.al_custom_vendors_sec {
+    background: #000000;
+}
+    
+.dark .deals-product .supplier-rating a.suppliers-box.d-block h4 {
+    color: #FFFFFF;
+}
+    
+.al_body_template_eight.dark .product-card-box.position-relative.text-center.al_custom_vendors_sec a.spotlight-deal-btn {
+    color: #D7D7D7 !important;
+    margin: 0px 0px;
+}
+    
+.dark #banner6 {
+    padding-top: 30px !important;
+}
+    
