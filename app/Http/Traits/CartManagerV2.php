@@ -1451,10 +1451,6 @@ trait CartManagerV2
                         }
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> pre_production
                 $vendorData->coupon_amount_used = decimal_format($coupon_amount_used);
                 $vendorData->service_fee_percentage_amount = decimal_format($vendor_service_fee_percentage_amount);
                 $vendorData->fixed_service_charge_amount = decimal_format($vendor_fixed_service_charge_amount);
