@@ -5,11 +5,13 @@
        <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
    </div>--}}
    <a class="common-product-box text-center" href="{{ @$product->vendor_slug }}/product/{{ @$product->url_slug }}">
-    @if(!empty($product->path))
-       <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ get_file_path(@$product->path,'FILL_URL','260','260') }}" alt="" title="">
-       @endif
+        {{-- @if(!empty($product->path)) --}}
+            <div class="img-outer-box position-relative"> 
+                <img class="blur-up lazyload" data-src="{{ get_file_path(@$product->path,'FILL_URL','260','260') }}" alt="" title="">
            <div class="pref-timing"> </div>
        </div>
+       {{-- @endif --}}
+
        <div class="media-body align-self-start">
            <div class="inner_spacing px-0">
                <div class="product-description">
