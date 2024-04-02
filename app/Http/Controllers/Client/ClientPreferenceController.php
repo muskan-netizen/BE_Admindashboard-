@@ -122,6 +122,8 @@ class ClientPreferenceController extends BaseController{
         $primaryCountry = ClientCountries::where('is_primary', 1)->first();
         $nomenclatureAllToGet=Nomenclature::get();
         $want_to_tip_nomenclature=$nomenclatureAllToGet->where('label','Want To Tip')->first();
+        $include_gift_nomenclature=$nomenclatureAllToGet->where('label','Include Gift')->first();
+        $control_panel_nomenclature=$nomenclatureAllToGet->where('label','Control Panel')->first();
         $fixed_fee=$nomenclatureAllToGet->where('label','Fixed Fee')->first();
 
         // $want_to_tip_nomenclature=Nomenclature::where('label','Want To Tip')->first();
@@ -175,7 +177,7 @@ class ClientPreferenceController extends BaseController{
         $roles = [];
 
         $roles = RoleOld::where('status',1)->get();
-        return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee','verify_options','accounting','staticDropoff','laundry_teams','roles','countries', 'primaryCountry', 'cli_countries'));
+        return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee','verify_options','accounting','staticDropoff','laundry_teams','roles','countries', 'primaryCountry', 'cli_countries', 'include_gift_nomenclature', 'control_panel_nomenclature'));
     }
 
     public function referandearnUpdate(Request $request, $code){
