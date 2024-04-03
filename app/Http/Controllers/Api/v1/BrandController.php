@@ -53,7 +53,7 @@ class BrandController extends BaseController
                     }, 'inwishlist' => function($qry) use($userid){
                         $qry->where('user_id', $userid);
                     },
-                    'media.image', 
+                    'media.image',
                     'addOn' => function($q1) use($langId){
                         $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
                         $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
@@ -69,7 +69,7 @@ class BrandController extends BaseController
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     },
                     'variant' => function($q) use($langId){
-                        $q->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode');
+                        $q->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode','compare_at_price');
                         // $q->groupBy('product_id');
                     }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                     'tags.tag.translations' => function ($q) use ($langId) {
@@ -121,7 +121,7 @@ class BrandController extends BaseController
                     }
                 }
             }
-            
+
             // if(!empty($products)){
             //     foreach ($products as $product) {
             //         $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
@@ -154,11 +154,11 @@ class BrandController extends BaseController
         $paginate = $request->has('limit') ? $request->limit : 12;
         $setArray = $optionArray = array();
         $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
-        
+
         if($request->has('variants') && !empty($request->variants)){
             $setArray = array_unique($request->variants);
         }
-        
+
         $startRange = 0; $endRange = 20000;
         if($request->has('range') && !empty($request->range)){
             $range = explode(';', $request->range);
@@ -166,28 +166,28 @@ class BrandController extends BaseController
             $startRange = $range[0] * $clientCurrency->doller_compare;
             $endRange = $range[1] * $clientCurrency->doller_compare;
         }
-        
+
         $multiArray = array();
         if($request->has('options') && !empty($request->options)){
             foreach ($request->options as $key => $value) {
                 $multiArray[$request->variants[$key]][] = $value;
             }
         }
-        
+
         $variantIds = $productIds = array();
-        
+
         if(!empty($multiArray)){
             foreach ($multiArray as $key => $value) {
                 $new_pIds = $new_vIds = array();
                 $vResult = ProductVariantSet::join('product_categories as pc', 'product_variant_sets.product_id', 'pc.product_id')->select('product_variant_sets.product_variant_id', 'product_variant_sets.product_id')
                 ->where('product_variant_sets.variant_type_id', $key)
                 ->whereIn('product_variant_sets.variant_option_id', $value);
-                
+
                 if(!empty($variantIds)){
                     $vResult  = $vResult->whereIn('product_variant_sets.product_variant_id', $variantIds);
                 }
                 $vResult  = $vResult->groupBy('product_variant_sets.product_variant_id')->get();
-                
+
                 if($vResult){
                     foreach ($vResult as $key => $value) {
                         $new_vIds[] = $value->product_variant_id;
@@ -234,7 +234,7 @@ class BrandController extends BaseController
                 $products = $products->orderBy('products.id', 'desc');
             }
             if (!empty($order_type) && $order_type == 'most_purchased') {
-                
+
                 $products = $products->orderBy('order_product_count', 'desc');
             }
             $products = $products->groupBy('products.id')->paginate($paginate);
