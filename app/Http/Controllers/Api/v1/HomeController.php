@@ -1264,7 +1264,8 @@ class HomeController extends BaseController
                     return $this->errorResponse('SMTP not configured.', 400);
                 }
                 $mail_from = $request->email;
-                $sendto = $client->contact_email ? $client->contact_email : $superAdmin->email;
+                $sender = $data->mail_from;
+                $receiver = $client->contact_email ? $client->contact_email : $superAdmin->email;
                 $customer_name = $request->name;
                 $data = [
                     'logo' => $client->logo['original'],
@@ -1277,9 +1278,9 @@ class HomeController extends BaseController
                 Mail::send(
                     'email.contactUs',
                     ['mailData' => $data],
-                    function ($message) use ($sendto, $customer_name, $mail_from) {
-                        $message->from($mail_from, $customer_name);
-                        $message->to($sendto)->subject('Customer Request for Contact');
+                    function ($message) use ($receiver, $customer_name, $sender) {
+                        $message->from($sender, $customer_name);
+                        $message->to($receiver)->subject('Customer Request for Contact');
                     }
                 );
                 return $this->successResponse('', 'Thank you for contacting us. We will get to you shortly');
