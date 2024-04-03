@@ -12,7 +12,7 @@
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label for="">Adhar (Front)</label>
+                    <label for="">{{ getNomenclatureName('Aadhaar Front') }}</label>
                     <input type="file" name="adhar_front" id="adhar_front" class="form-control" value="" required />
                     @error('adhar_front')
                     <div class="error">{{ $message }}</div>
@@ -22,7 +22,7 @@
 
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label for="">Adhar (Back)</label>
+                    <label for="">{{ getNomenclatureName('Aadhaar Back') }}</label>
                     <input type="file" name="adhar_back" id="adhar_back" class="form-control" value="" required />
                     @error('adhar_back')
                     <div class="error">{{ $message }}</div>
@@ -36,7 +36,7 @@
     <div class="col-sm-2"></div>
     <div class="col-sm-10">
         <div class="form-group">
-            <label for="">Adhar Number</label>
+            <label for="">{{ getNomenclatureName('Aadhaar Number') }}</label>
             <input type="text" name="adhar_number" id="adhar_number" class="form-control" value="" required />
             @error('adhar_number')
             <div class="error">{{ $message }}</div>
@@ -45,7 +45,7 @@
 
 
         <div class="form-group">
-            <label for="">UPI ID</label>
+            <label for="">{{ getNomenclatureName('UPI ID') }}</label>
             <input type="text" name="upi_id" id="upi_id" class="form-control" value="" required />
             @error('upi_id')
             <div class="error">{{ $message }}</div>

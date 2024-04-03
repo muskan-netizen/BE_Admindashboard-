@@ -267,10 +267,6 @@
 
                                                 <li class="grand_total d-flex align-items-center justify-content-between">
                                                     <label class="m-0">{{ __('Amount') }}</label>
-                                                    @if ($vendor['delivery_fee'] == '' || $vendor['delivery_fee'] == null)
-<!--                                                         {{ $vendor['delivery_fee'] = 0 }} -->
-                                                    @endif
-
                                                     <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor['subtotal_amount'] - $vendor['discount_amount'] + $vendor['total_container_charges'] + $vendor['taxable_amount'] + $vendor['service_fee_percentage_amount'] + $vendor['fixed_fee'] + $vendor['delivery_fee'] + $vendor['additional_price'] + $vendor['toll_amount']-$order->wallet_amount_used) }}
                                                     </span>
                                                 </li>
@@ -281,9 +277,6 @@
 
                                     </a>
                                     <div id="update-single-status" class="my-2">
-
-
-
                                         @if ($vendor['order_status_option_id'] == 1)
                                             @if ($order->vendors->first()->exchanged_of_order)
                                                 <button class="update-status-ar btn-info"

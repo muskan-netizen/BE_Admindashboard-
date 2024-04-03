@@ -406,12 +406,13 @@ class PaymentOptionController extends BaseController
             } elseif ($response->isRedirect()) {
                 $token = $response->getData();
                 if(isset($token['TOKEN']) && $request->action=="pickup_delivery"){
+                    $getOrder = Order::where('order_number',$request->order_number)->first();
                     $payment = new Payment();
                     $payment->date = date('Y-m-d');
                     $payment->user_id = $user->id ?? null;
                     $payment->transaction_id = $token['TOKEN'];
                     $payment->payment_option_id = 3;
-                    $payment->order_id = $request->order_number;
+                    $payment->order_id = isset($getOrder)?$getOrder->id:$request->order_number;
                     $payment->balance_transaction = $request->amount?? '';
                     $payment->type = $request->action;
                     $payment->save();
