@@ -766,8 +766,11 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
     border-radius: 15px;
     -webkit-transition: 0.5s;
     transition: 0.5s;
+    align-items: center;
 }
-
+.vendor-info li span{
+    margin-left: 10px;
+}
 .cart-main-box .cart-sub-total {
     padding: 10px 12px;
     border-top: 1px solid #000;
@@ -2630,7 +2633,7 @@ section.home-serivces .card-box {
     border-radius: 15px;
     overflow: hidden;
     position: relative;
-    padding-bottom: 70%;
+    /* padding-bottom: 70%; */
     width: 100%;
 }
 
@@ -2817,8 +2820,8 @@ section.home-serivces .card-box {
     position: relative;
     padding-bottom: 0%!important;
     height: 100%!important;
-    max-height: 250px;
-    min-height: 250px;
+    /* max-height: 250px;
+    min-height: 250px; */
 }
 
 .al_body_template_six .displayProducts .product-box .product-image img {
@@ -2847,7 +2850,8 @@ section.home-serivces .card-box {
 
 .al_body_template_six .displayProducts .product-box .media-body h3 {
     font-size: 16px;
-    margin-bottom: 0
+    margin-bottom: 0;
+    margin-top: 0;
 }
 
 .al_body_template_six .displayProducts .product-box .media-body h3 label,
@@ -2922,7 +2926,8 @@ section.home-serivces .card-box {
 } */
 
 .al_body_template_six .order_detail_data .product_list label {
-    font-size: 12px
+    font-size: 12px;
+    padding-left: 10px;
 }
 
 .al_body_template_six .order_detail_data .product_list .alOrderImg {
@@ -2932,7 +2937,8 @@ section.home-serivces .card-box {
     width: 70px;
     margin-right: 10px;
     position: relative;
-    overflow: hidden
+    /* overflow: hidden */
+    overflow: visible;
 }
 
 .al_body_template_six .order_detail_data .product_list .alOrderImg img {
@@ -2966,7 +2972,7 @@ section.home-serivces .card-box {
     font-size: 10px;
     line-height: 20px;
     top: 6px;
-    right: 10px
+    right: 37px
 }
 
 .al_body_template_six .product-full-tab .nav-material.nav-tabs .nav-item .nav-link,
@@ -3873,6 +3879,9 @@ div#cart_template .shoping_cart .vendor_products_tr .row .col-10 h4 {
         width: 400px;
         top: 50px;
     }
+
+
+
 }
 
 @media (max-width: 991px) {

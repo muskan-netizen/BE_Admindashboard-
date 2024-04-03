@@ -1262,7 +1262,7 @@ body.al_body_template_two .vendor-design_new  .product-bottom-bar {
     padding: 0 6px!important;
 }
 .menu-navigation .pixelstrap ul , .menu_navigation_al_four .pixelstrap .alMainMenu ul, .menu-navigation_al .pixelstrap .al_main_category_list {
-    max-height: 40vh;
+    max-height: 132px;
     overflow-y: auto;
     overflow-x: hidden;
 }   
@@ -2149,3 +2149,10 @@ section#our_vendor_main_div .render_full_best_sellers {padding: 20px 0 !importan
 .dark.al_body_template_six .vendor-design_new p{
     color: #fff!important;
 }
+.al_body_template_six #header_cart_main_ul {
+        padding:0px 15px;
+    }
+
+
+
+
