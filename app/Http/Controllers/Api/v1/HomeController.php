@@ -52,7 +52,7 @@ class HomeController extends BaseController
             $vendorMode = [];
             foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
                 $clientVendorTypes = $vendor_typ_key.'_check';
-                
+
                 $nomenclature =  $vendor_typ_key.'_nomenclature';
                 $vendorData = [];
                     if($preferences->preferences->$clientVendorTypes == 1){
@@ -63,7 +63,7 @@ class HomeController extends BaseController
                         //$client_preference_detail->$iconFiledName['proxy_url'].'36/26'.$client_preference_detail-> $iconFiledName['image_path']
                         //$vendorData["name"] = $clientVendorTypes;
                         $vendorData["type"] = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key;
-                     
+
 
                         $vendorMode[] = $vendorData;
                     }
@@ -360,7 +360,9 @@ class HomeController extends BaseController
                 $homeData['primary_country'] = $primary_country;
             }
 
-       
+            if(empty((array)$primary_currencies)){
+                $homeData['primary_currencies'] = ClientCurrency::with('currency')->select('currency_id', 'is_primary', 'doller_compare')->where('is_primary',1)->orderBy('is_primary', 'desc')->first();
+            }
 
             if (isset($homeData['profile']->custom_domain) && !empty($homeData['profile']->custom_domain) && $homeData['profile']->custom_domain != $homeData['profile']->sub_domain)
                 $domain_link = "https://" . $homeData['profile']->custom_domain;
@@ -1679,7 +1681,7 @@ class HomeController extends BaseController
             $user = Auth::user();
             $userVendorWishlist = UserVendorWishlist::with('vendor')->where('user_id', $user->id)->get();
             return $this->successResponse($userVendorWishlist);
-    
+
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             Log::error($e->getLine());
