@@ -65,6 +65,7 @@ class FacebookController extends FrontController
         } elseif ($driver == 'apple'){
             $config['client_id'] = $ClientPreferences->google_client_id;
             $config['client_secret'] = $ClientPreferences->google_client_secret;
+            // $config['redirect'] = 'https://weshopafrica.com/auth/callback/google';
             $config['redirect'] = 'https://'.$domain.'/auth/callback/google';
 
             return Socialite::buildProvider(GoogleProvider::class, $config);
