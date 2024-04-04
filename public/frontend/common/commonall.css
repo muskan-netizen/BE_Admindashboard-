@@ -1006,7 +1006,8 @@ li.vendor-timing p{
 }
 .al_body_template_six .common-banner:after{
     position:absolute;
-    background:#000000c7;border-radius: 0px;
+    background:#00000085;
+    border-radius: 0px;
     /* z-index: -1; */
 }
 
