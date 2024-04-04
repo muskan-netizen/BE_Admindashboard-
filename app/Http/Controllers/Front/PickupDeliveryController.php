@@ -1441,7 +1441,6 @@ class PickupDeliveryController extends FrontController{
                     'order_id' =>  $order->id,
                     'dispatcher_status_option_id' =>  1,
                     'vendor_id' =>  $vendor]);
-
                     $ex_gateways_wallet = [4,36,40,41,22]; // stripe,mycash,userede,openpay,ccavenue
                     if (in_array($order->payment_option_id, $ex_gateways_wallet )){
                         $wal =   $wallet->forceWithdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
@@ -1531,14 +1530,26 @@ class PickupDeliveryController extends FrontController{
                     return $this->errorResponse('Coupon Code apply only first order.', 422);
                 }
             }
+<<<<<<< HEAD
+=======
+
+>>>>>>> pre_production
             $order_vendor_user_promo_count = OrderVendor::where(['coupon_id' => $request->coupon_id])->count();
             if($order_vendor_user_promo_count >= $cart_detail->limit_total){
                 return $this->errorResponse(__('Coupon Code limit has been reached.'), 422);
             }
+<<<<<<< HEAD
+=======
+
+>>>>>>> pre_production
             $order_vendor_user_promo_count = OrderVendor::where(['user_id' => $user->id, 'coupon_id' => $request->coupon_id])->count();
             if($order_vendor_user_promo_count >= $cart_detail->limit_per_user){
                 return $this->errorResponse(__('Coupon Code already applied.'), 422);
             }
+<<<<<<< HEAD
+=======
+
+>>>>>>> pre_production
             if($cart_detail->promo_type_id == 2){
                 $cart_detail['new_amount'] = $cart_detail->amount;
                 if($cart_detail['new_amount'] < 0)

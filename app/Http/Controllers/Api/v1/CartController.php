@@ -757,7 +757,6 @@ class CartController extends BaseController
         $cartData = $cartData->select('vendor_id', 'vendor_dinein_table_id','dispatch_agent_id', 'is_cart_checked')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
 
 
-
         $taxes=TaxRate::all();
         $taxRates=array();
         foreach($taxes as $tax){
@@ -1565,7 +1564,6 @@ class CartController extends BaseController
                 }
 
                 if($vendorData->vendor->service_charge_amount > 0){
-                     $amount_for_service = $opt_quantity_price_new + $only_products_amount;
                      $vendor_service_fee_percentage_amount = $vendorData->vendor->service_charge_amount;
                      $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                  }

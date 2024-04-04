@@ -210,11 +210,11 @@
                                                     </li>
                                                 @endif
 
-                                                @if ($vendor['taxable_amount'] > 0 || $vendor['taxable_amount'] < 0)
+                                                @if ($order->total_other_taxes_amount > 0 || $order->total_other_taxes_amount < 0)
                                                     <li class="d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Tax') }}</label>
-                                                        @if ($vendor['taxable_amount'] !== null)
-                                                            <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor['taxable_amount']) }}</span>
+                                                        @if ($order->total_other_taxes_amount !== null)
+                                                            <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($order->total_other_taxes_amount) }}</span>
                                                         @else
                                                             <span>{{ $clientCurrency->currency->symbol }}0.00</span>
                                                         @endif

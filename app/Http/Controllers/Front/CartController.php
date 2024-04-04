@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Front;
-
 use DB;
 use Log;
 use Auth;
@@ -26,10 +24,6 @@ class CartController extends FrontController
 {
 
     use ApiResponser, CartManager, KwikApi, BiddingCartTrait, CartManagerV2, Borzoe;
-
-
-
-
     private function randomString()
     {
         $random_string = substr(md5(microtime()), 0, 32);
@@ -3095,6 +3089,7 @@ class CartController extends FrontController
 
     public function checkIsolateSingleVendor(Request $request, $domain = '')
     {
+        
         $preference = ClientPreference::first();
         $user = Auth::user();
         $new_session_token = session()->get('_token');

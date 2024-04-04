@@ -1332,7 +1332,6 @@ class PickupDeliveryController extends BaseController{
                     'order_id' =>  $order->id,
                     'dispatcher_status_option_id' =>  1,
                     'vendor_id' =>  $vendor]);
-
                     $ex_gateways_wallet = [4,36,40,41,22]; // stripe,mycash,userede,openpay,ccavenue
                     if (in_array($order->payment_option_id, $ex_gateways_wallet )){
                         $wal =   $wallet->forceWithdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
@@ -1438,7 +1437,6 @@ class PickupDeliveryController extends BaseController{
                     $q->where('refrence_id', $vendor_id);
                 })->where('restriction_on', 1)->where('is_deleted', 0)->where('minimum_spend','<=',$total_minimum_spend)->where('maximum_spend','>=',$total_minimum_spend)->whereDate('expiry_date', '>=', $now)->get();
                 $promo_codes = $promo_codes->merge($result2);
-
 
             }
             return $this->successResponse($promo_codes, '', 200);
@@ -1625,6 +1623,7 @@ class PickupDeliveryController extends BaseController{
         if(isset($order->orderDetail->scheduled_date_time)){
             $order->orderDetail->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);
         }
+
         $order->payable_amount = decimal_format($order->payable_amount - $order->wallet_amount_used);
         if($response->status() == 200){
             $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order->order_id ,'vendor_id' =>$order->vendor_id ])->latest()->first();
