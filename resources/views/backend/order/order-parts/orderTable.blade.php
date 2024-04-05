@@ -1,4 +1,6 @@
     @if(count($orders['orders']) > 0)
+
+   
     @foreach ($orders['orders'] as $k => $order)
 
         <div class="{{$ClassName}} al_order_sec" id="full-order-div{{ $k }}">
@@ -267,7 +269,7 @@
 
                                                 <li class="grand_total d-flex align-items-center justify-content-between">
                                                     <label class="m-0">{{ __('Amount') }}</label>
-                                                    <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor['subtotal_amount'] - $vendor['discount_amount'] + $vendor['total_container_charges'] + $vendor['taxable_amount'] + $vendor['service_fee_percentage_amount'] + $vendor['fixed_fee'] + $vendor['delivery_fee'] + $vendor['additional_price'] + $vendor['toll_amount']-$order->wallet_amount_used) }}
+                                                    <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor['subtotal_amount'] - $vendor['discount_amount']  + $order->total_other_taxes_amount + $vendor['service_fee_percentage_amount'] + $vendor['fixed_fee'] + $vendor['delivery_fee'] + $vendor['additional_price'] + $vendor['toll_amount']-$order->wallet_amount_used) }}
                                                     </span>
                                                 </li>
                                             </ul>
