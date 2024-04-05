@@ -1003,6 +1003,10 @@ body.al_body_template_eight .category-related-product .product-card-box .media-b
     color: var(--theme-deafult);
 }
 
+body.dark.al_body_template_eight .category-related-product .product-card-box .media-body.align-self-start .al_clock b {
+    color: #ffffff;
+}
+
 body.al_body_template_eight .collection-wrapper.al h2 {
     font-size: 24px;
     margin-top: 0;
@@ -1385,6 +1389,10 @@ body.al_body_template_eight.homeHeader .collection-product-wrapper .col-md-3.col
     margin-bottom: 25px;
     background: #fff;
     /* padding: 0; */
+}
+
+body.dark.al_body_template_eight.homeHeader .collection-product-wrapper .col-md-3.col-6.col-grid-box{
+    background: transparent !important;
 }
 
 body.al_body_template_eight div#show-map-modal .modal-full-width {
@@ -2658,6 +2666,8 @@ body.dark.al_body_template_eight.p2p-module .category-related-product .product-c
 
 body.dark.al_body_template_eight.p2p-module .number input {
     color: #fff;
+    border-left: 1px solid #484848;
+    border-right: 1px solid #484848;
 }
 
 body.dark.al_body_template_eight .rating-text-box.ml-sm-auto {
@@ -2679,6 +2689,9 @@ body.al_body_template_eight .categories-product-list .col-sm-6.offset-sm-3 {
         font-size: 16px !important;
         color: var(--theme-deafult) !important;
         font-weight: 600;
+    }
+    .dark .p2p_single_slider .col .deals-product .supplier-rating a {
+        color: #ffffff !important;
     }
     .al_body_template_eight .best-seller-full h2.h2-heading {
         margin: 26px 0px !important;
@@ -3122,6 +3135,16 @@ body.al_body_template_eight .custom_banner .container{
     padding-left: 0;
     padding-right: 0;
 }
+
+body.dark .shoping_cart .number .minus, body.dark .shoping_cart .number .plus {
+    color: #FFF;
+    font-weight: 400;
+}
+    
+body.dark .number .counter-container {
+    border: 1px solid #484848;
+}
+
 /*----------laptop view----------*/
 
 @media screen and (min-width:768px) and (max-width:1392px){
@@ -3142,8 +3165,23 @@ body.al_body_template_eight .custom_banner .container{
 }
 
 @media screen and (max-width:1366px){
-    .menu-navigation.alThreeMenu .slick-slider .slick-next{right:0px;}
-    .menu-navigation.alThreeMenu .slick-slider .slick-prev{left: 0px;}
+    .dark .menu-navigation.alThreeMenu .slick-slider .slick-next {
+        right: -10px;
+        background: #FFF;
+    }
+        
+    .dark .menu-navigation.alThreeMenu .slick-slider .slick-prev {
+        left: -10px;
+        background: #FFF;
+    }
+        
+    .dark .slick-next:before, .dark .slick-prev:before {
+        color: #000 !important;
+    }
+
+    body.dark.al_body_template_eight.homeHeader .collection-product-wrapper .col-md-3.col-6.col-grid-box {
+        background: transparent !important;
+    }
 }
 
 /*-------------ipad css--------*/
@@ -3161,10 +3199,10 @@ body.al_body_template_eight .custom_banner .container{
 
 @media(max-width:991px) {
     body.al_body_template_eight .al_custom_head_map_box{
-        max-width: 450px;
+        max-width: 360px;
     }
     body.al_body_template_eight .home-slider-wrapper .banner-img-outer img{
-border-radius: 0 !important;
+        border-radius: 0 !important;
     }
     body.al_body_template_eight .custom_banner img{
         min-height: auto;
@@ -3241,6 +3279,7 @@ border-radius: 0 !important;
         max-width: 100%;
         flex: 100%;
         height: auto;
+        padding-top: 20px;
     }
     body.al_body_template_eight.homeHeader .img-outer-box.position-relative {
         width: 100%;
@@ -4006,6 +4045,7 @@ border-radius: 0 !important;
 @media screen and (max-width:375px){
     .al_body_template_eight #our_vendor_main_div .vendors section .top-heading h2.h2-heading{font-size: 14px !important;}
     .al_body_template_eight article#page-container section .vendors section a{font-size: 14px !important;}
+    .al_body_template_eight.dark article#page-container section .vendors section a{color: #ffffff !important;}
 }
 
 .alSpaCityBox{position: relative;padding-bottom: 100%;overflow: hidden;border-radius: 15px 15px 0 0;margin-bottom: 10px;}
@@ -4015,3 +4055,10 @@ body.dark .alSpaListBox{background-color: #000; }
 .alSpaListBox{background-color: #fff;overflow: hidden;border: 1px solid #e8e8e8;box-shadow: rgb(28 28 28 / 3%) 0 .4rem 0.8rem!important;border-radius: 15px;}
 .login-with-username div#password-wrapper{position: relative;}
 body.al_body_template_eight .main-login-page .toggle-password{top: 24px;}
+
+.dark #main-menu a.current_category {
+    color: #fff !important;
+}
+.dark #banner9 {
+    padding-top: 40px !important;
+}

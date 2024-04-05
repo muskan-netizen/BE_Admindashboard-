@@ -1232,7 +1232,7 @@ class CartController extends BaseController
                                             $coupon_product_discount = $coupon_product_discount + $opt_quantity_price;
                                     }
                                 }
-                                $order_sub_total = $order_sub_total + $prod->pvariant->price * $prod->quantity;
+                                $order_sub_total = $order_sub_total + $prod->pvariant->price* $prod->quantity;
                             }else{
                                 $order_sub_total = round($order_sub_total  + $prod->pvariant->price*$prod->quantity,2);
                             }
@@ -1446,7 +1446,6 @@ class CartController extends BaseController
                             }
                         }
                         if ( $PromoDelete !=1) {
-
                             $minimum_spend = 0;
                             if (isset($vendorData->coupon->promo->minimum_spend)) {
                                 $minimum_spend = $vendorData->coupon->promo->minimum_spend * $clientCurrency->doller_compare;
@@ -1476,7 +1475,6 @@ class CartController extends BaseController
                                     // $payable_amount -= $percentage_amount;
                                     $discount_amount = $percentage_amount;
                                 }
-
                                 $couponData['coupon_id'] =  $vendorData->coupon->promo->id;
                                 $couponData['name'] =  $vendorData->coupon->promo->name;
                                 $couponData['dis_amount'] =  $dis_amt;
@@ -1490,7 +1488,6 @@ class CartController extends BaseController
                                 $couponApplied = 1;
                             }
                             else{
-
                                 $cart->coupon()->delete();
                                 $vendorData->coupon()->delete();
                                 unset($vendorData->coupon);
@@ -1500,7 +1497,6 @@ class CartController extends BaseController
                         if ( $PromoDelete !=1) {
                             if($vendorData->coupon->promo->allow_free_delivery ==1   ){
                                 $PromoFreeDeliver = 1;
-
                                 $discount_amount = $discount_amount +  $vendorTotalDeliveryFee;
                             }
                         }
@@ -1560,8 +1556,9 @@ class CartController extends BaseController
                     $vendorData->couponData = $couponData;
                 }
                 $vendor_service_fee_percentage_amount = 0;
+                
                 if($vendorData->vendor->service_fee_percent > 0){
-                    $amount_for_service = $only_products_amount;
+                    $amount_for_service =  $only_products_amount;
                     $vendor_service_fee_percentage_amount = (($amount_for_service) * $vendorData->vendor->service_fee_percent) / 100 ;
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                 }

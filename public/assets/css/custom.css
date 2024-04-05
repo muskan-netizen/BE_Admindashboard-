@@ -5059,6 +5059,12 @@ div#addRejectmodal {
 }
 
 @media(max-width:767px) {
+    body.al_body_template_one section.section-b-space.ratio_asos.alProductCategories {
+        padding-top: 8rem !important;
+    }
+    body.al_body_template_one.homeHeader section.section-b-space.ratio_asos {
+        padding-top: 7rem !important;
+    }
     .al_order_sec .order_head h4 {
         opacity: 1
     }

@@ -469,9 +469,9 @@ class DashBoardController extends BaseController
             $vendor_orders->whereBetween('created_at', [$from_date, $end_date]);
 
 
-                //  $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) {
-                //         $query->where('user_id', Auth::user()->id);
-                //     });
+                 $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) {
+                        $query->where('user_id', Auth::user()->id);
+                    });
 
              if(count($vendorIds)>0)
                 {
@@ -515,6 +515,7 @@ class DashBoardController extends BaseController
             $data = clone $order_revenue;
             $data1 = clone $order_revenue;
             $locationwise_revenue = clone $order_revenue;
+            
             $currentyear_ordercount = clone $order_revenue;
 
             # Current week revenue sum
@@ -663,7 +664,7 @@ class DashBoardController extends BaseController
 
             # Revenue location wise
             // dd($orders->with('address:id,city')->get());  
-
+            // pr($locationwise_revenue->get()->toArray());
             $locationwise_revenueNew = $locationwise_revenue->with('address:id,city')->groupBy('address_id')->selectRaw('address_id, sum(payable_amount) as sum, COUNT(address_id) as addressCount');
             // ->whereYear('created_at', date('Y'));
             // dd($locationwise_revenueNew->get());
@@ -675,6 +676,13 @@ class DashBoardController extends BaseController
                 $locationwise_revenueNew->whereBetween('created_at', [$from_date, $end_date]);
                 $currentyear_orderCount = $currentyear_ordercount->whereBetween('created_at', [$from_date, $end_date])->count();
             }
+
+            if (Auth::user()->is_superadmin == 0) {
+                $locationwise_revenueNew = $locationwise_revenueNew->whereHas('vendors.vendor.permissionToUser', function ($query) {
+                    $query->where('user_id', Auth::user()->id);
+                });
+            }
+            
             // dd(currentyear_ordercountNew);
             $address_ids = $locationwise_revenueNew->pluck('address_id')->toArray();
 
@@ -700,7 +708,7 @@ class DashBoardController extends BaseController
 
             $orderLocations = [];
             $address_ids  = [];
-             //pr($locationwise_revenue->toArray());
+             
             if(sizeof($locationwise_revenue) > 0) {
                 foreach($locationwise_revenue as $key => $orderAdd)
                 {

@@ -139,7 +139,7 @@
         var picker = new jscolor("#hexa-colorpicker-" + n, options);
     });
 
-    $(document).on('click', '.addOptionRow-edit-Addon', function(e) {
+    $(document).on('click', '.addOptionRow-edit', function(e) {
         var d = new Date();
         var n = d.getTime();
         var $tr = $('.optionTableEdit tbody>tr:first').next('tr');

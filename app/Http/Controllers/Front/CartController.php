@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Front;
-
 use DB;
 use Log;
 use Auth;
@@ -26,10 +24,6 @@ class CartController extends FrontController
 {
 
     use ApiResponser, CartManager, KwikApi, BiddingCartTrait, CartManagerV2, Borzoe;
-
-
-
-
     private function randomString()
     {
         $random_string = substr(md5(microtime()), 0, 32);
@@ -2231,7 +2225,7 @@ class CartController extends FrontController
                 $mycartView = view('frontend.yacht.cart-page')->with(['cart_details' => (($cart_details) ? json_decode($cart_details) : []), 'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm, 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message, 'addons' => $addon, 'cmsPages' => $cmsPages])->render();
             } else {
 
-
+                
                 $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details) ? json_decode($cart_details) : []), 'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm, 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message, 'cmsPages' => $cmsPages])->render();
             }
 
@@ -3095,6 +3089,7 @@ class CartController extends FrontController
 
     public function checkIsolateSingleVendor(Request $request, $domain = '')
     {
+        
         $preference = ClientPreference::first();
         $user = Auth::user();
         $new_session_token = session()->get('_token');

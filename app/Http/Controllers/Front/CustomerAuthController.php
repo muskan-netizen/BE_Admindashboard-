@@ -89,6 +89,7 @@ class CustomerAuthController extends FrontController
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
         $set_template = WebStylingOption::where('web_styling_id',1)->where('is_selected',1)->first();
+        $preferences = ClientPreference::select('signup_image')->first();
         if($set_template->template_id == 4)
         {
             $login_page = "template_four.account.loginnew";
@@ -99,7 +100,7 @@ class CustomerAuthController extends FrontController
         } else{
             $login_page = "account.loginnew";
         }
-        return view('frontend.'.$login_page)->with(['navCategories' => $navCategories]);
+        return view('frontend.'.$login_page)->with(['navCategories' => $navCategories, 'preferences' => $preferences]);
     }
 
     public function registerForm(Request $request,$domain = '')
@@ -107,6 +108,7 @@ class CustomerAuthController extends FrontController
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $navCategories = $this->categoryNav($langId);
+        $preferences = ClientPreference::select('signup_image')->first();
 
         $urlPrevious = url()->previous();
         $routePrevious = app('router')->getRoutes($urlPrevious)->match(app('request')->create($urlPrevious))->getName();
@@ -142,9 +144,9 @@ class CustomerAuthController extends FrontController
         $allergic_items = AllergicItem::get();
         //echo $register_page; die;
         if (!Session::get('referrer')) {
-            return view('frontend.'.$register_page)->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents,'allergic_items' => $allergic_items]);
+            return view('frontend.'.$register_page)->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents,'allergic_items' => $allergic_items, 'preferences' => $preferences]);
         } else {
-            return view('frontend.account.'.$register_page)->with(['navCategories' => $navCategories, 'code' => Session::get('referrer'),'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents,'allergic_items' => $allergic_items]);
+            return view('frontend.account.'.$register_page)->with(['navCategories' => $navCategories, 'code' => Session::get('referrer'),'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents,'allergic_items' => $allergic_items, 'preferences' => $preferences]);
         }
     }
 

@@ -1945,7 +1945,7 @@ $(document).ready(function () {
                 if (response.status == "Success") {
                     if(path.indexOf("details") !== -1){
                         paypalDebitTransaction(amount, 3, response.data);
-                    }else if (path.indexOf("cart") !== -1) {
+                    }else if(path.indexOf("cart") !== -1) {
                         placeOrder(address_id, 3, response.data, tip);
                     } else if (path.indexOf("wallet") !== -1) {
                         creditWallet(amount, 3, response.data);

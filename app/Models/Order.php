@@ -38,7 +38,7 @@ class Order extends Model implements Auditable
     }
     public function address()
     {
-        return $this->hasOne('App\Models\UserAddress', 'id', 'address_id');
+        return $this->hasOne('App\Models\UserAddress', 'id', 'address_id')->withTrashed();
     }
     public function orderLocation()
     {

@@ -918,6 +918,7 @@ class OrderController extends BaseController
                                 $totalFreeDeliveryCharges += $delivery_fee;
                                 $deliveryfeeOnCoupon = 1;
                             }
+                            
                             if(isset($rate) && $total_discount > 0 ){
                                $discount = ($total_discount*$rate) / 100;
                                $vendor_taxable_amount -= $discount;
@@ -927,7 +928,7 @@ class OrderController extends BaseController
                         //Start applying service fee on vendor products total
                         $service_fee_percentage_amount = 0;
                         if ($vendor_cart_product->vendor->service_fee_percent > 0) {
-                            $service_fee_percentage_amount = (($vendor_products_total_amount-$total_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                            $service_fee_percentage_amount = (($actual_amount-$total_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
                             $vendor_service_fee_percentage_amount = $vendor_service_fee_percentage_amount + $service_fee_percentage_amount;
                             $vendor_payable_amount += $service_fee_percentage_amount;
                             $payable_amount += $service_fee_percentage_amount;
@@ -1707,7 +1708,7 @@ class OrderController extends BaseController
                 if($order->is_postpay==1 && $order->payment_status == 0)
                 {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used + $order->tip_amount;
+                    $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used +$order->tip_amount;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -2994,7 +2995,6 @@ class OrderController extends BaseController
             $order['user_document_list'] =  $user_registration_documents;
             $order['category_KYC_document'] = $category_KYC_document??null;
             $order->slot_based_Price =  $slot_based_Price??0;
-
             return $this->successResponse($order, null, 201);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
