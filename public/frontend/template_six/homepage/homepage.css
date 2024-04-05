@@ -194,7 +194,7 @@
         /* flex-wrap: wrap; */
         /* display: inline-block!important; */
         margin: 0 auto;
-        width: 100vw;
+        /* width: 100vw; */
         justify-content: flex-start;
     }
 
@@ -968,7 +968,7 @@
         background-color: #fff;
         padding: 0 0 0px 0px;
         border-radius: 15px;
-        /* box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25); */
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
     }
 
     .al_body_template_six .alSixMainMenu .slick-slide {
@@ -1298,6 +1298,62 @@
         color: #cbcbcb;
     }
 
+/* nnew css */
+
+.custom_banner{
+    margin-bottom: 30px;
+}
+.my-menu #main-menu li {
+    width: 16.33%;
+    padding-right: 12px;
+    padding-left: 12px;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    display: inline-block;
+}
+.my-menu #main-menu li a{
+    
+    background-color: #fff;
+    /* margin: 0 5px; */
+    /* padding: 6px; */
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+  
+}
+.my-menu ul.sm.pixelstrap.sm-horizontal {
+    text-align: left;
+}
+.my-menu #main-menu li:hover a{
+    /* box-shadow: none; */
+    width: 100%;
+}
+.my-menu #main-menu li ul li{
+    width: 100%;
+    margin-bottom: 0px;
+padding: 0px;
+}
+.my-menu span.alCategoryName {
+    font-weight: 600;
+    padding: 11px 0px;
+    display: block;
+    font-size: 13px;
+    /* display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden; */
+
+}
+
+
+
+.my-menu .nav-cate-img img {
+    height: 187px;
+    /* width: 100%;
+    min-width: 100%; */
+}
+
+
     /*responsive css add */
 
 
@@ -1324,9 +1380,29 @@
     /* .nav-tabs.navigation-tab_al.nav-material{width: 300px;flex-wrap: nowrap;overflow-x: auto;padding:10px;}
     .nav-tabs.navigation-tab_al.nav-material span.al_textTabsText{width: 100%;display: inline-block;max-width: 100%!important;min-width:75px;text-align: center;}
     .al_body_template_six .alSixMainMenu {margin-top  : 20px;} */
+    .my-menu #main-menu li {
+        width: calc(20% - 24px)
     }
 
+
+}
+
+@media screen and (max-width:992px){
+    .my-menu #main-menu li {
+        width: calc(25% - 4px)
+    }
+}
+@media screen and (max-width:767px){
+    .my-menu #main-menu li {
+        width: calc(33% - 1px)
+    }
+}
+
     @media (max-width:576px) {
+
+        .my-menu #main-menu li {
+            width: calc(50% - 3px)
+        }
         html,
         body {
             overflow-x: hidden;
