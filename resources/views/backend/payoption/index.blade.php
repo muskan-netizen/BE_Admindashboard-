@@ -184,7 +184,11 @@ Options']) @section('css')
 				$icici_sub_merchant_name = (isset($creds->icici_sub_merchant_name)) ? $creds->icici_sub_merchant_name : '';
 				$icici_merchant_encryption_file = (isset($creds->icici_merchant_encryption_file)) ? $creds->icici_merchant_encryption_file : '';
 				$icici_merchant_key_file = (isset($creds->icici_merchant_key_file)) ? $creds->icici_merchant_key_file : '';
-				
+
+                //hitpay payment Gateway
+                $hitpay_business_key =(isset($creds->hitpay_business_key))?$creds->hitpay_business_key:'';
+                $hitpay_salt_key=(isset($creds->hitpay_salt_key))?$creds->hitpay_salt_key:'';
+
 				if(strtolower($opt->code) == 'obo') {
 					$opt->title = "O'Pay";
 				}
@@ -322,7 +326,7 @@ Options']) @section('css')
 								</div>
 							</div>
 							<div class="col-12">
-								<div class="form-group mb-2">
+								<div class="form-group mb-2">required
 									<label for="ccavenue_access_code" class="mr-3">{{ __("Access
 										Code") }}</label> <input type="text"
 										name="ccavenue_access_code" id="ccavenue_access_code"
@@ -399,7 +403,7 @@ Options']) @section('css')
 										__("Webhook_signature") }}</label> <input type="password"
 										name="stripe_webhook_signature" id="stripe_webhook_signature"
 										class="form-control" value="{{$webhook_signature}}" @if($opt->status
-									== 1) required @endif>
+									== 1) @endif>
 								</div>
 							</div>
 						</div>
@@ -1878,6 +1882,24 @@ Options']) @section('css')
                         </div>
                     </div>
                     @endif
+                    @if ( (strtolower($opt->code) == 'hitpay') )
+                    <div class="mt-2" id="hitpay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="hitpay_business_key" class="mr-3">{{ __("HITPAY BUSINESS KEY") }}</label>
+                                    <input type="password" name="hitpay_business_key" id="hitpay_business_key" class="form-control" value="{{$hitpay_business_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+							 <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="hitpay_salt_key" class="mr-3">{{ __("HITPAY SALT KEY") }}</label>
+                                    <input type="password" name="hitpay_salt_key" id="hitpay_salt_key" class="form-control" value="{{$hitpay_salt_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                     @if ( (strtolower($opt->code) == 'totalpay') )
 						<div class="mt-2" id="totalpay_fields_wrapper" @if($opt->
 							status != 1) style="display:none" @endif>
@@ -1920,7 +1942,7 @@ Options']) @section('css')
 										</div>
 									</div>
 								</div>
-								
+
 							</div>
 					@endif
 
@@ -2208,7 +2230,12 @@ Options']) @section('css')
             $("#" + code + "_fields_wrapper").show();
             $("#" + code + "_fields_wrapper").find('input').attr('required', true);
         } else {
-            $("#" + code + "_fields_wrapper").hide();
+            $("#" + code + "_fields_wrapper").hide();$validatedData = $request->validate([
+                                'thawani_Apikey' => 'required',
+                                'thawani_publishKey' => 'required',
+
+
+                            ]);
             $("#" + code + "_fields_wrapper").find('input').removeAttr('required');
         }
 

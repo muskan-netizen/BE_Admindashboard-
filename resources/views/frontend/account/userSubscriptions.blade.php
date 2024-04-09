@@ -179,8 +179,8 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                                     </div>
 								</div>
                            </div>
-                            
-                           	@php 
+
+                           	@php
                            	$subscription_plans_meal = clone $subscription_plans;
                            	$subscription_plans_meal = $subscription_plans_meal->where('type_id', '=' ,2)->get();
                            	@endphp
@@ -555,6 +555,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var data_trans_url = "{{route('payment.payByDataTrans')}}";
     var pesapal_payment_url = "{{ route('pesapal.payment') }}";
     var livee_payment_url = "{{route('livee.pay')}}"
+    var payment_hitpay_url="{{ route('make.hitpay.payment') }}";
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).val();

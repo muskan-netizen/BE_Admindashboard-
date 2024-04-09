@@ -1318,7 +1318,7 @@ class PickupDeliveryController extends FrontController{
                 }else{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
-                $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$dynamic;
+                $call_back_url = "http://".$domain."/dispatch-pickup-delivery/".$dynamic;
 
                 $type=$request->type??0;
                 $friendName=$request->friendName?? null;
@@ -1672,7 +1672,7 @@ class PickupDeliveryController extends FrontController{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
 
-                $call_back_url = "https://".$domain."/dispatch/driver/bids/update/".$UserBidRideRequest->web_hook_code;
+                $call_back_url = "http://".$domain."/dispatch/driver/bids/update/".$UserBidRideRequest->web_hook_code;
 
                 $postdata =  [
                             'tasks'                   => $request->tasks,

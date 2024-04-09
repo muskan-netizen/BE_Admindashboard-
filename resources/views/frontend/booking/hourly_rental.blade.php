@@ -333,7 +333,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
         </div>
         <div class="alFullMapForm col-md-12 p-0 position-absolute">
             <div class="booking-experienceNew">
-             
+
                     @if (isset($client_preference_detail) && $client_preference_detail->book_for_friend == 1)
                     <div class="tip_radio_controls_book_friend text-center mt-2">
                         <input type="radio" class="tip_radio is_for_friend" id="for_me" name="is_for_friend"
@@ -363,12 +363,12 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                             </label>
                         </div>
                     @endif
-                    
+
                         <!-- MultiStep Form -->
                         <div class="row">
                             <div class="col-md-12 col-md-offset-3">
                                 <form action="" id="msform">
-                                    
+
                                     @csrf
                                     <!-- fieldsets -->
                                     <fieldset>
@@ -382,14 +382,14 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                                         </div>
                                         <hr>
                                         <div class="row mt-2">
-                                           
+
                                             <div class="col-6 text-left ">Starting at</div>
                                             <div class="col-6 text-right">${{decimal_format($product->per_hour_price,2)}}/hr</div>
                                         </div>
                                         <input type="button" name="next" class="next action-button" value="Get Started"/>
 
                                     </fieldset>
-                                    
+
                                     <fieldset>
                                         <h2 class="fs-title">How much time do you need?</h2>
                                         <div class="container rental-container ">
@@ -400,7 +400,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                                             </div>
                                             <input type="hidden" id="rental_hours" value="1" />
                                             <input type="hidden" id="rental_price" value="{{decimal_format($product->per_hour_price)}}" />
-                                           
+
                                             <div class="box-container mb-3">
                                                 <div class="custom-box filled-box"></div>
                                                 <div class="custom-box"></div>
@@ -425,18 +425,18 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                                             <div class="col-md-6">
                                                 <div class="input-group">
                                                     <input type="text" class="form-control" id="datetime-picker" name="booking-date" placeholder="Leave Later">
-                                                    
+
                                                 </div>
                                             </div>
                                         </div>
                                           <hr>
                                         <div class="row mt-2 mb-2">
-                                           
+
                                             <div class="col-6 text-left ">Starting at</div>
                                             <div class="col-6 hourly_price text-right">${{decimal_format($product->per_hour_price,2)}}/hr</div>
                                         </div>
-                                        
-                                        
+
+
                                         <hr>
                                         <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                                         <input type="button" id="select_vendor" name="next" class="next action-button" value="Choose a trip"/>
@@ -457,7 +457,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                                         <input type="button" name="next"  id="choose_rental" class="next action-button" value="Choose Rental"/>
                                     </fieldset>
                                     <fieldset>
-                                        <h2 class="fs-title">Rental Details</h2>                                        
+                                        <h2 class="fs-title">Rental Details</h2>
                                         <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
                                         <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                                         <input type="button" name="next"  class="next action-button" value="Next"/>
@@ -485,15 +485,15 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                                             <button class="btn btn-solid w-100" id="book_hourly_rental" data-rel="pickup_now" data-task_type="" data-payment_method="1">{{__('Book Now')}}</button>
 
                                     </fieldset>
-                                    
-                                 
-                                   
+
+
+
                                 </form>
                             </div>
                         </div>
                     <!-- /.MultiStep Form -->
-                    
-                        
+
+
                     <div class="address-form d-none">
 
 
@@ -503,7 +503,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                             <div class="title title-36">{{ __(getDynamicTypeName('Where can we pick you up?')) }}</div>
                         </div>
                     </div>
-                    
+
                     <input type="hidden" name="pickup_location_latitude[]" value="" id="pickup_location_latitude">
                     <input type="hidden" name="pickup_location_longitude[]" value="" id="pickup_location_longitude">
                     <input type="hidden" name="destination_location_latitude[]" value=""
@@ -519,7 +519,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                     <input type="hidden" id="address-longitude" value="" />
                     <input type="hidden" name="schedule_date" value="" id="schedule_date" />
                     <div class="location-containerNew style-4">
-                      
+
                         <div class="location-search d-flex align-items-center" style="display:none !important;"
                             id="destination_location_add_more">
                         </div>
@@ -617,7 +617,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                                                 class="fa fa-calendar"></i></span>
                                     </div>
                                 </div>
-                            
+
                                 @if($is_recurring_booking == 1)
                                     <div class="recurring-option">
                                         @include('frontend.product-part.recurring-booking')
@@ -635,7 +635,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                             <div class="cab-button d-flex flex-nowrap align-items-center py-2 pl-2" id="vendor_main_div">
                             </div>
                         </div>
-                        
+
                         <div class="vehical-container style-4" id="search_product_rider_main_div" style="display:none;">
                         </div>
 
@@ -1021,7 +1021,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                 </div>
             </div>
 
-            
+
 
             <span id="show_error_of_bid" class="text-danger"></span>
 
@@ -1056,7 +1056,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                     </div>
                     <div class="cab-location-details">
                     <div style="height:5px;"><div class="loader cab-detail-main-loader" style="display: none;"></div></div>
-       
+
 
                     <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
@@ -1120,17 +1120,17 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                 <span id="driver_request_error" class="text-danger"> </span>
                 </div>
 
-              
-                
+
+
                 <div class="row">
                     <div class="col-md-12 create-bid-btn">
                         <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-task_type="schedule" booking-type='driver_request' data-tags="<%=(result.tags)%>">{{__('Request For Driver')}}</button>
                     </div>
                 </div>
             </div>
-            
+
             <span id="show_errors" class="text-danger"></span>
-            
+
         </script>
 
         <script type="text/template" id="driver_biding_list">
@@ -1173,8 +1173,8 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                         <span class="d-flex align-items-center justify-content-between"><b>{{ __('Service Charge') }}</b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
                     <% } %>
-                           
-                    <% if((result.product_tax) && (result.product_tax) > 0 ){ %>        
+
+                    <% if((result.product_tax) && (result.product_tax) > 0 ){ %>
                         <span class="d-flex align-items-center justify-content-between"><b><%= result.product_tax_name %></b> <label><sub class="ling-throgh" id
                             ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.total_other_taxes %></b></label></span>
                     <% } %>
@@ -1200,8 +1200,8 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                         <div class="col-6 mb-2 text-right" id="distance"><%= result.distance %> {{__($client_preference_detail->distance_unit_for_time)}}</div>
                     </div>
                 </div>
-                
-     
+
+
         <% if((result.faqlist) && (result.faqlist) > 0 ){ %>
         <div class="text-center my-3 btn-product-order-form-div">
             <button class="clproduct_order_form btn btn-solid w-100"  id="add_product_order_form"  data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" >{{__('Product Order Form')}}</button>
@@ -1219,7 +1219,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
     </div>
     <span id="show_error_of_booking" class="error text-danger"></span>
 
-   
+
 </script>
 
     <script type="text/template" id="payment_methods_template">
@@ -1356,7 +1356,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
     </div>
 </script>
 
-               
+
                 <div class="promo-box style-4 d-none">
                     <a class="d-block mt-2 close-promo-code-detail-box" href="javascript:void(0)">✕</a>
                     <div class="row" id="cab_booking_promo_code_list_main_div">
@@ -1828,6 +1828,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
         var driver_biding_list_url = "{{route('getBidsRelatedToOrderRide')}}";
         var accept_bid_by_customer = "{{route('acceptBidByCustomer')}}";
         var livee_payment_url="{{route('livee.pay')}}";
+        var payment_hitpay_url="{{ route('make.hitpay.payment') }}";
 
         @if ($client_preference_detail->distance_unit_for_time == 'mile')
             var distance_unit = "IMPERIAL";
