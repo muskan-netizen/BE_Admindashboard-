@@ -916,7 +916,6 @@ $(document).ready(function () {
 
         $(this).attr("disabled", true);
         var form = document.getElementById('category_kyc_form_in_cart');
-        var formData = new FormData(form);
         var data_uri = post_category_kyc_document;
 
         $.ajaxSetup({
@@ -1730,11 +1729,11 @@ $(document).ready(function () {
         } else if (walletElement.length > 0) {
             total_amount = walletElement.val();
         }
-        
+
         ajaxData.amount = total_amount;
         ajaxData.returnUrl = path;
         ajaxData.cancelUrl = path;
-        
+
         if (typeof tip_for_past_order !== 'undefined') {
             if (tip_for_past_order != undefined && tip_for_past_order == 1) {
                 let order_number = $("#order_number").val();
@@ -1742,8 +1741,8 @@ $(document).ready(function () {
                 order_number = order_number;
             }
         }
- 
-        
+
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -1775,6 +1774,36 @@ $(document).ready(function () {
         });
     }
 
+function paymentViaMastercard() {
+    const walletElement = $('input[name="wallet_amount"]');
+    const subscriptionElement = $('input[name="subscription_amount"]');
+
+    let ajaxData = [];
+    let total_amount;
+    if (path.indexOf('wallet') !== -1) {
+        total_amount = walletElement.val();
+        ajaxData.push({ name: 'payment_from', value: 'wallet' });
+    }
+
+    ajaxData.push(
+        { name: 'amount', value: total_amount }
+    )
+
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        data: ajaxData,
+        url: mastercard_create_session_url,
+        success({ session }) {
+            const { id } = session;
+
+            Checkout.configure({
+                session: { id }
+            })
+            Checkout.showPaymentPage();
+        },
+    });
+}
 
     function paymentViaRazorpay_wallet(address_id, payment_option_id) {
         let walletElement = $("input[name='wallet_amount']");
@@ -1867,7 +1896,7 @@ $(document).ready(function () {
             }
             //totalpay Ends
 
-            
+
 //The Thawani Pg  starts
         function paymentViaThawanipg(address_id,payment_option_id,order)
         {
@@ -1935,7 +1964,7 @@ $(document).ready(function () {
             // $('#topup_wallet_btn').trigger('click');
             // $('#wallet_topup_form #radio-paypal').prop("checked", true);
             $("#topup_wallet_btn, .topup_wallet_confirm").attr("disabled", true);
-        } 
+        }
         $.ajax({
             type: "GET",
             dataType: 'json',
@@ -2190,7 +2219,7 @@ $(document).ready(function () {
 
 
     window.creditWallet = function creditWallet(amount, payment_option_id, transaction_id) {
-        
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -3080,7 +3109,7 @@ $(document).ready(function () {
         //var fixed_fee_amount            =initialize_values($('#fixed_fee_amount').val());
         var tip                         =initialize_values($(this).val());
 
-       
+
 
 
         var amount_elem = $("#cart_payable_amount_original");
@@ -6008,7 +6037,6 @@ $(document).ready(function () {
 
     function walletPaymentOPtions(payment_option_id)
     {
-         
         switch (payment_option_id) {
             case 3:
                     paymentViaPaypal('', payment_option_id);
@@ -6197,6 +6225,9 @@ $(document).ready(function () {
                 break;
             case 45:
                 paymentViaTelr('', payment_option_id, '');
+                break;
+            case 46:
+                paymentViaMastercard();
                 break;
             case 47:
                 paymentViaKhalti('', '');

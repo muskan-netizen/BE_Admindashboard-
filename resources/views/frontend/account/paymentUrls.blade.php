@@ -50,4 +50,5 @@
 	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
     var data_trans_url = "{{route('payment.payByDataTrans')}}";
     var livee_payment_url = "{{url('livee.pay')}}";
+    var mastercard_create_session_url = "{{ route('payment.mastercard.createSession') }}";
 </script>

@@ -379,6 +379,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('payment/razorpay/notify', 'Front\RazorpayGatewayController@razorpayNotify')->name('payment.razorpayNotify');
 	Route::get('payment/razorpay/payout/notify', 'Front\RazorpayGatewayController@razorpayPayoutNotify')->name('payment.razorpay.payout.notify');
 
+    Route::post('payment/mastercard/session-create', 'Front\MastercardPaymentController@createSession')->name('payment.mastercard.createSession');
+
 
 	//Cashfree
 	Route::get('payment/cashfree/return', 'Front\CashfreeGatewayController@cashfreeReturn')->name('payment.cashfree.return');
