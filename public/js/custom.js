@@ -1924,9 +1924,9 @@ function paymentViaHitpay(address_id, payment_option_id, order) {
         data: ajaxData,
         success: function (response) {
             if (response.status == "Success") {
-                console.log(response);
-                // let paymentUrl = response.payment_url;
-                // window.location.href = paymentUrl;
+
+                let paymentUrl = response.payment_url;
+                window.location.href = paymentUrl;
             }
         },
         error: function (xrh, error, h) {
