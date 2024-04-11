@@ -1702,7 +1702,7 @@ class OrderController extends BaseController
 
             if ($order->payment_option_id == 1 && ($order->payable_amount >0)) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used +$order->tip_amount;
+                $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used + $order->tip_amount;
             } else {
 
                 if($order->is_postpay==1 && $order->payment_status == 0)
