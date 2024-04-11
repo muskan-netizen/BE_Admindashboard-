@@ -58,10 +58,18 @@ article#page-container {
 .home-slider-wrapper .banner-img-outer img {
     max-height: 300px;
     object-fit: cover;
-    max-width: 1370px;
+    max-width: inherit;
     border-radius: 50px
 }
-
+.home-slider-wrapper .carousel-inner {
+    border-radius: 50px;
+}
+.home-slider-wrapper .carousel-item {
+    border-radius: 50px;
+}
+.home-slider-wrapper .carousel-item.active {
+    border-radius: 50px;
+}
 article#page-container section .vendors section {
     padding: 20px 0!important;
     margin-bottom: 0!important;
@@ -991,13 +999,16 @@ body.al_body_template_three .al_box_third_template {
     object-fit: cover;
         padding: 0px;
     }
-    .al_body_template_three .al_offset-top-home {
-        margin-top: 158.75px !important;
+    .al_body_template_three #myCarousel {
+        padding-top: 40px !important;
     }
+    /* .al_body_template_three .al_offset-top-home {
+        margin-top: 158.75px !important;
+    } */
     .al_body_template_three section.home-slider-wrapper {
         padding: 0 !important;
     }
     .al_body_template_three article#page-container section .vendors  section.bed-bath {
         padding: 40px 0!important;
     }
-    
+
