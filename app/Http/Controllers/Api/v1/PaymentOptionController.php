@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Http\Controllers\Front\HitpayController;
 use DB;
 use Auth;
 use Carbon\Carbon;
@@ -15,11 +16,11 @@ use App\Http\Controllers\Api\v1\{BaseController, VnpayController, StripeGatewayC
 use App\Http\Controllers\Front\DpoController;
 use App\Http\Controllers\Front\CcavenueController;
 use App\Http\Controllers\Front\KongapayController;
-use App\Http\Controllers\Front\{MpesaController,TotalpayController};
+use App\Http\Controllers\Front\{MpesaController, TotalpayController};
 use App\Http\Controllers\Front\MvodafoneController;
 use App\Http\Controllers\Front\NmiPaymentController;
 use App\Http\Controllers\Front\OboPaymentController;
-use App\Http\Controllers\Front\{PayphoneController,ThawaniPaymentController};
+use App\Http\Controllers\Front\{PayphoneController, ThawaniPaymentController};
 use App\Http\Controllers\Front\PowerTransPaymentController;
 use App\Http\Controllers\Front\PesapalPaymentController;
 use App\Http\Controllers\Front\SkipCashController;
@@ -71,9 +72,9 @@ class PaymentOptionController extends BaseController
                 $option->title = __("O'Pay");
             } elseif ($option->code == 'livee') {
                 $option->title = __("livees");
-            }elseif($option->code == 'totalpay') {
+            } elseif ($option->code == 'totalpay') {
                 $option->title = __('Total Pay');
-            }elseif($option->code == 'thawani') {
+            } elseif ($option->code == 'thawani') {
                 $option->title = __('Thawani Payment');
             }
             $option->title = __($option->title);
@@ -376,11 +377,17 @@ class PaymentOptionController extends BaseController
         return $gateway->paybythawanipg($request);
     }
 
+    public function postPaymentVia_hitpay(Request $request)
+    {
+        $gateway = new HitpayController();
+        return $gateway->makePayment($request);
+    }
+
     public function postPaymentVia_paypal(Request $request)
     {
         try {
             $user = Auth::user();
-            $paypal_creds = PaymentOption::select('credentials','test_mode')->where('code', 'paypal')->where('status', 1)->first();
+            $paypal_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'paypal')->where('status', 1)->first();
             $creds_arr = json_decode($paypal_creds->credentials);
             $username = (isset($creds_arr->username)) ? $creds_arr->username : '';
             $password = (isset($creds_arr->password)) ? $creds_arr->password : '';
@@ -398,21 +405,21 @@ class PaymentOptionController extends BaseController
                 'currency' => $currency, //'USD',
                 'amount' => $this->getDollarCompareAmount($request->amount),
                 'cancelUrl' => url($request->serverUrl . $request->cancelUrl),
-                'returnUrl' => url('/payment/paypal/CompletePurchase?amount='.$request->amount.'&order_number='.$request->order_number.'&action='.$request->action.'&come_from='.$request->come_from)
+                'returnUrl' => url('/payment/paypal/CompletePurchase?amount=' . $request->amount . '&order_number=' . $request->order_number . '&action=' . $request->action . '&come_from=' . $request->come_from)
             ])->send();
 
             if ($response->isSuccessful()) {
                 return $this->successResponse($response->getData());
             } elseif ($response->isRedirect()) {
                 $token = $response->getData();
-                if(isset($token['TOKEN']) && $request->action=="pickup_delivery"){
+                if (isset($token['TOKEN']) && $request->action == "pickup_delivery") {
                     $payment = new Payment();
                     $payment->date = date('Y-m-d');
                     $payment->user_id = $user->id ?? null;
                     $payment->transaction_id = $token['TOKEN'];
                     $payment->payment_option_id = 3;
                     $payment->order_id = $request->order_number;
-                    $payment->balance_transaction = $request->amount?? '';
+                    $payment->balance_transaction = $request->amount ?? '';
                     $payment->type = $request->action;
                     $payment->save();
                 }

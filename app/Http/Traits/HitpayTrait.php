@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Traits;
 
 use App\Models\Order;
@@ -11,10 +12,15 @@ use Illuminate\Support\Facades\Validator;
 trait HitpayTrait
 {
 
-    public function index()
-    {
-
-    }
+    /**
+     * createPaymentRequest create a request for initiate the payment
+     *
+     * @param  mixed $hitpay_client
+     * @param  mixed $body
+     * @param  mixed $url
+     * @param  mixed $api_key
+     * @return mixed response from the request
+     */
     public function createPaymentRequest($hitpay_client, $body, $url, $api_key)
     {
         try {
@@ -108,7 +114,6 @@ trait HitpayTrait
                     $redirectUrl  = route('order.success', $order->id);
                 } else {
                     $redirectUrl  = route('payment.gateway.return.response') . '/?gateway=totalpay' . '&status=200&order=' . $order->id;
-
                 }
 
                 // Send Email
@@ -123,38 +128,25 @@ trait HitpayTrait
                 $user = auth()->user();
                 $redirectUrl = route('user.wallet');
             }
-
         } elseif ($payment->type == 'tip') {
             if ($payment->payment_from == 'web') {
                 $redirectUrl = route('user.orders');
             } else {
-                $redirectUrl = route('payment.gateway.return.response') . '/?gateway=totalpay' . '&status=200&order=' .$payment->transaction_id . '&action=tip';
-
+                $redirectUrl = route('payment.gateway.return.response') . '/?gateway=totalpay' . '&status=200&order=' . $payment->transaction_id . '&action=tip';
             }
-
         } elseif ($payment->type == 'subscription') {
             if ($payment->payment_from == 'web') {
                 $redirectUrl = route('user.subscription.plans');
             } else {
                 $redirectUrl = route('payment.gateway.return.response') . '/?gateway=totalpay' . '&status=200&transaction_id=' . $payment->transaction_id . '&action=subscription';
-
             }
-        }
-        else if($payment->type=='pickup_delivery'){
+        } else if ($payment->type == 'pickup_delivery') {
             if ($payment->payment_from == 'web') {
-                $redirectUrl   =route('front.booking.details',$payment->transaction_id);
+                $redirectUrl   = route('front.booking.details', $payment->transaction_id);
             } else {
                 $redirectUrl = route('payment.gateway.return.response') . '/?gateway=totalpay' . '&status=200&order=' . $payment->transaction_id;
-
             }
-
         }
-        return $redirectUrl ;
-
+        return $redirectUrl;
     }
-
-
-
-
-
 }
