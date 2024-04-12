@@ -201,7 +201,7 @@ class HomeController extends BaseController
             } else {
 
 
-            $mobile_banners = MobileBanner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
+            $mobile_banners = MobileBanner::with(['category','category.type', 'vendor'])->where('status', 1)->where('validity_on', 1)
                 ->where(function ($q) {
                     $q->whereNull('start_date_time')->orWhere(function ($q2) {
                         $q2->whereDate('start_date_time', '<=', Carbon::now())
@@ -1138,29 +1138,6 @@ class HomeController extends BaseController
 
         $vendor_results = [];
         foreach ($vendors as $vendor) {
-            $vendor->is_vendor_closed = 0;
-            if($vendor->show_slot == 0){
-                if(empty($vendor->slotdate_start_end_time) && empty($vendor->slot_start_end_time)){
-                    $vendor->is_vendor_closed = 1;
-                }else{
-                    $vendor->is_vendor_closed = 0;
-                    if(!empty($vendor->slotdate_start_end_time)){
-                        $slotdate_start_end_time = explode('##', $vendor->slotdate_start_end_time);
-                        if($slotdate_start_end_time[0]!='' && $slotdate_start_end_time[1]!=''){
-                            $vendor->opening_time  = date('g:i A',strtotime($slotdate_start_end_time[0]));
-                            $vendor->closing_time = date('g:i A',strtotime($slotdate_start_end_time[1]));
-                        }
-
-                    }elseif(!empty($vendor->slot_start_end_time)){
-                        $slot_start_end_time = explode('##', $vendor->slot_start_end_time);
-                        if($slot_start_end_time[0]!='' && $slot_start_end_time[1]!=''){
-                            $vendor->opening_time  = date('g:i A',strtotime($slot_start_end_time[0]));
-                            $vendor->closing_time = date('g:i A',strtotime($slot_start_end_time[1]));
-                        }
-                    }
-                }
-            }
-
             $vendor->response_type = 'vendor';
             $vendor->image_url = $vendor->logo['proxy_url'] . '80/80' . $vendor->logo['image_path'];
             $vendor_results[] = $vendor;
