@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers;
+namespace App\Helpers\Mastercard;
 
 use Illuminate\Support\Str;
 use GuzzleHttp\Client;
@@ -30,11 +30,12 @@ final class Mastercard
         ]);
     }
 
-    public function newSession(array $options)
+    public function initiateHostedCheckout(array $options)
     {
+        $options['apiOperation'] = Operation::INITIATE_CHECKOUT;
         $response = $this->client->post(sprintf('api/rest/version/79/merchant/%s/session', $this->merchant_id), [
             'headers' => ['Content-Type' => 'application/json'],
-            'body' => json_encode($options),
+            'body'    => json_encode($options),
         ]);
 
         $rbody = $response->getBody()->getContents();

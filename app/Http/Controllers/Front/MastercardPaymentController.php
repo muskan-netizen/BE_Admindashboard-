@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Front;
 
 use App\Models\Payment;
-use App\Helpers\Mastercard;
+use App\Helpers\Mastercard\Mastercard;
 use App\Http\Controllers\Controller;
+use App\Models\ClientCurrency;
+use App\Models\Currency;
 use App\Models\PaymentOption;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Ramsey\Uuid\Uuid;
 
 class MastercardPaymentController extends Controller
@@ -33,19 +36,31 @@ class MastercardPaymentController extends Controller
 
     public function createSession(Request $request)
     {
-        $user = Auth::user();
-
-        $first_name = explode(' ', $user->name, 1)[0];
-        $last_name  = explode(' ', $user->name, 2)[1];
-
-        $reference_id = $this->orderNumber($request);
         $payment_info = (object)$request->validate([
             'payment_from' => 'required',
             'amount' => 'numeric|required',
         ]);
 
+        $user = Auth::user();
+
+        $firstName = explode(' ', $user->name, 1)[0];
+        $lastName  = explode(' ', $user->name, 2)[1];
+
+        $customer = compact('firstName', 'lastName');
+        $customer['email']       = $user->email;
+        $customer['mobilePhone'] = $user->phone_number;
+
+        $reference_id = $this->orderNumber($request);
+
+        $currency_id = Session::get('customerCurrency');
+        $currency    = Currency::find($currency_id);
+
+        if (!$currency) {
+            $client_primary_currency = ClientCurrency::where('is_primary', true)->get(['currency_id'])->first()->currency_id;
+            $currency                = Currency::find($client_primary_currency);
+        }
+
         $session_metadata = [
-            "apiOperation" => "INITIATE_CHECKOUT",
             "interaction" => [
                 "operation" => "AUTHORIZE",
                 "merchant" => [
@@ -54,28 +69,22 @@ class MastercardPaymentController extends Controller
             ],
             "order" => [
                 "id" => $reference_id,
-                "amount" => "100.00",
-                "currency" => "USD",
+                "amount" => $payment_info->amount,
+                "currency" => $currency->iso_code,
                 "description" => "Recharge Onebasket wallet",
             ],
-            "customer" => [
-                "firstName" => $first_name,
-                "lastName"  => $last_name,
-                "mobilePhone" => $user->phone_number,
-                "email"     => $user->email,
-            ]
+            'customer' => $customer,
         ];
 
         switch ($payment_info->payment_from) {
             case 'wallet':
-                $sessionResponse = $this->client->newSession($session_metadata);
+                $sessionResponse = $this->client->initiateHostedCheckout($session_metadata);
                 if (!$sessionResponse) return response()->json($this->client->error(), 500);
 
-                return $sessionResponse;
+                return response()->json($sessionResponse);
             default:
                 break;
         }
-        $sessionResponse = $this->client->newSession([]);
     }
 
 
