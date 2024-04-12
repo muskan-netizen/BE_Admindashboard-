@@ -76,6 +76,8 @@ class PaymentOptionController extends BaseController
                 $option->title = __('Total Pay');
             } elseif ($option->code == 'thawani') {
                 $option->title = __('Thawani Payment');
+            } else if ($option->code == 'hitpay') {
+                $option->title = __('Hitpay');
             }
             $option->title = __($option->title);
         }
