@@ -31,7 +31,7 @@ class MastercardPaymentController extends Controller
             : $this->credentials->mastercard_gateway;
 
         $this->client = new Mastercard(
-            $this->credentials->mastercard_merchant_id,
+            (($pay_option->test_mode == 1) ? 'TEST' : '') . $this->credentials->mastercard_merchant_id,
             $this->credentials->mastercard_merchant_key,
             $gateway
         );
