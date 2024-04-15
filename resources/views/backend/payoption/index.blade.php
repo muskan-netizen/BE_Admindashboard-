@@ -189,6 +189,7 @@ Options']) @section('css')
                 $mastercard_merchant_id = (isset($creds->mastercard_merchant_id)) ? $creds->mastercard_merchant_id : '';
                 $mastercard_merchant_key = (isset($creds->mastercard_merchant_key)) ? $creds->mastercard_merchant_key : '';
                 $mastercard_operator_id = (isset($creds->mastercard_operator_id)) ? $creds->mastercard_operator_id : '';
+                $mastercard_gateway = (isset($creds->mastercard_gateway)) ? $creds->mastercard_gateway : '';
 
 				if(strtolower($opt->code) == 'obo') {
 					$opt->title = "O'Pay";
@@ -261,6 +262,15 @@ Options']) @section('css')
 
                                     <input type="text" name="mastercard_operator_id" id="mastercard_operator_id" class="form-control"
                                         value="{{ $mastercard_operator_id }}" <?php if ($opt->status == 1) echo 'required' ?>>
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label for="mastercard_gateway" class="mr-3">
+                                        {{ __('Mastercard Gateway') }}
+                                    </label>
+
+                                    <input type="text" name="mastercard_gateway" id="mastercard_gateway" class="form-control"
+                                        value="{{ $mastercard_gateway }}" <?php if ($opt->test_mode != 1) echo 'required' ?>>
                                 </div>
 							</div>
 						</div>
