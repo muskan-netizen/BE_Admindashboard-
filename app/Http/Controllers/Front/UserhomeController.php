@@ -466,7 +466,7 @@ class UserhomeController extends FrontController
     {
        // pr(Session::get('onDemandPricingSelected'));
         try {
-
+            $startTime = microtime(true); // Start time in seconds with microseconds
             $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
 
             
@@ -670,6 +670,12 @@ class UserhomeController extends FrontController
                     Redis::expire($this->loc_key, $this->cache_minutes);
                 }
 
+            // Your code to be measured goes here
+        
+            $endTime = microtime(true); // End time in seconds with microseconds
+            $executionTime = $endTime - $startTime; // Calculate execution time in seconds
+        
+            \Log::info('Execution time homepage: ' . $executionTime . ' seconds');
 
                 return view('frontend.'.$view_page)->with($homeData);
             }
