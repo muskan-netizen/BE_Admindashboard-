@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front;
 use App\Models\Payment;
 use App\Helpers\Mastercard\Mastercard;
 use App\Helpers\Mastercard\Models\Authorization;
+use App\Helpers\Mastercard\Models\Customer;
 use App\Helpers\Mastercard\Models\Order;
 use App\Helpers\Mastercard\Operation;
 use App\Http\Controllers\Controller;
@@ -45,12 +46,9 @@ class MastercardPaymentController extends Controller
 
         $user = Auth::user();
 
-        $firstName = explode(' ', $user->name, 1)[0];
-        $lastName  = explode(' ', $user->name, 2)[1];
-
-        $customer = compact('firstName', 'lastName');
-        $customer['email']       = $user->email;
-        $customer['mobilePhone'] = $user->phone_number;
+        $customer = (new Customer($user->name))
+            ->setEmail($user->email)
+            ->setMobilePhone($user->phone_number);
 
         $reference_id = $this->orderNumber($request);
 
@@ -62,21 +60,45 @@ class MastercardPaymentController extends Controller
             $currency                = Currency::find($client_primary_currency);
         }
 
+        $order_model         = new Order($reference_id, $currency->iso_code, (float)$payment_info->amount);
         $authorization_model = (new Authorization($this->credentials->mastercard_merchant_id))
-            ->setOrder(new Order($reference_id, $currency->iso_code, (float)$payment_info->amount));
+            ->setCustomer($customer);
+
+        $authorization_model->getInteraction()->setReturnUrl(route('payment.mastercard.return'));
 
         switch ($payment_info->payment_from) {
             case 'wallet':
-                $session_metadata['order']['description'] = 'Recharge wallet';
+                $order_model->setDescription("Recharge your wallet");
+                $authorization_model->setOrder($order_model);
+
                 $sessionResponse = $this->client->request(Operation::INITIATE_CHECKOUT, $authorization_model);
                 if (!$sessionResponse) return response()->json($this->client->error(), 500);
 
                 return response()->json($sessionResponse);
+
+            case 'cart':
+                $authorization_model->setOrder($order_model);
+
+                $sessionResponse = $this->client->request(Operation::INITIATE_CHECKOUT, $authorization_model);
+                if (!$sessionResponse) return response()->json($this->client->error(), 500);
+
+                return response()->json($sessionResponse);
+
+            case 'subscription':
             default:
                 break;
         }
     }
 
+    public function postPayment(Request $request)
+    {
+        // TODO
+    }
+
+    public function paymentWebhookEndpoint(Request $request)
+    {
+        // TODO
+    }
 
     public function orderNumber($request)
     {

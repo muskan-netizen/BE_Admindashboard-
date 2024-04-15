@@ -53,26 +53,6 @@ final class Mastercard
         return null;
     }
 
-    // public function initiateHostedCheckout(array $options)
-    // {
-    //     $options['apiOperation'] = Operation::INITIATE_CHECKOUT;
-    //     $response = $this->client->post(sprintf('api/rest/version/79/merchant/%s/session', $this->merchant_id), [
-    //         'headers' => ['Content-Type' => 'application/json'],
-    //         'body'    => json_encode($options),
-    //     ]);
-
-    //     $rbody = $response->getBody()->getContents();
-    //     $rbody = json_decode($rbody);
-
-    //     if ($rbody->result == 'SUCCESS') {
-    //         $this->error = null;
-    //         return $rbody;
-    //     }
-
-    //     $this->error = $rbody;
-    //     return null;
-    // }
-
     public function error()
     {
         return $this->error;
