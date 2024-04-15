@@ -472,7 +472,7 @@
                             </div>
                         </div>
                         @if($vendor->show_slot == 0)
-                        @if($client_preferences->scheduling_with_slots != 1)
+                        @if($client_preferences->scheduling_with_slots == 1)
                         @if($client_preference_detail->business_type != 'laundry')
                             <div class="card-box">
                                 <div class="row">
