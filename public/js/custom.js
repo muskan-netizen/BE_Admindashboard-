@@ -1774,20 +1774,25 @@ $(document).ready(function () {
         });
     }
 
-function paymentViaMastercard() {
+function paymentViaMastercard(paymentMehod, order) {
     const walletElement = $('input[name="wallet_amount"]');
+    const cartElement = $("input[name='cart_total_payable_amount']");
     const subscriptionElement = $('input[name="subscription_amount"]');
 
-    let ajaxData = [];
+    let ajaxData = [{ name: 'payment_from', value: paymentMehod }];
     let total_amount;
-    if (path.indexOf('wallet') !== -1) {
-        total_amount = walletElement.val();
-        ajaxData.push({ name: 'payment_from', value: 'wallet' });
+
+    switch (paymentMehod) {
+        case 'wallet': total_amount = walletElement.val(); break;
+        case 'cart': {
+            ajaxData.push({ name: 'order_number', value: order['order_number'] });
+            total_amount = cartElement.val();
+            break;
+        };
+        default: throw new Error('unknown payment method');
     }
 
-    ajaxData.push(
-        { name: 'amount', value: total_amount }
-    )
+    ajaxData.push({ name: 'amount', value: total_amount });
 
     $.ajax({
         type: 'POST',
@@ -1796,7 +1801,7 @@ function paymentViaMastercard() {
         url: mastercard_create_session_url,
         success({ session }) {
             const { id } = session;
-
+            console.log(id);
             Checkout.configure({
                 session: { id }
             })
@@ -5899,6 +5904,12 @@ function paymentViaMastercard() {
                 }
             break;
 
+            case '46': {
+                let order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                paymentViaMastercard('cart', order);
+                break;
+            }
+
             case '47':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 if (order != '') {
@@ -6227,7 +6238,7 @@ function paymentViaMastercard() {
                 paymentViaTelr('', payment_option_id, '');
                 break;
             case 46:
-                paymentViaMastercard();
+                paymentViaMastercard('wallet');
                 break;
             case 47:
                 paymentViaKhalti('', '');
