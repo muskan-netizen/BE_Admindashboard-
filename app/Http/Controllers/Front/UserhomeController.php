@@ -466,10 +466,10 @@ class UserhomeController extends FrontController
     {
        // pr(Session::get('onDemandPricingSelected'));
         try {
+           
             $startTime = microtime(true); // Start time in seconds with microseconds
             $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
-
-            
+            $client = Client::first();
             $home = array();
             $vendor_ids = array();
             if ($request->has('ref')) {
@@ -675,7 +675,7 @@ class UserhomeController extends FrontController
             $endTime = microtime(true); // End time in seconds with microseconds
             $executionTime = $endTime - $startTime; // Calculate execution time in seconds
         
-            \Log::info('Execution time homepage: ' . $executionTime . ' seconds');
+            \Log::info('Execution time homepage:'.$client->database_name.':' . $executionTime . ' seconds');
 
                 return view('frontend.'.$view_page)->with($homeData);
             }
