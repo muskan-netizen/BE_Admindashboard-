@@ -34,7 +34,7 @@ class ProductController extends FrontController{
     public function index(Request $request, $domain = '',$vendor,$url_slug)
     {
 
-    
+        $startTime = microtime(true); // Start time in seconds with microseconds
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
         $pickup_time = $request->pickup;
         $drop_time = $request->drop;
@@ -446,6 +446,12 @@ class ProductController extends FrontController{
             })->count();
             $template = WebStylingOption::where('is_selected','1')->first();
    
+        // Your code to be measured goes here
+    
+        $endTime = microtime(true); // End time in seconds with microseconds
+        $executionTime = $endTime - $startTime; // Calculate execution time in seconds
+    
+        \Log::info('Execution time Product Details: ' . $executionTime . ' seconds');
             if(!empty($pickup_time)&&!empty($drop_time)){
               
                 return view('frontend.yacht.'.$product_page)->with(['productAttributes' => $productAttributes, 'pickup_time' => $pickup_time,'drop_time' => $drop_time,'user_vendor' => $user_vendor, 'shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array, 'set_template' => $set_template, 'current_time_response' => $current_time_response, 'processorProduct'=> $processorProduct, 'productBookingsCount' => $productBookingsCount]);
