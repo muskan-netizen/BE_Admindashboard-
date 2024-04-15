@@ -2,6 +2,7 @@
 
 namespace App\Helpers\Mastercard;
 
+use App\Helpers\Mastercard\Models\Model;
 use Illuminate\Support\Str;
 use GuzzleHttp\Client;
 
@@ -30,12 +31,14 @@ final class Mastercard
         ]);
     }
 
-    public function initiateHostedCheckout(array $options)
+    public function request(string $api_operation, Model $model)
     {
-        $options['apiOperation'] = Operation::INITIATE_CHECKOUT;
+        $model_object = $model->toJson();
+        $model_object['apiOperation'] = $api_operation;
+
         $response = $this->client->post(sprintf('api/rest/version/79/merchant/%s/session', $this->merchant_id), [
             'headers' => ['Content-Type' => 'application/json'],
-            'body'    => json_encode($options),
+            'body'    => json_encode($model_object),
         ]);
 
         $rbody = $response->getBody()->getContents();
@@ -49,6 +52,26 @@ final class Mastercard
         $this->error = $rbody;
         return null;
     }
+
+    // public function initiateHostedCheckout(array $options)
+    // {
+    //     $options['apiOperation'] = Operation::INITIATE_CHECKOUT;
+    //     $response = $this->client->post(sprintf('api/rest/version/79/merchant/%s/session', $this->merchant_id), [
+    //         'headers' => ['Content-Type' => 'application/json'],
+    //         'body'    => json_encode($options),
+    //     ]);
+
+    //     $rbody = $response->getBody()->getContents();
+    //     $rbody = json_decode($rbody);
+
+    //     if ($rbody->result == 'SUCCESS') {
+    //         $this->error = null;
+    //         return $rbody;
+    //     }
+
+    //     $this->error = $rbody;
+    //     return null;
+    // }
 
     public function error()
     {

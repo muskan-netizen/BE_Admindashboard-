@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Front;
 
 use App\Models\Payment;
 use App\Helpers\Mastercard\Mastercard;
+use App\Helpers\Mastercard\Models\Authorization;
+use App\Helpers\Mastercard\Models\Order;
+use App\Helpers\Mastercard\Operation;
 use App\Http\Controllers\Controller;
 use App\Models\ClientCurrency;
 use App\Models\Currency;
@@ -11,7 +14,6 @@ use App\Models\PaymentOption;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Ramsey\Uuid\Uuid;
 
 class MastercardPaymentController extends Controller
 {
@@ -60,25 +62,13 @@ class MastercardPaymentController extends Controller
             $currency                = Currency::find($client_primary_currency);
         }
 
-        $session_metadata = [
-            "interaction" => [
-                "operation" => "AUTHORIZE",
-                "merchant" => [
-                    "name" => 'TEST' . $this->credentials->mastercard_merchant_id,
-                ]
-            ],
-            "order" => [
-                "id" => $reference_id,
-                "amount" => $payment_info->amount,
-                "currency" => $currency->iso_code,
-                "description" => "Recharge Onebasket wallet",
-            ],
-            'customer' => $customer,
-        ];
+        $authorization_model = (new Authorization($this->credentials->mastercard_merchant_id))
+            ->setOrder(new Order($reference_id, $currency->iso_code, (float)$payment_info->amount));
 
         switch ($payment_info->payment_from) {
             case 'wallet':
-                $sessionResponse = $this->client->initiateHostedCheckout($session_metadata);
+                $session_metadata['order']['description'] = 'Recharge wallet';
+                $sessionResponse = $this->client->request(Operation::INITIATE_CHECKOUT, $authorization_model);
                 if (!$sessionResponse) return response()->json($this->client->error(), 500);
 
                 return response()->json($sessionResponse);
