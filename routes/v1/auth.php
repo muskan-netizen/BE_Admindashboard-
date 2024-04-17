@@ -15,7 +15,6 @@ Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], funct
 
 
 
-
     });
     Route::group(['middleware' => ['dbCheck']], function() {
         Route::post('login', 'Api\v1\AuthController@login');
@@ -42,7 +41,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('check-product-availability/{id}','Api\v1\YachtController@checkProductAvailability');
     });
     Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() {
-
+        
         /**Chat resourses */
         //Route::resource('chat', 'Client\ChatController');
         Route::get('chat/all/{room_id?}', 'Api\v1\ChatController@index');
@@ -149,6 +148,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         //Route::post('get-vendor-transactions', 'Api\v1\VendorController@getOrdersList');
 
         Route::match(['get','post'],'payment/{gateway}', 'Api\v1\PaymentOptionController@postPayment');
+        Route::post('paystack/cancelPurchase', 'Api\v1\PaymentOptionController@paystackCancelPurchase');
       //  Route::match(['get','post'],'payment/plugnpay','Api\v1\PlugnpayGatewayController@beforePayment');
 
         //azulpay

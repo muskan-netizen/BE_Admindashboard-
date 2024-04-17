@@ -322,14 +322,22 @@ class PaystackGatewayController extends FrontController
     public function paystackCancelPurchaseApp(Request $request)
     {
         $url = 'payment/gateway/returnResponse?status=0&gateway=paystack&action='.$request->action;
-        // Once the transaction has been approved, we need to complete it.
+        // If the transaction has been failed, we need to delete the order.
         if($request->has('status') && ($request->get('status') == '0') ){
             if($request->action == 'cart'){
                 $order_number = $request->order_number;
                 $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                 $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
                 foreach ($order_products as $order_prod) {
-                    OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                    $order_prod->delete();
+                    // OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                }
+                $user = User::find($order->user_id);
+                if($user){
+                    if($order->wallet_amount_used > 0){
+                        $wallet = $user->wallet;
+                        $wallet->depositFloat($order->wallet_amount_used, ['Wallet has been <b>refunded</b> for payment failed of order #'. $order->order_number]);
+                    }
                 }
                 OrderProduct::where('order_id', $order->id)->delete();
                 OrderProductPrescription::where('order_id', $order->id)->delete();
