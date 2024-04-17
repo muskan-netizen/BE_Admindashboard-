@@ -1221,9 +1221,17 @@ class HomeController extends BaseController
             // }
         $products = $products->paginate($limit, $page);
         $product_results = [];
+        $user = Auth::user();
+        $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+        
         foreach ($products as $product) {
             $product->response_type = 'product';
             $product->image_url = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
+            foreach ($product->variant as $key => $value) {
+                $product->variant[$key]->multiplier = $clientCurrency->doller_compare;
+                $product->variant[$key]->price *= $product->variant[$key]->multiplier;
+                $product->variant[$key]->compare_at_price *= $product->variant[$key]->multiplier;
+            }
             $product_results[] = $product;
         }
         if (@$product_results) {

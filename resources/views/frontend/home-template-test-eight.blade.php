@@ -653,21 +653,16 @@
 			</div>
 		</section>
         @elseif($homePageLabel->slug == 'recently_viewed' && (count($homePageData['recently_viewed']) != 0))
-		<section class="main-pro-slider p2p-full-width suppliers-section container mb-4" id="homepage_recently_viewed">
-
-			<div class="row">
-				<div class="col-lg-2 col-md-3 view text-center">
-					<div class=" top-heading mt-4 pt-5">
-						<h2 class="h2-heading">{{$homePageLabel->slug=='recently_viewed' ? __('Recently')." ".getNomenclatureName('Viewed', true) : __($homePageLabel->title)}}</h2>
-						<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>
-					</div>
+		<section class="main-pro-slider p2p-full-width suppliers-section  mb-4" id="homepage_recently_viewed">
+			<div class="container">
+				<div class=" top-heading pt-5">
+					<h2 class="h2-heading">{{$homePageLabel->slug=='recently_viewed' ? __('Recently')." ".getNomenclatureName('Viewed', true) : __($homePageLabel->title)}}</h2>
+					{{-- <a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a> --}}
 				</div>
-				<div class="col-lg-10 col-md-9 p-0 mb-4">
-					<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-						@foreach ($homePageData[$homePageLabel->slug] as $product )
-						@include('frontend.home_page_8.recently_viewed')
-						@endforeach
-					</div>
+				<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+					@foreach ($homePageData[$homePageLabel->slug] as $product )
+					@include('frontend.home_page_8.recently_viewed')
+					@endforeach
 				</div>
 			</div>
 		</section>
