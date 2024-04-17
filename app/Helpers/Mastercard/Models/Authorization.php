@@ -7,6 +7,7 @@ use App\Helpers\Mastercard\Interaction as IntrOp;
 final class Authorization implements Model
 {
     private object $object;
+    private Order $order;
     private Interaction $interaction;
 
     public function __construct(string $merchant_id)
@@ -27,6 +28,13 @@ final class Authorization implements Model
         return $this->interaction;
     }
 
+    public function getOrder(): ?Order
+    {
+        if (!isset($this->order)) return null;
+
+        return $this->order;
+    }
+
     /**
      * Set order model metadata
      *
@@ -34,7 +42,7 @@ final class Authorization implements Model
      */
     public function setOrder(Order $order): self
     {
-        $this->object->order = $order->toJson();
+        $this->order = $order;
         return $this;
     }
 
@@ -51,8 +59,9 @@ final class Authorization implements Model
 
     public function toJson(): array
     {
-        if (!isset($this->object->order)) throw new \Error("order must be set");
+        if (!isset($this->order)) throw new \Error("order must be set");
         $this->object->interaction = $this->interaction->toJson();
+        $this->object->order = $this->order->toJson();
 
         return (array)$this->object;
     }

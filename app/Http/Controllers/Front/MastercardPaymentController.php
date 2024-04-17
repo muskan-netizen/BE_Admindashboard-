@@ -62,14 +62,14 @@ class MastercardPaymentController extends Controller
 
         $order_model         = new Order($reference_id, $currency->iso_code, (float)$payment_info->amount);
         $authorization_model = (new Authorization($this->credentials->mastercard_merchant_id))
+            ->setOrder($order_model)
             ->setCustomer($customer);
 
         $authorization_model->getInteraction()->setReturnUrl(route('payment.mastercard.return'));
 
         switch ($payment_info->payment_from) {
             case 'wallet':
-                $order_model->setDescription("Recharge your wallet");
-                $authorization_model->setOrder($order_model);
+                $authorization_model->getOrder()->setDescription("Recharge your wallet");
 
                 $sessionResponse = $this->client->request(Operation::INITIATE_CHECKOUT, $authorization_model);
                 if (!$sessionResponse) return response()->json($this->client->error(), 500);
@@ -77,8 +77,6 @@ class MastercardPaymentController extends Controller
                 return response()->json($sessionResponse);
 
             case 'cart':
-                $authorization_model->setOrder($order_model);
-
                 $sessionResponse = $this->client->request(Operation::INITIATE_CHECKOUT, $authorization_model);
                 if (!$sessionResponse) return response()->json($this->client->error(), 500);
 
