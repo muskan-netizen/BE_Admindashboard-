@@ -747,12 +747,14 @@ class PaymentOptionController extends BaseController
                                 'obo_client_id' => 'required',
                                 'obo_key_id' => 'required',
                                 'obo_market_place_id' => 'required',
+                                'obo_company_reference' => 'required',
                             ]);
                             $json_creds = json_encode(array(
                                 'obo_business_name' => $request->obo_business_name,
                                 'obo_client_id' => $request->obo_client_id,
                                 'obo_key_id' => $request->obo_key_id,
                                 'obo_market_place_id' => $request->obo_market_place_id,
+                                'obo_company_reference' => $request->obo_company_reference,
                             ));
                         break;
                             break;
@@ -831,8 +833,8 @@ class PaymentOptionController extends BaseController
                                     $validatedData = $request->validate([
                                     'thawani_Apikey' => 'required',
                                     'thawani_publishKey' => 'required',
-                                    
-                                    
+
+
                                     ]);
                                     $json_creds = json_encode(array(
                                     'thawani_Apikey' => $request->thawani_Apikey,

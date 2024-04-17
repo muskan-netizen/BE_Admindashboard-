@@ -152,12 +152,17 @@ Options']) @section('css')
 				$nmi_key_id = (isset($creds->nmi_key_id)) ? $creds->nmi_key_id : '';
 
                 // OBO Pay
-                $obo_business_name   = (isset($creds->obo_business_name)) ? $creds->obo_business_name : '';
-                $obo_client_id       = (isset($creds->obo_client_id)) ? $creds->obo_client_id : '';
-                $obo_key_id          = (isset($creds->obo_key_id)) ? $creds->obo_key_id : ''  ;
-                $obo_market_place_id = (isset($creds->obo_market_place_id)) ? $creds->obo_market_place_id : '';
+                $obo_business_name     = (isset($creds->obo_business_name)) ? $creds->obo_business_name : '';
+                $obo_client_id         = (isset($creds->obo_client_id)) ? $creds->obo_client_id : '';
+                $obo_key_id            = (isset($creds->obo_key_id)) ? $creds->obo_key_id : ''  ;
+                $obo_market_place_id   = (isset($creds->obo_market_place_id)) ? $creds->obo_market_place_id : '';
+                $obo_company_reference = (isset($creds->obo_company_reference)) ? $creds->obo_company_reference : '';
+
+                // Powertrans
 				$powertrans_id = (isset($creds->powertrans_id)) ? $creds->powertrans_id : '';
 				$powertrans_password = (isset($creds->powertrans_password)) ? $creds->powertrans_password : '';
+
+                // Pesapal
 				$pesapal_consumer_key = (isset($creds->pesapal_consumer_key)) ? $creds->pesapal_consumer_key : '';
 				$pesapal_consumer_secret = (isset($creds->pesapal_consumer_secret)) ? $creds->pesapal_consumer_secret : '';
 
@@ -184,7 +189,7 @@ Options']) @section('css')
 				$icici_sub_merchant_name = (isset($creds->icici_sub_merchant_name)) ? $creds->icici_sub_merchant_name : '';
 				$icici_merchant_encryption_file = (isset($creds->icici_merchant_encryption_file)) ? $creds->icici_merchant_encryption_file : '';
 				$icici_merchant_key_file = (isset($creds->icici_merchant_key_file)) ? $creds->icici_merchant_key_file : '';
-				
+
 				if(strtolower($opt->code) == 'obo') {
 					$opt->title = "O'Pay";
 				}
@@ -1771,8 +1776,15 @@ Options']) @section('css')
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="obo_market_place_id." class="mr-3">{{$gateway}}{{ __("MARKET PLACE ID") }}</label>
+                                    <label for="obo_market_place_id." class="mr-3">{{$gateway}}{{ __(" MARKET PLACE ID") }}</label>
                                     <input type="text" name="obo_market_place_id" id="obo_market_place_id" class="form-control" value="{{$obo_market_place_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="obo_company_reference" class="mr-3">{{ $gateway }}{{ __(" COMPANY REFERENCE ID") }}</label>
+                                    <input type="text" name="obo_company_reference" id="obo_company_reference" class="form-control" value="{{ $obo_company_reference }}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>
@@ -1920,7 +1932,7 @@ Options']) @section('css')
 										</div>
 									</div>
 								</div>
-								
+
 							</div>
 					@endif
 
