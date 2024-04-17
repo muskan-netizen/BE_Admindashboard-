@@ -382,7 +382,7 @@ trait ProductActionTrait{
 
                             GROUP BY `products`.`id`
 
-                            ORDER BY RAND() LIMIT 6";
+                             LIMIT 6";
 
                 $products = DB::select( DB::raw($raw_query));
 
@@ -541,7 +541,7 @@ trait ProductActionTrait{
             $getSubCatIdsIn
             $whereProductType
             GROUP BY `products`.`id`
-            ORDER BY RAND() LIMIT 6";
+             LIMIT 6";
 
 
             $returnArray = DB::select( DB::raw($raw_query));
