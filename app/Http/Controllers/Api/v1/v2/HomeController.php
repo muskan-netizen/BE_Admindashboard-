@@ -1153,6 +1153,7 @@ class HomeController extends BaseController
 
         return 0;
     }
+
     public function searchBrand($langId, $keyword, $limit, $page)
     {
         // $orderBy = "";
@@ -1169,12 +1170,12 @@ class HomeController extends BaseController
             ->where('bt.title', 'LIKE', '%' . $keyword . '%')
             ->where('brands.status', '!=', '2')
             ->where('bt.language_id', $langId)
-            // if(@$orderBy){
-            //     $brands = $brands->orderByRaw("CASE ".$orderBy." ELSE 10 END, bt.title");
-            // }
+        // if(@$orderBy){
+        //     $brands = $brands->orderByRaw("CASE ".$orderBy." ELSE 10 END, bt.title");
+        // }
 
-             ->orderBy('brands.position', 'asc');
-            // ->limit(5)->get();
+            ->orderBy('brands.position', 'asc');
+        // ->limit(5)->get();
         $brands = $brands->paginate($limit, $page);
         $brand_results = [];
         foreach ($brands as $brand) {
@@ -1337,11 +1338,14 @@ class HomeController extends BaseController
                         $query->where($action, 1);
                     })
                     ->where(function ($q) use ($keyword) {
-                        //foreach ($keyword as $word) {
-                            $q->where('products.sku', ' LIKE', $keyword . '%')
-                                ->orWhere('products.url_slug', 'LIKE', $keyword . '%')
-                                ->orWhere('pt.title', 'LIKE', $keyword . '%');
-                        //}
+                        // foreach ($keyword as $word) {
+                        //     $q->orwhere('products.sku', ' LIKE', $word . '%')
+                        //         ->orWhere('products.url_slug', 'LIKE', $word . '%')
+                        //         ->orWhere('pt.title', 'LIKE', $word . '%');
+                        // }
+                        $q->where('products.sku', ' LIKE', $keyword . '%')
+                        ->orWhere('products.url_slug', 'LIKE', $keyword . '%')
+                        ->orWhere('pt.title', 'LIKE', $keyword . '%');
                     });
                 if ($for == 'category') {
                     $prodIds = array();
