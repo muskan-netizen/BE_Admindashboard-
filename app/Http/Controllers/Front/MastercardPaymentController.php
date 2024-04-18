@@ -7,30 +7,46 @@ use App\Helpers\Mastercard\Mastercard;
 use App\Helpers\Mastercard\Models\Authorization;
 use App\Helpers\Mastercard\Models\Customer;
 use App\Helpers\Mastercard\Models\Order;
+use App\Helpers\Mastercard\Models\Purchase;
+use App\Helpers\Mastercard\Models\Verify;
 use App\Helpers\Mastercard\Operation;
 use App\Http\Controllers\Controller;
+use App\Http\Traits\OrderTrait;
+use App\Models\CaregoryKycDoc;
+use App\Models\Cart;
+use App\Models\CartAddon;
+use App\Models\CartCoupon;
+use App\Models\CartProductPrescription;
 use App\Models\ClientCurrency;
 use App\Models\Currency;
+use App\Models\Order as ModelsOrder;
 use App\Models\PaymentOption;
+use App\Models\User;
+use App\Models\UserVendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 
 class MastercardPaymentController extends Controller
 {
+    use OrderTrait;
+
     private Mastercard $client;
     private object $credentials;
+    private int $payopt_id;
 
     public function __construct()
     {
-        $pay_option        = PaymentOption::where('code', 'mastercard')->where('status', 1)->get(['credentials', 'test_mode', 'status'])->firstOrFail();
+        $pay_option        = PaymentOption::where('code', 'mastercard')->where('status', 1)->get(['credentials', 'test_mode', 'status', 'id'])->firstOrFail();
         $this->credentials = json_decode($pay_option->credentials);
 
         $gateway = $pay_option->test_mode == 1
             ? 'test-gateway.mastercard.com'
             : $this->credentials->mastercard_gateway;
 
-        $this->client = new Mastercard(
+        $this->payopt_id = $pay_option->id;
+        $this->client    = new Mastercard(
             (($pay_option->test_mode == 1) ? 'TEST' : '') . $this->credentials->mastercard_merchant_id,
             $this->credentials->mastercard_merchant_key,
             $gateway
@@ -60,42 +76,87 @@ class MastercardPaymentController extends Controller
             $currency                = Currency::find($client_primary_currency);
         }
 
-        $order_model         = new Order($reference_id, $currency->iso_code, (float)$payment_info->amount);
-        $authorization_model = (new Authorization($this->credentials->mastercard_merchant_id))
+        $order_model         = new Order($reference_id, $currency->iso_code, (int)$payment_info->amount);
+        $authorization_model = (new Verify($this->credentials->mastercard_merchant_id))
             ->setOrder($order_model)
             ->setCustomer($customer);
 
-        $authorization_model->getInteraction()->setReturnUrl(route('payment.mastercard.return'));
+        $authorization_model
+            ->getInteraction()
+            ->setReturnUrl(route('payment.mastercard.return', [
+                'order_id' => $reference_id,
+                'payment_from' => $request->payment_from
+            ]));
 
         switch ($payment_info->payment_from) {
             case 'wallet':
                 $authorization_model->getOrder()->setDescription("Recharge your wallet");
-
-                $sessionResponse = $this->client->request(Operation::INITIATE_CHECKOUT, $authorization_model);
-                if (!$sessionResponse) return response()->json($this->client->error(), 500);
-
-                return response()->json($sessionResponse);
-
             case 'cart':
-                $sessionResponse = $this->client->request(Operation::INITIATE_CHECKOUT, $authorization_model);
-                if (!$sessionResponse) return response()->json($this->client->error(), 500);
-
-                return response()->json($sessionResponse);
-
             case 'subscription':
+                break;
+
             default:
+                return back()->withErrors(['generic' => 'unknown payment info']);
                 break;
         }
+
+        $sessionResponse = $this->client->request(Operation::INITIATE_CHECKOUT, $authorization_model);
+        if (!$sessionResponse) return response()->json($this->client->error(), 500);
+
+        $session_id = $sessionResponse->session->id;
+        $success_indicator = $sessionResponse->successIndicator;
+
+        Session::put('order-' . $reference_id, compact('session_id', 'success_indicator'));
+
+        return response()->json($sessionResponse);
     }
 
-    public function postPayment(Request $request)
+    public function postPayment(Request $request, string $domain = '', string $order_id, string $payment_from)
     {
-        // TODO
-    }
+        $session_data = Session::get('order-' . $order_id);
+        Session::forget('order-' . $order_id);
 
-    public function paymentWebhookEndpoint(Request $request)
-    {
-        // TODO
+        if (!$session_data) return redirect()->back();
+
+        list(
+            'session_id' => $session_id,
+            'success_indicator' => $success_indicator
+        ) = $session_data;
+
+        if ($success_indicator != $request->resultIndicator) {
+            return back();
+        }
+
+        $payment = Payment::where('transaction_id', $order_id)->first();
+        $payment->viva_order_id = $order_id;
+        $payment->payment_option_id = $this->payopt_id;
+
+        $user = auth()->user();
+
+        switch ($payment->type) {
+            case 'wallet':
+                $wallet = $user->wallet;
+                $wallet->depositFloat(
+                    $payment->balance_transaction,
+                    [sprintf('Wallet has been credited <b>credited</b> for order number <b>%s</b>', $payment->transaction_id)]
+                );
+                return redirect()->route('user.wallet');
+
+            case 'cart':
+                $order = ModelsOrder::where('order_number', $order_id)->first();
+                $order->payment_status = 1;
+                $order->save();
+
+                $this->orderSuccessCartDetail($order);
+
+                return redirect()->route('order.success', $order->id);
+
+            case 'subscription':
+            case 'pickup_delivery':
+            case 'tip':
+            default:
+                return back();
+        }
     }
 
     public function orderNumber($request)
