@@ -10,6 +10,8 @@ use App\Helpers\Mastercard\Models\Order;
 use App\Helpers\Mastercard\Models\Purchase;
 use App\Helpers\Mastercard\Models\Verify;
 use App\Helpers\Mastercard\Operation;
+use App\Http\Controllers\Api\v1\PickupDeliveryController;
+use App\Http\Controllers\Api\v1\UserSubscriptionController;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\OrderTrait;
 use App\Models\CaregoryKycDoc;
@@ -152,8 +154,37 @@ class MastercardPaymentController extends Controller
                 return redirect()->route('order.success', $order->id);
 
             case 'subscription':
+                $request = new Request([
+                    'transaction_id' => $payment->transaction_id,
+                    'payment_option_id' => $this->payopt_id,
+                    'subsid' => $payment->transaction_id,
+                    'subscription_id' => $payment->transaction_id,
+                    'amount' => $payment->amount,
+                ]);
+
+                (new UserSubscriptionController)->purchaseSubscriptionPlan($request, $request->subscription_id);
+                return redirect()->route('user.subscription.plans', '1');
             case 'pickup_delivery':
+                $request = new Request([
+                    'transaction_id' => $order_id,
+                    'payment_option_id' => $this->payopt_id,
+                    'amount' => $payment->amount,
+                    'order_number' => $order_id,
+                    'reload_route' => $payment->reload_route,
+                ]);
+
+                (new PickupDeliveryController)->orderUpdateAfterPaymentPickupDelivery($request);
+                return redirect()->route('front.booking.details', $payment->transaction_id);
             case 'tip':
+                $request = new Request([
+                    'tip_amount' => $payment->amount,
+                    'order_number' => $payment->order_number,
+                    'transaction_id' => $order_id,
+                ]);
+
+                (new OrderController)->tipAfterOrder($request);
+
+                return redirect()->route('user.orders');
             default:
                 return back();
         }
