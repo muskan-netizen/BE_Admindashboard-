@@ -10,18 +10,17 @@ trait ProductTrait{
 
     public function getProduct($product_id,$vendor_slug,$url_slug,$user='',$langId)
     {
+      
        $with_array = [
             'product_availability',
             'variant' => function ($sel) {
                 $sel->groupBy('product_id');
             },
-            'translation_one'=> function ($t) use ($langId) {
-                $t->where('language_id', $langId);
-            },
+            
             'variant.set' => function ($sel) {
                 $sel->select('product_variant_id', 'variant_option_id');
             },
-            'variant.media.pimage.image', 'related', 'upSell', 'crossSell', 'vendor', 'media.image',
+            'variant.media.pimage.image', 'vendor', 'media.image',
              'translation' => function ($q) use ($langId) {
                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                 $q->where('language_id', $langId);
@@ -65,9 +64,9 @@ trait ProductTrait{
                     $query->where('user_wishlists.user_id', $user->id);
                 });
             }
-            $product = $product->with('related');
+            // $product = $product->with('related');
 
-            $product = $product->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration','tags','is_long_term_service','service_duration', 'returnable' , 'replaceable' , 'return_days', 'same_day_delivery', 'next_day_delivery','hyper_local_delivery','is_recurring_booking','calories' );
+            // $product = $product->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration','tags','is_long_term_service','service_duration', 'returnable' , 'replaceable' , 'return_days', 'same_day_delivery', 'next_day_delivery','hyper_local_delivery','is_recurring_booking','calories' );
             $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
             if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
                 $product = $product->with(['OrderProduct' => function($q) {
@@ -75,14 +74,14 @@ trait ProductTrait{
                     $q->whereDate('end_date_time', '>', now());
                 }]);
             }
-            $product = $product->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration','tags','is_long_term_service','service_duration', 'returnable' , 'replaceable' , 'return_days', 'same_day_delivery', 'next_day_delivery','hyper_local_delivery','is_recurring_booking', 'security_amount','captain_name', 'captain_profile', 'captain_description');
+            $product = $product->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration','tags','is_long_term_service','service_duration', 'returnable' , 'replaceable' , 'return_days', 'same_day_delivery', 'next_day_delivery','hyper_local_delivery','is_recurring_booking', 'security_amount','captain_name','calories', 'captain_profile', 'captain_description');
           
             $product = $product->whereHas('vendor',function($q) use($vendor_slug){
                     $q->where('slug',$vendor_slug);
                 })->where('url_slug', $url_slug)
                 ->where('is_live', 1)
                 ->firstOrFail();
-                // pr($product->variantSet);
+           
         return $product;
     }
 
