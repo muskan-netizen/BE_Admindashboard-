@@ -452,7 +452,7 @@ class ProductController extends FrontController{
         $endTime = microtime(true); // End time in seconds with microseconds
         $executionTime = $endTime - $startTime; // Calculate execution time in seconds
     
-         \Log::info('Execution time Product Detials:'.$client->database_name.':' . $executionTime . ' seconds');
+        //  \Log::info('Execution time Product Detials:'.$client->database_name.':' . $executionTime . ' seconds');
         
             if(!empty($pickup_time)&&!empty($drop_time)){
               
