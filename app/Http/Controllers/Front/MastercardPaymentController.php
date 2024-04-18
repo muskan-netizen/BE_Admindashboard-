@@ -85,21 +85,24 @@ class MastercardPaymentController extends Controller
 
         $authorization_model
             ->getInteraction()
-            ->setReturnUrl(route('payment.mastercard.return', [
-                'order_id' => $reference_id,
-                'payment_from' => $request->payment_from
-            ]));
+            ->setReturnUrl(route('payment.mastercard.return', ['order_id' => $reference_id]));
 
         switch ($payment_info->payment_from) {
             case 'wallet':
                 $authorization_model->getOrder()->setDescription("Recharge your wallet");
             case 'cart':
+                break;
             case 'subscription':
+                $authorization_model
+                    ->getInteraction()
+                    ->setReturnUrl(route('payment.mastercard.return', [
+                        'order_id' => $reference_id,
+                        'subscription_id' => $request->subscription_id,
+                    ]));
                 break;
 
             default:
                 return back()->withErrors(['generic' => 'unknown payment info']);
-                break;
         }
 
         $sessionResponse = $this->client->request(Operation::INITIATE_CHECKOUT, $authorization_model);
@@ -113,7 +116,7 @@ class MastercardPaymentController extends Controller
         return response()->json($sessionResponse);
     }
 
-    public function postPayment(Request $request, string $domain = '', string $order_id, string $payment_from)
+    public function postPayment(Request $request, string $domain = '', string $order_id, ?string $subscription_id = null)
     {
         $session_data = Session::get('order-' . $order_id);
         Session::forget('order-' . $order_id);
@@ -163,7 +166,7 @@ class MastercardPaymentController extends Controller
                 ]);
 
                 (new UserSubscriptionController)->purchaseSubscriptionPlan($request, $request->subscription_id);
-                return redirect()->route('user.subscription.plans', '1');
+                return redirect()->route('user.subscription.plans', $subscription_id);
             case 'pickup_delivery':
                 $request = new Request([
                     'transaction_id' => $order_id,
@@ -221,10 +224,10 @@ class MastercardPaymentController extends Controller
                     'payment_from' => $request->come_from ?? 'web',
                 ]);
             } elseif ($request->payment_from == 'subscription') {
-                $time = $request->subscription_id ? $request->subscription_id : time();
+                $time = sprintf('%s_%d', $request->subscription_id, time());
                 $payment = Payment::create([
                     'amount' => 0,
-                    'transaction_id' => $request->subscription_id . '_' . $time,
+                    'transaction_id' => $time,
                     'balance_transaction' => round($amount, 2),
                     'type' => 'subscription',
                     'date' => date('Y-m-d'),

@@ -380,7 +380,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('payment/razorpay/payout/notify', 'Front\RazorpayGatewayController@razorpayPayoutNotify')->name('payment.razorpay.payout.notify');
 
     Route::post('payment/mastercard/session-create', 'Front\MastercardPaymentController@createSession')->name('payment.mastercard.createSession');
-    Route::get('payment/mastercard/return/{order_id}/{payment_from}', 'Front\MastercardPaymentController@postPayment')->name('payment.mastercard.return');
+    Route::get('payment/mastercard/return/{order_id}/{subscription_id?}', 'Front\MastercardPaymentController@postPayment')->name('payment.mastercard.return');
 
 
 	//Cashfree

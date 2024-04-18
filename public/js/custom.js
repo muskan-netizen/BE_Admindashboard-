@@ -1778,6 +1778,7 @@ function paymentViaMastercard(paymentMehod, order) {
     const walletElement = $('input[name="wallet_amount"]');
     const cartElement = $("input[name='cart_total_payable_amount']");
     const subscriptionElement = $('input[name="subscription_amount"]');
+    const subscriptionIdElement = $('#subscription_payment_form #subscription_id');
 
     let ajaxData = [{ name: 'payment_from', value: paymentMehod }];
     let total_amount;
@@ -1789,6 +1790,10 @@ function paymentViaMastercard(paymentMehod, order) {
             total_amount = cartElement.val();
             break;
         };
+        case 'subscription':
+            ajaxData.push({ name: 'subscription_id', value: subscriptionIdElement.val() });
+            total_amount = subscriptionElement.val();
+            break;
         default: throw new Error('unknown payment method');
     }
 
@@ -5416,6 +5421,8 @@ function paymentViaMastercard(paymentMehod, order) {
             case 45:
                 paymentViaTelr('', payment_option_id, '');
             break;
+            case 46:
+                paymentViaMastercard('subscription');
             case 47:
                 paymentViaKhalti('', '');
             break;
