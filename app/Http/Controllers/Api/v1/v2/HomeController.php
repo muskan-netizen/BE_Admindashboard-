@@ -1138,29 +1138,6 @@ class HomeController extends BaseController
 
         $vendor_results = [];
         foreach ($vendors as $vendor) {
-            $vendor->is_vendor_closed = 0;
-            if($vendor->show_slot == 0){
-                if(empty($vendor->slotdate_start_end_time) && empty($vendor->slot_start_end_time)){
-                    $vendor->is_vendor_closed = 1;
-                }else{
-                    $vendor->is_vendor_closed = 0;
-                    if(!empty($vendor->slotdate_start_end_time)){
-                        $slotdate_start_end_time = explode('##', $vendor->slotdate_start_end_time);
-                        if($slotdate_start_end_time[0]!='' && $slotdate_start_end_time[1]!=''){
-                            $vendor->opening_time  = date('g:i A',strtotime($slotdate_start_end_time[0]));
-                            $vendor->closing_time = date('g:i A',strtotime($slotdate_start_end_time[1]));
-                        }
-
-                    }elseif(!empty($vendor->slot_start_end_time)){
-                        $slot_start_end_time = explode('##', $vendor->slot_start_end_time);
-                        if($slot_start_end_time[0]!='' && $slot_start_end_time[1]!=''){
-                            $vendor->opening_time  = date('g:i A',strtotime($slot_start_end_time[0]));
-                            $vendor->closing_time = date('g:i A',strtotime($slot_start_end_time[1]));
-                        }
-                    }
-                }
-            }
-
             $vendor->response_type = 'vendor';
             $vendor->image_url = $vendor->logo['proxy_url'] . '80/80' . $vendor->logo['image_path'];
             $vendor_results[] = $vendor;
@@ -1176,6 +1153,7 @@ class HomeController extends BaseController
 
         return 0;
     }
+
     public function searchBrand($langId, $keyword, $limit, $page)
     {
         // $orderBy = "";
@@ -1192,12 +1170,12 @@ class HomeController extends BaseController
             ->where('bt.title', 'LIKE', '%' . $keyword . '%')
             ->where('brands.status', '!=', '2')
             ->where('bt.language_id', $langId)
-            // if(@$orderBy){
-            //     $brands = $brands->orderByRaw("CASE ".$orderBy." ELSE 10 END, bt.title");
-            // }
+        // if(@$orderBy){
+        //     $brands = $brands->orderByRaw("CASE ".$orderBy." ELSE 10 END, bt.title");
+        // }
 
-             ->orderBy('brands.position', 'asc');
-            // ->limit(5)->get();
+            ->orderBy('brands.position', 'asc');
+        // ->limit(5)->get();
         $brands = $brands->paginate($limit, $page);
         $brand_results = [];
         foreach ($brands as $brand) {
@@ -1360,11 +1338,14 @@ class HomeController extends BaseController
                         $query->where($action, 1);
                     })
                     ->where(function ($q) use ($keyword) {
-                        //foreach ($keyword as $word) {
-                            $q->where('products.sku', ' LIKE', $keyword . '%')
-                                ->orWhere('products.url_slug', 'LIKE', $keyword . '%')
-                                ->orWhere('pt.title', 'LIKE', $keyword . '%');
-                        //}
+                        // foreach ($keyword as $word) {
+                        //     $q->orwhere('products.sku', ' LIKE', $word . '%')
+                        //         ->orWhere('products.url_slug', 'LIKE', $word . '%')
+                        //         ->orWhere('pt.title', 'LIKE', $word . '%');
+                        // }
+                        $q->where('products.sku', ' LIKE', $keyword . '%')
+                        ->orWhere('products.url_slug', 'LIKE', $keyword . '%')
+                        ->orWhere('pt.title', 'LIKE', $keyword . '%');
                     });
                 if ($for == 'category') {
                     $prodIds = array();
