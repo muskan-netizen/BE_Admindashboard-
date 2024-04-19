@@ -1730,11 +1730,11 @@ $(document).ready(function () {
         } else if (walletElement.length > 0) {
             total_amount = walletElement.val();
         }
-        
+
         ajaxData.amount = total_amount;
         ajaxData.returnUrl = path;
         ajaxData.cancelUrl = path;
-        
+
         if (typeof tip_for_past_order !== 'undefined') {
             if (tip_for_past_order != undefined && tip_for_past_order == 1) {
                 let order_number = $("#order_number").val();
@@ -1742,8 +1742,8 @@ $(document).ready(function () {
                 order_number = order_number;
             }
         }
- 
-        
+
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -1867,7 +1867,7 @@ $(document).ready(function () {
             }
             //totalpay Ends
 
-            
+
 //The Thawani Pg  starts
         function paymentViaThawanipg(address_id,payment_option_id,order)
         {
@@ -1935,7 +1935,7 @@ $(document).ready(function () {
             // $('#topup_wallet_btn').trigger('click');
             // $('#wallet_topup_form #radio-paypal').prop("checked", true);
             $("#topup_wallet_btn, .topup_wallet_confirm").attr("disabled", true);
-        } 
+        }
         $.ajax({
             type: "GET",
             dataType: 'json',
@@ -2190,7 +2190,7 @@ $(document).ready(function () {
 
 
     window.creditWallet = function creditWallet(amount, payment_option_id, transaction_id) {
-        
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -3080,7 +3080,7 @@ $(document).ready(function () {
         //var fixed_fee_amount            =initialize_values($('#fixed_fee_amount').val());
         var tip                         =initialize_values($(this).val());
 
-       
+
 
 
         var amount_elem = $("#cart_payable_amount_original");
@@ -6008,7 +6008,7 @@ $(document).ready(function () {
 
     function walletPaymentOPtions(payment_option_id)
     {
-         
+
         switch (payment_option_id) {
             case 3:
                     paymentViaPaypal('', payment_option_id);

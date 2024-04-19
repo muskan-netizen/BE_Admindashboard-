@@ -1556,7 +1556,7 @@ class CartController extends BaseController
                     $vendorData->couponData = $couponData;
                 }
                 $vendor_service_fee_percentage_amount = 0;
-                
+
                 if($vendorData->vendor->service_fee_percent > 0){
                     $amount_for_service =  $only_products_amount;
                     $vendor_service_fee_percentage_amount = (($amount_for_service) * $vendorData->vendor->service_fee_percent) / 100 ;
@@ -1881,7 +1881,7 @@ class CartController extends BaseController
             }
             $cart->total_payable_amount = 0.00;
         } else {
-            $cart->total_payable_amount = ($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
+            $cart->total_payable_amount = ($total_paying  + $cart->total_tax) -   ($loyalty_amount_saved);
         }
 
         /* if($total_taxable_amount>0){
