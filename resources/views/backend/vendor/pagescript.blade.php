@@ -8,13 +8,13 @@
             //console.log(section_id);
             var price_section_temp    = $('#vendor_section_template').html();
             var modified_temp         = _.template(price_section_temp);
-          
+
             // console.log(languages);
             // $.each(languages, function( index, value ) {
             //     var result_html           = modified_temp({id:section_id,data:data,language:value});
             //     $("#vendor_section_options").append(result_html);
             // });
-            
+
             var result_html           = modified_temp({id:section_id,data:data});
             $("#vendor_section_options").append(result_html);
             $('.add_more_button').hide();
@@ -41,7 +41,7 @@
             submitVendorSectionForm();
         });
 
-    
+
     function submitVendorSectionForm() {
         var form = document.getElementById('save_vendor_section_form');
         var formData = new FormData(form);
@@ -71,7 +71,7 @@
                 // location.reload();
                 if (response.status == 'success') {
                     $('.section_msg').text('Updated successfully');
-                    
+
                     //setTimeout(function() {
                         $(".modal .close").click();
                          location.reload();
@@ -93,7 +93,7 @@
                 setTimeout(function() {
                    location.reload();
                 }, 2000);
-               
+
             },error: function(response) {
                 $("#add_vendor_section_form").attr("disabled", false);
                 if (response.status === 422) {
@@ -119,7 +119,7 @@
         getVendorSection(section_id, language_id);
       }
     });
-    
+
     $(document).on("click",".deleteMultiBanner",function() {
         //alert('asd');
         var banner_id =  $(this).data('banner_id');
@@ -130,16 +130,16 @@
             confirmButtonText: 'Yes',
             focusConfirm: false,
             preConfirm: () => {
-                
+
             },onOpen: function() {
             }
           }).then(async (result) => {
-           
+
             await  deleteMultiBanner(banner_id)
           })
 
-      
-    
+
+
     });
     function deleteMultiBanner(banner_id){
         axios.get(`/client/vendor_banner/destroy/${banner_id}`)
@@ -153,14 +153,14 @@
                 setTimeout(async ()=>{
                     location.reload();
                 },2000)
-             
+
         })
         .catch(e => {
             Swal.fire(
-                'Something went wrong, try again later!',                                    
+                'Something went wrong, try again later!',
                 'error'
             )
-        })    
+        })
 
     }
     $(document).on("click",".submitMultibannerForm",function() {
@@ -180,44 +180,44 @@
             setTimeout(async ()=>{
                 location.reload();
             },2000)
-          
-             
+
+
         })
         .catch(e => {
             Swal.fire(
-               "{{__('Something went wrong, try again later!')}}",                                    
+               "{{__('Something went wrong, try again later!')}}",
                 'error'
             )
-        })    
-    
+        })
+
     });
-    
+
     $(document).on('click','.editSectionBtn',function(){
         var section_id = $(this).data('id');
         var language_id = $(this).data('language_id');
         if(section_id != undefined && section_id != ''){
             getVendorSection(section_id, language_id);
         }
-        
+
     });
     $('.openVendorSectionModal').click(function() {
         $('#add_section').modal();
         $("#save_vendor_section_form input[name='section_id']").val('');
         document.getElementById("save_vendor_section_form").reset();
-        
+
         $('#add_section #header_title').html(`{{ __("Add Section") }}`);
         $("#vendor_section_options").html('');
         addvendorSectionTemplate(0);
 
     });
-        
+
     function getVendorSection(section_id, language_id){
         var get_section_url = "{{ route('vsection.edit', ':id') }}";
         var url = get_section_url.replace(":id", section_id);
         $.get(url, {language_id:language_id},function(response) {
               if(response.status == 'Success'){
                     if(response.data){
-                     
+
                         $("#vendor_section_options").html('');
                         $("#save_vendor_section_form input[name='section_id']").val(response.data.id);
                         $("#save_vendor_section_form input[name='heading']").val((response.data.heading_translation[0]!= undefined)? response.data.heading_translation[0].heading : '');
@@ -246,8 +246,8 @@
         $('#editCardBox #vendorDialCode').val(dial_code);
     });
 
-    
-    
+
+
     $('.openAddModal').click(function() {
         $('#add-form').modal({
             //backdrop: 'static',
@@ -571,11 +571,11 @@
                 setTimeout(function() {
                     location.reload();
                 }, 2000);
-               
+
             }
         });
     }
-    
+
 
     function submitImportForm() {
         var form = document.getElementById('save_imported_vendors');
@@ -684,7 +684,7 @@
                         icon: "Warning!",
                         button: "OK",
                     });
-                return 
+                return
                 }
                 if (response.status == 'success') {
                     $(".modal .close").click();
@@ -753,7 +753,7 @@
                         icon: "Warning!",
                         button: "OK",
                     });
-                return 
+                return
                 }
                 if (response.status == 'success') {
                     $(".modal .close").click();
@@ -932,7 +932,7 @@
         });
     });
     $(document).on('click', '.delete_addon_set', function(e) {
-        e.preventDefault(); 
+        e.preventDefault();
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
@@ -940,7 +940,7 @@
         });
         console.log('sdf');
         var option_id = $(this).attr('data_addon_id');
-       
+
         $.ajax({
             type: "POST",
             url: "{{route('addonoption_delete')}}",
@@ -969,7 +969,7 @@
                 console.log('data2');
             }
         });
-      
+
     });
     // search users for set permission
     $('#search_user_for_vendor_permission').keyup(function(){
@@ -1060,12 +1060,12 @@
             return false;
         }
 
-        var contact=dial_code+phone_number;
+        //var contact=dial_code+phone_number;
 
         $.ajax({
             method: 'post',
             url: url,
-            data: { _token:token,name: name,contact:contact,phone_number:phone_number,dial_code:dial_code,email:email,password:password},
+            data: { _token:token,name: name,contact:phone_number,phone_number:phone_number,dial_code:dial_code,email:email,password:password},
             success: function(response) {
                 $('#adduesr_error').html('');
                 console.log(response);
@@ -1277,7 +1277,7 @@ $(".openConfirmAppointmentDispatcher").click(function(e) {
                 }else{
                     alert(data.message);
                 }
-               
+
             },
             error: function(data) {
                 alert(data.message);
@@ -1307,7 +1307,7 @@ $('.editProtection').on('click', function(e) {
         var did = $(this).attr('dataid');
         let url = `{{route("rental.protection.edit", ":id")}}`;
         url = url.replace(':id', did);
-        
+
         $.ajax({
             type: "get",
             url: url,
@@ -1370,7 +1370,7 @@ $('.editProtection').on('click', function(e) {
         var did = $(this).attr('dataid');
         let url = `{{route("booking.option.edit", ":id")}}`;
         url = url.replace(':id', did);
-        
+
         $.ajax({
             type: "get",
             url: url,
@@ -1438,7 +1438,7 @@ $('.editProtection').on('click', function(e) {
             keyboard: false
         });
     });
-    
+
 
     $('.editDestination').on('click', function(e) {
         $.ajaxSetup({
@@ -1450,7 +1450,7 @@ $('.editProtection').on('click', function(e) {
         var did = $(this).attr('dataid');
         let url = `{{route("destination.edit", ":id")}}`;
         url = url.replace(':id', did);
-        
+
         $.ajax({
             type: "get",
             url: url,

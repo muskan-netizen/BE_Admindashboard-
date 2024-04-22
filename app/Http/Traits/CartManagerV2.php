@@ -1154,7 +1154,7 @@ trait CartManagerV2
 
                             }//End Pvariant condition
                          if($deliveryfeeOnCoupon == 1){
-                            $free_delivery_amount +=   $deliveryCharges_real;
+                            $free_delivery_amount =   $deliveryCharges_real;
 
                          }
                         $is_slot_from_dispatch =  $prod->product->is_slot_from_dispatch;
