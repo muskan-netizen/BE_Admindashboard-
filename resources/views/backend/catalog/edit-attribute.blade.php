@@ -7,10 +7,10 @@
                     <select class="form-control selectize-select" required id="edit_cateSelectBox" name="cate_id[]" multiple>
                         <option value="">{{ __("Select Category") }}...</option>
                         @foreach($categories as $cate)
-                            <option value="{{$cate['id']}}" @if(in_array($cate['id'], $variant->varcategory->pluck('category_id')->toArray())) selected @endif>{{$cate['hierarchy']}}</option>
+                            <option value="{{$cate['id']}}" @if(@$variant->varcategory->category_id == $cate['id']) selected @endif>{{$cate['hierarchy']}}</option>
                         @endforeach
                     </select>
-                    
+
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
                     </span>
