@@ -1062,12 +1062,12 @@
             return false;
         }
 
-        var contact=dial_code+phone_number;
+        //var contact=dial_code+phone_number;
 
         $.ajax({
             method: 'post',
             url: url,
-            data: { _token:token,name: name,contact:contact,phone_number:phone_number,dial_code:dial_code,email:email,password:password},
+            data: { _token:token,name: name,contact:phone_number,phone_number:phone_number,dial_code:dial_code,email:email,password:password},
             success: function(response) {
                 $('#adduesr_error').html('');
                 console.log(response);

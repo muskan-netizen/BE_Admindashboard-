@@ -915,7 +915,7 @@ class OrderController extends BaseController
                                 $vendor_discount_amount = $vendor_discount_amount +  $delivery_fee;
                                 $vendor_payable_amount = $vendor_payable_amount - $delivery_fee;
                                 $total_discount += $delivery_fee;
-                                $totalFreeDeliveryCharges += $delivery_fee;
+                               // $totalFreeDeliveryCharges += $delivery_fee;
                                 $deliveryfeeOnCoupon = 1;
                             }
                             if(isset($rate) && $total_discount > 0 ){
