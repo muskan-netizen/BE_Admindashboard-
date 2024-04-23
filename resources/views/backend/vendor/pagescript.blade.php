@@ -302,7 +302,9 @@
             }
             //autocomplete[name] = new google.maps.places.Autocomplete(('.form-control')[0], { types: ['geocode'] }); console.log('hello');
             autocomplete[name] = new google.maps.places.Autocomplete(document.getElementById(name + "-address"), {
-                types: ['geocode']
+                 // types: ['geocode'], ///< Type "geocode", should not be used in a place search filter, as per the official docs
+                                        ///< [ref](https://developers.google.com/maps/documentation/javascript/supported_types#table2)
+                strictBounds: false,
             });
             if(is_map_search_perticular_country){
                 autocomplete[name].setComponentRestrictions({'country': [is_map_search_perticular_country]});
