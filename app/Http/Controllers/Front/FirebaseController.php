@@ -16,8 +16,7 @@ class FirebaseController extends FrontController
 {
 
     public function service_worker()
-    {
-        return ;
+    { 
         $preference = ClientPreference::first();
         $view = response()->view('frontend.firebase.service_worker', compact('preference'));
         $view->header('Content-Type', 'application/javascript');
