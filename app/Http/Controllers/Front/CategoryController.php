@@ -412,7 +412,7 @@ class CategoryController extends FrontController{
 
     public function listData($langId, $category_id, $type = '',$vendorIds = array(),$is_max = false){
 
-        $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 1;
+        $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
         $vendorType = Session::get('vendorType');
 
         if(strtolower($type) == 'vendor'){
@@ -495,11 +495,11 @@ class CategoryController extends FrontController{
             $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
 
             $vendors =  $vendorIds;
-            // if(count($vendorIds)==0){
-            //     if(Session::has('vendors')){
-            //         $vendors = Session::get('vendors');
-            //     }
-            // }
+            if(count($vendorIds)==0){
+                if(Session::has('vendors')){
+                    $vendors = Session::get('vendors');
+                }
+            }
             $products = Product::with(['vendor','media.image', 'category', 'ProductAttribute',
                         'translation' => function($q) use($langId){
                           $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
