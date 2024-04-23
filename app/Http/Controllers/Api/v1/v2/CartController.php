@@ -1619,6 +1619,7 @@ class CartController extends BaseController
         if($cart->total_fixed_fee_amount){
             $cart->total_payable_amount = $cart->total_payable_amount +$cart->total_fixed_fee_amount;
         }
+       
 
         $wallet_amount_used = 0;
         if (isset($user)) {
@@ -1675,7 +1676,7 @@ class CartController extends BaseController
         $cart->advance_payable_amount= number_format((float)$advancePayableAmount, 2, '.', '');
         $cart->pending_amount= number_format((float)$pendingAmount, 2, '.', '');
         //till here
-
+         
         $cart->vendor_details = $vendor_details;
         $cart->cart_dinein_table_id = $cart_dinein_table_id;
         $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
