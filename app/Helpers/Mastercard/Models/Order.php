@@ -19,8 +19,9 @@ class Order implements Model
         ?float $amount = null
     ) {
         $this->object = (object)[
-            'id'       => $reference_id,
-            'currency' => $currency,
+            'id'        => $reference_id,
+            'currency'  => $currency,
+            'reference' => time(),
         ];
 
         if ($amount) $this->object->amount = (string)$amount;
@@ -58,6 +59,10 @@ class Order implements Model
     {
         $this->object->description = $description;
         return $this;
+    }
+
+    public function getReference(): int {
+        return $this->object->reference;
     }
 
     public function toJson(): array

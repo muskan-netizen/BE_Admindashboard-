@@ -79,7 +79,7 @@ class MastercardPaymentController extends Controller
         }
 
         $order_model         = new Order($reference_id, $currency->iso_code, (int)$payment_info->amount);
-        $authorization_model = (new Verify($this->credentials->mastercard_merchant_id))
+        $authorization_model = (new Purchase($this->credentials->mastercard_merchant_id))
             ->setOrder($order_model)
             ->setCustomer($customer);
 

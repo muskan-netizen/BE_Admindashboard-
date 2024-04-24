@@ -15,7 +15,11 @@ final class Purchase implements Model
         $this->interaction = (new Interaction(IntrOp::PURCHASE))
             ->setMerchantId($merchant_id);
 
-        $this->object = (object)[];
+        $this->object = (object)[
+            'transaction' => (object)[
+                'reference' => time(),
+            ],
+        ];
     }
 
     /**
