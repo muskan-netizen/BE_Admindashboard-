@@ -29,7 +29,18 @@
         body[dir="rtl"] #alSixHomeServices .col-xl-8.offset-xl-2 {
             margin-right: 0!important;
         }
+        .my-menu #main-menu li{
+            padding-left: 5px!important;
+            padding-right: 5px!important;
+        }
+        .my-menu #main-menu li:nth-of-type(odd){
+            padding-left: 0!important;
+        }
+        .my-menu #main-menu li:nth-of-type(even){
+            padding-right: 0!important;
+        }
     }
+
     .home-slider-wrapper span.carousel-control-prev-icon:before{
         position: absolute;
         content: "";
@@ -1399,9 +1410,14 @@ padding: 0px;
 }
 
     @media (max-width:576px) {
+        .alSixMainMenu .nav-cate-img img{
+            max-width: 100%;
+            width: 100%!important;
+            min-width: inherit;
+        }
 
         .my-menu #main-menu li {
-            width: calc(50% - 3px)
+            width:49.2% ;
         }
         html,
         body {
@@ -1439,13 +1455,14 @@ padding: 0px;
         }
         .carousel-inner a.banner-img-outer{height: 300px;}
         .al_body_template_six .vendors .top-heading{margin: 0px 20px;}
-        .menu-navigation_al {margin: 20px 10px;}
+        .menu-navigation_al {margin: 0 10px 20px;}
         .al_body_template_six .al_custom_brand .brand-box{background-color: #eee;}
         .cab-banner-area .container-fluid.p-64.py-64 {padding: 10px !important;}
         body.al_body_template_six .al_searchType .form-control{width:50%;}
         body.al_body_template_six .alFindSec{width:50%;}
         body.al_body_template_six .alFindSec button.btn i {padding-left: 10px;}
         .al_body_template_six section {padding: 30px 0px;}
+        body.al_body_template_six  .vendors section{padding-top: 0!important;}
     }
 
     @media screen and (max-width:320px){

@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Traits;
-use App\Models\{ProductRecentlyViewed,WebStylingOption,Product,Category,HomeProduct,ProductCategory,OrderVendorProduct,OrderProductRating,OrderProduct, VendorCategory, Vendor, SubscriptionInvoicesVendor};
+use App\Models\{ProductRecentlyViewed,WebStylingOption,Product,Category, ClientCurrency, HomeProduct,ProductCategory,OrderVendorProduct,OrderProductRating,OrderProduct, VendorCategory, Vendor, SubscriptionInvoicesVendor};
 use Illuminate\Support\Str;
 use Auth;
 use Session;
@@ -382,7 +382,7 @@ trait ProductActionTrait{
 
                             GROUP BY `products`.`id`
 
-                            ORDER BY RAND() LIMIT 6";
+                             LIMIT 6";
 
                 $products = DB::select( DB::raw($raw_query));
 
@@ -401,7 +401,10 @@ trait ProductActionTrait{
     {
         try
         {
-           // pr($venderIds);
+            $user = Auth::user();
+            $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+            $comparePrice = $clientCurrency->doller_compare ?? 1.00;
+
             $vendorWhereIN = ' ';
             $getSubCatIdsIn = ' ';
             $completeWhere = ' ';
@@ -492,8 +495,8 @@ trait ProductActionTrait{
             `product_translation`.`meta_description`,
             `vendors`.`address`,
             `product_translation`.`language_id`,
-            `product_variant`.`compare_at_price` as `compare_price_numeric`,
-            `product_variant`.`price` as `price_numeric`,
+            CAST(`product_variant`.`compare_at_price` * $comparePrice AS DECIMAL(10,2)) as `compare_price_numeric`,
+            CAST(`product_variant`.`price` * $comparePrice AS DECIMAL(10,2)) as `price_numeric`,
             `category_translation`.`name` as `category_name` ,
             `category_translation`.`meta_title` as `category_meta_title` ,
             `category_translation`.`meta_keywords` as `category_meta_keyword` ,
@@ -541,7 +544,7 @@ trait ProductActionTrait{
             $getSubCatIdsIn
             $whereProductType
             GROUP BY `products`.`id`
-            ORDER BY RAND() LIMIT 6";
+             LIMIT 6";
 
 
             $returnArray = DB::select( DB::raw($raw_query));

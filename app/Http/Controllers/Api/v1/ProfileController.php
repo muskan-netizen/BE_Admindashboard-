@@ -48,9 +48,24 @@ class ProfileController extends BaseController
 
     private $folderName = '/user/document';
 
-    public function postSendReffralCode(SendReferralRequest $SendReferralRequest)
+    public function postSendReffralCode(Request $SendReferralRequest)
     {
         try {
+            $validator = Validator::make($SendReferralRequest->all(), [
+                'email' => 'required|email|max:50|unique:users'
+            ],[
+                'email.required' => 'The email field is required.',
+                'email.email' => 'The email must be a valid email address.',
+                'email.unique' => 'This email is already registered.',
+            ]);
+
+            if ($validator->fails()) {
+                foreach ($validator->errors()->toArray() as $error_key => $error_value) {
+                    $errors['error'] = __($error_value[0]);
+                    return response()->json($errors, 422);
+                }
+            }
+
             $user = Auth::user();
             $client = Client::first();
             $client_preference_detail = ClientPreference::first();
@@ -87,6 +102,7 @@ class ProfileController extends BaseController
                                 $message->to($sendto)->subject('Referral For Registration');
                             });
                         } catch (\Exception $e) {
+                            \Log::error($e->getMessage());
                         }
                     }
                     return response()->json(array(

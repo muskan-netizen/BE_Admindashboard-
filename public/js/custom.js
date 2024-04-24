@@ -6055,6 +6055,7 @@ function paymentViaMastercard(paymentMehod, order) {
 
     function walletPaymentOPtions(payment_option_id)
     {
+
         switch (payment_option_id) {
             case 3:
                     paymentViaPaypal('', payment_option_id);

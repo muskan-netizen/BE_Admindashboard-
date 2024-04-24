@@ -257,6 +257,8 @@ class ProductController extends BaseController
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
             foreach ($product->variant as $key => $value) {
                 $product->variant[$key]->multiplier = $clientCurrency->doller_compare;
+                $product->variant[$key]->price *= $product->variant[$key]->multiplier;
+                $product->variant[$key]->compare_at_price *= $product->variant[$key]->multiplier;
                 $product->variant[$key]->variant_title = $product->variant[$key]->optionData ?? '';
             }
             $addonList = array();
@@ -615,9 +617,9 @@ class ProductController extends BaseController
                         $value->fuel_type = $fields['Fuel Type'] ?? '';
                         $value->Seats = $fields['Seats'] .' Seats'?? '';
                     } else{
-                        $value->cabins = $fields['Cabins']. ' Cabins' ?? '0' ;
-                        $value->baths = $fields['Baths']. ' Baths' ?? '0' ;
-                        $value->berths = $fields['Berths'].' Berths' ?? '0';
+                        $value->cabins = $fields['Cabins'] ?? '0' . ' Cabins';
+                        $value->baths = $fields['Baths'] ?? '0' . ' Baths';
+                        $value->berths = $fields['Berths'] ?? '0' .' Berths';
                     }
                 }
             }
