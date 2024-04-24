@@ -70,7 +70,7 @@ class MastercardPaymentController extends Controller
             $currency                = Currency::find($client_primary_currency);
         }
 
-        $order_model         = new Order($reference_id, $currency->iso_code, (int)$payment_info->amount);
+        $order_model         = new Order($reference_id, $currency->iso_code, (int)ceil($payment_info->amount));
         $authorization_model = (new Purchase($this->credentials->mastercard_merchant_id))
             ->setOrder($order_model)
             ->setCustomer($customer);
