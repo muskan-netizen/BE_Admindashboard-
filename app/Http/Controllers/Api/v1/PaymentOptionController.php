@@ -15,7 +15,7 @@ use App\Http\Controllers\Api\v1\{BaseController, VnpayController, StripeGatewayC
 use App\Http\Controllers\Front\DpoController;
 use App\Http\Controllers\Front\CcavenueController;
 use App\Http\Controllers\Front\KongapayController;
-use App\Http\Controllers\Front\{MpesaController,TotalpayController};
+use App\Http\Controllers\Front\{MastercardPaymentController, MpesaController,TotalpayController};
 use App\Http\Controllers\Front\MvodafoneController;
 use App\Http\Controllers\Front\NmiPaymentController;
 use App\Http\Controllers\Front\OboPaymentController;
@@ -106,6 +106,15 @@ class PaymentOptionController extends BaseController
         } else {
             return $this->errorResponse("Invalid Gateway Request", 400);
         }
+    }
+
+    public function postPaymentVia_mastercard(Request $request) {
+        $gateway = new MastercardPaymentController();
+        $request->request->add([
+            'payment_from' => $request->action,
+            'come_from'    => 'app',
+        ]);
+        return $gateway->createSession($request);
     }
 
     public function postPaymentVia_livee(Request $request)

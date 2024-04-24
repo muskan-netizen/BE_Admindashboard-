@@ -21,7 +21,7 @@ class Order implements Model
         $this->object = (object)[
             'id'        => $reference_id,
             'currency'  => $currency,
-            'reference' => time(),
+            'reference' => time() . rand(00000, 99999),
         ];
 
         if ($amount) $this->object->amount = (string)$amount;

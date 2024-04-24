@@ -17,7 +17,7 @@ final class Purchase implements Model
 
         $this->object = (object)[
             'transaction' => (object)[
-                'reference' => time(),
+                'reference' => time() . rand(00000, 99999),
             ],
         ];
     }
