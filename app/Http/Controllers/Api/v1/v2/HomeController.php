@@ -115,6 +115,7 @@ class HomeController extends BaseController
     public function homepage(Request $request, $domain = '')
     {
         try {
+        \Log::info($request);
 
             $this->config();
             $home = array();
@@ -140,7 +141,7 @@ class HomeController extends BaseController
 
             $categoryTypes = getServiceTypesCategory($type);
 
-            $this->venderFilterOpenClose   = $request->has('open_close_vendor') && $request->open_close_vendor ? $request->open_close_vendor : null;
+            $this->venderFilterOpenClose   = isset($request->open_close_vendor) ? $request->open_close_vendor : null;
             $this->venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
             $clientPreferences = ClientPreference::first();
 
@@ -1224,7 +1225,7 @@ class HomeController extends BaseController
         $product_results = [];
         $user = Auth::user();
         $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
-        
+
         foreach ($products as $product) {
             $product->response_type = 'product';
             $product->image_url = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
