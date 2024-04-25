@@ -115,8 +115,6 @@ class HomeController extends BaseController
     public function homepage(Request $request, $domain = '')
     {
         try {
-        \Log::info($request);
-
             $this->config();
             $home = array();
             $vendor_ids = array();
