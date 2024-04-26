@@ -16,9 +16,11 @@ use App\Models\ClientCurrency;
 use App\Models\Currency;
 use App\Models\Order as ModelsOrder;
 use App\Models\PaymentOption;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
@@ -104,6 +106,7 @@ class MastercardPaymentController extends Controller
         $session_data = compact('session_id', 'success_indicator');
 
         $session_data['payment_come_from'] = $request->come_from ?? 'web';
+        $session_data['user_id']           = auth()->user()->id;
 
         if ($request->has('subscription_id')) $session_data['subscription_id'] = $request->subscription_id;
         if ($request->has('cancelUrl')) $session_data['cancel_url'] = $request->cancelUrl;
@@ -111,6 +114,10 @@ class MastercardPaymentController extends Controller
         Cache::store('redis')->put('order-' . $reference_id, $session_data);
 
         $sessionResponse->referenceId = $reference_id;
+        if ($request->come_from == 'app') return response()->json([
+            'status' => 'Success',
+            'data'   => sprintf('https://test-gateway.mastercard.com/checkout/pay/%s?checkoutVersion=1.0.0', $session_id)
+        ]);
         return response()->json($sessionResponse);
     }
 
@@ -140,6 +147,12 @@ class MastercardPaymentController extends Controller
         $payment = Payment::where('transaction_id', $order_id)->first();
         $payment->viva_order_id = $order_id;
         $payment->payment_option_id = $this->payopt_id;
+
+        if ($come_from == 'app') {
+            $user_id = $session_data['user_id'];
+            $user = User::with('wallet')->find($user_id);
+            Auth::login($user);
+        }
 
         $user = auth()->user();
 
@@ -288,7 +301,7 @@ class MastercardPaymentController extends Controller
                 $res =  Payment::create([
                     'amount' => 0,
                     'transaction_id' =>  $time,
-                    'balance_transaction' => $request->amount,
+                    'balance_transaction' => $amount,
                     'type' => 'tip',
                     'date' => date('Y-m-d'),
                     'user_id' => $user_id,
@@ -299,7 +312,7 @@ class MastercardPaymentController extends Controller
                 Payment::create([
                     'amount' => 0,
                     'transaction_id' => $time,
-                    'balance_transaction' => $request->amt,
+                    'balance_transaction' => $amount,
                     'type' => 'pickup_delivery',
                     'date' => date('Y-m-d'),
                     'user_id' => $user_id,

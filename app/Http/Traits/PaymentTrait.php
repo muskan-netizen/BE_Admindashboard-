@@ -18,7 +18,7 @@ trait PaymentTrait{
             $paymentOptions = ['paypal', 'azul', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink', 'razorpay', 'simplify', 'square', 'pagarme', 'checkout', 'authorize_net', 'kongapay', 'ccavenue', 'cashfree', 'toyyibpay', 'easebuzz', 'vnpay', 'paytab', 'flutterwave', 'mvodafone', 'windcave', 'payphone', 'stripe_oxxo', 'stripe_ideal', 'viva_wallet', 'mycash', 'dpo', 'openpay', 'userede', 'upay', 'conekta', 'telr', 'khalti', 'plugnpay', 'nmi', 'yappy', 'skip_cash', 'data_trans', 'mtn_momo', 'pesapal', 'obo', 'livee', 'mpesasafari', 'totalpay', 'thawani', 'mastercard'];
         }elseif($type=='pickup_delivery')
         {
-            $paymentOptions = ['cod','azul', 'dpo', 'razorpay','paystack','stripe','payfast','offline_manual','authorize_net','payphone','khalti','flutterwave','plugnpay','nmi','yappy','skip_cash','ccavenue','data_trans','mtn_momo','pesapal','livee','mpesasafari','totalpay','thawani','paypal'];
+            $paymentOptions = ['cod','azul', 'dpo', 'razorpay','paystack','stripe','payfast','offline_manual','authorize_net','payphone','khalti','flutterwave','plugnpay','nmi','yappy','skip_cash','ccavenue','data_trans','mtn_momo','pesapal','livee','mpesasafari','totalpay','thawani','paypal', 'mastercard'];
 
             if(!empty(session()->get('company_id')) || !empty(auth()->user()->company_id))
             {

@@ -1794,6 +1794,11 @@ function paymentViaMastercard(paymentMehod, order) {
             ajaxData.push({ name: 'subscription_id', value: subscriptionIdElement.val() });
             total_amount = subscriptionElement.val();
             break;
+
+        case 'pickup_delivery':
+            total_amount = order.total_amount;
+            ajaxData.push({ name: 'order_number', value: order.order_number });
+            break;
         default: throw new Error('unknown payment method');
     }
 

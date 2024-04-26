@@ -195,7 +195,7 @@
             overflow-x: hidden;
             overflow-y: scroll;
             width: 100%;
-            padding-bottom:30px; 
+            padding-bottom:30px;
         }
 
         .slick_bid_ride .slick-items{
@@ -371,7 +371,7 @@ input[type=number]::-webkit-outer-spin-button {
                                     <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
                                 </label>
 
-                               
+
                             </div>
                             <div class="item mx-1">
                             <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_pooling" name="is_cab_pooling_radio"
@@ -380,7 +380,7 @@ input[type=number]::-webkit-outer-spin-button {
                                     <h5 class="m-0" id="pool_5">{{ __('Pooling') }}</h5>
                                 </label>
 
-                               
+
                             </div>
                             @endif
 
@@ -432,7 +432,7 @@ input[type=number]::-webkit-outer-spin-button {
                                 <div class="title title-24 position-relative edit-dropoff"> {{ __('To') }} - <span
                                         id="dropoff-where-to"></span><i class="fa fa-angle-down" aria-hidden="true"></i>
                                 </div>
-                                    <i class="fa fa-times ml-1 apremove delete-drop-off" aria-hidden="true" data-rel=""></i>                 
+                                    <i class="fa fa-times ml-1 apremove delete-drop-off" aria-hidden="true" data-rel=""></i>
                             </li>
                         </ul>
                         <a class="add-more-location position-relative pl-2" style="display:none"
@@ -612,7 +612,7 @@ input[type=number]::-webkit-outer-spin-button {
                 <div class="hourly-rental-container">
                 </div>
                 <script type="text/template" id="rider_template">
-            
+
                     <div class="col-12 d-flex justify-content-between align-items-center">
                 <% if(riders.length > 0){%>
                     <p class="m-0">Riders : <%= riders.length %></p>
@@ -1725,6 +1725,14 @@ input[type=number]::-webkit-outer-spin-button {
     @if (in_array('khalti', $client_payment_options))
         <script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
     @endif
+    @if (in_array('mastercard', $client_payment_options))
+    @php
+        $mastercard = \App\Models\PaymentOption::where('code', 'mastercard')->get(['credentials', 'test_mode'])->firstOrFail();
+        $mastercard_credentials = json_decode($mastercard->credentials);
+        $mastercard_gateway = $mastercard->test_mode == 1 ? 'test-gateway.mastercard.com' : $mastercard_credentials->mastercard_gateway;
+    @endphp
+        <script src="https://{{$mastercard_gateway}}/static/checkout/checkout.min.js"></script>
+    @endif
     <!-- <script src="https://js.stripe.com/v3/"></script> -->
     <script type="text/javascript">
         var ajaxCall = 'ToCancelPrevReq';
@@ -1846,6 +1854,7 @@ input[type=number]::-webkit-outer-spin-button {
     @if(in_array('data_trans',$client_payment_options))
         <script src="{{ $data_trans_script_url }}"></script>
     @endif
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
         integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -1857,7 +1866,7 @@ input[type=number]::-webkit-outer-spin-button {
         var category_id = "{{ $category->id ?? '' }}";
         var category_name = "{{ @$category->translation[0]->name ?? '' }}";
         var routeset = "{{ route('pickup-delivery-route', ':category_id') }}";
-        var is_hourly_rental_enabled = 1;      
+        var is_hourly_rental_enabled = 1;
         var autocomplete_urls = routeset.replace(":category_id", category_id);
         var wallet_balance = {{ $wallet_balance }}
         var payment_stripe_url = "{{ route('payment.stripe') }}";
@@ -1878,6 +1887,7 @@ input[type=number]::-webkit-outer-spin-button {
         var no_result_message = "{{ __('No result found. Please try a new search') }}";
         var create_mtn_momo_token = "{{route('mtn.momo.createToken')}}";
         var powertrans_payment_url = "{{ route('powertrans.payment') }}";
+        var mastercard_create_session_url = "{{ route('payment.mastercard.createSession') }}";
 
         var pesapal_payment_url = "{{ route('pesapal.payment') }}";
         /// ************* product order form **************///////
@@ -1941,7 +1951,7 @@ input[type=number]::-webkit-outer-spin-button {
                 $('.location-containerNew').removeClass('d-none');
 
             });
-           
+
             $('#label_for_hourly_rental').click(function() {
 
             $('.address-form').addClass('d-none');
@@ -1951,7 +1961,7 @@ input[type=number]::-webkit-outer-spin-button {
             $(".hourly-rental-container").removeClass('d-none');
             $(".hourly-rental-container").removeClass('active');
             $('#label_for_friend').removeClass('active');
-           
+
             $('.hourly-rental-container').empty();
 
             // Make an AJAX request to load the view.
@@ -1961,7 +1971,7 @@ input[type=number]::-webkit-outer-spin-button {
                 success: function(response) {
                     // Append the retrieved view to the desired element.
                     $('.hourly-rental-container').html(response.view);
-                    
+
                 },
                 error: function(xhr, status, error) {
                     // Handle errors if necessary.
