@@ -108,7 +108,7 @@ class MastercardPaymentController extends Controller
         if ($request->has('subscription_id')) $session_data['subscription_id'] = $request->subscription_id;
         if ($request->has('cancelUrl')) $session_data['cancel_url'] = $request->cancelUrl;
 
-        Cache::store('redis')->put('order-' . $reference_id, $session_data, 60);
+        Cache::store('redis')->put('order-' . $reference_id, $session_data);
 
         $sessionResponse->referenceId = $reference_id;
         return response()->json($sessionResponse);
