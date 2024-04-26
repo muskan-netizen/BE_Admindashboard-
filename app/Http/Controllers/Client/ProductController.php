@@ -197,6 +197,7 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
+        
         // $this->testfun1();
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch']);
         // $this->searchCatalogObjects();
@@ -398,6 +399,7 @@ class ProductController extends BaseController
      */
     public function update(Request $request, $domain = '', $id)
     {
+       
         DB::beginTransaction();
         try {
             //ProductVariant::where('product_id',$id)->update(['status'=>0]);

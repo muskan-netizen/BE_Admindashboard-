@@ -84,7 +84,8 @@ use App\Models\{
     CartRentalProtection,
     OrderNotificationsLogs,
     ProductAvailability,
-    ClientPreferenceAdditional
+    ClientPreferenceAdditional,
+    OrderVendorProduct
 };
 use App\Models\ProductVariantSet;
 use GuzzleHttp\Client as GCLIENT;
@@ -2979,9 +2980,11 @@ class OrderController extends FrontController
                 }
             }
             $payable_amount = $payable_amount + $tip_amount + $total_other_taxes + $security_amount;
-            $payable_amount += $order->taxable_amount;
-            // ---------------------------------------
-            // $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
+            if($total_other_taxes < 0)
+              $payable_amount += $order->taxable_amount;
+
+              // ---------------------------------------
+            $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
 
             // if(!empty($vendor_cart_product->recurring_booking_time)){
             //     $payable_amount = ($request->total_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
@@ -3024,11 +3027,9 @@ class OrderController extends FrontController
             }
 
             $payable_amount = $payable_amount - $wallet_amount_used;
-
             if (!empty($vendor_cart_product->recurring_booking_time)) {
                 $payable_amount =  $request->total_amount - $wallet_amount_used;
             }
-
             //echo  " Total payable_amount2=".$payable_amount."; <br>";
             $order->total_service_fee = $total_service_fee;
             $order->total_delivery_fee = $total_delivery_fee;
@@ -3057,8 +3058,8 @@ class OrderController extends FrontController
             $order->luxury_option_id = $luxury_option->id ?? '';
             $payable_amount = $payable_amount - $Order_bid_discount ?? 0;
             if (!$additionalPreferences->is_tax_price_inclusive) {
-
-                $orderTotalPay = decimal_format($payable_amount + isset($slot_based_price) ? $slot_based_price : 0);
+                $slot_based_price =   isset($slot_based_price) ? $slot_based_price : 0;
+                $orderTotalPay = decimal_format($payable_amount + $slot_based_price);
                 // gift card calculation
                 if ($giftCardTotalAmount > 0 && $orderTotalPay > 0) {
                     $calCulateGiftCard = $this->calCulateGiftCard($orderTotalPay, $giftCardTotalAmount);
@@ -3067,10 +3068,13 @@ class OrderController extends FrontController
                 }
                 $order->payable_amount = $orderTotalPay;
             } else {
+                $slot_based_price =   isset($slot_based_price) ? $slot_based_price : 0;
+
                 // Slot based price added to payable amount column
-                $order->payable_amount = decimal_format($payable_amount + isset($slot_based_price) ? $slot_based_price : 0);
+                $order->payable_amount = decimal_format($payable_amount + $slot_based_price);
 
                 $orderTotalPay = decimal_format($payable_amount - $total_other_taxes);
+
                 // gift card calculation
                 if ($giftCardTotalAmount > 0 && $orderTotalPay > 0) {
                     $calCulateGiftCard = $this->calCulateGiftCard($orderTotalPay, $giftCardTotalAmount);
@@ -3079,10 +3083,10 @@ class OrderController extends FrontController
                 }
                 $order->payable_amount = $orderTotalPay;
             }
+
             if (@$getAdditionalPreference['is_rental_weekly_monthly_price']) {
                 $order->payable_amount = $request->total_amount;
             }
-
             if (getAdditionalPreference([
                 'is_gift_card'
             ])['is_gift_card'] == 1) {
@@ -3133,9 +3137,8 @@ class OrderController extends FrontController
                 $order->recurring_booking_time  = $recurring_booking_time;
             }
 
-            $order->payable_amount = $request->total_amount;
-
             if ((FacadesSession::get('vendorType') == "rental")) {
+                $order->payable_amount = $request->total_amount;
                 $order->total_amount = $request->total_amount;
             }
             $order->save();
@@ -3902,11 +3905,11 @@ class OrderController extends FrontController
 
             if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
+                $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used + $order->tip_amount;
             } else {
                 if ($order->is_postpay == 1 && $order->payment_status == 0) {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
+                    $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used + $order->tip_amount;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -3917,6 +3920,8 @@ class OrderController extends FrontController
             if (!empty($dispatch_domain->last_mile_team)) {
                 $team_tag = $dispatch_domain->last_mile_team;
             }
+            $vendorProduct=OrderVendorProduct::where('order_id',$order->id)->first();
+            $tags = isset($vendorProduct->product)?$vendorProduct->product->tags:'';
 
             if (isset($order->scheduled_date_time) && !empty($order->scheduled_date_time)) {
                 $task_type = 'schedule';
@@ -3974,6 +3979,7 @@ class OrderController extends FrontController
                 'cash_to_be_collected' => $payable_amount ?? 0.00,
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
+                'order_agent_tag' => $tags,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'is_restricted' => $order_vendor->is_restricted,

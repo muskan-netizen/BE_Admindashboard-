@@ -726,7 +726,7 @@ $timezone = Auth::user()->timezone;
                         @endif
                         <tr>
                             <th scope="row" colspan="4" class="text-end">{{ __("Estimated Tax") }} :</th>
-                            <td>{{$clientCurrency->currency->symbol}}{{decimal_format($taxable_amount)}}</td>
+                            <td>{{$clientCurrency->currency->symbol}}{{decimal_format($order->total_other_taxes_amount)}}</td>
                         </tr>
                         @if($vendor->additional_price > 0)
                         <tr>
@@ -780,9 +780,9 @@ $timezone = Auth::user()->timezone;
 
                         @php
 
-                        $adminRevenue = ($revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount - number_format($vendor->orderDetail->loyalty_amount_saved);
+                        $adminRevenue = ($revenue + $order->total_other_taxes_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount - number_format($vendor->orderDetail->loyalty_amount_saved);
 
-                        $storeRevenue = ($sub_total + $order->fixed_fee_amount + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
+                        $storeRevenue = ($sub_total + $order->fixed_fee_amount +  $order->total_other_taxes_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
 
                         @endphp
                         @endif
@@ -844,7 +844,7 @@ $timezone = Auth::user()->timezone;
                                     $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges+$order->rental_protection_amount+$order->booking_option_price - $order->wallet_amount_used +$order->total_other_taxes_amount;
                                 }else{
 
-                                    $total = $order->taxable_amount+$order->total_service_fee+$order->fixed_fee_amount+$order->total_container_charges+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount - $order->wallet_amount_used + $order->total_other_taxes_amount;
+                                    $total = $order->total_service_fee+$order->fixed_fee_amount+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount - $order->wallet_amount_used + $order->total_other_taxes_amount;
                                 }
                                 @endphp
 

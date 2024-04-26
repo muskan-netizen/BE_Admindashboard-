@@ -4124,3 +4124,32 @@ a.morelink.less {
     min-height: inherit;
     overflow: hidden;
 }
+
+
+
+
+.al_body_template_three .alFullMapForm {
+    top: 50px;
+    height: 90vh!important;
+    overflow-y: auto;
+    background-color: #fff !important;
+}
+.al_body_template_three .booking-experienceNew {
+    background-color: #fff;
+    left: 0;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll !important;
+    width: 100%;
+}
+.al_body_template_three #alTaxiBookingWrapper #cab_detail_box .cab-outer.style-4 {
+    top: 0;
+    background: #ffff;
+    width: 100%;
+    /* height: calc(100vh - 250px); */
+    overflow: auto;
+    position: relative !important;
+}
+.al_body_template_three .payment-promo-container {
+    margin-top: 4rem;
+}
