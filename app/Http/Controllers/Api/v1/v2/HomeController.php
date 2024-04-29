@@ -1139,6 +1139,26 @@ class HomeController extends BaseController
         foreach ($vendors as $vendor) {
             $vendor->response_type = 'vendor';
             $vendor->image_url = $vendor->logo['proxy_url'] . '80/80' . $vendor->logo['image_path'];
+            $vendor->is_vendor_closed = 0;
+            if ($vendor->show_slot == 0) {
+                if (($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty())) {
+                    $vendor->is_vendor_closed = 1;
+                } else {
+                    $vendor->is_vendor_closed = 0;
+                    if ($vendor->slotDate->isNotEmpty()) {
+                        if ($vendor->slotDate->first()->start_time != '' && $vendor->slotDate->first()->end_time != '') {
+                            $vendor->opening_time  = date('g:i A', strtotime($vendor->slotDate->first()->start_time));
+                            $vendor->closing_time = date('g:i A', strtotime($vendor->slotDate->first()->end_time));
+                        }
+                    } elseif ($vendor->slot->isNotEmpty()) {
+
+                        if ($vendor->slot->first()->start_time && $vendor->slot->first()->end_time) {
+                            $vendor->opening_time = date('g:i A', strtotime($vendor->slot->first()->start_time));
+                            $vendor->closing_time = date('g:i A', strtotime($vendor->slot->first()->end_time));
+                        }
+                    }
+                }
+            }
             $vendor_results[] = $vendor;
         }
 
