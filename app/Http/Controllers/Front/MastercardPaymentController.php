@@ -99,7 +99,9 @@ class MastercardPaymentController extends Controller
                 break;
 
             case 'subscription':
-                $authorization_model->getOrder()->setDescription("Payment for Subscription ID#" . $request->subscription_id);
+                $authorization_model
+                    ->getOrder()
+                    ->setDescription("Payment for Subscription ID#" . $request->subscription_id);
                 break;
 
             case 'cart':
