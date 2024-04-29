@@ -64,6 +64,10 @@ class MastercardPaymentController extends Controller
 
         $reference_id = $this->orderNumber($request);
 
+        if ($payment_info->payment_from == 'tip') {
+            [$reference_id, $order_id] = explode(':', $reference_id);
+        }
+
         $currency_id = Session::get('customerCurrency');
         $currency    = Currency::find($currency_id);
 
@@ -83,14 +87,23 @@ class MastercardPaymentController extends Controller
 
         switch ($payment_info->payment_from) {
             case 'wallet':
-                $authorization_model->getOrder()->setDescription("Recharge your wallet");
+                $authorization_model
+                    ->getOrder()
+                    ->setDescription("Recharge your wallet");
+                break;
 
             case 'tip':
-            case 'cart':
-            case 'pickup_delivery':
+                $authorization_model
+                    ->getOrder()
+                    ->setDescription("Tip for OrderID#". $order_id);
                 break;
+
             case 'subscription':
                 $authorization_model->getOrder()->setDescription("Payment for Subscription ID#" . $request->subscription_id);
+                break;
+
+            case 'cart':
+            case 'pickup_delivery':
                 break;
 
             default:
@@ -110,6 +123,7 @@ class MastercardPaymentController extends Controller
 
         if ($request->has('subscription_id')) $session_data['subscription_id'] = $request->subscription_id;
         if ($request->has('cancelUrl')) $session_data['cancel_url'] = $request->cancelUrl;
+        if ($request->payment_from == 'tip') $session_data['tip_order'] = $order_id;
 
         Cache::store('redis')->put('order-' . $reference_id, $session_data);
 
@@ -208,7 +222,7 @@ class MastercardPaymentController extends Controller
             case 'tip':
                 $request = new Request([
                     'tip_amount' => $payment->amount,
-                    'order_number' => $payment->order_number,
+                    'order_number' => $session_data['tip_order'],
                     'transaction_id' => $order_id,
                 ]);
 
@@ -299,7 +313,7 @@ class MastercardPaymentController extends Controller
             } elseif ($request->payment_from == 'tip') {
                 $time = time();
                 $res =  Payment::create([
-                    'amount' => 0,
+                    'amount' => $amount,
                     'transaction_id' =>  $time,
                     'balance_transaction' => $amount,
                     'type' => 'tip',
@@ -307,6 +321,8 @@ class MastercardPaymentController extends Controller
                     'user_id' => $user_id,
                     'payment_from' => $request->come_from ?? 'web',
                 ]);
+
+                return $time . ':' . $request->order_number;
             } else if ($request->payment_from == 'pickup_delivery') {
                 $time = $request->order_number;
                 Payment::create([

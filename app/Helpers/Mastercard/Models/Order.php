@@ -27,6 +27,15 @@ class Order implements Model
         if ($amount) $this->object->amount = (string)$amount;
     }
 
+    public function getOrderId(): string {
+        return $this->object->id;
+    }
+
+    public function setOrderId(string $reference_id): self {
+        $this->object->id = $reference_id;
+        return $this;
+    }
+
     /**
      * Sets the total payable amount for the order
      *

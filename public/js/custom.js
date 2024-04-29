@@ -1784,12 +1784,19 @@ function paymentViaMastercard(paymentMehod, order) {
     let total_amount;
 
     switch (paymentMehod) {
-        case 'wallet': total_amount = walletElement.val(); break;
-        case 'cart': {
+        case 'wallet':
+            total_amount = walletElement.val();
+            if (tip_for_past_order !== undefined && tip_for_past_order == 1) {
+                ajaxData[0].value = 'tip';
+                ajaxData.push({ name: 'order_number', value: $("#order_number").val() });
+            }
+
+            break;
+
+        case 'cart':
             ajaxData.push({ name: 'order_number', value: order['order_number'] });
             total_amount = cartElement.val();
             break;
-        };
         case 'subscription':
             ajaxData.push({ name: 'subscription_id', value: subscriptionIdElement.val() });
             total_amount = subscriptionElement.val();

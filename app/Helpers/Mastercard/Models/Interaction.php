@@ -28,6 +28,21 @@ final class Interaction implements Model
         return $this;
     }
 
+    /**
+     * Sets the cancel url for the interaction
+     *
+     * @param string $cancel_url
+     */
+    public function setCancelUrl(string $cancel_url): self {
+        $this->object->cancelUrl = $cancel_url;
+        return $this;
+    }
+
+    public function setTimeoutUrl(string $timeout_url): self {
+        $this->object->timeoutUrl = $timeout_url;
+        return $this;
+    }
+
     public function setMerchantId(string $merchant_id): self
     {
         if (isset($this->object->merchant)) {
