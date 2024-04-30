@@ -271,11 +271,9 @@ class HomeController extends BaseController
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
             $enable_layout = CabBookingLayout::where('is_active', 1)->app();
 
-            $enable_layout = $enable_layout->orderBy('order_by', 'asc')->pluck('slug')->toArray();
-            //$homePageData = $this->postHomePageData($request);
-
+                $enable_layout = $enable_layout->orderBy('order_by', 'asc')->pluck('slug')->toArray();
+            
             if($request->action=='2'){
-                // dd('sdsd');
                 $homePageData = $this->postHomePageDataV2($request, $set_template, $enable_layout, $additionalPreference,$user);
             } else {
                 $homePageData = $this->postHomePageData($request,$additionalPreference);
@@ -283,7 +281,6 @@ class HomeController extends BaseController
 
             if($type == 'p2p')
             {
-
 
             $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
                 $q->whereIn('type_id',$categoryTypes);
@@ -1399,7 +1396,6 @@ class HomeController extends BaseController
         $client_timezone = DB::table('clients')->first('timezone');
 
         $timezone        = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );
-        //pr($enable_layout);
        // $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating','is_show_vendor_on_subcription']);
         $vendor_ids = $vendors = [];
         $new_products = [];
@@ -1416,12 +1412,9 @@ class HomeController extends BaseController
             $p_dim = '260/260';
         }
 
-        //st
-
         $latitude = Session::get('latitude');
         $longitude = Session::get('longitude');
 
-        //pr($latitude);
         if($request->has('latitude') ){
             $latitude = $request->latitude;
             Session::put('latitude', $latitude);
@@ -1579,7 +1572,6 @@ class HomeController extends BaseController
                 }
             }
         }
-        //pr($mostSellingVendors);
         $on_sale_product_details =$on_sale_products = [];
         if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in
             $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', 'on_sale', $request->type,$on_sale_title, $p_dim, $getSubCatIds);
@@ -1693,7 +1685,6 @@ class HomeController extends BaseController
 
         /** Respose data */
 
-
             $data = [
                 'vendor_ids'=>$vendor_ids,
                 'brands' => $brands,
@@ -1716,7 +1707,6 @@ class HomeController extends BaseController
                 'banners' => $banners,
                 'additionalPreference' => $additionalPreference,
             ];
-            //pr( $data);
             return $data ;
     }
   # check if last mile delivery on
