@@ -38,6 +38,7 @@ class MastercardPaymentController extends Controller
 
     private Mastercard $client;
     private object $credentials;
+    private string $gatewayUrl;
     private int $payopt_id;
 
     public function __construct()
@@ -49,9 +50,11 @@ class MastercardPaymentController extends Controller
             ? 'test-gateway.mastercard.com'
             : $this->credentials->mastercard_gateway;
 
-        $this->payopt_id = $pay_option->id;
-        $this->client    = new Mastercard(
-            (($pay_option->test_mode == 1) ? 'TEST' : '') . $this->credentials->mastercard_merchant_id,
+        $this->gatewayUrl = mastercardGateway();
+        $this->payopt_id  = $pay_option->id;
+
+        $this->client = new Mastercard(
+            $this->gatewayUrl,
             $this->credentials->mastercard_merchant_key,
             $gateway
         );
@@ -140,7 +143,7 @@ class MastercardPaymentController extends Controller
         $sessionResponse->referenceId = $reference_id;
         if ($request->come_from == 'app') return response()->json([
             'status' => 'Success',
-            'data'   => sprintf('https://test-gateway.mastercard.com/checkout/pay/%s?checkoutVersion=1.0.0', $session_id)
+            'data'   => sprintf('https://%s.mastercard.com/checkout/pay/%s?checkoutVersion=1.0.0', $this->gatewayUrl, $session_id)
         ]);
         return response()->json($sessionResponse);
     }
