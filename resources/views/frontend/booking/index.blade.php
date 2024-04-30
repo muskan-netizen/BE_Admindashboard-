@@ -1726,12 +1726,7 @@ input[type=number]::-webkit-outer-spin-button {
         <script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
     @endif
     @if (in_array('mastercard', $client_payment_options))
-    @php
-        $mastercard = \App\Models\PaymentOption::where('code', 'mastercard')->get(['credentials', 'test_mode'])->firstOrFail();
-        $mastercard_credentials = json_decode($mastercard->credentials);
-        $mastercard_gateway = $mastercard->test_mode == 1 ? 'test-gateway.mastercard.com' : $mastercard_credentials->mastercard_gateway;
-    @endphp
-        <script src="https://{{$mastercard_gateway}}/static/checkout/checkout.min.js"></script>
+        <script src="https://{{mastercardGateway()}}/static/checkout/checkout.min.js"></script>
     @endif
     <!-- <script src="https://js.stripe.com/v3/"></script> -->
     <script type="text/javascript">

@@ -2149,7 +2149,7 @@ if (!function_exists('recurringCalculationFunction')) {
         }
     }
 
-    if (!function_exists('productPriceAfterVendorDiscount')) 
+    if (!function_exists('productPriceAfterVendorDiscount'))
     {
          function productPriceAfterVendorDiscount($vendorData,$product_discount_amount,$doller_compare,$cart)
         {
@@ -2178,9 +2178,9 @@ if (!function_exists('recurringCalculationFunction')) {
             $PromoDelete = 0;
             $data['vendor_discount_amount'] = 0;
             $data['deliveryfeeOnCoupon'] = 0;
-            if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) 
+            if (isset($vendorData->coupon) && !empty($vendorData->coupon) )
             {
-                if ( $PromoDelete !=1) 
+                if ( $PromoDelete !=1)
                 {
                         $minimum_spend = 0;
                         if (isset($vendorData->coupon->promo->minimum_spend)) {
@@ -2206,9 +2206,18 @@ if (!function_exists('recurringCalculationFunction')) {
                             unset($vendorData->coupon);
                            return $data;
                         }
-                } 
+                }
             }
             return $data??0;
         }
+    }
+}
+
+if (!function_exists('mastercardGateway')) {
+    function mastercardGateway() {
+        $payopt = PaymentOption::where('code', 'mastercard')->get(['test_mode', 'credentials'])->first();
+        return ($payopt->test_mode == 1)
+            ? 'test-gateway.mastercard.com'
+            : $payopt->credentials->mastercard_gateway;
     }
 }

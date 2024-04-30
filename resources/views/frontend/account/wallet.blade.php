@@ -831,12 +831,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     <script src="{{ $data_trans_script_url }}"></script>
 @endif
 @if (in_array('mastercard', $client_payment_options))
-@php
-    $mastercard = \App\Models\PaymentOption::where('code', 'mastercard')->get(['credentials', 'test_mode'])->firstOrFail();
-    $mastercard_credentials = json_decode($mastercard->credentials);
-    $mastercard_gateway = $mastercard->test_mode == 1 ? 'test-gateway.mastercard.com' : $mastercard_credentials->mastercard_gateway;
-@endphp
-    <script src="https://{{$mastercard_gateway}}/static/checkout/checkout.min.js"></script>
+    <script src="https://{{mastercardGateway()}}/static/checkout/checkout.min.js"></script>
 @endif
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script src="{{asset('js/payment.js')}}"></script>
