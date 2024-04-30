@@ -1523,7 +1523,6 @@ class CartController extends BaseController
                     $vendorData->isDeliverable = 0;
                     $delivery_status = 0;
                     $deliver_charge = 0;
-                    $vendorTotalDeliveryFee = 0;
                     $vendorData->delivery_types = '';
                  }
             } else{
