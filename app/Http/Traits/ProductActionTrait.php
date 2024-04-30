@@ -342,7 +342,7 @@ trait ProductActionTrait{
             $single_category_products = [];
 
             if (($type == 'single_category_products' || $type == 'selected_products')) {
-                $single_category_products = HomeProduct::whereSlug($type)->first();
+                $single_category_products = HomeProduct::whereSlug($type)->latest()->first();
             }
 
             if($type == 'single_category_products' && !empty($single_category_products)){
@@ -567,6 +567,7 @@ trait ProductActionTrait{
     public function getEvenOddTime($time) {
         return ($time % 5 === 0) ? $time : ($time - ($time % 5));
     }
+
     public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL,$venderFilterOpenClose=null,$venderFilterbest=null,$nearest_vendor=0)
     {
         try
