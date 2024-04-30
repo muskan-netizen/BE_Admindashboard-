@@ -342,7 +342,7 @@ trait ProductActionTrait{
             $single_category_products = [];
 
             if (($type == 'single_category_products' || $type == 'selected_products')) {
-                $single_category_products = HomeProduct::whereSlug($type)->first();
+                $single_category_products = HomeProduct::whereSlug($type)->latest()->first();
             }
 
             if($type == 'single_category_products' && !empty($single_category_products)){
