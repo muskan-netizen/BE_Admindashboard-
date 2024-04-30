@@ -1786,11 +1786,10 @@ function paymentViaMastercard(paymentMehod, order) {
     switch (paymentMehod) {
         case 'wallet':
             total_amount = walletElement.val();
-            if (tip_for_past_order !== undefined && tip_for_past_order == 1) {
+            if (typeof tip_for_past_order !== 'undefined' && tip_for_past_order == 1) {
                 ajaxData[0].value = 'tip';
                 ajaxData.push({ name: 'order_number', value: $("#order_number").val() });
             }
-
             break;
 
         case 'cart':
