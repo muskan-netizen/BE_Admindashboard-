@@ -283,7 +283,7 @@ class MastercardPaymentController extends Controller
         $orderController = new OrderController();
         $orderController->autoAcceptOrderIfOn($order->id);
 
-        $cart = Cart::where('status', 0)->where('user_id', $order->user_id)->select('id')->first();
+        $cart = Cart::where('user_id', $order->user_id)->where('status', '0')->first();
         if (!empty($cart)) {
             Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
             CartAddon::where('cart_id', $cart->id)->delete();
@@ -317,6 +317,10 @@ class MastercardPaymentController extends Controller
         }
         // send sms
         $orderController->sendSuccessSMS($request, $order);
+
+        // Mark the cart as deleted
+        $cart->status = '2';
+        $cart->save();
     }
 
     public function orderNumber($request)
