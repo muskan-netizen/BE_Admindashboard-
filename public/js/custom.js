@@ -1790,7 +1790,6 @@ function paymentViaMastercard(paymentMehod, order) {
                 ajaxData[0].value = 'tip';
                 ajaxData.push({ name: 'order_number', value: $("#order_number").val() });
             }
-
             break;
 
         case 'cart':

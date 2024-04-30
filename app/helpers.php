@@ -2216,8 +2216,11 @@ if (!function_exists('recurringCalculationFunction')) {
 if (!function_exists('mastercardGateway')) {
     function mastercardGateway() {
         $payopt = PaymentOption::where('code', 'mastercard')->get(['test_mode', 'credentials'])->first();
-        return ($payopt->test_mode == 1)
-            ? 'test-gateway.mastercard.com'
-            : $payopt->credentials->mastercard_gateway;
+        $test_url = 'test-gateway.mastercard.com';
+        if(!empty($payopt) && $payopt->test_mode != 1){
+            $creds = json_decode($payopt->credentials);
+            $test_url = $creds->mastercard_gateway??$test_url;
+        }
+        return $test_url;
     }
 }
