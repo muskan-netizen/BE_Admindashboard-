@@ -109,8 +109,22 @@ $clientData = \App\Models\Client::select('socket_url')->first();
     text-align: right;
 }
 
+.related-products .product-card-box {
+    border-radius: 10px !important;
+    overflow: hidden;
+    box-shadow: 0 4px 14px 0 rgb(0 0 0 / 8%);
+    padding: 0 !important;
+}
+.dark .related-products .product-card-box {
+    background: #000 !important;
+}
+.related-products .product-card-box .media-body {
+    padding: 0 20px 20px;
+}
 
-
+.slick-slide .inner_spacing p {
+    display: block;
+}
     </style>
 
 @endsection
@@ -771,7 +785,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 @endphp
                                                 {{-- @dd($product->variant[0]->quantity) --}}
                                                 @if($is_available == 1)
-                                                    <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}" id="add_to_cart_btn">{{__('Add To Cart')}}</a>
+                                                <button type="button" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart  {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}" id="add_to_cart_btn">{{__('Add To Cart')}}</button>
                                                 @endif
 
                                                     @if($vendor_info->is_vendor_closed == 1 && $checkSlot == 0)
@@ -1113,34 +1127,35 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
     <div class="container pb-md-4">
         <div class="product-m  related-products pb-2  related-css">
             @forelse($product->related_products as $related_product)
-            <div>
-                <a class="common-product-box scale-effect text-center" href="{{route('productDetail',[$related_product->vendor->slug,$related_product->url_slug])}}">
-                    <div class="img-outer-box position-relative">
-                        <img class="img-fluid blur-up lazyload" data-src="{{ $related_product->image_url }}" alt="">
-                        <!-- <div class="pref-timing">
-                            <span>5-10 min</span>
-                        </div> -->
-                        <!-- <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i> -->
-                    </div>
-                    <div class="media-body align-self-center">
-                        <div class="inner_spacing px-0">
-                            <div class="product-description">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <h6 class="card_title ellips">{{ $related_product->translation_title }}</h6>
-                                </div>
-                                <p>{{ $related_product->vendor_name }}</p>
-                                <p class="border-bottom pb-1">In {{$related_product->category_name}}</p>
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <b>
-                                        @if($related_product->inquiry_only == 0)
-                                        {{ Session::get('currencySymbol') . $related_product->variant_price }}
-                                        @endif
-                                    </b>
-                                </div>
+            <div class="product-card-box position-relative al_box_third_template al ">
+                {{-- <a class="common-product-box scale-effect text-center" href="{{route('productDetail',[$related_product->vendor->slug,$related_product->url_slug])}}"> </a> --}}
+                <div class="img-outer-box position-relative">
+                    <a class="common-product-box scale-effect text-center" href="{{route('productDetail',[$related_product->vendor->slug,$related_product->url_slug])}}">
+                    <img class="img-fluid blur-up lazyload" data-src="{{ $related_product->image_url }}" alt="">
+                    </a>
+                    <!-- <div class="pref-timing">
+                        <span>5-10 min</span>
+                    </div> -->
+                    <!-- <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i> -->
+                </div>
+                <div class="media-body align-self-center">
+                    <div class="inner_spacing px-0">
+                        <div class="product-description">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h6 class="card_title ellips">{{ $related_product->translation_title }}</h6>
+                            </div>
+                            <p>{{ $related_product->vendor_name }}</p>
+                            <p class="border-bottom pb-1">In {{$related_product->category_name}}</p>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <b>
+                                    @if($related_product->inquiry_only == 0)
+                                    {{ Session::get('currencySymbol') . $related_product->variant_price }}
+                                    @endif
+                                </b>
                             </div>
                         </div>
                     </div>
-                </a>
+                </div>
             </div>
             @empty
             @endforelse
