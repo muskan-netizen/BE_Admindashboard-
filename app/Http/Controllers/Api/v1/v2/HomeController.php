@@ -115,7 +115,6 @@ class HomeController extends BaseController
     public function homepage(Request $request, $domain = '')
     {
         try {
-
             $this->config();
             $home = array();
             $vendor_ids = array();
@@ -140,7 +139,7 @@ class HomeController extends BaseController
 
             $categoryTypes = getServiceTypesCategory($type);
 
-            $this->venderFilterOpenClose   = $request->has('open_close_vendor') && $request->open_close_vendor ? $request->open_close_vendor : null;
+            $this->venderFilterOpenClose   = isset($request->open_close_vendor) ? $request->open_close_vendor : null;
             $this->venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
             $clientPreferences = ClientPreference::first();
 
@@ -1161,6 +1160,26 @@ class HomeController extends BaseController
             }
             $vendor->response_type = 'vendor';
             $vendor->image_url = $vendor->logo['proxy_url'] . '80/80' . $vendor->logo['image_path'];
+            $vendor->is_vendor_closed = 0;
+            if ($vendor->show_slot == 0) {
+                if (($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty())) {
+                    $vendor->is_vendor_closed = 1;
+                } else {
+                    $vendor->is_vendor_closed = 0;
+                    if ($vendor->slotDate->isNotEmpty()) {
+                        if ($vendor->slotDate->first()->start_time != '' && $vendor->slotDate->first()->end_time != '') {
+                            $vendor->opening_time  = date('g:i A', strtotime($vendor->slotDate->first()->start_time));
+                            $vendor->closing_time = date('g:i A', strtotime($vendor->slotDate->first()->end_time));
+                        }
+                    } elseif ($vendor->slot->isNotEmpty()) {
+
+                        if ($vendor->slot->first()->start_time && $vendor->slot->first()->end_time) {
+                            $vendor->opening_time = date('g:i A', strtotime($vendor->slot->first()->start_time));
+                            $vendor->closing_time = date('g:i A', strtotime($vendor->slot->first()->end_time));
+                        }
+                    }
+                }
+            }
             $vendor_results[] = $vendor;
         }
 
@@ -1245,7 +1264,7 @@ class HomeController extends BaseController
         $product_results = [];
         $user = Auth::user();
         $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
-        
+
         foreach ($products as $product) {
             $product->response_type = 'product';
             $product->image_url = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
