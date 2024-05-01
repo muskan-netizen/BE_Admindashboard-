@@ -140,7 +140,7 @@ class HomeController extends BaseController
 
             $categoryTypes = getServiceTypesCategory($type);
 
-            $this->venderFilterOpenClose   = $request->has('open_close_vendor') && $request->open_close_vendor ? $request->open_close_vendor : null;
+            $this->venderFilterOpenClose   = isset($request->open_close_vendor) ? $request->open_close_vendor : null;
             $this->venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
             $clientPreferences = ClientPreference::first();
 
@@ -1149,29 +1149,27 @@ class HomeController extends BaseController
 
         $vendor_results = [];
         foreach ($vendors as $vendor) {
+            $vendor->response_type = 'vendor';
+            $vendor->image_url = $vendor->logo['proxy_url'] . '80/80' . $vendor->logo['image_path'];
             $vendor->is_vendor_closed = 0;
-            if($vendor->show_slot == 0){
-                if(empty($vendor->slotdate_start_end_time) && empty($vendor->slot_start_end_time)){
+            if ($vendor->show_slot == 0) {
+                if (($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty())) {
                     $vendor->is_vendor_closed = 1;
-                }else{
+                } else {
                     $vendor->is_vendor_closed = 0;
-                    if(!empty($vendor->slotdate_start_end_time)){
-                        $slotdate_start_end_time = explode('##', $vendor->slotdate_start_end_time);
-                        if($slotdate_start_end_time[0]!='' && $slotdate_start_end_time[1]!=''){
-                            $vendor->opening_time  = date('g:i A',strtotime($slotdate_start_end_time[0]));
-                            $vendor->closing_time = date('g:i A',strtotime($slotdate_start_end_time[1]));
+                    if ($vendor->slotDate->isNotEmpty()) {
+                        if ($vendor->slotDate->first()->start_time != '' && $vendor->slotDate->first()->end_time != '') {
+                            $vendor->opening_time  = date('g:i A', strtotime($vendor->slotDate->first()->start_time));
+                            $vendor->closing_time = date('g:i A', strtotime($vendor->slotDate->first()->end_time));
                         }
-                    }elseif(!empty($vendor->slot_start_end_time)){
-                        $slot_start_end_time = explode('##', $vendor->slot_start_end_time);
-                        if($slot_start_end_time[0]!='' && $slot_start_end_time[1]!=''){
-                            $vendor->opening_time  = date('g:i A',strtotime($slot_start_end_time[0]));
-                            $vendor->closing_time = date('g:i A',strtotime($slot_start_end_time[1]));
+                    } elseif ($vendor->slot->isNotEmpty()) {
+                        if ($vendor->slot->first()->start_time && $vendor->slot->first()->end_time) {
+                            $vendor->opening_time = date('g:i A', strtotime($vendor->slot->first()->start_time));
+                            $vendor->closing_time = date('g:i A', strtotime($vendor->slot->first()->end_time));
                         }
                     }
                 }
             }
-            $vendor->response_type = 'vendor';
-            $vendor->image_url = $vendor->logo['proxy_url'] . '80/80' . $vendor->logo['image_path'];
             $vendor_results[] = $vendor;
         }
 
