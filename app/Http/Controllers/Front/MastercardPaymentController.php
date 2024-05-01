@@ -8,15 +8,23 @@ use App\Helpers\Mastercard\Models\Customer;
 use App\Helpers\Mastercard\Models\Order;
 use App\Helpers\Mastercard\Models\Purchase;
 use App\Helpers\Mastercard\Operation;
+use App\Http\Controllers\Api\v1\OrderController;
 use App\Http\Controllers\Api\v1\PickupDeliveryController;
 use App\Http\Controllers\Api\v1\UserSubscriptionController;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\OrderTrait;
+use App\Models\Cart;
+use App\Models\CartAddon;
+use App\Models\CartCoupon;
+use App\Models\CartDeliveryFee;
+use App\Models\CartProduct;
+use App\Models\CartProductPrescription;
 use App\Models\ClientCurrency;
 use App\Models\Currency;
 use App\Models\Order as ModelsOrder;
 use App\Models\PaymentOption;
 use App\Models\User;
+use App\Models\UserVendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -30,6 +38,7 @@ class MastercardPaymentController extends Controller
 
     private Mastercard $client;
     private object $credentials;
+    private string $gatewayUrl;
     private int $payopt_id;
 
     public function __construct()
@@ -37,15 +46,13 @@ class MastercardPaymentController extends Controller
         $pay_option        = PaymentOption::where('code', 'mastercard')->where('status', 1)->get(['credentials', 'test_mode', 'status', 'id'])->firstOrFail();
         $this->credentials = json_decode($pay_option->credentials);
 
-        $gateway = $pay_option->test_mode == 1
-            ? 'test-gateway.mastercard.com'
-            : $this->credentials->mastercard_gateway;
+        $this->gatewayUrl = mastercardGateway();
+        $this->payopt_id  = $pay_option->id;
 
-        $this->payopt_id = $pay_option->id;
-        $this->client    = new Mastercard(
+        $this->client = new Mastercard(
             (($pay_option->test_mode == 1) ? 'TEST' : '') . $this->credentials->mastercard_merchant_id,
             $this->credentials->mastercard_merchant_key,
-            $gateway
+            $this->gatewayUrl,
         );
     }
 
@@ -132,7 +139,7 @@ class MastercardPaymentController extends Controller
         $sessionResponse->referenceId = $reference_id;
         if ($request->come_from == 'app') return response()->json([
             'status' => 'Success',
-            'data'   => sprintf('https://test-gateway.mastercard.com/checkout/pay/%s?checkoutVersion=1.0.0', $session_id)
+            'data'   => sprintf('https://%s.mastercard.com/checkout/pay/%s?checkoutVersion=1.0.0', $this->gatewayUrl, $session_id)
         ]);
         return response()->json($sessionResponse);
     }
@@ -187,7 +194,7 @@ class MastercardPaymentController extends Controller
                 $order->payment_status = 1;
                 $order->save();
 
-                $this->orderSuccessCartDetail($order);
+                $this->handleSuccessCart($order);
 
                 if ($come_from == 'app') break;
                 return redirect()->route('order.success', $order->id);
@@ -269,6 +276,49 @@ class MastercardPaymentController extends Controller
             'order'   => $order_id,
             'status'  => 500,
         ]);
+    }
+
+    private function handleSuccessCart($order) {
+        $orderController = new OrderController();
+        $orderController->autoAcceptOrderIfOn($order->id);
+
+        $cart = Cart::where('user_id', $order->user_id)->where('status', '0')->first();
+        if (!empty($cart)) {
+            Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+            CartAddon::where('cart_id', $cart->id)->delete();
+            CartCoupon::where('cart_id', $cart->id)->delete();
+            CartProduct::where('cart_id', $cart->id)->delete();
+            CartProductPrescription::where('cart_id', $cart->id)->delete();
+            CartDeliveryFee::where('cart_id', $cart->id)->delete();
+        }
+
+        // Send Notification
+        if (!empty($order->vendors)) {
+            foreach ($order->vendors as $vendor_value) {
+                $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
+                $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+            }
+        }
+
+        $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+        $super_admin = User::where('is_superadmin', 1)->pluck('id');
+
+        $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+
+        $request = new Request(['user_id'=>$order->user_id,'address_id'=>$order->address_id]);
+
+        //Send Email to customer
+        $orderController->sendSuccessEmail($request, $order);
+        //Send Email to Vendor
+        foreach ($order->vendors->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+            $orderController->sendSuccessEmail($request, $order, $vendor_id);
+        }
+        // send sms
+        $orderController->sendSuccessSMS($request, $order);
+
+        // Mark the cart as deleted
+        $cart->delete();
     }
 
     public function orderNumber($request)
