@@ -160,7 +160,7 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                                                 </div>
                                                 <ul class="mb-3">
                                                     @foreach($plan->features as $feature)
-                                                        <li><i class="fa fa-check"></i> {{ __($feature->feature->title) }}</li>
+                                                        <li><i class="fa fa-check"></i>{{ __($feature->percent_value ?? '') }} {{ __($feature->feature->title) }}</li>
                                                     @endforeach
                                                 </ul>
                                             </div>
