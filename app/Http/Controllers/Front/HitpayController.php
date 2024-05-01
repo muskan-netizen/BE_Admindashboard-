@@ -107,7 +107,6 @@ class HitpayController extends Controller
             return redirect($url);
         }
     }
-
     //web hook
     public function paymentSuccessHitpay($request)
     {
