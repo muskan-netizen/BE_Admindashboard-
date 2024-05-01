@@ -15,7 +15,7 @@ use App\Models\CartCoupon;
 use App\Models\CartProduct;
 use App\Models\CartProductPrescription;
 use App\Models\UserVendor;
-
+use Illuminate\Support\Facades\Log;
 
 class HitpayController extends Controller
 {
@@ -34,7 +34,12 @@ class HitpayController extends Controller
             $credentials = json_decode($payOption->credentials);
             $this->businessKey = $credentials->hitpay_business_key;
             $this->saltKey = $credentials->hitpay_salt_key;
-            $this->url = 'https://api.sandbox.hit-pay.com/v1/payment-requests';
+
+            if ($payOption->test_mode == 1) {
+                $this->url = 'https://api.sandbox.hit-pay.com/v1/payment-requests';
+            } else {
+                $this->url = 'https://api.hit-pay.com/v1/payment-requests';
+            }
             $this->hitpay_client = new Client([
                 'http_errors' => false
             ]);
@@ -49,15 +54,16 @@ class HitpayController extends Controller
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
         $orderNumber = strval($this->orderNumber($request));
-        $redirectUrl = $this->getSuccessUrl($orderNumber);
+        // $redirectUrl = $this->getSuccessUrl($orderNumber);
+        $redirectUrl = url('/success-hitpay') . "?orderNumber=" . $orderNumber;
         $amount = number_format($request->amount, 2, '.', '');
 
         $body = [
-            'redirect_url' =>$redirectUrl,
+            'redirect_url' => $redirectUrl,
             'email' => $user->email,
             'phone' => $user->phone_number,
             'reference_number' => $orderNumber,
-            'webhook' =>'https://webhook.site/d86c81b8-140a-44bd-8cb1-0aa646b7ea6b', //"https".$domain."/payment/hitpay/webhook",
+            'webhook' => "https" . $domain . "/payment/hitpay/webhook",
             'currency' => 'SGD',
             'amount' => $amount
         ];
@@ -69,7 +75,6 @@ class HitpayController extends Controller
             'payment_url' => $responseUrl,
 
         ]);
-
     }
 
     /**
@@ -82,27 +87,26 @@ class HitpayController extends Controller
     public function validateHitpayPayment(Request $request)
     {
         try {
-
-
-
-            if($request->status == 'completed'){
-         $hi=  $this->paymentSuccessHitpay($request);
-                return response()->json(['message' => 'Webhook handled successfully','data'=>$hi], 200);
-
+            if ($request->status == 'completed') {
+                $this->paymentSuccessHitpay($request);
+                return response()->json(['message' => 'Webhook handled successfully'], 200);
             }
-
-
         } catch (\Exception $e) {
             // Invalid payload
             http_response_code(400);
             exit();
         }
-
-
     }
 
+    //afterPayment
+    public function responseAfterPayment(Request $request)
+    {
 
-
+        if (isset($request->status) && $request->status == "completed") {
+            $url = $this->getSuccessUrl($request->orderNumber);
+            return redirect($url);
+        }
+    }
 
     //web hook
     public function paymentSuccessHitpay($request)
@@ -121,16 +125,13 @@ class HitpayController extends Controller
                 if ($order) {
                     $order->payment_status = '1';
                     $order->save();
-
-                    $this->orderSuccessCartDetail($order);
                 }
             } elseif ($payment->type == 'wallet') {
-                    $user = User::findOrFail($payment->user_id);
-                    Auth::login($user);
-                    $user = Auth::user();
+                $user = User::findOrFail($payment->user_id);
+                Auth::login($user);
+                $user = Auth::user();
                 $wallet = $user->wallet;
                 $wallet->depositFloat($payment->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $payment->transaction_id . '</b>']);
-
             } elseif ($payment->type == 'subscription') {
                 $parts = explode("_", (string) $payment->transaction_id);
                 $subscription_id = $parts[0];
@@ -139,11 +140,10 @@ class HitpayController extends Controller
                 $data['subsid'] = $payment->transaction_id;
                 $data['subscription_id'] = $subscription_id;
                 $data['amount'] = $payment->amount;
-                $data['user_id']=$payment->user_id;
+                $data['user_id'] = $payment->user_id;
                 $request = new Request($data);
                 $subscriptionController = new UserSubscriptionController();
-               $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
-
+                $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
             } elseif ($payment->type == 'pickup_delivery') {
 
                 $data['payment_option_id'] = 69;
@@ -155,22 +155,19 @@ class HitpayController extends Controller
                 $request = new Request($data);
 
                 $plaseOrderForPickup = new PickupDeliveryController();
-                return  $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+                $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
             } elseif ($payment->type == 'tip') {
 
                 $data['tip_amount'] = $payment->amount;
                 $data['order_number'] = $payment->transaction_id;
                 $data['transaction_id'] = $transactionId;
-                $data['user_id']= $payment->user_id;
+                $data['user_id'] = $payment->user_id;
                 $request = new Request($data);
                 $orderController = new OrderController();
-              return $orderController->tipAfterOrder($request);
-
-            } else {
-
+                $orderController->tipAfterOrder($request);
             }
         } catch (\Exception $e) {
-            return $e->getMessage();
+            Log::error($e->getMessage());
         }
     }
     public function orderNumber($request)
@@ -242,13 +239,6 @@ class HitpayController extends Controller
             return $e->getMessage();
         }
     }
-
-
-
-
-
-
-
 
     public function orderSuccessCartDetail($order)
     {

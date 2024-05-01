@@ -326,7 +326,7 @@ Options']) @section('css')
 								</div>
 							</div>
 							<div class="col-12">
-								<div class="form-group mb-2">required
+								<div class="form-group mb-2">
 									<label for="ccavenue_access_code" class="mr-3">{{ __("Access
 										Code") }}</label> <input type="text"
 										name="ccavenue_access_code" id="ccavenue_access_code"
