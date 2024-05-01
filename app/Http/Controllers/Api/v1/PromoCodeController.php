@@ -247,6 +247,11 @@ class PromoCodeController extends Controller{
                 return $this->errorResponse(__('Coupon Code limit has been reached.'), 422);
             }
 
+            $order_vendor_user_promo_count = OrderVendor::where(['coupon_id' => $request->coupon_id])->count();
+            if($order_vendor_user_promo_count >= $promo_code->limit_total){
+                return $this->errorResponse(__('Coupon Code limit has been reached.'), 422);
+            }
+
             $cart_coupon_detail = CartCoupon::where('cart_id', $request->cart_id)->where('vendor_id', $request->vendor_id)->where('coupon_id', $request->coupon_id)->first();
             if($cart_coupon_detail){
                 return $this->errorResponse(__('Coupon Code already applied.'), 422);

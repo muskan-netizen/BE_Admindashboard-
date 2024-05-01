@@ -1915,8 +1915,6 @@ function paymentViaHitpay(address_id, payment_option_id, order) {
             { name: 'returnUrl', value: path },
             { name: 'payment_option_id', value: payment_option_id }
         );
-
-    console.log(payment_hitpay_url);
     $.ajax({
         type: "POST",
         dataType: 'json',
@@ -1936,7 +1934,6 @@ function paymentViaHitpay(address_id, payment_option_id, order) {
 
     });
 }
-
 
 //The Thawani Pg  starts
 function paymentViaThawanipg(address_id, payment_option_id, order) {
@@ -1985,6 +1982,7 @@ function paymentViaThawanipg(address_id, payment_option_id, order) {
     });
 }
 //Thawani Pg Ends Here Ends
+
 function paymentSuccessViaPaypal(amount, token, payer_id, path, tip = 0, order_number = 0) {
     let address_id = 0;
     var currentUrl = window.location.origin;

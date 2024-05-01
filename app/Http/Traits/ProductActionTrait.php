@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Traits;
-use App\Models\{ProductRecentlyViewed,WebStylingOption,Product,Category,HomeProduct,ProductCategory,OrderVendorProduct,OrderProductRating,OrderProduct, VendorCategory, Vendor, SubscriptionInvoicesVendor};
+use App\Models\{ProductRecentlyViewed,WebStylingOption,Product,Category, ClientCurrency, HomeProduct,ProductCategory,OrderVendorProduct,OrderProductRating,OrderProduct, VendorCategory, Vendor, SubscriptionInvoicesVendor};
 use Illuminate\Support\Str;
 use Auth;
 use Session;
@@ -342,7 +342,7 @@ trait ProductActionTrait{
             $single_category_products = [];
 
             if (($type == 'single_category_products' || $type == 'selected_products')) {
-                $single_category_products = HomeProduct::whereSlug($type)->first();
+                $single_category_products = HomeProduct::whereSlug($type)->latest()->first();
             }
 
             if($type == 'single_category_products' && !empty($single_category_products)){
@@ -382,7 +382,7 @@ trait ProductActionTrait{
 
                             GROUP BY `products`.`id`
 
-                            ORDER BY RAND() LIMIT 6";
+                             LIMIT 6";
 
                 $products = DB::select( DB::raw($raw_query));
 
@@ -401,7 +401,10 @@ trait ProductActionTrait{
     {
         try
         {
-           // pr($venderIds);
+            $user = Auth::user();
+            $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+            $comparePrice = $clientCurrency->doller_compare ?? 1.00;
+
             $vendorWhereIN = ' ';
             $getSubCatIdsIn = ' ';
             $completeWhere = ' ';
@@ -492,8 +495,8 @@ trait ProductActionTrait{
             `product_translation`.`meta_description`,
             `vendors`.`address`,
             `product_translation`.`language_id`,
-            `product_variant`.`compare_at_price` as `compare_price_numeric`,
-            `product_variant`.`price` as `price_numeric`,
+            CAST(`product_variant`.`compare_at_price` * $comparePrice AS DECIMAL(10,2)) as `compare_price_numeric`,
+            CAST(`product_variant`.`price` * $comparePrice AS DECIMAL(10,2)) as `price_numeric`,
             `category_translation`.`name` as `category_name` ,
             `category_translation`.`meta_title` as `category_meta_title` ,
             `category_translation`.`meta_keywords` as `category_meta_keyword` ,
@@ -541,7 +544,7 @@ trait ProductActionTrait{
             $getSubCatIdsIn
             $whereProductType
             GROUP BY `products`.`id`
-            ORDER BY RAND() LIMIT 6";
+             LIMIT 6";
 
 
             $returnArray = DB::select( DB::raw($raw_query));
@@ -564,12 +567,13 @@ trait ProductActionTrait{
     public function getEvenOddTime($time) {
         return ($time % 5 === 0) ? $time : ($time - ($time % 5));
     }
+
     public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL,$venderFilterOpenClose=null,$venderFilterbest=null,$nearest_vendor=0)
     {
-        // pr('sd');
         try
         {
             $mytime = Carbon::now()->setTimezone($timezone);
+            $day = $mytime->dayOfWeek+1;
             $current_time = $mytime->toTimeString();
             $current_date = Carbon::now()->format('Y-m-d');
             $multiply = Session::get('currencyMultiplier') ?? 1;
@@ -603,7 +607,7 @@ trait ProductActionTrait{
                 GROUP_CONCAT(DISTINCT `category_translations`.`name` SEPARATOR ', ') AS `categoriesList`,
                 (SELECT count(`order_vendors`.`id`) FROM `order_vendors` WHERE `order_vendors`.`vendor_id` = `vendors`.`id`) AS `selling_count`,
                 (SELECT CONCAT(`vendor_slot_dates`.`start_time`, '##', `vendor_slot_dates`.`end_time`) FROM `vendor_slot_dates` WHERE `vendor_slot_dates`.`vendor_id` = `vendors`.`id` LIMIT 0,1) AS `slotdate_start_end_time`,
-                (SELECT CONCAT(`vendor_slots`.`start_time`, '##', `vendor_slots`.`end_time`) FROM `vendor_slots` WHERE `vendor_slots`.`vendor_id` = `vendors`.`id` AND `vendor_slots`.`start_time` < CAST('".$current_time."' AS time) AND `vendor_slots`.`end_time` > CAST('".$current_time."' AS time)  LIMIT 0,1) AS `slot_start_end_time`,
+                (SELECT CONCAT(`vendor_slots`.`start_time`, '##', `vendor_slots`.`end_time`) FROM `vendor_slots`  left join `slot_days` on `vendor_slots`.`id` = `slot_days`.`slot_id` WHERE `vendor_slots`.`vendor_id` = `vendors`.`id` AND  `slot_days`.`day` = ".$day." AND `vendor_slots`.`start_time` < CAST('".$current_time."' AS time) AND `vendor_slots`.`end_time` > CAST('".$current_time."' AS time)  LIMIT 0,1) AS `slot_start_end_time`,
                 6371 * acos(cos(radians(" . $latitude . "))
                                             * cos(radians(`vendors`.`latitude`))
                                             * cos(radians(`vendors`.`longitude`) - radians(" . $longitude . "))

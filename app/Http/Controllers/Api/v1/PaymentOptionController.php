@@ -30,8 +30,9 @@ use App\Http\Controllers\Front\WindcaveController;
 use App\Http\Controllers\LiveePaymentController;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, Product, OrderProductAddon, Client, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, CartDeliveryFee, CartProductPrescription, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, User, Payment, Transaction, UserVendor};
+use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, Product, OrderProductAddon, Client, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, CartDeliveryFee, CartProductPrescription, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, OrderProductPrescription, OrderTax, User, Payment, Transaction, UserVendor};
 use App\Http\Controllers\Front\MpesaSafariController;
+use Exception;
 
 class PaymentOptionController extends BaseController
 {
@@ -416,14 +417,15 @@ class PaymentOptionController extends BaseController
                 return $this->successResponse($response->getData());
             } elseif ($response->isRedirect()) {
                 $token = $response->getData();
-                if (isset($token['TOKEN']) && $request->action == "pickup_delivery") {
+                if(isset($token['TOKEN']) && $request->action=="pickup_delivery"){
+                    $getOrder = Order::where('order_number',$request->order_number)->first();
                     $payment = new Payment();
                     $payment->date = date('Y-m-d');
                     $payment->user_id = $user->id ?? null;
                     $payment->transaction_id = $token['TOKEN'];
                     $payment->payment_option_id = 3;
-                    $payment->order_id = $request->order_number;
-                    $payment->balance_transaction = $request->amount ?? '';
+                    $payment->order_id = isset($getOrder)?$getOrder->id:$request->order_number;
+                    $payment->balance_transaction = $request->amount?? '';
                     $payment->type = $request->action;
                     $payment->save();
                 }
@@ -889,5 +891,40 @@ class PaymentOptionController extends BaseController
             'payment_from' => $request->action,
         ]) : '';
         return $gateway->payByPesapal($request);
+    }
+
+    public function paystackCancelPurchase(Request $request)
+    {
+
+        try{
+            if($request->action == 'cart'){
+                $order_number = $request->order_number;
+                $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+                if(empty($order)){
+                    return $this->errorResponse('Order Not Found', 404);
+                }
+                // If the transaction has been failed, we need to delete the order.
+                $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+                foreach ($order_products as $order_prod) {
+                    $order_prod->delete();
+                }
+                $user = User::find($order->user_id);
+                if($user){
+                    if($order->wallet_amount_used > 0){
+                        $wallet = $user->wallet;
+                        $wallet->depositFloat($order->wallet_amount_used, ['Wallet has been <b>refunded</b> for payment failed of order #'. $order->order_number]);
+                    }
+                }
+                OrderProduct::where('order_id', $order->id)->delete();
+                OrderProductPrescription::where('order_id', $order->id)->delete();
+                VendorOrderStatus::where('order_id', $order->id)->delete();
+                OrderVendor::where('order_id', $order->id)->delete();
+                OrderTax::where('order_id', $order->id)->delete();
+                Order::where('id', $order->id)->delete();
+            }
+            return $this->errorResponse('Payment Failed', 500);
+        }catch(Exception $e){
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
     }
 }

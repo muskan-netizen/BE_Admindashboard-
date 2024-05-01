@@ -281,7 +281,6 @@ trait CartManagerV2
         $type = $obj['type'];
         $language = $obj['language'];
         $requestType = $obj['requestType'];
-        //pr($obj);
 
         $processorProduct = [];
 
@@ -381,14 +380,7 @@ trait CartManagerV2
         ]);
 
         // $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id','delivery_date','slot_price','slot_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-        // dd($cartData);
-        //Get All Taxes
-
-
-
         $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot', 'total_booking_time', 'product_id', 'cart_id', 'recurring_booking_type', 'recurring_week_day', 'recurring_week_type', 'recurring_day_data', 'recurring_booking_time', 'delivery_date', 'slot_price', 'slot_id', 'dispatch_agent_id', 'is_cart_checked')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-
-
 
         //Get All Taxes
         $taxRates = $this->getTaxesV2();
@@ -1162,7 +1154,7 @@ trait CartManagerV2
 
                             }//End Pvariant condition
                          if($deliveryfeeOnCoupon == 1){
-                            $free_delivery_amount +=   $deliveryCharges_real;
+                            $free_delivery_amount =   $deliveryCharges_real;
 
                          }
                         $is_slot_from_dispatch =  $prod->product->is_slot_from_dispatch;

@@ -473,35 +473,35 @@
                         </div>
                         @if($vendor->show_slot == 0)
                         @if($client_preferences->scheduling_with_slots != 1)
-                        @if($client_preference_detail->business_type != 'laundry')
-                            <div class="card-box">
-                                <div class="row">
-                                    <h4 class="mb-4 "> {{ __('Weekly Slot') }}</h4>
-                                    <div class="col-md-12">
-                                        <div class="row mb-2">
-                                            <div class="col-md-12 col-lg-4">
-                                                <div id='calendar_slot_alldays'>
-                                                    <table class="table table-centered table-nowrap table-striped" id="calendar_slot_alldays_table">
-                                                        <thead>
-                                                            <tr>
-                                                                <th colspan="2">This week</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                        </tbody>
-                                                    </table>
+                            @if($client_preference_detail->business_type != 'laundry')
+                                <div class="card-box">
+                                    <div class="row">
+                                        <h4 class="mb-4 "> {{ __('Weekly Slot') }}</h4>
+                                        <div class="col-md-12">
+                                            <div class="row mb-2">
+                                                <div class="col-md-12 col-lg-4">
+                                                    <div id='calendar_slot_alldays'>
+                                                        <table class="table table-centered table-nowrap table-striped" id="calendar_slot_alldays_table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th colspan="2">This week</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-12 col-lg-8">
-                                                <div id='calendar'>
+                                                <div class="col-md-12 col-lg-8">
+                                                    <div id='calendar'>
 
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endif
+                            @endif
                     @else
                         @if($client_preference_detail->business_type == 'laundry')
                             <div class="card-box">

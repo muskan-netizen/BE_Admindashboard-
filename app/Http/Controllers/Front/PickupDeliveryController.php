@@ -1441,15 +1441,12 @@ class PickupDeliveryController extends FrontController
 
                     OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2, 'dispatcher_status_option_id' => 1]);
 
-                    $update = VendorOrderDispatcherStatus::updateOrCreate([
-                        'dispatcher_id' => null,
-                        'order_id' =>  $order->id,
-                        'dispatcher_status_option_id' =>  1,
-                        'vendor_id' =>  $vendor
-                    ]);
-
-                    $ex_gateways_wallet = [4, 36, 40, 41, 22]; // stripe,mycash,userede,openpay,ccavenue
-                    if (in_array($order->payment_option_id, $ex_gateways_wallet)) {
+                    $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
+                    'order_id' =>  $order->id,
+                    'dispatcher_status_option_id' =>  1,
+                    'vendor_id' =>  $vendor]);
+                    $ex_gateways_wallet = [4,36,40,41,22]; // stripe,mycash,userede,openpay,ccavenue
+                    if (in_array($order->payment_option_id, $ex_gateways_wallet )){
                         $wal =   $wallet->forceWithdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
                     }
                 }
