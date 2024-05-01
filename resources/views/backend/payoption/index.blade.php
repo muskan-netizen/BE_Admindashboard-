@@ -403,7 +403,7 @@ Options']) @section('css')
 										__("Webhook_signature") }}</label> <input type="password"
 										name="stripe_webhook_signature" id="stripe_webhook_signature"
 										class="form-control" value="{{$webhook_signature}}" @if($opt->status
-									== 1) @endif>
+									== 1) required @endif>
 								</div>
 							</div>
 						</div>
@@ -2230,12 +2230,7 @@ Options']) @section('css')
             $("#" + code + "_fields_wrapper").show();
             $("#" + code + "_fields_wrapper").find('input').attr('required', true);
         } else {
-            $("#" + code + "_fields_wrapper").hide();$validatedData = $request->validate([
-                                'thawani_Apikey' => 'required',
-                                'thawani_publishKey' => 'required',
-
-
-                            ]);
+            $("#" + code + "_fields_wrapper").hide();
             $("#" + code + "_fields_wrapper").find('input').removeAttr('required');
         }
 

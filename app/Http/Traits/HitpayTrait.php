@@ -46,8 +46,10 @@ trait HitpayTrait
             //makeing  the request for checkout
             $response = $hitpay_client->request('POST', $url, $data);
             $responeBody = (array) json_decode($response->getBody());
+            \Log::info( $responeBody);
             return $responeBody;
-        } catch (Error $e) {
+        } catch (\Exception $e) {
+            \Log::info($e->getMessage());
             return $e->getMessage();
         }
     }

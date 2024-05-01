@@ -2210,7 +2210,7 @@ $(document).on("click", ".proceed_to_pay", function () {
         cardJson = {
             'cno': $('#card-element-powertrans').val(),
             'dt': newDate,
-            'cv': $('#cvv-element-powertrwallet_payment_methods ans').val(),
+            'cv': $('#cvv-element-powertrans').val(),
             'name': 'powertrans',
         }
         if (cardValidation(cardJson)) {
