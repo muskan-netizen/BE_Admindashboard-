@@ -402,7 +402,8 @@ trait ProductActionTrait{
         try
         {
             $user = Auth::user();
-            $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+            $user_currency  = $user->currency ?? $currency;
+            $clientCurrency = ClientCurrency::where('currency_id', $user_currency)->first();
             $comparePrice = $clientCurrency->doller_compare ?? 1.00;
 
             $vendorWhereIN = ' ';
@@ -462,8 +463,12 @@ trait ProductActionTrait{
             if(count($single_category_product_ids) > 0){
                 $single_category_product_ids = @implode(',',$single_category_product_ids);
                 if($single_category_product_ids){
-                    $completeWhere = ' AND  `products`.`id` IN  ('.$single_category_product_ids.')';
+                    $completeWhere .= ' AND  `products`.`id` IN  ('.$single_category_product_ids.')';
                 }
+            }
+            $order_by_random = ' ';
+            if( trim($completeWhere) == ''){
+                $order_by_random = ' ORDER BY RAND() ';
             }
 
 
@@ -544,6 +549,7 @@ trait ProductActionTrait{
             $getSubCatIdsIn
             $whereProductType
             GROUP BY `products`.`id`
+            $order_by_random
              LIMIT 6";
 
 
