@@ -282,16 +282,6 @@ class MastercardPaymentController extends Controller
         $orderController = new OrderController();
         $orderController->autoAcceptOrderIfOn($order->id);
 
-        $cart = Cart::where('user_id', $order->user_id)->where('status', '0')->first();
-        if (!empty($cart)) {
-            Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
-            CartAddon::where('cart_id', $cart->id)->delete();
-            CartCoupon::where('cart_id', $cart->id)->delete();
-            CartProduct::where('cart_id', $cart->id)->delete();
-            CartProductPrescription::where('cart_id', $cart->id)->delete();
-            CartDeliveryFee::where('cart_id', $cart->id)->delete();
-        }
-
         // Send Notification
         if (!empty($order->vendors)) {
             foreach ($order->vendors as $vendor_value) {
@@ -317,6 +307,15 @@ class MastercardPaymentController extends Controller
         // send sms
         $orderController->sendSuccessSMS($request, $order);
 
+        $cart = Cart::where('user_id', $order->user_id)->where('status', '0')->first();
+        if (!empty($cart)) {
+            Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+            CartAddon::where('cart_id', $cart->id)->delete();
+            CartCoupon::where('cart_id', $cart->id)->delete();
+            CartProduct::where('cart_id', $cart->id)->delete();
+            CartProductPrescription::where('cart_id', $cart->id)->delete();
+            CartDeliveryFee::where('cart_id', $cart->id)->delete();
+        }
         // Mark the cart as deleted
         $cart->delete();
     }
