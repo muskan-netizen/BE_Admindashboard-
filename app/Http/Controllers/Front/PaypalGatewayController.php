@@ -61,35 +61,32 @@ class PaypalGatewayController extends FrontController
                     'amount' => $amount,
                     'cancelUrl' => url($request->cancelUrl),
                     'returnUrl' => url($returnUrlParams),
-                    ])->send();
-                }else{
-                    $response = $this->gateway->purchase([
-                        'currency' => $this->currency, //'USD',
-                        'amount' => $amount,
-                        'cancelUrl' => url($request->cancelUrl),
-                        'returnUrl' => url($request->returnUrl . $returnUrlParams),
-                    ])->send();
-                }
-                if ($response->isSuccessful()) {
-                    return $this->successResponse($response->getData());
-                } elseif ($response->isRedirect()) {
-                    $token = $response->getData();
-                    if(isset($token['TOKEN']) && $request->payment_form=="pickup_delivery"){
-                        $payment = new Payment();
-                        $payment->date = date('Y-m-d');
-                        $payment->user_id = $user->id ?? null;
-                        $payment->transaction_id = $token['TOKEN'];
-                        $payment->payment_option_id = 3;
-                        $payment->order_id = $request->order_id; 
-                        $payment->balance_transaction = $request->amount?? '';
-                        $payment->type = $request->payment_form;
-                        $payment->save();
-                    }
-                    $this->failMail();
-                    return $this->successResponse($response->getRedirectUrl());
-                } else {
-                    $this->failMail();
-                    return $this->errorResponse($response->getMessage(), 400);
+                ])->send();
+            }else{
+                $response = $this->gateway->purchase([
+                    'currency' => $this->currency, //'USD',
+                    'amount' => $amount,
+                    'cancelUrl' => url($request->cancelUrl),
+                    'returnUrl' => url($request->returnUrl . $returnUrlParams),
+                ])->send();
+            }
+             
+            if ($response->isSuccessful()) {
+                
+                return $this->successResponse($response->getData());
+            }
+            elseif ($response->isRedirect()) {
+                $token = $response->getData();
+                if(isset($token['TOKEN']) && $request->payment_form=="pickup_delivery"){
+                    $payment = new Payment();
+                    $payment->date = date('Y-m-d');
+                    $payment->user_id = $user->id ?? null;
+                    $payment->transaction_id = $token['TOKEN'];
+                    $payment->payment_option_id = 3;
+                    $payment->order_id = $request->order_id; 
+                    $payment->balance_transaction = $request->amount?? '';
+                    $payment->type = $request->payment_form;
+                    $payment->save();
                 }
         } catch (\Exception $ex) {
             $this->failMail();

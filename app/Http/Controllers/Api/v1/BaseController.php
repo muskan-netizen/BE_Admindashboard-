@@ -426,7 +426,9 @@ class BaseController extends Controller{
         if($categories){
             $categories = $this->buildTree($categories->toArray());
         }
+
         return $categories;
+        
     }
 
     public function subCategoryNav($lang_id, $vends=[],$type = 'delivery', $cid) {

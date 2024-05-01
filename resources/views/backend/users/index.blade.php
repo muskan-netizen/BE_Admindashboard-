@@ -246,7 +246,11 @@
                                                 <div class="card-body">
                                                     <div class="table-responsive">
                                                         <form name="saveOrder" id="saveOrder"> @csrf</form>
+                                                        @php
+                                                            $ordermenu = getNomenclatureName('Orders', true);
+                                                            $ordermenulabel = ($ordermenu=="Orders")?__('Orders'):__($ordermenu);
 
+                                                        @endphp
                                                         <table class="table table-centered table-nowrap table-striped" id="user_datatable" width="100%">
                                                             <thead>
                                                                 <tr>
@@ -268,9 +272,9 @@
                                                                     <th>{{ __("Email OTP") }}</th>
                                                                     <th>{{ __("Phone OTP") }}</th>
                                                                     <th>{{ __('Wallet')}}</th>
-                                                                    <th>{{ __('Orders')}}</th>
+                                                                    <th>{{ __($ordermenulabel)}}</th>
                                                                     <th>{{ __('Loyalty Card')}}</th>
-                                                                    <th>{{ __('Active Orders') }}</th>
+                                                                    <th>{{ __('Active '. $ordermenulabel) }}</th>
                                                                     <th>{{ __('Total Order Value') }}</th>
                                                                     <th>{{ __('Total Order Discount') }}</th>
                                                                     <th>{{ __('Status')}}</th>

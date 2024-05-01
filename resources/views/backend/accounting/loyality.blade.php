@@ -61,7 +61,12 @@
                                         <i class="mdi mdi-eye-outline text-primary mdi-24px"></i>
                                         <span data-plugin="counterup">0</span> k
                                     </h3>
-                                    <p class="text-muted font-15 mb-0">{{ __('Unique Orders') }}</p>
+                                    @php
+                                        $ordermenu = getNomenclatureName('Orders', true);
+                                        $ordermenulabel = ($ordermenu=="Orders")?__('Orders'):__($ordermenu);
+
+                                    @endphp
+                                    <p class="text-muted font-15 mb-0">{{ __('Unique '. $ordermenulabel) }}</p>
                                 </div>
                             </div>
                         </div>

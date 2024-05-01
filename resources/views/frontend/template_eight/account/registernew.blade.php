@@ -41,13 +41,16 @@
 
     </style>
 @endsection
+@php
+    $signUpImage = $preferences->signup_image ?? null;
+@endphp
 @section('content')
     <section class="wrapper-main pt-lg-3 alSectionTop d-flex align-items-center main-signup-page">
         <div class="container">
             <div class="row bg_inner">
                 <div class="col-md-6 p-0">
                     <div class="login_img">
-                        <img src="{{asset('images/template-8/login-img.png')}}" class="img-fluid">
+                        <img src="{{ $signUpImage ? $signUpImage['proxy_url'].'400/400'.$signUpImage['image_path'] : asset('images/template-8/login-img.png') }}" class="img-fluid">
                     </div>
                 </div>
                 <div class="col-lg-6 pl-3">
@@ -324,7 +327,7 @@
                                 @endif
                                 @if (session('preferences')->apple_login == 1)
                                     <li>
-                                        <a href="javascript::void(0);">
+                                        <a href="{{url('auth/apple')}}">
                                             <img src="{{ asset('front-assets/images/apple.svg') }}">
                                         </a>
                                     </li>

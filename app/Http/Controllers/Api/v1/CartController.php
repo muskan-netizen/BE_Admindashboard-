@@ -1232,7 +1232,7 @@ class CartController extends BaseController
                                             $coupon_product_discount = $coupon_product_discount + $opt_quantity_price;
                                     }
                                 }
-                                $order_sub_total = $order_sub_total + $prod->pvariant->price * $prod->quantity;
+                                $order_sub_total = $order_sub_total + $prod->pvariant->price* $prod->quantity;
                             }else{
                                 $order_sub_total = round($order_sub_total  + $prod->pvariant->price*$prod->quantity,2);
                             }
@@ -1259,7 +1259,7 @@ class CartController extends BaseController
 
                                      //Find vendor Product Discount here
                                      $productPriceAfterVendorDiscount  = productPriceAfterVendorDiscount($prod,$quantity_price,$clientCurrency->doller_compare,$cart);
-                                     $quantity_price = $quantity_price - $productPriceAfterVendorDiscount['vendor_discount_amount'];
+                                    // $quantity_price = $quantity_price - $productPriceAfterVendorDiscount['vendor_discount_amount'];
                                      if ($productPriceAfterVendorDiscount['deliveryfeeOnCoupon'] == 1) {
                                         $deliveryfeeOnCoupon = 1;
                                     }
@@ -1446,7 +1446,6 @@ class CartController extends BaseController
                             }
                         }
                         if ( $PromoDelete !=1) {
-
                             $minimum_spend = 0;
                             if (isset($vendorData->coupon->promo->minimum_spend)) {
                                 $minimum_spend = $vendorData->coupon->promo->minimum_spend * $clientCurrency->doller_compare;
@@ -1476,7 +1475,6 @@ class CartController extends BaseController
                                     // $payable_amount -= $percentage_amount;
                                     $discount_amount = $percentage_amount;
                                 }
-
                                 $couponData['coupon_id'] =  $vendorData->coupon->promo->id;
                                 $couponData['name'] =  $vendorData->coupon->promo->name;
                                 $couponData['dis_amount'] =  $dis_amt;
@@ -1490,7 +1488,6 @@ class CartController extends BaseController
                                 $couponApplied = 1;
                             }
                             else{
-
                                 $cart->coupon()->delete();
                                 $vendorData->coupon()->delete();
                                 unset($vendorData->coupon);
@@ -1500,7 +1497,6 @@ class CartController extends BaseController
                         if ( $PromoDelete !=1) {
                             if($vendorData->coupon->promo->allow_free_delivery ==1   ){
                                 $PromoFreeDeliver = 1;
-
                                 $discount_amount = $discount_amount +  $vendorTotalDeliveryFee;
                             }
                         }
@@ -1560,8 +1556,9 @@ class CartController extends BaseController
                     $vendorData->couponData = $couponData;
                 }
                 $vendor_service_fee_percentage_amount = 0;
+
                 if($vendorData->vendor->service_fee_percent > 0){
-                    $amount_for_service = $only_products_amount;
+                    $amount_for_service =  $only_products_amount;
                     $vendor_service_fee_percentage_amount = (($amount_for_service) * $vendorData->vendor->service_fee_percent) / 100 ;
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                 }
@@ -1886,7 +1883,6 @@ class CartController extends BaseController
         } else {
             $cart->total_payable_amount = ($total_paying  + $cart->total_tax) -   ($loyalty_amount_saved);
         }
-
         /* if($total_taxable_amount>0){
             $cart->total_payable_amount = $cart->total_payable_amount +$total_taxable_amount;
         } */
@@ -1899,9 +1895,9 @@ class CartController extends BaseController
         if($cart->total_fixed_fee_amount){
             $cart->total_payable_amount = $cart->total_payable_amount +$cart->total_fixed_fee_amount;
         }
-        if(!empty($total_container_charges)){
-            $cart->total_payable_amount  += $total_container_charges;
-        }
+        // if(!empty($total_container_charges)){
+        //     $cart->total_payable_amount  += $total_container_charges;
+        // }
 
         if(@$rental_price){
             $cart->total_payable_amount = $rental_price;
@@ -1910,28 +1906,10 @@ class CartController extends BaseController
         //     $cart->total_payable_amount  += $total_service_fee;
         // }
 
-
-
-
         // if(!empty($totalDeliveryCharges)){
         //     $cart->total_payable_amount  += $totalDeliveryCharges;
         // }
 
-
-        $wallet_amount_used = 0;
-        if (isset($user)) {
-            if ($user->balanceFloat > 0) {
-                $wallet_amount_used = $user->balanceFloat;
-                if ($clientCurrency) {
-                    $wallet_amount_used = $user->balanceFloat * $clientCurrency->doller_compare;
-                }
-                if ($wallet_amount_used > $cart->total_payable_amount) {
-                    $wallet_amount_used = $cart->total_payable_amount;
-                }
-                $cart->total_payable_amount = $cart->total_payable_amount - $wallet_amount_used;
-                $cart->wallet_amount_used = $wallet_amount_used;
-            }
-        }
         if($delivery_status == 0 && @$duration->closed_store_order_scheduled == 1)
         {
             $cart->deliver_status = 1;
@@ -1952,7 +1930,7 @@ class CartController extends BaseController
         }
 
 
-        $cart->total_payable_amount += ($securityAmount + $rentalProtection + $bookingOption - $totalFreeDeliveryCharges);
+        $cart->total_payable_amount += ($securityAmount + $rentalProtection + $bookingOption - $total_disc_amount);
         //$cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
 
         //mohit sir branch code updated by sohail farm meat
@@ -1966,6 +1944,21 @@ class CartController extends BaseController
             $pendingAmount = $cart->total_payable_amount - $advancePayableAmount;
             $totalAmount = $cart->total_payable_amount;
             $cart->total_payable_amount = $advancePayableAmount;
+        }
+
+        $wallet_amount_used = 0;
+        if (isset($user)) {
+            if ($user->balanceFloat > 0) {
+                $wallet_amount_used = $user->balanceFloat;
+                if ($clientCurrency) {
+                    $wallet_amount_used = $user->balanceFloat * $clientCurrency->doller_compare;
+                }
+                if ($wallet_amount_used > $cart->total_payable_amount) {
+                    $wallet_amount_used = $cart->total_payable_amount;
+                }
+                $cart->total_payable_amount = $cart->total_payable_amount - $wallet_amount_used;
+                $cart->wallet_amount_used = $wallet_amount_used;
+            }
         }
         // $cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
         $cart->total_amount= number_format((float)$totalAmount, 2, '.', '');

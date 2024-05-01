@@ -134,6 +134,10 @@ header#al_new_design .main-menu .al_count_tabs_new_design.d-none.d-sm-block ul#t
     color: var(--theme-deafult)
 }
 
+.dark .al_custom_head_map_box i.fa.fa-search {
+    color: #fff !important;
+}
+
 .al_custom_head_map_box .form-control {
     padding: 0 10px;
     background-color: transparent;

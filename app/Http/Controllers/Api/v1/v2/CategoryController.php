@@ -39,14 +39,14 @@ class CategoryController extends BaseController
                 'type'  => function ($q) {
                     $q->select('id', 'title as redirect_to');
                 },
-                // 'childs.translation'  => function ($q) use ($langId) {
-                //     $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
-                //         ->where('category_translations.language_id', $langId);
-                // },
-                // 'translation' => function ($q) use ($langId) {
-                //     $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
-                //         ->where('category_translations.language_id', $langId);
-                // }
+                'childs.translation'  => function ($q) use ($langId) {
+                    $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                        ->where('category_translations.language_id', $langId);
+                },
+                'translation' => function ($q) use ($langId) {
+                    $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                        ->where('category_translations.language_id', $langId);
+                }
             ])->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products')
                 ->where('id', $cid)->first();
             $mode_of_service = "";
@@ -257,6 +257,7 @@ class CategoryController extends BaseController
             }
             return $vendorData;
         } elseif (strtolower($type) == 'subcategory') {
+            
             $category_details = [];
             $category_list = Category::with([
                 'tags', 'type'  => function ($q) {
@@ -313,9 +314,9 @@ class CategoryController extends BaseController
                 ->withCount('OrderProduct');
             
                 // $sess_vendors = [];
-                // if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                //     $user = Auth::user();
-                //     $sess_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
+                //  if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                //      $user = Auth::user();
+                //      $sess_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
                 // }
                 // if(!empty($ses_vendors)){
                 //     $vendor_ids = $sess_vendors;

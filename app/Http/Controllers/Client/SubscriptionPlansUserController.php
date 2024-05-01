@@ -337,8 +337,21 @@ class SubscriptionPlansUserController extends BaseController
     //Customer Subscription Report
     public function userSubscriptionReport(Request $request, $domain = '')
     {
-        $admin_subs_discount = OrderVendor::whereIn('order_status_option_id', array(1,2,4,5,6))->sum('subscription_discount_admin');
-        $vendor_subs_discount = OrderVendor::whereIn('order_status_option_id', array(1,2,4,5,6))->sum('subscription_discount_vendor');
+        $admin_subs_discount = OrderVendor::whereIn('order_status_option_id', array(1,2,4,5,6));
+        if (Auth::user()->is_superadmin == 0) {
+            $vendors = $admin_subs_discount->whereHas('vendor.permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+        $admin_subs_discount = $admin_subs_discount->sum('subscription_discount_admin');
+
+        $vendor_subs_discount = OrderVendor::whereIn('order_status_option_id', array(1,2,4,5,6));
+        if (Auth::user()->is_superadmin == 0) {
+            $vendors = $vendor_subs_discount->whereHas('vendor.permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+        $vendor_subs_discount = $vendor_subs_discount->sum('subscription_discount_vendor');
         return view('backend/accounting/usersubscriptions')->with(['admin_subs_discount'=>$admin_subs_discount, 'vendor_subs_discount'=>$vendor_subs_discount]);
     }
 

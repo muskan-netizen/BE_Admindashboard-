@@ -374,8 +374,25 @@ border-right: 1px solid var(--theme-deafult) !important;}
 .indicator-line{width: 100%;height: 2px;background: #c2c2c2;flex: 1;}
 
 .card-box{background-color: #fff;padding: 1.5rem;box-shadow: 0 0.75rem 6rem rgb(56 65 74 / 3%);margin-bottom: 24px;border-radius: 0.25rem;}
-.class_img{height: 100px;width: 100%;border-radius: 4px;overflow: hidden;max-width: 100%;object-fit: cover;}
-.class_img img{object-fit: cover;height: 100%;width: 100%; object-position: top;}
+/* .class_img{height: 100px;width: 100%;border-radius: 4px;overflow: hidden;max-width: 100%;object-fit: cover;}
+.class_img img{object-fit: cover;height: 100%;width: 100%; object-position: top;} */
+.class_img {
+    height: 100px;
+    width: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+    max-width: 110px;
+    object-fit: contain;
+    justify-content: end;
+    margin-left: auto;
+    border: 1px solid #EFEFEF;
+    }
+    .class_img img {
+    object-fit: contain;
+    height: 100%;
+    width: 100%;
+    object-position: top;
+    }
 .classes_wrapper .number{border: 1px solid var(--theme-deafult);border-radius: 4px;}
 .booking-time .radios{width: 95%;text-align: center;}
 .radio-btns input[type="checkbox"]{z-index: -1;position: absolute;display: none;}
@@ -462,6 +479,16 @@ ul.product_list_order_page .items_price{
 
 @media (max-width: 1366px){
     .al_body_template_eight  .home-serivces .side-card .product-order .shopping-cart .alVendorProductDetails {
+        width: 100%;
+    }
+
+    .dark .slick-next:before, .dark .slick-prev:before {
+        color: #000 !important;
+    }
+
+    footer#footer {
+        position: relative;
+        bottom: 0;
         width: 100%;
     }
 }
@@ -553,3 +580,20 @@ margin-left: 5px;
 }
 /*=================== search page style================= */
 .product-box .front a{position: relative;padding-bottom: 100%;}
+
+.dark .inner_spacing h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #BFBFBF;
+    line-height: 24px;
+    margin: 0;
+}
+
+.al_body_template_eight .vendor_first .product-image {
+    height: auto;
+    min-height: auto;
+    padding-bottom: 0;
+}
+.dark #banner9 {
+    padding-top: 40px !important;
+}

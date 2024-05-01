@@ -1037,7 +1037,7 @@
             return false;
         }
 
-        //var contact=dial_code+phone_number;
+        // var contact=dial_code+phone_number;
 
         $.ajax({
             method: 'post',
