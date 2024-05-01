@@ -280,6 +280,9 @@ class PickupDeliveryController extends FrontController
 
         $curId = Session::get('customerCurrency');
         $customerCurrency = ClientCurrency::where('currency_id', $curId)->first();
+        if (!$customerCurrency) {
+            $customerCurrency = ClientCurrency::where('is_primary', 1)->get()->first()->currency;
+        }
         $price_in_doller_compare = $product->total_tags_price  * $customerCurrency->doller_compare;
         //Add Tax on product
         $taxData = array();
