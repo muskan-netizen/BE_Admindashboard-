@@ -115,7 +115,6 @@ class HomeController extends BaseController
     public function homepage(Request $request, $domain = '')
     {
         try {
-
             $this->config();
             $home = array();
             $vendor_ids = array();
@@ -140,7 +139,7 @@ class HomeController extends BaseController
 
             $categoryTypes = getServiceTypesCategory($type);
 
-            $this->venderFilterOpenClose   = $request->has('open_close_vendor') && $request->open_close_vendor ? $request->open_close_vendor : null;
+            $this->venderFilterOpenClose   = isset($request->open_close_vendor) ? $request->open_close_vendor : null;
             $this->venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
             $clientPreferences = ClientPreference::first();
 
@@ -271,11 +270,9 @@ class HomeController extends BaseController
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
             $enable_layout = CabBookingLayout::where('is_active', 1)->app();
 
-            $enable_layout = $enable_layout->orderBy('order_by', 'asc')->pluck('slug')->toArray();
-            //$homePageData = $this->postHomePageData($request);
-
+                $enable_layout = $enable_layout->orderBy('order_by', 'asc')->pluck('slug')->toArray();
+            
             if($request->action=='2'){
-                // dd('sdsd');
                 $homePageData = $this->postHomePageDataV2($request, $set_template, $enable_layout, $additionalPreference,$user);
             } else {
                 $homePageData = $this->postHomePageData($request,$additionalPreference);
@@ -283,7 +280,6 @@ class HomeController extends BaseController
 
             if($type == 'p2p')
             {
-
 
             $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
                 $q->whereIn('type_id',$categoryTypes);
@@ -1138,8 +1134,49 @@ class HomeController extends BaseController
 
         $vendor_results = [];
         foreach ($vendors as $vendor) {
+            $vendor->is_vendor_closed = 0;
+            if($vendor->show_slot == 0){
+                if(empty($vendor->slotdate_start_end_time) && empty($vendor->slot_start_end_time)){
+                    $vendor->is_vendor_closed = 1;
+                }else{
+                    $vendor->is_vendor_closed = 0;
+                    if(!empty($vendor->slotdate_start_end_time)){
+                        $slotdate_start_end_time = explode('##', $vendor->slotdate_start_end_time);
+                        if($slotdate_start_end_time[0]!='' && $slotdate_start_end_time[1]!=''){
+                            $vendor->opening_time  = date('g:i A',strtotime($slotdate_start_end_time[0]));
+                            $vendor->closing_time = date('g:i A',strtotime($slotdate_start_end_time[1]));
+                        }
+                    }elseif(!empty($vendor->slot_start_end_time)){
+                        $slot_start_end_time = explode('##', $vendor->slot_start_end_time);
+                        if($slot_start_end_time[0]!='' && $slot_start_end_time[1]!=''){
+                            $vendor->opening_time  = date('g:i A',strtotime($slot_start_end_time[0]));
+                            $vendor->closing_time = date('g:i A',strtotime($slot_start_end_time[1]));
+                        }
+                    }
+                }
+            }
             $vendor->response_type = 'vendor';
             $vendor->image_url = $vendor->logo['proxy_url'] . '80/80' . $vendor->logo['image_path'];
+            $vendor->is_vendor_closed = 0;
+            if ($vendor->show_slot == 0) {
+                if (($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty())) {
+                    $vendor->is_vendor_closed = 1;
+                } else {
+                    $vendor->is_vendor_closed = 0;
+                    if ($vendor->slotDate->isNotEmpty()) {
+                        if ($vendor->slotDate->first()->start_time != '' && $vendor->slotDate->first()->end_time != '') {
+                            $vendor->opening_time  = date('g:i A', strtotime($vendor->slotDate->first()->start_time));
+                            $vendor->closing_time = date('g:i A', strtotime($vendor->slotDate->first()->end_time));
+                        }
+                    } elseif ($vendor->slot->isNotEmpty()) {
+
+                        if ($vendor->slot->first()->start_time && $vendor->slot->first()->end_time) {
+                            $vendor->opening_time = date('g:i A', strtotime($vendor->slot->first()->start_time));
+                            $vendor->closing_time = date('g:i A', strtotime($vendor->slot->first()->end_time));
+                        }
+                    }
+                }
+            }
             $vendor_results[] = $vendor;
         }
 
@@ -1224,7 +1261,7 @@ class HomeController extends BaseController
         $product_results = [];
         $user = Auth::user();
         $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
-        
+
         foreach ($products as $product) {
             $product->response_type = 'product';
             $product->image_url = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
@@ -1399,7 +1436,6 @@ class HomeController extends BaseController
         $client_timezone = DB::table('clients')->first('timezone');
 
         $timezone        = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );
-        //pr($enable_layout);
        // $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating','is_show_vendor_on_subcription']);
         $vendor_ids = $vendors = [];
         $new_products = [];
@@ -1416,12 +1452,9 @@ class HomeController extends BaseController
             $p_dim = '260/260';
         }
 
-        //st
-
         $latitude = Session::get('latitude');
         $longitude = Session::get('longitude');
 
-        //pr($latitude);
         if($request->has('latitude') ){
             $latitude = $request->latitude;
             Session::put('latitude', $latitude);
@@ -1579,7 +1612,6 @@ class HomeController extends BaseController
                 }
             }
         }
-        //pr($mostSellingVendors);
         $on_sale_product_details =$on_sale_products = [];
         if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in
             $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', 'on_sale', $request->type,$on_sale_title, $p_dim, $getSubCatIds);
@@ -1693,7 +1725,6 @@ class HomeController extends BaseController
 
         /** Respose data */
 
-
             $data = [
                 'vendor_ids'=>$vendor_ids,
                 'brands' => $brands,
@@ -1716,7 +1747,6 @@ class HomeController extends BaseController
                 'banners' => $banners,
                 'additionalPreference' => $additionalPreference,
             ];
-            //pr( $data);
             return $data ;
     }
   # check if last mile delivery on
