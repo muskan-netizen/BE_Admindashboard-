@@ -46,17 +46,13 @@ class MastercardPaymentController extends Controller
         $pay_option        = PaymentOption::where('code', 'mastercard')->where('status', 1)->get(['credentials', 'test_mode', 'status', 'id'])->firstOrFail();
         $this->credentials = json_decode($pay_option->credentials);
 
-        $gateway = $pay_option->test_mode == 1
-            ? 'test-gateway.mastercard.com'
-            : $this->credentials->mastercard_gateway;
-
         $this->gatewayUrl = mastercardGateway();
         $this->payopt_id  = $pay_option->id;
 
         $this->client = new Mastercard(
-            $this->gatewayUrl,
+            (($pay_option->test_mode == 1) ? 'TEST' : '') . $this->credentials->mastercard_merchant_id,
             $this->credentials->mastercard_merchant_key,
-            $gateway
+            $this->gatewayUrl,
         );
     }
 
@@ -322,8 +318,7 @@ class MastercardPaymentController extends Controller
         $orderController->sendSuccessSMS($request, $order);
 
         // Mark the cart as deleted
-        $cart->status = '2';
-        $cart->save();
+        $cart->delete();
     }
 
     public function orderNumber($request)
