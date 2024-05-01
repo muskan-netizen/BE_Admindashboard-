@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use DB;
@@ -81,7 +82,7 @@ class PaymentOptionSeeder extends Seeder
             array('id' => '65', 'path' => '', 'code' => 'totalpay', 'title' => 'TotalPay', 'off_site' => '1', 'status' => '0'),
             array('id' => '67', 'path' => '', 'code' => 'thawani', 'title' => 'Thawani', 'off_site' => '1', 'status' => '0'),
             array('id' => '68', 'path' => '', 'code' => 'icici', 'title' => 'Icici Upi', 'off_site' => '1', 'status' => '0'),
-            array('id' => '69', 'path' => '', 'code' => 'hitpay', 'title' => 'HitPay', 'off_site' => '0', 'status' => '0'),
+            array('id' => '69', 'path' => '', 'code' => 'hitpay', 'title' => 'HitPay', 'off_site' => '1', 'status' => '0'),
         );
 
 
@@ -109,6 +110,5 @@ class PaymentOptionSeeder extends Seeder
                 }
             }
         }
-
     }
 }

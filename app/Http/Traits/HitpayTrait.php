@@ -34,11 +34,6 @@ trait HitpayTrait
                 'amount' => 'required'
             ]);
 
-            // $validator->validate();
-            // if ($validator->errors()->hasAny()) {
-
-            //     return $validator->errors();
-            // }
             $header = [
                 'headers' => [
                     'X-BUSINESS-API-KEY' => $api_key,
@@ -56,44 +51,6 @@ trait HitpayTrait
             return $e->getMessage();
         }
     }
-
-    // /**
-    //  * generateSignatureArray genrate the hmac for Handling the webhook
-    //  *
-    //  * @param  mixed $secret salt key from admin os hitpay
-    //  * @param  array $args  array of the receviced in response expect hmac
-    //  * @return string return the hash_hmac 'sha256'
-    //  */
-    // public static function generateSignatureArray($secret, array $args)
-    // {
-    //     $hmacSource = [];
-    //     foreach ($args as $key => $val) {
-    //         $hmacSource[$key] = "{$key}{$val}";
-    //     }
-    //     ksort($hmacSource);
-    //     $sig = implode("", array_values($hmacSource));
-    //     $calculatedHmac = hash_hmac('sha256', $sig, $secret);
-
-    //     return $calculatedHmac;
-    // }
-
-
-
-    // /**
-    //  * isPaymentSuccess function is for matching the hmac
-    //  *
-    //  * @param  mixed $hmac value of hmac from response
-    //  * @param  mixed $paymenthash genrated hash from the receviced parameter
-    //  * @return boolean true if match otherwise false
-    //  */
-    // public function isPaymentSuccess(string $hmac, string $paymenthash)
-    // {
-
-    //         return hash_equals($hmac, $paymenthash) ?  true : false;
-
-
-
-    // }
 
     /**
      * getSuccessUrl get the success url
@@ -113,7 +70,7 @@ trait HitpayTrait
                 if ($payment->payment_from == 'web') {
                     $redirectUrl  = route('order.success', $order->id);
                 } else {
-                    $redirectUrl  = route('payment.gateway.return.response') . '/?gateway=totalpay' . '&status=200&order=' . $order->id;
+                    $redirectUrl  = url('payment/gateway/returnResponse')  . '/?gateway=totalpay' . '&status=200&order=' . $order->id;
                 }
 
                 // Send Email
@@ -123,7 +80,7 @@ trait HitpayTrait
             if ($payment->payment_from == 'app') {
                 $user = User::findOrFail($payment->user_id);
                 Auth::login($user);
-                $redirectUrl = route('payment.gateway.return.response') . '/?gateway=totalpay' . '&status=200&transaction_id=' . $payment->transaction_id . '&action=wallet';
+                $redirectUrl = url('payment/gateway/returnResponse') . '/?gateway=totalpay' . '&status=200&transaction_id=' . $payment->transaction_id . '&action=wallet';
             } else {
                 $user = auth()->user();
                 $redirectUrl = route('user.wallet');
@@ -132,19 +89,19 @@ trait HitpayTrait
             if ($payment->payment_from == 'web') {
                 $redirectUrl = route('user.orders');
             } else {
-                $redirectUrl = route('payment.gateway.return.response') . '/?gateway=totalpay' . '&status=200&order=' . $payment->transaction_id . '&action=tip';
+                $redirectUrl = url('payment/gateway/returnResponse')  . '/?gateway=totalpay' . '&status=200&order=' . $payment->transaction_id . '&action=tip';
             }
         } elseif ($payment->type == 'subscription') {
             if ($payment->payment_from == 'web') {
                 $redirectUrl = route('user.subscription.plans');
             } else {
-                $redirectUrl = route('payment.gateway.return.response') . '/?gateway=totalpay' . '&status=200&transaction_id=' . $payment->transaction_id . '&action=subscription';
+                $redirectUrl = url('payment/gateway/returnResponse')  . '/?gateway=totalpay' . '&status=200&transaction_id=' . $payment->transaction_id . '&action=subscription';
             }
         } else if ($payment->type == 'pickup_delivery') {
             if ($payment->payment_from == 'web') {
                 $redirectUrl   = route('front.booking.details', $payment->transaction_id);
             } else {
-                $redirectUrl = route('payment.gateway.return.response') . '/?gateway=totalpay' . '&status=200&order=' . $payment->transaction_id;
+                $redirectUrl = url('payment/gateway/returnResponse')  . '/?gateway=totalpay' . '&status=200&order=' . $payment->transaction_id;
             }
         }
         return $redirectUrl;

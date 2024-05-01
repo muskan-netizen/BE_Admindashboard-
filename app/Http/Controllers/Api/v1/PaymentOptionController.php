@@ -97,7 +97,9 @@ class PaymentOptionController extends BaseController
                 $domain = $client->sub_domain . env('SUBMAINDOMAIN');
             }
 
+
             $function = 'postPaymentVia_' . $gateway;
+
 
             if (method_exists($this, $function)) {
                 if (!empty($request->action)) {

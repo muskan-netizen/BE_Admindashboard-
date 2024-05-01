@@ -62,7 +62,7 @@ Route::group(['middleware' => ['domain']], function () {
     Route::post('dispatch/driver/bids/update/{id?}', 'Front\DispatcherController@dispatchDriverBidUpdate')->name('dispatch-driver-bids'); // instant booking / Bid and Ride pickup delivery update from dispatch
     Route::post('dispatch/driver/bids/status/{id?}', 'Front\DispatcherController@dispatchDriverBidStatus')->name('dispatch-driver-bids-status'); // instant booking / Bid and Ride Bid Status pickup delivery update from dispatch
 
-    Route::match (['get', 'post'], 'square/inventory/event/update', 'Front\SquareInventoryController@squareInventoryEventUpdate')->name('square-inventory-event-update'); // webhook to receive inventory updates from square inventory update events
+    Route::match(['get', 'post'], 'square/inventory/event/update', 'Front\SquareInventoryController@squareInventoryEventUpdate')->name('square-inventory-event-update'); // webhook to receive inventory updates from square inventory update events
 
     Route::get('testsms', 'Front\FrontController@testsms');
 
@@ -76,8 +76,8 @@ Route::group(['middleware' => ['domain']], function () {
 
     // Start edit order routes
     Route::post('edit-order/search/vendor/products', 'Front\TempCartController@vendorProductsSearchResults');
-    Route::match (['get', 'post'], 'edit-order/search/Agent/products', 'Front\TempCartController@AgentProductsSearchResults');
-    Route::match (['get', 'post'], 'edit-order/vendor/products/getProductsInCart', 'Front\TempCartController@getProductsInCart');
+    Route::match(['get', 'post'], 'edit-order/search/Agent/products', 'Front\TempCartController@AgentProductsSearchResults');
+    Route::match(['get', 'post'], 'edit-order/vendor/products/getProductsInCart', 'Front\TempCartController@getProductsInCart');
     Route::post('edit-order/temp-cart/product/add', 'Front\TempCartController@postAddToTempCart');
     Route::post('edit-order/temp-cart/product/updateQuantity', 'Front\TempCartController@updateQuantity');
     Route::post('edit-order/temp-cart/product/detailWithAddons', 'Front\TempCartController@getCartProductDetailWithAddons');
@@ -98,13 +98,13 @@ Route::group(['middleware' => ['domain']], function () {
     Route::get('payment/gateway/returnResponse', 'Front\PaymentController@getGatewayReturnResponse')->name('payment.gateway.return.response');
 
     //lalMoves Test Route
-    Route::match (['get', 'post'], 'order/lalamoves/quotation', 'Front\LalaMovesController@quotation')->name('order.lalamoves.quotation');
-    Route::match (['get', 'post'], 'order/d4bdunzo/quotation', 'Front\D4BDunzoController@quotation')->name('order.d4bdunzo.quotation');
+    Route::match(['get', 'post'], 'order/lalamoves/quotation', 'Front\LalaMovesController@quotation')->name('order.lalamoves.quotation');
+    Route::match(['get', 'post'], 'order/d4bdunzo/quotation', 'Front\D4BDunzoController@quotation')->name('order.d4bdunzo.quotation');
 
-    Route::match (['get', 'post'], 'order/lalamoves/place-order', 'Front\LalaMovesController@placeOrder')->name('order.lalamoves.place_order');
+    Route::match(['get', 'post'], 'order/lalamoves/place-order', 'Front\LalaMovesController@placeOrder')->name('order.lalamoves.place_order');
 
 
-    Route::match (['get', 'post'], 'payment/payByCompany', 'Front\PayCompanyController@payByCompany')->name('payment.payByCompany');
+    Route::match(['get', 'post'], 'payment/payByCompany', 'Front\PayCompanyController@payByCompany')->name('payment.payByCompany');
 
 
     ////check Shiprocket
@@ -197,13 +197,13 @@ Route::group(['middleware' => ['domain']], function () {
     Route::get('payment/gcash/view', 'Front\GCashController@webView')->name('payment.gcash.webView');
 
     //plugnpay
-    Route::match (['get', 'post'], 'payment/plugnpay', 'Front\PlugnpayController@beforePayment')->name('payment.plugnpay.beforePayment');
+    Route::match(['get', 'post'], 'payment/plugnpay', 'Front\PlugnpayController@beforePayment')->name('payment.plugnpay.beforePayment');
 
     //azulpay
-    Route::match (['get', 'post'], 'payment/nmi', 'Front\NmiPaymentController@beforePayment')->name('nmi.pay');
+    Route::match(['get', 'post'], 'payment/nmi', 'Front\NmiPaymentController@beforePayment')->name('nmi.pay');
 
     //mpesasafari
-    Route::match (['get', 'post'], 'payment/mpesa', 'Front\MpesaSafariController@createPayment')->name('mpesasafari.pay');
+    Route::match(['get', 'post'], 'payment/mpesa', 'Front\MpesaSafariController@createPayment')->name('mpesasafari.pay');
 
     // obo-pay
     Route::post('before-payment/obo', 'Front\OboPaymentController@beforePayment')->name('obo.pay');
@@ -218,57 +218,57 @@ Route::group(['middleware' => ['domain']], function () {
     Route::get('getShippingMethod', 'Front\PincodeController@getShippingMethod')->name('pincode.getShippingMethod');
 
     //Simplify
-    Route::match (['get', 'post'], 'payment/simplify/page', 'Front\SimplifyController@beforePayment')->name('payment.simplify.beforePayment');
+    Route::match(['get', 'post'], 'payment/simplify/page', 'Front\SimplifyController@beforePayment')->name('payment.simplify.beforePayment');
     Route::post('payment/simplify', 'Front\SimplifyController@createPayment')->name('payment.simplify.createPayment');
 
     //azulpay
-    Route::match (['get', 'post'], 'payment/azulpay', 'Front\AzulPaymentController@beforePayment')->name('payment.azulpay.beforePayment');
-    Route::match (['get', 'post'], 'payment/get-cards', 'Front\AzulPaymentController@getUserCards')->name('payment.azulpay.getCards');
+    Route::match(['get', 'post'], 'payment/azulpay', 'Front\AzulPaymentController@beforePayment')->name('payment.azulpay.beforePayment');
+    Route::match(['get', 'post'], 'payment/get-cards', 'Front\AzulPaymentController@getUserCards')->name('payment.azulpay.getCards');
     Route::get('payment/get-user-cards', 'Front\AzulPaymentController@getCardList')->name('payment.user.cards');
     Route::get('payment/setDefaultCard/{id}', 'Front\AzulPaymentController@setDefaultCard')->name('setDefaultCard');
     Route::get('payment/deleteCard/{id}', 'Front\AzulPaymentController@deleteCard')->name('delete.azul.card');
 
     //Square
-    Route::match (['get', 'post'], 'payment/square/page', 'Front\SquareController@beforePayment')->name('payment.square.beforePayment');
+    Route::match(['get', 'post'], 'payment/square/page', 'Front\SquareController@beforePayment')->name('payment.square.beforePayment');
     Route::post('payment/square', 'Front\SquareController@createPayment')->name('payment.square.createPayment');
 
     //Braintree
-    Route::match (['get', 'post'], 'payment/braintree/page', 'Front\BraintreeController@beforePayment')->name('payment.braintree.beforePayment');
+    Route::match(['get', 'post'], 'payment/braintree/page', 'Front\BraintreeController@beforePayment')->name('payment.braintree.beforePayment');
     Route::post('payment/braintree', 'Front\BraintreeController@createPayment')->name('payment.braintree.createPayment');
 
     //Ozow
-    Route::match (['get', 'post'], 'payment/ozow/page', 'Front\OzowController@beforePayment')->name('payment.ozow.beforePayment');
+    Route::match(['get', 'post'], 'payment/ozow/page', 'Front\OzowController@beforePayment')->name('payment.ozow.beforePayment');
     Route::post('payment/ozow', 'Front\OzowController@createPayment')->name('payment.ozow.createPayment');
 
     //Pagarme
-    Route::match (['get', 'post'], 'payment/pagarme/page', 'Front\PagarmeController@beforePayment')->name('payment.pagarme.beforePayment');
+    Route::match(['get', 'post'], 'payment/pagarme/page', 'Front\PagarmeController@beforePayment')->name('payment.pagarme.beforePayment');
     Route::post('payment/pagarme', 'Front\PagarmeController@createPayment')->name('payment.pagarme.createPayment');
     Route::post('payment/pagarme/card', 'Front\PagarmeController@createPaymentCard')->name('payment.pagarme.createPaymentCard');
 
     //Authorize.Net
-    Route::match (['get', 'post'], 'payment/authorize_net/page', 'Front\AuthorizeGatewayController@beforePayment')->name('payment.authorize.beforePayment');
+    Route::match(['get', 'post'], 'payment/authorize_net/page', 'Front\AuthorizeGatewayController@beforePayment')->name('payment.authorize.beforePayment');
     Route::post('payment/authorize', 'Front\AuthorizeGatewayController@createPayment')->name('payment.authorize.createPayment');
 
     //Paytab
-    Route::match (['get', 'post'], 'payment/paytab/page', 'Front\PaytabController@beforePayment')->name('payment.paytab.beforePayment');
+    Route::match(['get', 'post'], 'payment/paytab/page', 'Front\PaytabController@beforePayment')->name('payment.paytab.beforePayment');
     Route::post('payment/paytab', 'Front\PaytabController@createPayment')->name('payment.paytab.createPayment');
 
     //UPay
-    Route::match (['get', 'post'], 'payment/upay/page', 'Front\UPayController@beforePayment')->name('payment.upay.beforePayment');
-    Route::match (['get', 'post'], 'payment/upay', 'Front\ConektaController@afterPayment')->name('payment.upay.afterPayment');
+    Route::match(['get', 'post'], 'payment/upay/page', 'Front\UPayController@beforePayment')->name('payment.upay.beforePayment');
+    Route::match(['get', 'post'], 'payment/upay', 'Front\ConektaController@afterPayment')->name('payment.upay.afterPayment');
     //Conekta
-    Route::match (['get', 'post'], 'payment/conekta/page', 'Front\ConektaController@beforePayment')->name('payment.conekta.beforePayment');
-    Route::match (['get', 'post'], 'payment/conekta/{status}/{payment_from}/{come_from}/{amount}/{order_number?}', 'Front\ConektaController@afterPayment')->name('payment.conekta.afterPayment');
+    Route::match(['get', 'post'], 'payment/conekta/page', 'Front\ConektaController@beforePayment')->name('payment.conekta.beforePayment');
+    Route::match(['get', 'post'], 'payment/conekta/{status}/{payment_from}/{come_from}/{amount}/{order_number?}', 'Front\ConektaController@afterPayment')->name('payment.conekta.afterPayment');
     //Telr
-    Route::match (['get', 'post'], 'payment/telr/page', 'Front\TelrController@beforePayment')->name('payment.telr.beforePayment');
-    Route::match (['get', 'post'], 'payment/telr/{status}/{payment_from}/{come_from}/{amount}/{order_number?}', 'Front\TelrController@afterPayment')->name('payment.telr.afterPayment');
+    Route::match(['get', 'post'], 'payment/telr/page', 'Front\TelrController@beforePayment')->name('payment.telr.beforePayment');
+    Route::match(['get', 'post'], 'payment/telr/{status}/{payment_from}/{come_from}/{amount}/{order_number?}', 'Front\TelrController@afterPayment')->name('payment.telr.afterPayment');
 
     //Coinbase
-    Route::match (['get', 'post'], 'payment/coinbase/page', 'Front\CoinbaseController@beforePayment')->name('payment.coinbase.beforePayment');
+    Route::match(['get', 'post'], 'payment/coinbase/page', 'Front\CoinbaseController@beforePayment')->name('payment.coinbase.beforePayment');
     Route::post('payment/coinbase', 'Front\CoinbaseController@createPayment')->name('payment.coinbase.createPayment');
 
     // toyyibpay
-    Route::match (['get', 'post'], 'payment/toyyib', 'Front\ToyyibPayController@index')->name('payment.toyyibpay.index');
+    Route::match(['get', 'post'], 'payment/toyyib', 'Front\ToyyibPayController@index')->name('payment.toyyibpay.index');
     //Route::post('payment/webhook/toyyib', 'Front\ToyyibPayController@webhook')->name('payment.webhook.toyyibpay');
 
     Route::post('payment/toyyib/callback', 'Front\ToyyibPayController@callback')->name('payment.toyyibpay.callback');
@@ -289,7 +289,7 @@ Route::group(['middleware' => ['domain']], function () {
     Route::get('/success-totalpay', 'Front\TotalpayController@paymentSuccessTotalpay');
     //hitpay
     Route::post('/make-hitpay-payment', 'Front\HitpayController@makePayment')->name('make.hitpay.payment');
-    // Route::get('/success-hitpay', 'Front\HitpayController@paymentSuccessHitpay');
+    Route::get('/success-hitpay', 'Front\HitpayController@responseAfterPayment')->name('success.hitpay');
     Route::any('payment/hitpay/webhook', 'Front\HitpayController@validateHitpayPayment')->name('hitpay.webhook');
     //thawani Payment Gateway
     Route::post('/pay-by-thawanipg', 'Front\ThawaniPaymentController@paybythawanipg')->name('pay-by-thawanipg');
@@ -300,10 +300,10 @@ Route::group(['middleware' => ['domain']], function () {
     Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');
 
     //VivaWallet routes
-    Route::match (['get', 'post'], 'payment/vivawallet/pay', 'Front\VivawalletController@createPayLink')->name('vivawallet.pay');
+    Route::match(['get', 'post'], 'payment/vivawallet/pay', 'Front\VivawalletController@createPayLink')->name('vivawallet.pay');
 
 
-    Route::match (['get', 'post'], 'viva/result', 'Front\VivawalletController@successPage')->name('viva.success');
+    Route::match(['get', 'post'], 'viva/result', 'Front\VivawalletController@successPage')->name('viva.success');
     Route::any('viva/webhook/success', 'Front\VivawalletController@verifyWebhookUrl')->name('viva.webhook');
 
     //ccavenue-pay
@@ -321,7 +321,7 @@ Route::group(['middleware' => ['domain']], function () {
 
     //Flutterwave routes
     Route::post('payment/flutterwave', 'Front\FlutterWaveController@createHash')->name('flutterwave.createHash');
-    Route::match (['get', 'post'], 'payment/flutter/success', 'Front\FlutterWaveController@successPage')->name('flutterwave.success');
+    Route::match(['get', 'post'], 'payment/flutter/success', 'Front\FlutterWaveController@successPage')->name('flutterwave.success');
 
     //Easypaisa routes
     Route::post('payment/easypaisa', 'Front\EasypaisaController@createHash')->name('easypaisa.createHash');
@@ -355,10 +355,10 @@ Route::group(['middleware' => ['domain']], function () {
     //KongaPay routes
     Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
     Route::any('payment/kongapay/api', 'Front\KongapayController@webViewPay')->name('kongapay.webview');
-    Route::match (['get', 'post'], 'payment/kongapay/result/{from?}', 'Front\KongapayController@completeOrderCart')->name('kongapay.successCart');
-    Route::match (['get', 'post'], 'payment/kongapay/walletResult', 'Front\KongapayController@completeOrderWallet')->name('kongapay.successWallet');
-    Route::match (['get', 'post'], 'payment/kongapay/tipResult', 'Front\KongapayController@completeOrderTip')->name('kongapay.successTip');
-    Route::match (['get', 'post'], 'payment/kongapay/subsResult', 'Front\KongapayController@completeOrderSubs')->name('kongapay.successSubs');
+    Route::match(['get', 'post'], 'payment/kongapay/result/{from?}', 'Front\KongapayController@completeOrderCart')->name('kongapay.successCart');
+    Route::match(['get', 'post'], 'payment/kongapay/walletResult', 'Front\KongapayController@completeOrderWallet')->name('kongapay.successWallet');
+    Route::match(['get', 'post'], 'payment/kongapay/tipResult', 'Front\KongapayController@completeOrderTip')->name('kongapay.successTip');
+    Route::match(['get', 'post'], 'payment/kongapay/subsResult', 'Front\KongapayController@completeOrderSubs')->name('kongapay.successSubs');
 
 
     Route::post('payment/yoco/app', 'Front\YocoGatewayController@yocoPurchaseApp')->name('payment.yocoPurchaseApp');
@@ -392,25 +392,25 @@ Route::group(['middleware' => ['domain']], function () {
     // EasebuzzController payment test
     Route::get('/easebuzz-gateway', 'Front\EasebuzzController@easebuzz_gateway')->name('easebuzz-gateway');
     Route::post('payment/easebuzz/request', 'Front\EasebuzzController@order')->name('easebuzz.order');
-    Route::match (['get', 'post'], 'easebuzz_respont', 'Front\EasebuzzController@easebuzz_respont')->name('easebuzz_respont');
+    Route::match(['get', 'post'], 'easebuzz_respont', 'Front\EasebuzzController@easebuzz_respont')->name('easebuzz_respont');
     Route::any('payment/easebuzz/notify', 'Front\EasebuzzController@easybuzzNotify')->name('payment.easebuzz.easybuzzNotify');
     Route::any('payment/easebuzz/api', 'Front\EasebuzzController@easebuzz_respontAPP')->name('easebuzz.webview');
 
     // UseRedePaymentController payment test
-    Route::match (['get', 'post'], 'payment/userede/page', 'Front\UseRedePaymentController@beforePayment')->name('payment.userede.beforePayment');
-    Route::match (['get', 'post'], '/payment/userede/respons', 'Front\UseRedePaymentController@responsUs')->name('payment.userede.responsUs');
+    Route::match(['get', 'post'], 'payment/userede/page', 'Front\UseRedePaymentController@beforePayment')->name('payment.userede.beforePayment');
+    Route::match(['get', 'post'], '/payment/userede/respons', 'Front\UseRedePaymentController@responsUs')->name('payment.userede.responsUs');
     Route::post('/payment/userede/payment_init', 'Front\UseRedePaymentController@paymentInit')->name('payment.userede.createPayment');
     Route::post('/payment/userede/payment_init_app', 'Front\UseRedePaymentController@paymentInitApp')->name('payment.userede.createPaymentApp');
 
     // OpenpayPaymentController payment test
-    Route::match (['get', 'post'], 'payment/opnepay/page', 'Front\OpenpayPaymentController@beforePayment')->name('payment.opnepay.beforePayment');
+    Route::match(['get', 'post'], 'payment/opnepay/page', 'Front\OpenpayPaymentController@beforePayment')->name('payment.opnepay.beforePayment');
     Route::post('/payment/opnepay/payment_init', 'Front\OpenpayPaymentController@paymentInit')->name('payment.opnepay.createPayment');
     Route::post('/payment/opnepay/payment_init_app', 'Front\OpenpayPaymentController@paymentInitApp')->name('payment.opnepay.createPaymentApp');
-    Route::match (['get', 'post'], 'payment/webhook/opnepay', 'Front\OpenpayPaymentController@opnepayWebhook')->name('payment.webhook.opnepay');
+    Route::match(['get', 'post'], 'payment/webhook/opnepay', 'Front\OpenpayPaymentController@opnepayWebhook')->name('payment.webhook.opnepay');
     // test VNPAY payment gateway
     Route::get('/vnpay-gateway', 'Front\VnpayController@VnPay_gateway')->name('vnpay-gateway');
     Route::post('payment/vnpay/request', 'Front\VnpayController@order')->name('vnpay.order');
-    Route::match (['get', 'post'], 'vnpay_respont', 'Front\VnpayController@vnpay_respont')->name('vnpay_respont');
+    Route::match(['get', 'post'], 'vnpay_respont', 'Front\VnpayController@vnpay_respont')->name('vnpay_respont');
     Route::any('payment/vnpay/notify', 'Front\VnpayController@VnpayNotify')->name('payment.vnpay.VnpayNotify');
     Route::any('payment/vnpay/api', 'Front\VnpayController@vnpay_respontAPP')->name('vnpay_respont_app');
 
@@ -535,7 +535,7 @@ Route::group(['middleware' => ['domain']], function () {
     Route::post('category/filters/{id}', 'Front\CategoryController@categoryFilters')->name('productFilters');
     Route::get('category_kycDocument', 'Front\CategoryController@getcategoryKycDocument')->name('getCategoryKycDocument');
     Route::get('vendor/all', 'Front\VendorController@viewAll')->name('vendor.all');
-    Route::match (['get', 'post'], 'vendor/{id?}', 'Front\VendorController@vendorProducts')->name('vendorDetail');
+    Route::match(['get', 'post'], 'vendor/{id?}', 'Front\VendorController@vendorProducts')->name('vendorDetail');
     Route::get('vendor/{slug1}/{slug2}', 'Front\VendorController@vendorCategoryProducts')->name('vendorCategoryProducts');
     Route::post('vendor/filters/{id}', 'Front\VendorController@vendorFilters')->name('vendorProductFilters');
     Route::post('vendor/products/searchResults', 'Front\VendorController@vendorProductsSearchResults')->name('vendorProductsSearchResults');
@@ -700,7 +700,6 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
         Route::get('get-replace-order-data-in-model', 'Front\ReturnOrderController@getReplaceOrderDatailModel')->name('getReplaceOrderDatailModel');
         Route::get('get-replace-products', 'Front\ReturnOrderController@getReplaceProducts')->name('get-replace-products');
         Route::post('update-product-replace', 'Front\ReturnOrderController@updateProductReplace')->name('update.order.replace');
-
     });
 
     // Rental Extend Routes
@@ -731,14 +730,11 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
         Route::post('create/user/bid_ride_request', 'Front\PickupDeliveryController@createBidRideRequest')->name('createBid');
         Route::post('order-ride-bid-details', 'Front\PickupDeliveryController@getBidsRelatedToOrderRide')->name('getBidsRelatedToOrderRide');
         Route::post('accept-ride-bid', 'Front\PickupDeliveryController@acceptBidsRelatedToBidRideOrderRide')->name('acceptBidByCustomer');
-
-
-
     });
     Route::post('upload-file', 'Front\RatingController@uploadFile')->name('uploadfile');
     //Passbase
     Route::get('passbase/page', 'Front\PassbaseController@index')->name('passbase.page');
-    Route::match (['get', 'post'], 'passbase/store', 'Front\PassbaseController@storeAuthkey')->name('passbase.store');
+    Route::match(['get', 'post'], 'passbase/store', 'Front\PassbaseController@storeAuthkey')->name('passbase.store');
     Route::get('user/chat/userVendor/{room_id?}', 'Front\ChatController@UservendorChat')->name("userChat.UservendorChat");
     Route::get('user/chat/userAgent/{room_id?}', 'Front\ChatController@UserAgentChat')->name("userChat.UserAgentChat");
     Route::get('user/chat/userToUser/{room_id?}', 'Front\ChatController@UserToUserChat')->name("userChat.UserToUserChat");
