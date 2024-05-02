@@ -139,7 +139,7 @@ class MastercardPaymentController extends Controller
         $sessionResponse->referenceId = $reference_id;
         if ($request->come_from == 'app') return response()->json([
             'status' => 'Success',
-            'data'   => sprintf('https://%s.mastercard.com/checkout/pay/%s?checkoutVersion=1.0.0', $this->gatewayUrl, $session_id)
+            'data'   => sprintf('https://%s/checkout/pay/%s?checkoutVersion=1.0.0', $this->gatewayUrl, $session_id)
         ]);
         return response()->json($sessionResponse);
     }
