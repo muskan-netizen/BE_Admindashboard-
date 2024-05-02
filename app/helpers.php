@@ -202,10 +202,8 @@ if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
 if (!function_exists('sendFcmCurlRequest')) {
     function sendFcmCurlRequest($data, $fcm_server_key = '')
     {
-
-        $fcm_server_key = ($fcm_server_key == '') ? ClientPreference::select('fcm_server_key')->first()->fcm_server_key : $fcm_server_key;
-
-        if (!empty($fcm_server_key)) {
+        $fcm_server_key = ($fcm_server_key =='') ? ClientPreference::select('fcm_server_key')->first()->fcm_server_key :  $fcm_server_key ;
+         if (!empty($fcm_server_key )) {
 
             $headers = [
                 'Authorization: key=' . $fcm_server_key,
@@ -223,7 +221,6 @@ if (!function_exists('sendFcmCurlRequest')) {
             //     die('Oops! FCM Send Error: ' . curl_error($ch));
             // }
             curl_close($ch);
-
             return $result;
         } else {
             return false;
@@ -2189,8 +2186,14 @@ if (!function_exists('recurringCalculationFunction')) {
         }
     }
 
+<<<<<<< HEAD
     if (!function_exists('productPriceAfterVendorDiscount')) {
         function productPriceAfterVendorDiscount($vendorData, $product_discount_amount, $doller_compare, $cart)
+=======
+    if (!function_exists('productPriceAfterVendorDiscount'))
+    {
+         function productPriceAfterVendorDiscount($vendorData,$product_discount_amount,$doller_compare,$cart)
+>>>>>>> b666247ec9428675a9bc51972be24d136631c571
         {
             $allProductsSum = 0;
             $cart_products = CartProduct::with(['product.variant', 'addon.option'])
@@ -2217,6 +2220,7 @@ if (!function_exists('recurringCalculationFunction')) {
             $PromoDelete = 0;
             $data['vendor_discount_amount'] = 0;
             $data['deliveryfeeOnCoupon'] = 0;
+<<<<<<< HEAD
             if (isset($vendorData->coupon) && !empty($vendorData->coupon)) {
                 if ($PromoDelete != 1) {
                     $minimum_spend = 0;
@@ -2232,16 +2236,32 @@ if (!function_exists('recurringCalculationFunction')) {
                             $data['vendor_discount_amount'] = $vendorData->coupon->promo->amount;
                         } else {
                             $data['vendor_discount_amount'] = ($product_discount_amount * $vendorData->coupon->promo->amount / 100);
+=======
+            if (isset($vendorData->coupon) && !empty($vendorData->coupon) )
+            {
+                if ( $PromoDelete !=1)
+                {
+                        $minimum_spend = 0;
+                        if (isset($vendorData->coupon->promo->minimum_spend)) {
+                            $minimum_spend = $vendorData->coupon->promo->minimum_spend * $doller_compare;
+                        }
+                        $maximum_spend = 0;
+                        if (isset($vendorData->coupon->promo->maximum_spend)) {
+                            $maximum_spend = $vendorData->coupon->promo->maximum_spend * $doller_compare;
+>>>>>>> b666247ec9428675a9bc51972be24d136631c571
                         }
                         if ($vendorData->coupon->promo->allow_free_delivery == 1) {
                             $data['deliveryfeeOnCoupon'] = 1;
                         }
+<<<<<<< HEAD
                     } else {
                         $cart->coupon()->delete();
                         $vendorData->coupon()->delete();
                         unset($vendorData->coupon);
                         return $data;
                     }
+=======
+>>>>>>> b666247ec9428675a9bc51972be24d136631c571
                 }
             }
             return $data ?? 0;
