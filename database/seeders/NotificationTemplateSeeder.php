@@ -141,6 +141,13 @@ class NotificationTemplateSeeder extends Seeder
                 'tags' => '',
                 'content' => 'Products are finishing! || You are running out of products!',
                 'slug' => 'product-stock-vendor'
+            ],
+            [
+                'label' =>'Order Cancelled (Vendor)',
+                'subject' => 'Order Cancelled',
+                'tags' => '{order_id}',
+                'content' => 'Your order ({order_id}) is canecelled by Admin',
+                'slug' => 'order-cancelled-vendor'
             ]
         ];
         NotificationTemplate::truncate();
