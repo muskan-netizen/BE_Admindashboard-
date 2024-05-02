@@ -1066,6 +1066,7 @@ class OrderController extends BaseController
                 if ($request->status_option_id == 2 || $request->status_option_id == 3) {
                     $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
                     AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
+                    $this->sendRejectNotificationToVendor("",$request->vendor_id, $request->order_id);
                 }
 
 
@@ -3486,5 +3487,60 @@ class OrderController extends BaseController
     {
         OrderDocument::where('id', $id)->delete();
         return redirect()->back()->with('success', 'Document Deleted Successfully');
+    }
+
+    public function sendRejectNotificationToVendor($domain, $vendorId, $orderNo)
+    {
+        $userIds = UserVendor::where('vendor_id', $vendorId)->pluck('user_id');
+        if (count($userIds) > 0) {
+            $orderNumber = Order::find($orderNo)->value('order_number');
+            $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $userIds)->pluck('device_token')->toArray();
+            // push notification
+            $client_preferences = ClientPreference::select('fcm_server_key', 'favicon', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
+            if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+                $notification_content = NotificationTemplate::where('id', 19)->first();
+                if ($notification_content) {
+                    $body_content = str_ireplace("{order_id}", "#" . $orderNumber, $notification_content->content);
+                    $redirect_URL['type'] = 4;
+                    $data = [
+                        "registration_ids" => $devices,
+                        "notification" => [
+                            'title' => $notification_content->subject,
+                            'body'  => $body_content,
+                            'sound' => "default",
+                            "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                            'click_action' => '',
+                            "android_channel_id" => "default-channel-id",
+                            "redirect_type" => $redirect_URL['type']
+                        ],
+                        "data" => [
+                            'title' => $notification_content->subject,
+                            'body'  => $body_content,
+                            "type" => "order_status_change",
+                            "order_id" => $orderNo,
+                            "vendor_id" => $vendorId ?? '',
+                            "order_status" => 3,
+                            "redirect_type" => $redirect_URL['type']
+                        ],
+                        "priority" => "high"
+                    ];
+                    sendFcmCurlRequest($data);
+                }
+            }
+            // for sms
+            $users = User::whereIN('id', $userIds)->select('id', 'phone_number', 'dial_code');
+            foreach ($users as $user) {
+                $keyData = ['{order_number}' => $orderNumberr ?? ''];
+                $body = sendSmsTemplate('order-canceled-vendor', $keyData);
+                if (!empty($client_preferences->sms_provider)) {
+                    if ($user->dial_code == "971") {
+                        $to = '+' . $user->dial_code . "0" . $user->phone_number;
+                    } else {
+                        $to = '+' . $user->dial_code . $user->phone_number;
+                    }
+                    $send = $this->sendSmsNew($client_preferences, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
+                }
+            }
+        }
     }
 }
