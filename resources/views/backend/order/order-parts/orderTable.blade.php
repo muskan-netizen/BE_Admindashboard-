@@ -1,4 +1,6 @@
     @if(count($orders['orders']) > 0)
+
+   
     @foreach ($orders['orders'] as $k => $order)
 
         <div class="{{$ClassName}} al_order_sec" id="full-order-div{{ $k }}">
@@ -210,11 +212,11 @@
                                                     </li>
                                                 @endif
 
-                                                @if ($vendor['taxable_amount'] > 0 || $vendor['taxable_amount'] < 0)
+                                                @if ($order->total_other_taxes_amount > 0 || $order->total_other_taxes_amount < 0)
                                                     <li class="d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Tax') }}</label>
-                                                        @if ($vendor['taxable_amount'] !== null)
-                                                            <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor['taxable_amount']) }}</span>
+                                                        @if ($order->total_other_taxes_amount !== null)
+                                                            <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($order->total_other_taxes_amount) }}</span>
                                                         @else
                                                             <span>{{ $clientCurrency->currency->symbol }}0.00</span>
                                                         @endif
@@ -267,11 +269,7 @@
 
                                                 <li class="grand_total d-flex align-items-center justify-content-between">
                                                     <label class="m-0">{{ __('Amount') }}</label>
-                                                    @if ($vendor['delivery_fee'] == '' || $vendor['delivery_fee'] == null)
-<!--                                                         {{ $vendor['delivery_fee'] = 0 }} -->
-                                                    @endif
-
-                                                    <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor['subtotal_amount'] - $vendor['discount_amount'] + $vendor['total_container_charges'] + $vendor['taxable_amount'] + $vendor['service_fee_percentage_amount'] + $vendor['fixed_fee'] + $vendor['delivery_fee'] + $vendor['additional_price'] + $vendor['toll_amount']-$order->wallet_amount_used) }}
+                                                    <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor['subtotal_amount'] - $vendor['discount_amount']  + $order->total_other_taxes_amount + $vendor['service_fee_percentage_amount'] + $vendor['fixed_fee'] + $vendor['delivery_fee'] + $vendor['additional_price'] + $vendor['toll_amount']-$order->wallet_amount_used) }}
                                                     </span>
                                                 </li>
                                             </ul>
@@ -281,9 +279,6 @@
 
                                     </a>
                                     <div id="update-single-status" class="my-2">
-
-
-
                                         @if ($vendor['order_status_option_id'] == 1)
                                             @if ($order->vendors->first()->exchanged_of_order)
                                                 <button class="update-status-ar btn-info"

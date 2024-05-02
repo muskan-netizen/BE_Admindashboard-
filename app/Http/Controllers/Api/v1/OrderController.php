@@ -915,9 +915,10 @@ class OrderController extends BaseController
                                 $vendor_discount_amount = $vendor_discount_amount +  $delivery_fee;
                                 $vendor_payable_amount = $vendor_payable_amount - $delivery_fee;
                                 $total_discount += $delivery_fee;
-                                $totalFreeDeliveryCharges += $delivery_fee;
+                                // $totalFreeDeliveryCharges += $delivery_fee;
                                 $deliveryfeeOnCoupon = 1;
                             }
+
                             if(isset($rate) && $total_discount > 0 ){
                                $discount = ($total_discount*$rate) / 100;
                                $vendor_taxable_amount -= $discount;
@@ -927,7 +928,7 @@ class OrderController extends BaseController
                         //Start applying service fee on vendor products total
                         $service_fee_percentage_amount = 0;
                         if ($vendor_cart_product->vendor->service_fee_percent > 0) {
-                            $service_fee_percentage_amount = (($vendor_products_total_amount-$total_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                            $service_fee_percentage_amount = (($actual_amount-$total_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
                             $vendor_service_fee_percentage_amount = $vendor_service_fee_percentage_amount + $service_fee_percentage_amount;
                             $vendor_payable_amount += $service_fee_percentage_amount;
                             $payable_amount += $service_fee_percentage_amount;
@@ -1034,7 +1035,7 @@ class OrderController extends BaseController
 
 
 
-                    if($vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
+                    if(@$vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
                         $date       = explode(",",$vendor_cart_product->recurring_day_data);
                         if($vendor_cart_product->recurring_booking_type == 1 ||$vendor_cart_product->recurring_booking_type == 2 || $vendor_cart_product->recurring_booking_type == 3 || $vendor_cart_product->recurring_booking_type == 4){
                             $days_count     =  count($date);
@@ -1057,7 +1058,6 @@ class OrderController extends BaseController
                     $order->total_discount = $total_discount;
                     $payable_amount = $payable_amount + $total_delivery_fee - $total_discount -$totalFreeDeliveryCharges;
 
-
                     if ($loyalty_amount_saved > 0) {
                         if ($loyalty_amount_saved > $payable_amount) {
                             $loyalty_amount_saved = $payable_amount;
@@ -1065,7 +1065,6 @@ class OrderController extends BaseController
                         }
                     }
                     $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved;
-
                     $ex_gateways_wallet = [4,36,40,41,22]; // stripe,mycash,userede,openpay
                     $wallet_amount_used = 0;
                     if ($user->balanceFloat > 0) {
@@ -1707,12 +1706,15 @@ class OrderController extends BaseController
                 if($order->is_postpay==1 && $order->payment_status == 0)
                 {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used + $order->tip_amount;
+                    $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used +$order->tip_amount;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
                 }
             }
+
+            $vendorProduct=OrderVendorProduct::where('order_id',$order->id)->first();
+            $tags = isset($vendorProduct->product)?$vendorProduct->product->tags:'';
 
             $team_tag = null;
             if (!empty($dispatch_domain->last_mile_team))
@@ -1774,6 +1776,7 @@ class OrderController extends BaseController
                 'cash_to_be_collected' => $payable_amount ?? 0.00,
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
+                'order_agent_tag' => $tags,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'is_restricted' => $order_vendor->is_restricted,
@@ -2994,7 +2997,6 @@ class OrderController extends BaseController
             $order['user_document_list'] =  $user_registration_documents;
             $order['category_KYC_document'] = $category_KYC_document??null;
             $order->slot_based_Price =  $slot_based_Price??0;
-
             return $this->successResponse($order, null, 201);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

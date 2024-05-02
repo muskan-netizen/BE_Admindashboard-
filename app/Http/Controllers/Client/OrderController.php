@@ -1991,13 +1991,12 @@ class OrderController extends BaseController
 
             if ($order->payment_option_id == 1 && ($order->payable_amount >0)) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $orderVendorDetails->payable_amount - $order->loyalty_amount_saved - $order->wallet_amount_used + $order->tip_amount;
+                $payable_amount = $orderVendorDetails->payable_amount - $order->loyalty_amount_saved - $order->wallet_amount_used +$order->tip_amount;
             } else {
-
                 if($order->is_postpay==1 && $order->payment_status == 0)
                 {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $orderVendorDetails->payable_amount- $order->loyalty_amount_saved - $order->wallet_amount_used + $order->tip_amount;
+                    $payable_amount = $orderVendorDetails->payable_amount- $order->loyalty_amount_saved - $order->wallet_amount_used+$order->tip_amount;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -2022,6 +2021,8 @@ class OrderController extends BaseController
             else {
                 $task_type = 'now';
             }
+            $vendorProduct=OrderVendorProduct::where('order_id',$order->id)->first();
+            $tags = isset($vendorProduct->product)?$vendorProduct->product->tags:'';
 
             if (!empty($orderVendorDetails->scheduled_date_time) && $orderVendorDetails->scheduled_date_time > 0) {
                 $task_type = 'schedule';
@@ -2035,11 +2036,8 @@ class OrderController extends BaseController
                 $schedule_time =  $scheduleDateTime ?? null;
             }
 
-
             if(checkColumnExists('orders', 'recurring_booking_type') && ($order->recurring_day_data != ""))
             {
-
-
                 $date       = explode(",",$order->recurring_day_data);
                 $start_date = $end_date = '';
                 if(isset($date[0])){
@@ -2111,6 +2109,7 @@ class OrderController extends BaseController
                             'order_number' => $order->order_number,
                             'barcode' => '',
                             'order_team_tag' => $team_tag,
+                            'order_agent_tag' => $tags,
                             'call_back_url' => $call_back_url ?? null,
                             'task' => $tasks,
                             'is_restricted' => $orderVendorDetails->is_restricted,
@@ -2215,6 +2214,7 @@ class OrderController extends BaseController
                 'order_number' => $order->order_number,
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
+                'order_agent_tag' => $tags,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'is_restricted' => $orderVendorDetails->is_restricted,

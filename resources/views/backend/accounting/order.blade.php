@@ -16,7 +16,11 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">{{ __('Orders') }}</h4>
+                    @php
+                        $ordermenu = getNomenclatureName('Orders', true);
+                        $ordermenulabel = ($ordermenu=="Orders")?__('Orders'):__($ordermenu);
+                    @endphp
+                    <h4 class="page-title">{{ __($ordermenulabel) }}</h4>
                 </div>
             </div>
         </div>
@@ -40,7 +44,12 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                         <i class="mdi mdi-cart-arrow-up text-primary mdi-24px"></i>
                                         <span data-plugin="counterup" id="total_order_count">{{$total_order_count}}</span>
                                     </h3>
-                                    <p class="text-muted font-15 mb-0">{{ __('Total Orders') }}</p>
+                                    @php
+                                        $ordermenu = getNomenclatureName('Orders', true);
+                                        $ordermenulabel = ($ordermenu=="Orders")?__('Orders'):__($ordermenu);
+
+                                    @endphp
+                                    <p class="text-muted font-15 mb-0">{{ __('Total '. $ordermenulabel) }}</p>
                                 </div>
                             </div>
                             <div class="col-6 col-md-3 mb-3 mb-md-0">

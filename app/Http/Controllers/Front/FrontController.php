@@ -195,7 +195,7 @@ class FrontController extends Controller
                         'sms_provider', 'sms_key', 'sms_secret', 'sms_from' )->first();
         $to = $request->to ? '+91'.$request->to :'+917508983302';
         $provider = $prefer->sms_provider;
-        $body = "Dear ".ucwords('Harbans').", Please enter OTP (12345) to verify your account.";
+        $body = "Dear ".ucwords('Rajat').", Please enter OTP (12345) to verify your account.";
        // $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
         // $to = '+917508983302';
         // $body = "this is test sms from codebrew";

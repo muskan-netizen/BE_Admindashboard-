@@ -1154,7 +1154,7 @@ trait CartManagerV2
 
                             }//End Pvariant condition
                          if($deliveryfeeOnCoupon == 1){
-                            $free_delivery_amount +=   $deliveryCharges_real;
+                            $free_delivery_amount =   $deliveryCharges_real;
 
                          }
                         $is_slot_from_dispatch =  $prod->product->is_slot_from_dispatch;
@@ -1394,7 +1394,6 @@ trait CartManagerV2
                             }
                         }
 
-
                         if(!isset($serviceArea)){
                             $vendorData->service_area_empty = 1;
                             $vendorData->isDeliverable = 0;
@@ -1414,8 +1413,6 @@ trait CartManagerV2
                             $subscription_discount_vendor   = $subscription_discount_arr['vendor'];
                             $subscription_discount_delivery = $subscription_discount_arr['delivery_discount'];
                         }
-
-                        // \Log::info($deliveryfee_ifnot_discounted);
                         // add total delivery fee
                         // if($vendorData->vendor->delivery_charges_tax_id)
                         $total_deliver_charges +=  $deliveryfee_ifnot_discounted;
@@ -1452,7 +1449,6 @@ trait CartManagerV2
                         {
                             $rental_price = $rental_price + $total_service_fee;
                         }
-
 
 
                 $vendorData->coupon_amount_used = decimal_format($coupon_amount_used);
@@ -1545,8 +1541,6 @@ trait CartManagerV2
                 $total_subscription_discount_vendor    = $total_subscription_discount_vendor + $subscription_discount_vendor;
                 $total_subscription_discount_delivery  = $total_subscription_discount_delivery + $subscription_discount_delivery;
                 $vendorData->is_promo_code_available = $is_promo_code_available;
-
-
 
                 $taxChargeable['deliveryCharges'] = $total_deliver_charges;
                 $taxChargeable['vendor_service_fee_percentage_amount'] = $total_service_fee;
@@ -1765,7 +1759,7 @@ trait CartManagerV2
             $cart->address_id = $address_id??'';
             $cart->bid_total_discount = $bid_total_discount??0;
             $total_gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount + $total_container_charges);
-            // $gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount + $total_container_charges);
+          //  $gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount + $total_container_charges);
             $other_taxes = array_sum($taxCharges);
             $other_taxes_string = 'tax_fixed_fee:' . $taxCharges['total_fixed_fee_tax'] . ',tax_service_charges:' . $taxCharges['total_service_fee'] . ',tax_delivery_charges:' . $taxCharges['deliver_fee_charges'] . ',tax_markup_fee:' . $taxCharges['total_markup_fee_tax'] . ',product_tax_fee:' . $total_taxable_amount;;
 

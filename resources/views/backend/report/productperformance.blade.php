@@ -12,8 +12,13 @@
     <!-- start page title -->
     <div class="row">
         <div class="col-12">
+            @php
+                $productmenu = getNomenclatureName('Products', true);
+                $productmenulabel = ($productmenu=="Products")?__('Products'):__($productmenu);
+
+            @endphp
             <div class="page-title-box">
-                <h4 class="page-title">{{ __("Product Performance Report") }}</h4>
+                <h4 class="page-title">{{ __($productmenulabel. " Performance Report") }}</h4>
             </div>
         </div>
     </div>
@@ -68,19 +73,19 @@
                                 <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
                                     <li class="nav-item">
                                         <a class="nav-link active" id="top_performing_products_tab" data-toggle="tab" href="#top_performing_products" role="tab" aria-selected="false" data-rel="top_performing_products">
-                                            <i class="icofont icofont-man-in-glasses"></i>{{ __('Top Performing Products') }} <sup class="total-items" id="totalitem_sup1"></sup>
+                                            <i class="icofont icofont-man-in-glasses"></i>{{ __('Top Performing '.$productmenulabel) }} <sup class="total-items" id="totalitem_sup1"></sup>
                                         </a>
                                         <div class="material-border"></div>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" id="most_wishlist_products_tab" data-toggle="tab" href="#most_wishlist_products" role="tab" aria-selected="true" data-rel="most_wishlist_products">
-                                            <i class="icofont icofont-ui-home"></i>{{ __('Most Wishlist Product') }} <sup class="total-items" id="totalitem_sup2"></sup>
+                                            <i class="icofont icofont-ui-home"></i>{{ __('Most Wishlist '.$productmenulabel) }} <sup class="total-items" id="totalitem_sup2"></sup>
                                         </a>
                                         <div class="material-border"></div>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" id="most_refunded_products_tab" data-toggle="tab" href="#most_refunded_products" role="tab" aria-selected="false" data-rel="most_refunded_products">
-                                            <i class="icofont icofont-man-in-glasses"></i>{{ __('Most Refunded Product') }} <sup class="total-items" id="totalitem_sup3"></sup>
+                                            <i class="icofont icofont-man-in-glasses"></i>{{ __('Most Refunded '.$productmenulabel) }} <sup class="total-items" id="totalitem_sup3"></sup>
                                         </a>
                                         <div class="material-border"></div>
                                     </li>
@@ -96,7 +101,7 @@
                                                             <th width="10%">{{ __("S.No") }}</th>
                                                             <th width="30%">{{ __("Product") }}</th>
                                                             <th width="30%">{{ __("Vendor") }}</th>
-                                                            <th width="30%">{{ __("No. Of Products") }}</th>
+                                                            <th width="30%">{{ __("No. Of ".$productmenulabel) }}</th>
                                                         </tr>
                                                         </thead>
                                                         <tbody id="tbody_tab1">

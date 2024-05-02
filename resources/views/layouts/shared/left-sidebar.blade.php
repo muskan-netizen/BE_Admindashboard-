@@ -2,7 +2,7 @@
     $getAdditionalPreference = getAdditionalPreference(['is_seller_module','is_gift_card','is_marg_enable','is_vendor_marg_configuration','is_car_rental_enable']);
 @endphp
 <div class="left-side-menu">
-    <div class="logo-box   d-lg-block" style="height: auto">
+    <div class="logo-box d-lg-block" style="height: auto">
         @php
             $urlImg = URL::to('/').'/assets/images/users/user-1.jpg';
             $clientData = \App\Models\Client::select('id', 'logo','dark_logo','socket_url')->first();
@@ -80,8 +80,13 @@
                  @if(Auth::user()->is_admin || Auth::user()->is_superadmin )
                 <li>
                     <a class="menu-title pl-1" href="#">
+                        @php
+                            $ordermenu = getNomenclatureName('Orders', true);
+                            $ordermenulabel = ($ordermenu=="Orders")?__('Orders'):__($ordermenu);
+
+                        @endphp
                         <!-- <span class="icon-orders"></span> -->
-                        <span>{{ __('ORDERS') }}</span>
+                        <span>{{ __(ucwords($ordermenulabel)) }}</span>
                     </a>
                     <ul class="nav-second-level p-0 mx-2">
                             @if(@auth()->user()->can('dashboard-view') || Auth::user()->is_superadmin == 1)
@@ -194,7 +199,7 @@
                                             </li>
                                             @if(@auth()->user()->can('accounting-orders') || Auth::user()->is_superadmin == 1)
                                                 <li>
-                                                    <a href="{{route('account.orders')}}">{{ __('Orders') }}</a>
+                                                    <a href="{{route('account.orders')}}">{{ __($ordermenulabel) }}</a>
                                                 </li>
                                             @endif
                                             @if(@auth()->user()->can('accounting-loyalty-cards') || Auth::user()->is_superadmin == 1)
@@ -293,14 +298,19 @@
                                 <div class="collapse" id="sidebarreports">
                                     <ul class="nav-second-level">
                                         @if(@auth()->user()->can('review-view') || Auth::user()->is_superadmin == 1)
+                                        @php
+                                            $productmenu = getNomenclatureName('Products', true);
+                                            $productmenulabel = ($productmenu=="Products")?__('Products'):__($productmenu);
+
+                                        @endphp
                                         <li>
-                                            <a href="{{route('review.index')}}">{{ __('Product Reviews') }}</a>
+                                            <a href="{{route('review.index')}}">{{ __($productmenulabel. ' Reviews') }}</a>
                                         </li>
                                         @endif
 
                                         @if(@auth()->user()->can('review-product-performance') || Auth::user()->is_superadmin == 1)
                                         <li>
-                                            <a href="{{route('report.productperformance')}}">{{ __("Product Performance Report") }}</a>
+                                            <a href="{{route('report.productperformance')}}">{{ __($productmenulabel. " Performance Report") }}</a>
                                         </li>
                                         @endif
                                     </ul>

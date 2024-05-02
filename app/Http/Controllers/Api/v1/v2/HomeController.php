@@ -140,7 +140,7 @@ class HomeController extends BaseController
 
             $categoryTypes = getServiceTypesCategory($type);
 
-            $this->venderFilterOpenClose   = $request->has('open_close_vendor') && $request->open_close_vendor ? $request->open_close_vendor : null;
+            $this->venderFilterOpenClose   = isset($request->open_close_vendor) ? $request->open_close_vendor : null;
             $this->venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
             $clientPreferences = ClientPreference::first();
 
@@ -201,7 +201,7 @@ class HomeController extends BaseController
             } else {
 
 
-            $mobile_banners = MobileBanner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
+            $mobile_banners = MobileBanner::with(['category','category.type', 'vendor'])->where('status', 1)->where('validity_on', 1)
                 ->where(function ($q) {
                     $q->whereNull('start_date_time')->orWhere(function ($q2) {
                         $q2->whereDate('start_date_time', '<=', Carbon::now())
@@ -380,15 +380,13 @@ class HomeController extends BaseController
         }
 
             return $this->successResponse($homeData);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
 
-
     public function getSubcategoryVendor(Request $request, $domain = '')
     {
-
         try {
             $home = array();
             $vendor_ids = array();
@@ -512,7 +510,6 @@ class HomeController extends BaseController
                 'proxy_url'=> \Config::get('app.IMG_URL2')
             ];
 
-
             $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
             $homeData = ['homePageLabels' => $home_page_labels, 'reqData' => $request->all(), 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude, 'enable_layout' => $enable_layout,'image_prefix' => $image_const_arr];
             $homeData['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
@@ -521,13 +518,10 @@ class HomeController extends BaseController
             $homeData['banner_image'] = $banners??[];
             //$homeData['categories'] = $categories;
             return $this->successResponse($homeData);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
-
-
-
 
     /** return dashboard content like categories, vendors, brands, products     */
     /**
@@ -958,7 +952,6 @@ class HomeController extends BaseController
         }
         /**  Get cities end */
 
-
         /** Respose data */
         $data = [
             'vendor_ids' =>$vendor_ids,
@@ -995,12 +988,8 @@ class HomeController extends BaseController
                 'most_popular_products'  => (!empty($popular_products) && count($popular_products) > 0) ? $popular_products : [],
                 'recent_orders' => $activeOrders,
             ];
-            // dd( $data);
             return $data;
         }
-
-
-
         return $this->successResponse($data);
     }
 
@@ -1039,15 +1028,16 @@ class HomeController extends BaseController
                 ])->select('id', 'sku', 'title', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only', 'spotlight_deals')->where('spotlight_deals', 1)->paginate(15);
             }
             return $this->successResponse($selected_products);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
     public function searchCategories($langId, $keyword, $limit, $page)
     {
+
         // $orderBy = "";
         // foreach ($keyword as $key=>$word) {
-        //     $orderBy .= " WHEN cts.name LIKE '$word%' THEN ".$key."  ";
+        //     $orderBy .= " WHEN cts.name LIKE '$keyword%' THEN ".$key."  ";
         // }
         $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
             ->leftjoin('types', 'types.id', 'categories.type_id')
@@ -1064,8 +1054,8 @@ class HomeController extends BaseController
                 //         ->orWhere('cts.trans-slug', 'LIKE', $word . '%');
                 // }
                 $q->where('cts.name', 'LIKE', '%' . $keyword . '%')
-                ->orWhere('categories.slug', 'LIKE', '%' . $keyword . '%')
-                ->orWhere('cts.trans-slug', 'LIKE', '%' . $keyword . '%');
+                            ->orWhere('categories.slug', 'LIKE', '%' . $keyword . '%')
+                            ->orWhere('cts.trans-slug', 'LIKE', '%' . $keyword . '%');
             });
             // if(@$orderBy){
             //     $categories = $categories->orderByRaw("CASE ".$orderBy." ELSE 10 END, cts.name");
@@ -1134,7 +1124,6 @@ class HomeController extends BaseController
             }
         }
 
-
         $vendors = $vendors->where(function ($q) use ($keyword) {
             // foreach ($keyword as $word) {
             //     $q->orwhere('name', 'LIKE', '%'.$word . '%')->orWhere('address', 'LIKE', '%'.$word . '%');
@@ -1151,6 +1140,25 @@ class HomeController extends BaseController
         foreach ($vendors as $vendor) {
             $vendor->response_type = 'vendor';
             $vendor->image_url = $vendor->logo['proxy_url'] . '80/80' . $vendor->logo['image_path'];
+            $vendor->is_vendor_closed = 0;
+            if ($vendor->show_slot == 0) {
+                if (($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty())) {
+                    $vendor->is_vendor_closed = 1;
+                } else {
+                    $vendor->is_vendor_closed = 0;
+                    if ($vendor->slotDate->isNotEmpty()) {
+                        if ($vendor->slotDate->first()->start_time != '' && $vendor->slotDate->first()->end_time != '') {
+                            $vendor->opening_time  = date('g:i A', strtotime($vendor->slotDate->first()->start_time));
+                            $vendor->closing_time = date('g:i A', strtotime($vendor->slotDate->first()->end_time));
+                        }
+                    } elseif ($vendor->slot->isNotEmpty()) {
+                        if ($vendor->slot->first()->start_time && $vendor->slot->first()->end_time) {
+                            $vendor->opening_time = date('g:i A', strtotime($vendor->slot->first()->start_time));
+                            $vendor->closing_time = date('g:i A', strtotime($vendor->slot->first()->end_time));
+                        }
+                    }
+                }
+            }
             $vendor_results[] = $vendor;
         }
 
@@ -1233,9 +1241,17 @@ class HomeController extends BaseController
             // }
         $products = $products->paginate($limit, $page);
         $product_results = [];
+        $user = Auth::user();
+        $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+        
         foreach ($products as $product) {
             $product->response_type = 'product';
             $product->image_url = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
+            foreach ($product->variant as $key => $value) {
+                $product->variant[$key]->multiplier = $clientCurrency->doller_compare;
+                $product->variant[$key]->price *= $product->variant[$key]->multiplier;
+                $product->variant[$key]->compare_at_price *= $product->variant[$key]->multiplier;
+            }
             $product_results[] = $product;
         }
         if (@$product_results) {
@@ -1276,7 +1292,6 @@ class HomeController extends BaseController
     {
         try {
             $for = $request->view_type ?? 'all';
-
             // $keyword = $this->createSearchKeywords($request);
             $keyword = $request->keyword;
             // Display the results

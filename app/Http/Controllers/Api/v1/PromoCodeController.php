@@ -242,6 +242,10 @@ class PromoCodeController extends Controller{
             if($order_vendor_user_promo_count >= $promo_code->limit_per_user){
                 return $this->errorResponse('Coupon Code already applied.', 422);
             }
+            $order_vendor_user_promo_count = OrderVendor::where(['coupon_id' => $request->coupon_id])->count();
+            if($order_vendor_user_promo_count >= $promo_code->limit_total){
+                return $this->errorResponse(__('Coupon Code limit has been reached.'), 422);
+            }
 
             $order_vendor_user_promo_count = OrderVendor::where(['coupon_id' => $request->coupon_id])->count();
             if($order_vendor_user_promo_count >= $promo_code->limit_total){
@@ -262,7 +266,7 @@ class PromoCodeController extends Controller{
             $cart_coupon->coupon_id = $request->coupon_id;
             $cart_coupon->save();
             return $this->successResponse($cart_coupon, __('Promotion Code Used Successfully'), 201);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
@@ -328,7 +332,7 @@ class PromoCodeController extends Controller{
                 return $this->errorResponse('Coupon Code already applied.', 422);
             }
 
-            $order_vendor_user_promo_count = OrderVendor::where(['coupon_id' => $request->promocode])->count();
+            $order_vendor_user_promo_count = OrderVendor::where(['coupon_code' => $request->promocode])->count();
             if($order_vendor_user_promo_count >= $promo_code->limit_total){
                 return $this->errorResponse(__('Coupon Code limit has been reached.'), 422);
             }

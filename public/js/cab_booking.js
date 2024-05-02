@@ -439,7 +439,7 @@ $(document).ready(function () {
                     let order_id = response.data.id;
                     let order_number = response.data.order_number;
                     let reload_route = response.data.route;
-                    
+
                     if((payment_option_id == 1) || (payment_option_id == 2)){
                         // placeOrderBeforePayment('',payment_option_id,0,order_number);
                         window.location.replace(response.data.route);
@@ -452,24 +452,24 @@ $(document).ready(function () {
                         //     getDriverDetails(response.data.dispatch_traking_url)
                         // },3000);
                     }else if(payment_option_id == 3){
-                        let payment_form = "pickup_delivery";
-                         $.ajax({
-                             type: "POST",
-                             dataType: 'json',
-                             url: payment_paypal_url,
-                             data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: totalamount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,stripe_token: stripe_token , payment_form : payment_form,reload_route: reload_route,ordernumber:order_number,order_id:order_id },
-                             success: function(resp) {
-                                 if (resp.status == 'Success') {
-                                     window.location.replace(resp.data);
-                                 }
-                             },
-                             error: function(error) {
-                                 $('#show_error_of_booking').html(response.message);
- 
-                                 var response = $.parseJSON(error.responseText);
-                             }
-                     });
-                    }else if(payment_option_id == 4){
+                       let payment_form = "pickup_delivery";
+                        $.ajax({
+                            type: "POST",
+                            dataType: 'json',
+                            url: payment_paypal_url,
+                            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: totalamount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,stripe_token: stripe_token , payment_form : payment_form,reload_route: reload_route,ordernumber:order_number,order_id:order_id },
+                            success: function(resp) {
+                                if (resp.status == 'Success') {
+                                    window.location.replace(resp.data);
+                                }
+                            },
+                            error: function(error) {
+                                $('#show_error_of_booking').html(response.message);
+
+                                var response = $.parseJSON(error.responseText);
+                            }
+                    });
+                } else if(payment_option_id == 4){
                         var stripe_token = $('#stripe_token').val();
                         let payment_form = "pickup_delivery";
 
@@ -1338,6 +1338,13 @@ $(document).ready(function () {
                     }
                     $('.cab-detail-box #real_amount').text(response.data.currency_symbol+''+current_amount);
                 }
+            },
+            error: function (reject) {
+                if (reject.status === 422) {
+                    var message = $.parseJSON(reject.responseText);
+                    sweetAlert.error(message.message,"");
+                  //  $(".invalid-feedback.manual_promocode").html("<strong>" + message.message + "</strong>");
+                }
             }
         });
     });
@@ -1447,7 +1454,7 @@ $(document).ready(function () {
                             let particular_driver_template = _.template($('#particular_driver_template').html());
                             $("#cab_detail_box").append(particular_driver_template(cabData)).show();
                         }else{
-                           
+
                             let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
                             $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
                         }

@@ -1483,8 +1483,7 @@
                                             <label class="custom-control-label" for="is_gift"><img
                                                     class="pr-1 align-middle blur-up lazyload"
                                                     data-src="{{ asset('assets/images/gifts_icon.png') }}"
-                                                    alt=""> <span class="align-middle pt-1">
-                                                    {{ __('Does this include a gift?') }}</span></label>
+                                                    alt=""> <span class="align-middle pt-1">{{getNomenclatureName('Include Gift', true)}}</span></label>
                                         </div>
                                     </div>
                                 </div>
