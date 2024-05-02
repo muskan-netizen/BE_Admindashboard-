@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Api\v1;
 use Auth;
 use Omnipay\Omnipay;
 use Illuminate\Http\Request;
-use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{PaymentOption, Cart, Client, ClientPreference, ClientCurrency, SubscriptionPlansUser};
+use App\Models\{PaymentOption, Cart, ClientCurrency, SubscriptionPlansUser};
 
 class PaystackGatewayController extends BaseController
 {
@@ -28,7 +27,6 @@ class PaystackGatewayController extends BaseController
         $this->gateway->setSecretKey($secret_key);
         $this->gateway->setPublicKey($public_key);
         $this->gateway->setTestMode($testmode); //set it to 'false' when go live
-        // dd($this->gateway);
 
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
@@ -49,7 +47,7 @@ class PaystackGatewayController extends BaseController
             $meta_data = array();
             $reference_number = $description = $returnUrlParams = '';
             $returnUrl = $request->serverUrl . 'payment/paystack/completePurchase/app?amount='.$amount.'&status=200&gateway=paystack&action='.$request->action;
-            $cancelUrl = $request->serverUrl . 'payment/paystack/cancelPurchase/app?status=0&gateway=paystack&action='.$request->action;
+            $cancelUrl = $request->serverUrl . 'payment/paystack/cancelPurchase/app?status=0&gateway=paystack&action='.$request->action.'&order_number='. $request->order_number;
 
             if($request->payment_form == 'cart'){
                 $description = 'Order Checkout';

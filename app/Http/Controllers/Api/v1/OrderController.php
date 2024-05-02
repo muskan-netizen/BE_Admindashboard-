@@ -915,10 +915,10 @@ class OrderController extends BaseController
                                 $vendor_discount_amount = $vendor_discount_amount +  $delivery_fee;
                                 $vendor_payable_amount = $vendor_payable_amount - $delivery_fee;
                                 $total_discount += $delivery_fee;
-                                $totalFreeDeliveryCharges += $delivery_fee;
+                                // $totalFreeDeliveryCharges += $delivery_fee;
                                 $deliveryfeeOnCoupon = 1;
                             }
-                            
+
                             if(isset($rate) && $total_discount > 0 ){
                                $discount = ($total_discount*$rate) / 100;
                                $vendor_taxable_amount -= $discount;
@@ -1035,7 +1035,7 @@ class OrderController extends BaseController
 
 
 
-                    if($vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
+                    if(@$vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
                         $date       = explode(",",$vendor_cart_product->recurring_day_data);
                         if($vendor_cart_product->recurring_booking_type == 1 ||$vendor_cart_product->recurring_booking_type == 2 || $vendor_cart_product->recurring_booking_type == 3 || $vendor_cart_product->recurring_booking_type == 4){
                             $days_count     =  count($date);
@@ -1058,7 +1058,6 @@ class OrderController extends BaseController
                     $order->total_discount = $total_discount;
                     $payable_amount = $payable_amount + $total_delivery_fee - $total_discount -$totalFreeDeliveryCharges;
 
-
                     if ($loyalty_amount_saved > 0) {
                         if ($loyalty_amount_saved > $payable_amount) {
                             $loyalty_amount_saved = $payable_amount;
@@ -1066,7 +1065,6 @@ class OrderController extends BaseController
                         }
                     }
                     $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved;
-
                     $ex_gateways_wallet = [4,36,40,41,22]; // stripe,mycash,userede,openpay
                     $wallet_amount_used = 0;
                     if ($user->balanceFloat > 0) {
@@ -1715,6 +1713,9 @@ class OrderController extends BaseController
                 }
             }
 
+            $vendorProduct=OrderVendorProduct::where('order_id',$order->id)->first();
+            $tags = isset($vendorProduct->product)?$vendorProduct->product->tags:'';
+
             $team_tag = null;
             if (!empty($dispatch_domain->last_mile_team))
                 $team_tag = $dispatch_domain->last_mile_team;
@@ -1775,6 +1776,7 @@ class OrderController extends BaseController
                 'cash_to_be_collected' => $payable_amount ?? 0.00,
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
+                'order_agent_tag' => $tags,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'is_restricted' => $order_vendor->is_restricted,
@@ -3954,63 +3956,62 @@ class OrderController extends BaseController
     {
 
         $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
-
-        $vendorAppDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
-
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon','vendor_fcm_server_key')->first();
+        $from = '';
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-            $notification_content = NotificationTemplate::where('id', 4)->first();
-            $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
-            if ($notification_content) {
-                if($header_code == ''){
-                    $header_code = Client::orderBy('id', 'asc')->first()->code;
-                }
-                $code = $header_code;
-                $client = Client::where('code', $code)->first();
-                $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/client/order";
+            $from = $client_preferences->fcm_server_key;
+        }
+        $notification_content = NotificationTemplate::where('id', 4)->first();
+        $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
+        if ($notification_content) {
+            if($header_code == ''){
+                $header_code = Client::orderBy('id', 'asc')->first()->code;
+            }
+            $code = $header_code;
+            $client = Client::where('code', $code)->first();
+            $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/client/order";
 
-                 //Order Notifications Logs
-                    OrderNotificationsLogs::updateOrCreate([
-                        'order_vendor_id'=> $orderData->vendors[0]->id
-                            ],[
-                        'user_id' => auth()->id(),
-                        'order_number'=> $orderData->order_number,
-                        'vendor_id'=> $orderData->vendors[0]->vendor_id,
-                        'order_vendor_id'=> $orderData->vendors[0]->id,
-                        'order_id'=> $orderData->id,
-                        'message'=> $body_content .', <a href="'.$redirect_URL.'">#'.$orderData->order_number.'</a>'
-                    ]);
+            //Order Notifications Logs
+            OrderNotificationsLogs::updateOrCreate([
+                'order_vendor_id'=> $orderData->vendors[0]->id
+                    ],[
+                'user_id' => auth()->id(),
+                'order_number'=> $orderData->order_number,
+                'vendor_id'=> $orderData->vendors[0]->vendor_id,
+                'order_vendor_id'=> $orderData->vendors[0]->id,
+                'order_id'=> $orderData->id,
+                'message'=> $body_content .', <a href="'.$redirect_URL.'">#'.$orderData->order_number.'</a>'
+            ]);
 
-                $data = [
-                    "registration_ids" => $devices,
-                    "notification" => [
-                        'title' => $notification_content->subject,
-                        'body'  => $body_content,
-                        'sound' => "notification.wav",
-                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                       // 'click_action' => $redirect_URL,
-                        "android_channel_id" => "sound-channel-id"
-                    ],
-                    "data" => [
-                        'title' => $notification_content->subject,
-                        'body'  => $notification_content->content,
-                        'data' => $orderData,
-                        'order_id' => $orderData->id,
-                        'type' => "order_created"
-                    ],
-                    "priority" => "high"
-                ];
+            $data = [
+                "registration_ids" => $devices,
+                "notification" => [
+                    'title' => $notification_content->subject,
+                    'body'  => $body_content,
+                    'sound' => "notification.wav",
+                    "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                    // 'click_action' => $redirect_URL,
+                    "android_channel_id" => "sound-channel-id"
+                ],
+                "data" => [
+                    'title' => $notification_content->subject,
+                    'body'  => $notification_content->content,
+                    'data' => $orderData,
+                    'order_id' => $orderData->id,
+                    'type' => "order_created"
+                ],
+                "priority" => "high"
+            ];
+            if (!empty($from)) {
                 sendFcmCurlRequest($data);
             }
-        }
-        // Individual Vendor App User Token
-        $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
-        if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
-            $from = $client_preferences->vendor_fcm_server_key;
-            $data['registration_ids'] = $vendorAppUserDevices;
-
-            $result = sendFcmCurlRequest($data,$from );
+            $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+            if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
+                $from = $client_preferences->vendor_fcm_server_key;
+                $data['registration_ids'] = $vendorAppUserDevices;
+                $result = sendFcmCurlRequest($data,$from);
+            }
         }
     }
 

@@ -50,7 +50,7 @@ $(function () {
         dots: false,
         infinite: true,
         speed: 300,
-        slidesToShow: 4,
+        slidesToShow: 6,
         slidesToScroll: 3,
         responsive: [
             {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,infinite: true}},

@@ -500,7 +500,7 @@ class CategoryController extends FrontController{
                     $vendors = Session::get('vendors');
                 }
             }
-            $products = Product::with(['vendor', 'media.image', 'category', 'ProductAttribute',
+            $products = Product::with(['vendor','media.image', 'category', 'ProductAttribute',
                         'translation' => function($q) use($langId){
                           $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                           $q->groupBy('language_id','product_id');
@@ -510,7 +510,9 @@ class CategoryController extends FrontController{
                             $q->groupBy('product_id');
                         },'variant.checkIfInCart'])
                         ->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating', 'products.inquiry_only','products.minimum_order_count','products.batch_count','products.updated_at')
-                        ->where('products.is_live', 1)
+                        ->where('products.is_live', 1)->whereHas('vendor',function($q){
+                            $q->where('status',1);
+                        })
                         ->where('products.category_id', $category_id);
             if (!in_array(strtolower($type), ['rental service', 'p2p'])) {
                 $products = $products->whereIn('products.vendor_id', $vendors);
