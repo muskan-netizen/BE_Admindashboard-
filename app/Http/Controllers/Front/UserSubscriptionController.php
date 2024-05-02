@@ -216,7 +216,6 @@ class UserSubscriptionController extends FrontController
             ->where('user_id', $user->id)
             ->where('subscription_id', $subscription_plan->id)
             ->orderBy('end_date', 'desc')->first();
-        return $last_subscription;
         if( ($user) && ($subscription_plan) ){
             $subscription_invoice = new SubscriptionInvoicesUser;
             $subscription_invoice->user_id = $user->id;

@@ -3798,8 +3798,7 @@
         function smsChange() {
             var id = $("#sms_provider").find(':selected').attr('data-id');
             $('.sms_fields').css('display', 'none');
-            $('#' + id).css('dis fncChange();play', 'flex');
-            console.log(id);
+            $('#' + id).css('display', 'flex');
         }
 
         var square_enable_status_switch = $('#gofrugal_enable_status_switch');
