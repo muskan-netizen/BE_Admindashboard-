@@ -466,10 +466,6 @@ trait ProductActionTrait{
                     $completeWhere .= ' AND  `products`.`id` IN  ('.$single_category_product_ids.')';
                 }
             }
-            $order_by_random = ' ';
-            if( trim($completeWhere) == ''){
-                $order_by_random = ' ORDER BY RAND() ';
-            }
 
 
             $raw_query = "SELECT
@@ -549,7 +545,6 @@ trait ProductActionTrait{
             $getSubCatIdsIn
             $whereProductType
             GROUP BY `products`.`id`
-            $order_by_random
              LIMIT 6";
 
 
