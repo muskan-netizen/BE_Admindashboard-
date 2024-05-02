@@ -194,9 +194,7 @@ if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
 if (!function_exists('sendFcmCurlRequest')) {
     function sendFcmCurlRequest($data ,$fcm_server_key = '')
     {
-
         $fcm_server_key = ($fcm_server_key =='') ? ClientPreference::select('fcm_server_key')->first()->fcm_server_key :  $fcm_server_key ;
-
          if (!empty($fcm_server_key )) {
 
             $headers = [
@@ -215,7 +213,6 @@ if (!function_exists('sendFcmCurlRequest')) {
             //     die('Oops! FCM Send Error: ' . curl_error($ch));
             // }
             curl_close($ch);
-
             return $result;
         } else {
             return false;
@@ -2149,7 +2146,7 @@ if (!function_exists('recurringCalculationFunction')) {
         }
     }
 
-    if (!function_exists('productPriceAfterVendorDiscount')) 
+    if (!function_exists('productPriceAfterVendorDiscount'))
     {
          function productPriceAfterVendorDiscount($vendorData,$product_discount_amount,$doller_compare,$cart)
         {
@@ -2178,9 +2175,9 @@ if (!function_exists('recurringCalculationFunction')) {
             $PromoDelete = 0;
             $data['vendor_discount_amount'] = 0;
             $data['deliveryfeeOnCoupon'] = 0;
-            if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) 
+            if (isset($vendorData->coupon) && !empty($vendorData->coupon) )
             {
-                if ( $PromoDelete !=1) 
+                if ( $PromoDelete !=1)
                 {
                         $minimum_spend = 0;
                         if (isset($vendorData->coupon->promo->minimum_spend)) {
@@ -2206,7 +2203,7 @@ if (!function_exists('recurringCalculationFunction')) {
                             unset($vendorData->coupon);
                            return $data;
                         }
-                } 
+                }
             }
             return $data??0;
         }
