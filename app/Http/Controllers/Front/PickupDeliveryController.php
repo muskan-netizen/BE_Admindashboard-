@@ -45,7 +45,7 @@ class PickupDeliveryController extends FrontController{
                 $json = json_decode($option->credentials);
                 $option->title = $json->manule_payment_title;
             }elseif($option->code == 'obo'){
-                $option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
+                $option->title = __("Momo, Airtel Money by O'Pay");
             }
             elseif($option->code == 'livee'){
                 $option->title = __("Livees");
