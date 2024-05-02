@@ -50,7 +50,7 @@
     white-space: nowrap
 }
 .al_body_template_three.homeHeader .outter-fillter-data .product-wrapper-grid.card-product h3 label{
-    font-size: 14px;   
+    font-size: 14px;
     font-weight: 600;
     color: #000;
     letter-spacing: 0px;
@@ -805,6 +805,10 @@ span.filter-btn.btn.btn-theme i {
     display: block
 }
 
+.footer-theme .sub-title li .al_QRcode a svg {
+    width: 100%;
+    height: 100% !important;
+}
 
 /* ltf to rtf */
 
@@ -1115,7 +1119,7 @@ h2.homepage-address {
     height: 100%;
     border-radius: 12px;
 }
-/* 
+/*
 .al_body_template_three .img-outer-box.position-relative {
     border-radius: 12px;
     padding: 0;
@@ -2723,7 +2727,7 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
 }
 
 .show-div.shopping-cart .text-danger {
-    font-size: 12px;    
+    font-size: 12px;
     padding-left: 10px;
 }
 
@@ -3750,7 +3754,7 @@ body[dir] .third-temp-lan {
 @media (max-width:576px) {
     .vendor-description .profile_address h4, .vendor-description .profile_address p, .vendor-info li{
         font-size: 14px!important;
-    }    
+    }
 }
 
 /*customer css start here*/
@@ -4101,7 +4105,7 @@ a.morelink.less {
 
 .displayProducts .inner_spacing h3 {
     padding: 0;
-    margin: 0;  
+    margin: 0;
 }
 
 .product-image {
