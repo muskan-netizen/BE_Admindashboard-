@@ -6,7 +6,7 @@ body.al_body_template_eight .category-related-product.suggested-product.slick-in
     padding: 5px 10px;
     background: var(--theme-deafult);
     font-size: 14px;
-    font-weight: 400; 
+    font-weight: 400;
     position: absolute;
     top: 10px;
     left: 0;
@@ -688,7 +688,7 @@ body.al_body_template_eight .listing-categories ul li {
     display: block;
     padding-left: 10px;
     line-height: 12px;
-}   
+}
 body.al_body_template_eight .listing-categories ul {
     margin: 10px 0 30px;
 }
@@ -726,7 +726,7 @@ body.al_body_template_eight.homeHeader .product-wrapper-grid .product-image img 
     margin: 20px auto 0;
     margin-top: 0px;
 }
-/* 
+/*
 body.al_body_template_eight.homeHeader .product-wrapper-grid .product-image {
     top: -24px;
     text-align: center;
@@ -734,7 +734,7 @@ body.al_body_template_eight.homeHeader .product-wrapper-grid .product-image {
     right: 0;
     padding: 0;
 } */
-/* 
+/*
 .al_body_template_eight .categories_img .product-image {
     top: 0px !important;
     position: inherit;
@@ -1266,7 +1266,7 @@ body.al_body_template_eight.homeHeader .common-product-box.scale-effect .product
     top: -200px;
     margin: 0 auto;
 }
-/* 
+/*
 body.al_body_template_eight.homeHeader .img-outer-box.position-relative {
     left: 10px;
     width: 300px;
@@ -1359,7 +1359,7 @@ body.al_body_template_eight section.section-b-space.new-pages .custom-container 
     width: 20%;
     max-width: 20%;
 }
-/* 
+/*
 body.al_body_template_eight section.section-b-space.ratio_asos .collection-filter.col-lg-3 h2 button h5 span {
     padding: 10px;
 } */
@@ -3083,7 +3083,7 @@ body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider
 .price_box_bottom li span {
     font-size: 12px;
 }
-/*======== ( category product ratting fix) eight css gagandeep 11-04-2023  ========*/ 
+/*======== ( category product ratting fix) eight css gagandeep 11-04-2023  ========*/
 .al_body_template_eight .vendor_onetem .supplier-rating span.rating-number {
     position: absolute;
     top: 8px;
@@ -3140,7 +3140,7 @@ body.dark .shoping_cart .number .minus, body.dark .shoping_cart .number .plus {
     color: #FFF;
     font-weight: 400;
 }
-    
+
 body.dark .number .counter-container {
     border: 1px solid #484848;
 }
@@ -3169,12 +3169,12 @@ body.dark .number .counter-container {
         right: -10px;
         background: #FFF;
     }
-        
+
     .dark .menu-navigation.alThreeMenu .slick-slider .slick-prev {
         left: -10px;
         background: #FFF;
     }
-        
+
     .dark .slick-next:before, .dark .slick-prev:before {
         color: #000 !important;
     }
@@ -3380,13 +3380,17 @@ body.dark .number .counter-container {
     body.al_body_template_eight .custom-vender-card {
         height: 400px;
     }
+
+    .al_body_template_eight .slick-slider .product-card-box .img-outer-box.position-relative img {
+        object-fit: inherit !important;
+    }
 }
 
 
 /*-------------------mobile view css----------*/
 
 @media(max-width:767px) {
-   
+
     body.al_body_template_eight .home-slider-wrapper .banner-img-outer img,
     body.al_body_template_eight .al_mobile_banner {
         border-radius: 0px !important;
@@ -3394,7 +3398,7 @@ body.dark .number .counter-container {
     /* .al_body_template_eight .alNewSliderTopBrand .brand-img{
         max-height: 100px !important;
     } */
-  
+
     body.al_body_template_eight .al_custom_brand{
         padding-top: 0 !important;
         margin-top: 0 !important;
@@ -3694,8 +3698,8 @@ body.dark .number .counter-container {
     }
     body.al_body_template_eight.homeHeader .common-banner img {
         width: 100%;
-        height: 300px;
-        object-fit: cover;
+        height: 200px;
+        object-fit: fill;
         margin-top: 0;
     }
     body.al_body_template_eight.homeHeader .common-product-box.scale-effect .col-4 {
@@ -3756,6 +3760,11 @@ body.dark .number .counter-container {
         flex: 50%;
     }
 
+    body.al_body_template_eight .custom_banner img{
+        min-height: auto;
+        height: 100px;
+        border-radius: 10px;
+    }
 
 }
 
