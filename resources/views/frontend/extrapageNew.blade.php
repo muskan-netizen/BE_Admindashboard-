@@ -60,7 +60,7 @@
                                         <span class="invalid-feedback" id="phone_number_error"><strong></strong></span>
                                         <input type="hidden" id="countryData" name="countryData" value="us">
                                         <input type="hidden" id="dialCode" name="dialCode" value="{{$user ? $user->dial_code : ''}}">
-                                        
+
                                     </div>
                                     <div class="col-md-3 mb-2" id="titleInput">
                                         <label for="fullname">{{__('Title')}}</label>
@@ -107,7 +107,7 @@
                                         <span class="invalid-feedback" id="phone_number_error"><strong></strong></span>
                                         <input type="hidden" id="countryData" name="countryData" value="in">
                                         <input type="hidden" id="dialCode" name="dialCode" value="{{$user ? $user->dial_code : '91'}}">
-                                        
+
                                     </div>
                                     <div class="col-md-3 mb-2" id="titleInput">
                                         <label for="fullname">{{__('Title')}}</label>
@@ -123,17 +123,17 @@
                                 <div class="form-row">
 
                                     @if(!$user)
-                                        <div class="item_password col-md-3 mb-3 resgiter_password" id="passwordInput" > 
+                                        <div class="item_password col-md-3 mb-3 resgiter_password" id="passwordInput" >
                                             <label for="password">{{__('Password')}}</label>
                                             <input type="password" class="form-control" name="password" value="" required="">
                                             <span class="invalid-feedback" id="password_error"><strong></strong></span>
-                                            <span toggle="#password-field" class="fa fa-eye-slash toggle-password" aria-hidden="true"></span>                                            
+                                            <span toggle="#password-field" class="fa fa-eye-slash toggle-password" aria-hidden="true"></span>
                                         </div>
                                         <div class="item_password col-md-3 mb-3 resgiter_password"  id="confirm_passwordInput">
                                             <label for="confirm_password">{{__('Confirm Password')}}</label>
                                             <input type="password" class="form-control" name="confirm_password" value="" required="">
                                             <span class="invalid-feedback" id="confirm_password_error"><strong></strong></span>
-                                            <span toggle="#password-field" class="fa fa-eye-slash toggle-password" aria-hidden="true"></span>                                            
+                                            <span toggle="#password-field" class="fa fa-eye-slash toggle-password" aria-hidden="true"></span>
                                         </div>
                                     @endif
                                 </div>
@@ -542,7 +542,7 @@
                                 <div class="form-row">
                                     <div class="col-12 checkbox-input" id="check_conditionsCheckbox">
                                         <input type="checkbox" id="check_conditions" name="check_conditions" value="1">
-                                        <label for="check_conditions">{{__('I accept the')}} <a href="{{url('page/terms-conditions')}}" target="_blank">{{__('Terms And Conditions')}}</a> {{__('and have read the')}} <a href="{{url('page/privacy-policy')}}" target="_blank"> {{__('Privacy Policy.')}}</a></label>
+                                        <label for="check_conditions" class="font-weight-bold" style="font-size: 1.25rem !important;">{{__('I accept the')}} <a href="{{url('page/terms-conditions')}}" target="_blank">{{__('Terms And Conditions')}}</a> {{__('and have read the')}} <a href="{{url('page/privacy-policy')}}" target="_blank"> {{__('Privacy Policy.')}}</a></label>
                                         <span class="invalid-feedback" id="check_conditions_error"><strong></strong></span>
                                     </div>
                                 </div>
@@ -775,7 +775,7 @@ function isNumberKey(evt) {
         $("#input_file_banner").change(function() {
             readURL(this, '#upload_banner_preview');
         });
-        
+
         var input = document.querySelector("#phone");
         var iti = window.intlTelInput(input, {
             separateDialCode: true,
@@ -809,7 +809,7 @@ function isNumberKey(evt) {
             $('#register_btn_loader').show();
             $('.form-control').removeClass("is-invalid");
             $('.invalid-feedback').children("strong").html('');
-            
+
             $.ajax({
                 type: "POST",
                 data: formData,
@@ -897,7 +897,7 @@ function isNumberKey(evt) {
             var lats = addressLatitude.value;
             var lngs = addressLongitude.value;
         }
-        
+
         document.getElementById('map_for').value = no;
 
         if (lats == null || lats == '0' || lats =='') {
@@ -950,7 +950,7 @@ function isNumberKey(evt) {
             }
             });
         });
-       
+
         $('#add-customer-modal').addClass('fadeIn');
         $('#show-map-modal').modal({
             //backdrop: 'static',
@@ -972,8 +972,8 @@ function isNumberKey(evt) {
 
     $('#show-map-modal').modal('hide');
    });
-    
-    //// end vendor register page map icon 
+
+    //// end vendor register page map icon
 </script>
 
 <script>

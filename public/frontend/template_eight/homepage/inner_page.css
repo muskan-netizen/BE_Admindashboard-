@@ -54,7 +54,10 @@ background: #f3f3f3;overflow: hidden;transition: all .5s;-webkit-transition: all
 
 .collection-product-wrapper .product-wrapper-grid .product-box:hover{background-color: #fff;}
 .dark .collection-product-wrapper .product-wrapper-grid .product-box:hover{background-color: #232323;box-shadow: none;}
-.dark.al_body_template_three nav.scrollspy-menu li.active a,.dark.al_body_template_three nav.scrollspy-menu li:hover a{background:linear-gradient(-90deg,var(--theme-deafult) -540%,#2b2b2b 100%)}.dark .collection-filter-block{border-color:#2b2b2b}.dark .top-header .header-dropdown .onhover-dropdown .onhover-show-div li{background-color:#2b2b2b}.footer-theme .sub-title li .al_QRcode a{display:block}
+.dark.al_body_template_three nav.scrollspy-menu li.active a,.dark.al_body_template_three nav.scrollspy-menu li:hover a{background:linear-gradient(-90deg,var(--theme-deafult) -540%,#2b2b2b 100%)}.dark .collection-filter-block{border-color:#2b2b2b}.dark .top-header .header-dropdown .onhover-dropdown .onhover-show-div li{background-color:#2b2b2b}.footer-theme .sub-title li .al_QRcode a{display:block}.footer-theme .sub-title li .al_QRcode a svg {
+    width: 100%;
+    height: 100% !important;
+}
 /* ltf to rtf */
 body[dir=rtl] img.logo-image{margin-left: 10px;}
 body[dir=rtl] .vendors .slick-slider{direction:ltr}body[dir=rtl] .onhover-show-div li.active:after{left:12px;right:auto;top:20px}body[dir=rtl] .location-bar.d-inline-flex.align-items-center.position-relative{border-right:none;border-left:1px solid;margin-left:10px}body[dir=rtl] .iti--allow-dropdown input,body[dir=rtl] .iti--allow-dropdown input[type=tel],body[dir=rtl] .iti--allow-dropdown input[type=text],body[dir=rtl] .iti--separate-dial-code input,body[dir=rtl] .iti--separate-dial-code input[type=tel],body[dir=rtl] .iti--separate-dial-code input[type=text]{padding-right:86px;padding-left:0!important;margin-left:0}body[dir=rtl] .al_body_template_three .inner_spacing span.rating{right:auto;left:0}body[dir=rtl] ul#top-tab.navigation-tab_al{padding:0;margin:0!important}body[dir=rtl] .al_custom_head .al_z_index{text-align:left!important}body[dir=rtl] li.onhover-dropdown.mobile-account{padding-left:0!important}body[dir=rtl] .al_custom_head.site-topbar .location-bar h2{padding-left:10px}
@@ -521,7 +524,7 @@ body[dir=rtl] .al_footer_template_three ul li{padding-right: 0px !important;}
         display: block!important;
         color: #000!important;
         width: 100%!important;
-    }   
+    }
     .al_body_template_eight .vendor-design_new .col-sm-2.col-md-1.vender-icon {
         display: inline-block;
         width: unset;
