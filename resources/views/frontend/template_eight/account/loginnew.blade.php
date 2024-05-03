@@ -11,7 +11,7 @@ $signUpImage = $preferences->signup_image ?? null;
 @endphp
 <section class="wrapper-main py-lg-5 py-3 d-flex align-items-center main-login-page">
     <div class="container">
-        <div class="row align-items-center h-100" id="login-section">  
+        <div class="row align-items-center h-100" id="login-section">
             <div class="col-md-6 p-0">
                 <div class="login_img">
                     <img src="{{ $signUpImage ? $signUpImage['proxy_url'].'400/400'.$signUpImage['image_path'] : asset('images/template-8/login-img.png') }}" class="img-fluid">
@@ -119,7 +119,7 @@ $signUpImage = $preferences->signup_image ?? null;
                             <div class="divider_line mt-3">
                                 <span>OR</span>
                             </div>
-                            
+
                             <ul class="social-media-links d-flex align-items-center justify-content-center mb-4 mt-3">
                                 @if(@session('preferences')->google_login == 1)
                                 <li>
@@ -383,9 +383,9 @@ $signUpImage = $preferences->signup_image ?? null;
                         }
                     }
                 }, error: function (error) {
-                    var response = $.parseJSON(error.responseText);
+                    console.log(error); // added for testing geting html in response
+                    var response = error.responseJSON;
                     // let error_messages = response.message;
-
                     if((response.data != null) && (response.data.user_exists != undefined) && (response.data.user_exists == false)){
                         Swal.fire({
                             title: "{{__('User Not Found')}}",

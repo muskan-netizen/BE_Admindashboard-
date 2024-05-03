@@ -194,9 +194,7 @@ if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
 if (!function_exists('sendFcmCurlRequest')) {
     function sendFcmCurlRequest($data ,$fcm_server_key = '')
     {
-
         $fcm_server_key = ($fcm_server_key =='') ? ClientPreference::select('fcm_server_key')->first()->fcm_server_key :  $fcm_server_key ;
-
          if (!empty($fcm_server_key )) {
 
             $headers = [
@@ -215,7 +213,6 @@ if (!function_exists('sendFcmCurlRequest')) {
             //     die('Oops! FCM Send Error: ' . curl_error($ch));
             // }
             curl_close($ch);
-
             return $result;
         } else {
             return false;
