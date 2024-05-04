@@ -34,7 +34,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('copy:catalog')->everyTwoMinutes();
-        $schedule->command('cart:reminder')->hourly();
+        // $schedule->command('cart:reminder')->hourly();
         $schedule->command('auto:reject_order')->everyMinute();
         $schedule->command('auto:reject_order_notifi')->everyMinute();
         // $schedule->command('set_default_dummy:data')->dailyAt('00:30');
