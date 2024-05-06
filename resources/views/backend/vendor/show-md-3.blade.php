@@ -941,7 +941,7 @@ aria-hidden="true">
             <div class="col-md-12">
                 <div class="row">
                     <div class="col-md-12">
-                        <h4 class="mb-2"> <span class="">{{ __("Category Setup") }}</span> ({{ __("Visible For Admi rfergn")
+                        <h4 class="mb-2"> <span class="">{{ __("Category Setup") }}</span> ({{ __("Visible For Admin")
                             }})</h4>
                     </div>
                 </div>
