@@ -48,7 +48,7 @@ class CartProduct extends Model{
     }
 
     public function coupon(){
-      return $this->hasOne('App\Models\CartCoupon', 'vendor_id', 'vendor_id')->select("cart_id", "coupon_id", 'vendor_id');
+      return $this->hasOne('App\Models\CartCoupon', 'cart_id', 'cart_id')->select("cart_id", "coupon_id", 'vendor_id');
     }
 
     public function currency(){
