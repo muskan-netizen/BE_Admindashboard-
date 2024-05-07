@@ -177,6 +177,12 @@ if($type == 'p2p'){
         }).then(function() {
             console.log('Service worker was stopped.');
         });
+        if (navigator.serviceWorker.controller) {
+            console.log('Service worker is active.');
+            location.reload();
+        } else {
+            console.log('Service worker is not active.');
+        }
     } else {
         console.error("Service workers are not supported.");
     }
