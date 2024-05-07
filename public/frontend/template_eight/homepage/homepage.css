@@ -824,7 +824,7 @@ footer#footer {
         min-height: 290px !important;
         max-height: 290px !important;
     }
-    
+
 }
 
 article#page-container {
@@ -1463,7 +1463,7 @@ section.suppliers-section.container {
     border: 3px solid var(--theme-deafult);
 } */
 
-section.suppliers-section.container.vender_slider h2.h2-heading {    
+section.suppliers-section.container.vender_slider h2.h2-heading {
     width: 100%;
     line-height: 45px;
 }
@@ -1581,7 +1581,7 @@ section#homepage_top_rated .slick-slider .slick-next {
     display: inline-block !important;
     text-align: left;
 }
-/* 
+/*
 .al_body_template_eight section#homepage_top_rated .product-m.render_top_rated .row .col {
     width: 20%;
     max-width: 20%;
@@ -1702,29 +1702,27 @@ body.al_body_template_eight .product-m .slick-next:before,
 }
 
 body.dark.al_body_template_eight section.popular-brands.left-shape_.position-relative.bg-light-gray {
-    background: #2b2b2b !important;
+    background: transparent !important;
 }
 .dark .list-box{
     background-color: #000;
 }
 body.dark.al_body_template_eight .main-product {
-    background: linear-gradient(to right, #2d2c2b, #2b2b2b);
+    background: transparent;
 }
 
 body.dark.al_body_template_eight section.suppliers-section.container.vender_slider .product-m.render_vendors {
     background: #606060;
 }
 
-body.dark.al_body_template_eight .render_full_spotlight_deals {
-    background: #2b2b2b;
-}
-
-body.dark.al_body_template_eight .main-pro-slider .suppliers-slider-recently_viewed {
+body.dark.al_body_template_eight .render_full_spotlight_deals,
+body.dark.al_body_template_eight .main-pro-slider .suppliers-slider-recently_viewed,
+body.dark.al_body_template_eight section#homepage_top_rated {
     background: transparent;
 }
 
-body.dark.al_body_template_eight section#homepage_top_rated {
-    background: #2b2b2b;
+.suppliers-section  .top-heading.pt-5 {
+    padding: 0 !important;
 }
 
 
@@ -1775,7 +1773,7 @@ body.dark.al_body_template_eight section.main-product.single_category_products .
 }
 
 body.dark.al_body_template_eight section#homepage_recently_viewed {
-    padding: 60px 0 0!important;
+    padding: 40px 0 0!important;
 }
 
 body.dark.al_body_template_eight section.container.popular-brands.left-shape_.position-relative {

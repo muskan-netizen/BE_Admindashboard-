@@ -383,27 +383,31 @@ $signUpImage = $preferences->signup_image ?? null;
                         }
                     }
                 }, error: function (error) {
-                    console.log(error); // added for testing geting html in response
-                    var response = error.responseJSON;
-                    // let error_messages = response.message;
-                    if((response.data != null) && (response.data.user_exists != undefined) && (response.data.user_exists == false)){
-                        Swal.fire({
-                            title: "{{__('User Not Found')}}",
-                            text: response.message,
-                            icon: 'info',
-                            iconColor: '{{getClientPreferenceDetail()->web_color}}',
-                            showCancelButton: true,
-                            confirmButtonText: 'Signup',
-                            confirmButtonColor: '{{getClientPreferenceDetail()->web_color}}'
-                        }).then((result) => {
-                            if(result.value)
-                            {
-                                window.location.href = "{{ route('customer.register') }}";
-                            }
-                        });
-                    }
-                    else{
-                        $("#error-msg").html(response.message);
+                    if (error.hasOwnProperty('responseJSON') && error.status === 404) {
+                        var response = error.responseJSON;
+                        // let error_messages = response.message;
+                        if((response.data != null) && (response.data.user_exists != undefined) && (response.data.user_exists == false)){
+                            Swal.fire({
+                                title: "{{__('User Not Found')}}",
+                                text: response.message,
+                                icon: 'info',
+                                iconColor: '{{getClientPreferenceDetail()->web_color}}',
+                                showCancelButton: true,
+                                confirmButtonText: 'Signup',
+                                confirmButtonColor: '{{getClientPreferenceDetail()->web_color}}'
+                            }).then((result) => {
+                                if(result.value)
+                                {
+                                    window.location.href = "{{ route('customer.register') }}";
+                                }
+                            });
+                        }
+                        else{
+                            $("#error-msg").html(response.message);
+                            $("#error-msg").show();
+                        }
+                    } else {
+                        $("#error-msg").html('Something went wrong');
                         $("#error-msg").show();
                     }
                 }
