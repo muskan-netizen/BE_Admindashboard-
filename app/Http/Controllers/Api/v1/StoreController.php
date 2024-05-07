@@ -2692,7 +2692,7 @@ class StoreController extends BaseController
 					if( checkTableExists('product_attributes') ) {
 						if( !empty($request->attribute) ) {
 							$attribute = json_decode($request->attribute, true);
-
+                         
 							if( !empty($attribute) ) {
 
 								$insert_arr = [];
@@ -2707,7 +2707,6 @@ class StoreController extends BaseController
 
 											foreach( $value['option'] as $key1 => $val1 ) {
 												if( @in_array($val1['option_id'], $value_arr) ) {
-
 													$insert_arr[$insert_count]['product_id'] = $product->id;
 													$insert_arr[$insert_count]['attribute_id'] = $value['id'];
 													$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
@@ -2760,7 +2759,6 @@ class StoreController extends BaseController
 
 
 									}
-									
 									if (!empty($insert_arr)) {
 										ProductAttribute::where('product_id', $request->product_id)->delete();
 										ProductAttribute::insert($insert_arr);
@@ -2768,10 +2766,10 @@ class StoreController extends BaseController
 
 
 								}
-								if( !empty($insert_arr) ) {
-									ProductAttribute::where('product_id',$request->product_id)->delete();
-									ProductAttribute::insert($insert_arr);
-								}
+								// if( !empty($insert_arr) ) {
+								// 	ProductAttribute::where('product_id',$request->product_id)->delete();
+								// 	ProductAttribute::insert($insert_arr);
+								// }
 							}
 						}
 						if (@$request->date_availability) {	
