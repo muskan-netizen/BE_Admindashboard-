@@ -754,7 +754,7 @@ class CartController extends BaseController
             'vendorProducts.product.cartBookingOptions.bookingOption',
         ]);
 
-        $cartData = $cartData->select('vendor_id', 'vendor_dinein_table_id','dispatch_agent_id', 'is_cart_checked')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        $cartData = $cartData->select('vendor_id','cart_id', 'vendor_dinein_table_id','dispatch_agent_id', 'is_cart_checked')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
 
 
         $taxes=TaxRate::all();
