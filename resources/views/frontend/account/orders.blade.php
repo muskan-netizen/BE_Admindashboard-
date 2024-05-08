@@ -740,6 +740,7 @@ $timezone = Auth::user()->timezone;
     var data_trans_url = "{{route('payment.payByDataTrans')}}";
     var create_mtn_momo_token = "{{route('mtn.momo.createToken')}}";
     var mastercard_create_session_url = "{{ route('payment.mastercard.createSession') }}";
+    var payment_hitpay_url="{{ route('make.hitpay.payment') }}";
 
      @if(!empty($client_preference_detail->is_postpay_enable))
         var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";

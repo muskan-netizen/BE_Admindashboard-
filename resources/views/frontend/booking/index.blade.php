@@ -1769,6 +1769,7 @@ input[type=number]::-webkit-outer-spin-button {
         var driver_biding_list_url = "{{route('getBidsRelatedToOrderRide')}}";
         var accept_bid_by_customer = "{{route('acceptBidByCustomer')}}";
         var livee_payment_url="{{route('livee.pay')}}";
+        var payment_hitpay_url="{{ route('make.hitpay.payment') }}";
 
         @if ($client_preference_detail->distance_unit_for_time == 'mile')
             var distance_unit = "IMPERIAL";

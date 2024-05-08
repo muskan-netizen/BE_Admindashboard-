@@ -559,6 +559,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var pesapal_payment_url = "{{ route('pesapal.payment') }}";
     var livee_payment_url = "{{route('livee.pay')}}";
     var mastercard_create_session_url = "{{route('payment.mastercard.createSession')}}";
+    var payment_hitpay_url="{{ route('make.hitpay.payment') }}";
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).val();

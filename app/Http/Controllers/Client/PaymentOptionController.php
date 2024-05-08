@@ -849,6 +849,17 @@ class PaymentOptionController extends BaseController
                                 'mastercard_gateway' => 'required_if:sandbox[46],!=,"on"|nullable|string',
                             ]));
                             break;
+                        case 'hitpay':
+                            $validatedData = $request->validate([
+                                'hitpay_business_key' => 'required',
+                                'hitpay_salt_key' => 'required',
+                            ]);
+                            $json_creds = json_encode(
+                                array(
+                                    'hitpay_business_key' => $request->hitpay_business_key,
+                                    'hitpay_salt_key' => $request->hitpay_salt_key,
+                                )
+                            );
                     }
                 }
             }

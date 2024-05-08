@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Http\Controllers\Front\HitpayController;
 use DB;
 use Auth;
 use Carbon\Carbon;
@@ -19,7 +20,7 @@ use App\Http\Controllers\Front\{MastercardPaymentController, MpesaController,Tot
 use App\Http\Controllers\Front\MvodafoneController;
 use App\Http\Controllers\Front\NmiPaymentController;
 use App\Http\Controllers\Front\OboPaymentController;
-use App\Http\Controllers\Front\{PayphoneController,ThawaniPaymentController};
+use App\Http\Controllers\Front\{PayphoneController, ThawaniPaymentController};
 use App\Http\Controllers\Front\PowerTransPaymentController;
 use App\Http\Controllers\Front\PesapalPaymentController;
 use App\Http\Controllers\Front\SkipCashController;
@@ -72,10 +73,12 @@ class PaymentOptionController extends BaseController
                 $option->title = __("O'Pay");
             } elseif ($option->code == 'livee') {
                 $option->title = __("livees");
-            }elseif($option->code == 'totalpay') {
+            } elseif ($option->code == 'totalpay') {
                 $option->title = __('Total Pay');
-            }elseif($option->code == 'thawani') {
+            } elseif ($option->code == 'thawani') {
                 $option->title = __('Thawani Payment');
+            } else if ($option->code == 'hitpay') {
+                $option->title = __('Hitpay');
             }
             $option->title = __($option->title);
         }
@@ -94,7 +97,9 @@ class PaymentOptionController extends BaseController
                 $domain = $client->sub_domain . env('SUBMAINDOMAIN');
             }
 
+
             $function = 'postPaymentVia_' . $gateway;
+
 
             if (method_exists($this, $function)) {
                 if (!empty($request->action)) {
@@ -386,11 +391,17 @@ class PaymentOptionController extends BaseController
         return $gateway->paybythawanipg($request);
     }
 
+    public function postPaymentVia_hitpay(Request $request)
+    {
+        $gateway = new HitpayController();
+        return $gateway->makePayment($request);
+    }
+
     public function postPaymentVia_paypal(Request $request)
     {
         try {
             $user = Auth::user();
-            $paypal_creds = PaymentOption::select('credentials','test_mode')->where('code', 'paypal')->where('status', 1)->first();
+            $paypal_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'paypal')->where('status', 1)->first();
             $creds_arr = json_decode($paypal_creds->credentials);
             $username = (isset($creds_arr->username)) ? $creds_arr->username : '';
             $password = (isset($creds_arr->password)) ? $creds_arr->password : '';
@@ -408,7 +419,7 @@ class PaymentOptionController extends BaseController
                 'currency' => $currency, //'USD',
                 'amount' => $this->getDollarCompareAmount($request->amount),
                 'cancelUrl' => url($request->serverUrl . $request->cancelUrl),
-                'returnUrl' => url('/payment/paypal/CompletePurchase?amount='.$request->amount.'&order_number='.$request->order_number.'&action='.$request->action.'&come_from='.$request->come_from)
+                'returnUrl' => url('/payment/paypal/CompletePurchase?amount=' . $request->amount . '&order_number=' . $request->order_number . '&action=' . $request->action . '&come_from=' . $request->come_from)
             ])->send();
 
             if ($response->isSuccessful()) {
@@ -893,7 +904,7 @@ class PaymentOptionController extends BaseController
 
     public function paystackCancelPurchase(Request $request)
     {
-        
+
         try{
             if($request->action == 'cart'){
                 $order_number = $request->order_number;

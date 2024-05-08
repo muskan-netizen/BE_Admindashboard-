@@ -3,10 +3,10 @@
 @endsection
 @section('content')
 
-
     @php
         $sms_crendential = json_decode($preference->sms_credentials);
     @endphp
+
 
     <div class="container-fluid custom-toggle al">
         @if ($client_preference_detail->business_type != 'taxi')
@@ -1185,15 +1185,13 @@
                         <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
                     </div>
                     <p class="sub-header">{{ __('View and update your Firebase Keys') }}</p>
-
                     <div class="row">
                         <div class="col-md-6">
-                             <select class="form-control col-6" name="fire_base_type">
-                            <option value="FB" >Fire Base</option>
-                            <option value="AF" {{((getAdditionalPreference(['fire_base_type'])['fire_base_type'] == "AF" )? 'selected' : '')}}>App Flyer</option>
+                             <select class="form-control col-6"  name="fire_base_type" >
+                            <option  value="FB" {{((getAdditionalPreference(['fire_base_type'])['fire_base_type'] == "FB" )? 'selected' : '')}}>Fire Base</option>
+                            <option  value="AF" {{((getAdditionalPreference(['fire_base_type'])['fire_base_type'] == "AF" )? 'selected' : '')}}>App Flyer</option>
                             </select>
                         </div>
-
                         <div class="col-md-6">
                             <div class="form-group mb-2">
                                 <label for="fcm_server_key">{{ __('Server Key') }}</label>
@@ -1433,7 +1431,7 @@
                                     </span>
                                 @endif
                             </div>
-                        </div>
+                        </div>FB
                     </div>
                 </form>
             </div><!-- Twitter card end -->
@@ -3801,7 +3799,6 @@
             var id = $("#sms_provider").find(':selected').attr('data-id');
             $('.sms_fields').css('display', 'none');
             $('#' + id).css('display', 'flex');
-            console.log(id);
         }
 
         var square_enable_status_switch = $('#gofrugal_enable_status_switch');

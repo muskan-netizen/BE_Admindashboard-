@@ -287,6 +287,10 @@ Route::group(['middleware' => ['domain']], function () {
      //totalpay
      Route::post('/make-payment','Front\TotalpayController@makePayment')->name('make.payment');
      Route::get('/success-totalpay', 'Front\TotalpayController@paymentSuccessTotalpay');
+      //hitpay
+    Route::post('/make-hitpay-payment', 'Front\HitpayController@makePayment')->name('make.hitpay.payment');
+    Route::get('/success-hitpay', 'Front\HitpayController@responseAfterPayment')->name('success.hitpay');
+    Route::any('payment/hitpay/webhook', 'Front\HitpayController@validateHitpayPayment')->name('hitpay.webhook');
 	//thawani Payment Gateway
 	Route::post('/pay-by-thawanipg', 'Front\ThawaniPaymentController@paybythawanipg')->name('pay-by-thawanipg');
     Route::get('/after-payment/{transaction_id}', 'Front\ThawaniPaymentController@afterpayment')->name('after.payment');

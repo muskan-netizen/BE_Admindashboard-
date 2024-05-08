@@ -1229,7 +1229,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
     var success_error_container = ".cart_response";
     var data_trans_url = "{{route('payment.payByDataTrans')}}";
-
+    var payment_hitpay_url="{{ route('make.hitpay.payment') }}";
     var pesapal_payment_url = "{{ route('pesapal.payment') }}";
 
     var powertrans_payment_url = "{{ route('powertrans.payment') }}";

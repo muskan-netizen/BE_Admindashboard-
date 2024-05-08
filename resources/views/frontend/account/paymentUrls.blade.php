@@ -51,4 +51,5 @@
     var data_trans_url = "{{route('payment.payByDataTrans')}}";
     var livee_payment_url = "{{url('livee.pay')}}";
     var mastercard_create_session_url = "{{ route('payment.mastercard.createSession') }}";
+    var payment_hitpay_url="{{ route('make.hitpay.payment') }}";
 </script>

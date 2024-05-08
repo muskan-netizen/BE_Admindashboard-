@@ -195,6 +195,9 @@ Options']) @section('css')
                 $mastercard_merchant_key = (isset($creds->mastercard_merchant_key)) ? $creds->mastercard_merchant_key : '';
                 $mastercard_operator_id = (isset($creds->mastercard_operator_id)) ? $creds->mastercard_operator_id : '';
                 $mastercard_gateway = (isset($creds->mastercard_gateway)) ? $creds->mastercard_gateway : '';
+                //hitpay payment Gateway
+                $hitpay_business_key =(isset($creds->hitpay_business_key))?$creds->hitpay_business_key:'';
+                $hitpay_salt_key=(isset($creds->hitpay_salt_key))?$creds->hitpay_salt_key:'';
 
 				if(strtolower($opt->code) == 'obo') {
 					$opt->title = "O'Pay";
@@ -1931,6 +1934,24 @@ Options']) @section('css')
                                 <div class="form-group mb-2">
                                     <label for="livee_consumer_secret" class="mr-3">{{ __("LIVEES RESOURCE KEY") }}</label>
                                     <input type="password" name="livee_resource_key" id="livee_resource_key" class="form-control" value="{{$livee_resource_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    @if ( (strtolower($opt->code) == 'hitpay') )
+                    <div class="mt-2" id="hitpay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="hitpay_business_key" class="mr-3">{{ __("HITPAY BUSINESS KEY") }}</label>
+                                    <input type="password" name="hitpay_business_key" id="hitpay_business_key" class="form-control" value="{{$hitpay_business_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+							 <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="hitpay_salt_key" class="mr-3">{{ __("HITPAY SALT KEY") }}</label>
+                                    <input type="password" name="hitpay_salt_key" id="hitpay_salt_key" class="form-control" value="{{$hitpay_salt_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>
