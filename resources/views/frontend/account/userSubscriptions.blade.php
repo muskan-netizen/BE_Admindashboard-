@@ -179,8 +179,8 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                                     </div>
 								</div>
                            </div>
-                            
-                           	@php 
+
+                           	@php
                            	$subscription_plans_meal = clone $subscription_plans;
                            	$subscription_plans_meal = $subscription_plans_meal->where('type_id', '=' ,2)->get();
                            	@endphp
@@ -513,6 +513,9 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @if(in_array('khalti',$client_payment_options))
     <script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
 @endif
+@if (in_array('mastercard', $client_payment_options))
+    <script src="https://{{mastercardGateway()}}/static/checkout/checkout.min.js"></script>
+@endif
 <script type="text/javascript">
     var stripe_fpx = '';
     var fpxBank = '';
@@ -554,7 +557,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var powertrans_payment_url = "{{ route('powertrans.payment') }}";
     var data_trans_url = "{{route('payment.payByDataTrans')}}";
     var pesapal_payment_url = "{{ route('pesapal.payment') }}";
-    var livee_payment_url = "{{route('livee.pay')}}"
+    var livee_payment_url = "{{route('livee.pay')}}";
+    var mastercard_create_session_url = "{{route('payment.mastercard.createSession')}}";
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).val();

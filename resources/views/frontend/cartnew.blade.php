@@ -1105,6 +1105,9 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @if(in_array('khalti',$client_payment_options))
     <script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
 @endif
+@if (in_array('mastercard', $client_payment_options))
+    <script src="https://{{mastercardGateway()}}/static/checkout/checkout.min.js"></script>
+@endif
 <script src="{{ asset('assets/libs/dropzone/dropzone.min.js') }}"></script>
 <script src="{{ asset('assets/libs/dropify/dropify.min.js') }}"></script>
 <script type="text/javascript" src="{{asset('assets/js/intlTelInput.js')}}"></script>
@@ -1231,6 +1234,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 
     var powertrans_payment_url = "{{ route('powertrans.payment') }}";
     var livee_payment_url="{{route('livee.pay')}}";
+
+    var mastercard_create_session_url = "{{route('payment.mastercard.createSession')}}";
 
     @if(!empty($client_preference_detail->is_postpay_enable))
         var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";

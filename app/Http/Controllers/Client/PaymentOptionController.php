@@ -841,6 +841,14 @@ class PaymentOptionController extends BaseController
                                     'thawani_publishKey' => $request->thawani_publishKey,
                                     ));
                         break;
+                        case 'mastercard':
+                            $json_creds = json_encode($request->validate([
+                                'mastercard_merchant_id' => 'required|string',
+                                'mastercard_merchant_key' => 'required|string',
+                                'mastercard_operator_id' => 'required|string',
+                                'mastercard_gateway' => 'required_if:sandbox[46],!=,"on"|nullable|string',
+                            ]));
+                            break;
                     }
                 }
             }

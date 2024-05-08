@@ -509,8 +509,10 @@ $(document).ready(function () {
                         payphoneButton(response.data);
                     }else if(payment_option_id == 42){
                         payWithDpo(response.data);
-                    }else if(payment_option_id == 30){
+                    } else if (payment_option_id == 30) {
                         payWithFlutterWave(response.data);
+                    } else if (payment_option_id == 46) {
+                        paymentViaMastercard('pickup_delivery', response.data)
                     }else if(payment_option_id == 49){
 
                         paymentViaplugnpay(reload_route,'',response.data);

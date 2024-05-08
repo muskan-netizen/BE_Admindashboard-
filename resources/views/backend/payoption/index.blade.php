@@ -190,6 +190,12 @@ Options']) @section('css')
 				$icici_merchant_encryption_file = (isset($creds->icici_merchant_encryption_file)) ? $creds->icici_merchant_encryption_file : '';
 				$icici_merchant_key_file = (isset($creds->icici_merchant_key_file)) ? $creds->icici_merchant_key_file : '';
 
+                //mastercard payment gateway
+                $mastercard_merchant_id = (isset($creds->mastercard_merchant_id)) ? $creds->mastercard_merchant_id : '';
+                $mastercard_merchant_key = (isset($creds->mastercard_merchant_key)) ? $creds->mastercard_merchant_key : '';
+                $mastercard_operator_id = (isset($creds->mastercard_operator_id)) ? $creds->mastercard_operator_id : '';
+                $mastercard_gateway = (isset($creds->mastercard_gateway)) ? $creds->mastercard_gateway : '';
+
 				if(strtolower($opt->code) == 'obo') {
 					$opt->title = "O'Pay";
 				}
@@ -215,7 +221,7 @@ Options']) @section('css')
 									data-color="#43bee1" @if($opt->status == 1) checked @endif>
 							</div>
 						</div>
-						@if ( (strtolower($opt->code) != 'dpo') && (strtolower($opt->code)
+                        @if ( (strtolower($opt->code) != 'dpo') && (strtolower($opt->code)
 						!= 'cod') && (strtolower($opt->code) != 'razorpay') &&
 						(strtolower($opt->code) != 'simplify') &&
 						(strtolower($opt->code)!= 'kongapay') && (strtolower($opt->code)!=
@@ -234,7 +240,47 @@ Options']) @section('css')
 						@endif
 					</div>
 
-					@if ( (strtolower($opt->code) == 'cod') )
+                    @if ((strtolower($opt->code) == 'mastercard'))
+                    <div class="mt-2" id="mastercard_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+						<div class="row">
+							<div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mastercard_merchant_id" class="mr-3">
+                                        {{ __('Merchant ID') }}
+                                    </label>
+                                    <input type="text" name="mastercard_merchant_id" id="mastercard_merchant_id" class="form-control"
+                                        value="{{ $mastercard_merchant_id }}" <?php if ($opt->status == 1) echo 'required' ?>>
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label for="mastercard_merchant_key" class="mr-3">
+                                        {{ __('Merchant Key') }}
+                                    </label>
+                                    <input type="password" name="mastercard_merchant_key" id="mastercard_merchant_key" class="form-control"
+                                        value="{{ $mastercard_merchant_key }}" <?php if ($opt->status == 1) echo 'required' ?>>
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label for="mastercard_operator_id" class="mr-3">
+                                        {{ __('Operator ID') }}
+                                    </label>
+
+                                    <input type="text" name="mastercard_operator_id" id="mastercard_operator_id" class="form-control"
+                                        value="{{ $mastercard_operator_id }}" <?php if ($opt->status == 1) echo 'required' ?>>
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label for="mastercard_gateway" class="mr-3">
+                                        {{ __('Mastercard Gateway') }}
+                                    </label>
+
+                                    <input type="text" name="mastercard_gateway" id="mastercard_gateway" class="form-control"
+                                        value="{{ $mastercard_gateway }}" <?php if ($opt->test_mode != 1) echo 'required' ?>>
+                                </div>
+							</div>
+						</div>
+                    </div>
+                    @endif @if ( (strtolower($opt->code) == 'cod') )
 					<div class="mt-2" id="cod_fields_wrapper" @if($opt->
 						status != 1) style="display:none" @endif>
 						<div class="row">

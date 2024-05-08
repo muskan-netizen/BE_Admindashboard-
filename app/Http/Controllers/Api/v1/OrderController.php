@@ -2219,6 +2219,9 @@ class OrderController extends BaseController
             }
 
             $customerCurrency = ClientCurrency::join('currencies as cu', 'cu.id', 'client_currencies.currency_id')->where('client_currencies.currency_id', $user->currency)->first();
+            if (!$customerCurrency) {
+                $customerCurrency = ClientCurrency::where('is_primary', 1)->get()->first()->currency;
+            }
             $currSymbol = $customerCurrency->symbol;
             $client_name = 'Sales';
             $mail_from = $data->mail_from;

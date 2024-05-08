@@ -916,7 +916,6 @@ $(document).ready(function () {
 
         $(this).attr("disabled", true);
         var form = document.getElementById('category_kyc_form_in_cart');
-        var formData = new FormData(form);
         var data_uri = post_category_kyc_document;
 
         $.ajaxSetup({
@@ -1775,6 +1774,57 @@ $(document).ready(function () {
         });
     }
 
+function paymentViaMastercard(paymentMehod, order) {
+    const walletElement = $('input[name="wallet_amount"]');
+    const cartElement = $("input[name='cart_total_payable_amount']");
+    const subscriptionElement = $('input[name="subscription_amount"]');
+    const subscriptionIdElement = $('#subscription_payment_form #subscription_id');
+
+    let ajaxData = [{ name: 'payment_from', value: paymentMehod }];
+    let total_amount;
+
+    switch (paymentMehod) {
+        case 'wallet':
+            total_amount = walletElement.val();
+            if (typeof tip_for_past_order !== 'undefined' && tip_for_past_order == 1) {
+                ajaxData[0].value = 'tip';
+                ajaxData.push({ name: 'order_number', value: $("#order_number").val() });
+            }
+            break;
+
+        case 'cart':
+            ajaxData.push({ name: 'order_number', value: order['order_number'] });
+            total_amount = cartElement.val();
+            break;
+        case 'subscription':
+            ajaxData.push({ name: 'subscription_id', value: subscriptionIdElement.val() });
+            total_amount = subscriptionElement.val();
+            break;
+
+        case 'pickup_delivery':
+            total_amount = order.total_amount;
+            ajaxData.push({ name: 'order_number', value: order.order_number });
+            break;
+        default: throw new Error('unknown payment method');
+    }
+
+    ajaxData.push({ name: 'amount', value: total_amount });
+
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        data: ajaxData,
+        url: mastercard_create_session_url,
+        success({ session }) {
+            const { id } = session;
+            console.log(id);
+            Checkout.configure({
+                session: { id }
+            })
+            Checkout.showPaymentPage();
+        },
+    });
+}
 
     function paymentViaRazorpay_wallet(address_id, payment_option_id) {
         let walletElement = $("input[name='wallet_amount']");
@@ -5382,6 +5432,8 @@ $(document).ready(function () {
             case 45:
                 paymentViaTelr('', payment_option_id, '');
             break;
+            case 46:
+                paymentViaMastercard('subscription');
             case 47:
                 paymentViaKhalti('', '');
             break;
@@ -5870,6 +5922,12 @@ $(document).ready(function () {
                 }
             break;
 
+            case '46': {
+                let order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                paymentViaMastercard('cart', order);
+                break;
+            }
+
             case '47':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 if (order != '') {
@@ -6197,6 +6255,9 @@ $(document).ready(function () {
                 break;
             case 45:
                 paymentViaTelr('', payment_option_id, '');
+                break;
+            case 46:
+                paymentViaMastercard('wallet');
                 break;
             case 47:
                 paymentViaKhalti('', '');

@@ -79,7 +79,7 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '67', 'path' => '', 'code' => 'thawani', 'title' => 'Thawani', 'off_site' => '1', 'status' => '0'),
         array('id' => '68', 'path' => '', 'code' => 'icici', 'title' => 'Icici Upi', 'off_site' => '1', 'status' => '0'),
       );
-      
+
 
       if($option_count == 0)
       {
