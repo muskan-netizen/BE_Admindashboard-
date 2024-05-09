@@ -67,7 +67,7 @@ class HitpayController extends Controller
             'currency' => $this->currency,
             'amount' => $amount
         ];
-
+        \Log::info("https" . $domain . "/payment/hitpay/webhook");
         $response = $this->createPaymentRequest($this->hitpay_client, $body, $url, $businessKey);
         $responseUrl = $response['url'];
         return response()->json([
@@ -111,6 +111,7 @@ class HitpayController extends Controller
     public function paymentSuccessHitpay($request)
     {
         try {
+            \Log::info(["Webhook hitpay" => $request]);
             $transactionId = $request->reference_number;
             $payment = Payment::where('transaction_id', $transactionId)->first();
             return $payment;
