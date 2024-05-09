@@ -110,7 +110,7 @@ class HitpayController extends Controller
     //web hook
     public function paymentSuccessHitpay($request)
     {
-        try {
+       // try {
             \Log::info(["Webhook hitpay" => $request]);
             $transactionId = $request->reference_number;
             $payment = Payment::where('transaction_id', $transactionId)->first();
@@ -166,10 +166,11 @@ class HitpayController extends Controller
                 $orderController = new OrderController();
                 $orderController->tipAfterOrder($request);
             }
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-        }
+        // } catch (\Exception $e) {
+        //     Log::error($e->getMessage());
+        // }
     }
+
     public function orderNumber($request)
     {
         try {
