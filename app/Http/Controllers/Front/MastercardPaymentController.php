@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\v1\OrderController;
 use App\Http\Controllers\Api\v1\PickupDeliveryController;
 use App\Http\Controllers\Api\v1\UserSubscriptionController;
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\CustomDomain;
 use App\Http\Traits\OrderTrait;
 use App\Models\Cart;
 use App\Models\CartAddon;
@@ -41,9 +42,13 @@ class MastercardPaymentController extends Controller
     private string $gatewayUrl;
     private int $payopt_id;
 
-    public function __construct()
+    public function __construct(Request $request)
     {
-        $pay_option        = PaymentOption::where('code', 'mastercard')->where('status', 1)->get(['credentials', 'test_mode', 'status', 'id'])->firstOrFail();
+        $pay_option = PaymentOption::where('code', 'mastercard')->where('status', 1)->get(['credentials', 'test_mode', 'status', 'id'])->first();
+        if (!$pay_option) {
+            (new CustomDomain)->handle($request, fn($_) => $_);
+            $pay_option = PaymentOption::where('code', 'mastercard')->where('status', 1)->get(['credentials', 'test_mode', 'status', 'id'])->first();
+        }
         $this->credentials = json_decode($pay_option->credentials);
 
         $this->gatewayUrl = mastercardGateway();
