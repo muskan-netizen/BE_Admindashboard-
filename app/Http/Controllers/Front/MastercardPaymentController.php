@@ -130,8 +130,6 @@ class MastercardPaymentController extends Controller
         }
 
         $sessionResponse = $this->client->request(Operation::INITIATE_CHECKOUT, $authorization_model);
-        Log::info("mastercard: session response");
-        Log::info($sessionResponse);
         if (!$sessionResponse) return response()->json($this->client->error(), 500);
 
         $session_id = $sessionResponse->session->id;
