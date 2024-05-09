@@ -294,6 +294,17 @@ Route::group(['middleware' => ['domain']], function () {
 	//thawani Payment Gateway
 	Route::post('/pay-by-thawanipg', 'Front\ThawaniPaymentController@paybythawanipg')->name('pay-by-thawanipg');
     Route::get('/after-payment/{transaction_id}', 'Front\ThawaniPaymentController@afterpayment')->name('after.payment');
+
+	//Cyberservice Pay Controller
+	Route::get('cybersource/initiate-payment','Front\CyberSourcePaymentController@webPayment')->name('cybersource.initiate.payment');
+	Route::get('cybersource/payment/api', 'Front\CyberSourcePaymentController@webMobilePayment')->name('cybersource.webMobileview');
+	Route::any('cybersource/process-payment','Front\CyberSourcePaymentController@processPayment')->name('cybersource.processPayment');
+	//Orange Pay Controller
+	Route::get('orangepay/payment/api', 'Front\OrangePaymentController@webMobilePayment')->name('orangepay.webMobileview');
+	Route::post('orangepay/initiate-payment','Front\OrangePaymentController@web_payment')->name('orangepay.initiate.payment');
+	Route::any('success-orangepay', 'Front\OrangePaymentController@successPage')->name('success.orangepayment');
+	Route::get('cancel-orangepay', 'Front\OrangePaymentController@cancelPage')->name('cancel.orangepayment');
+
     // Route::post('/pay-by-thawanipg', 'Api\v1\ThawaniPaymentController@paybythawanipg')->name('pay-by-thawanipg');
     // Route::get('/after-payment/{transaction_id}', 'Api\v1\ThawaniPaymentController@afterpayment')->name('after.payment');
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');

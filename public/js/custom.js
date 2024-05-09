@@ -6138,6 +6138,19 @@ function paymentViaHitpay(address_id, payment_option_id, order) {
                 paymentViaHitpay(address_id, payment_option_id, order);
             }
             break;
+            case '70':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaOranngepay('', payment_option_id, '');
+                    paymentViaCyberSourcePay('', payment_option_id, '');
+                }
+            break;
+            case '71':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaOrangePay('', payment_option_id, '');
+                }
+            break;
         }
 
     }

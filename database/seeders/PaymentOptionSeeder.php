@@ -79,6 +79,8 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '67', 'path' => '', 'code' => 'thawani', 'title' => 'Thawani', 'off_site' => '1', 'status' => '0'),
         array('id' => '68', 'path' => '', 'code' => 'icici', 'title' => 'Icici Upi', 'off_site' => '1', 'status' => '0'),
         array('id' => '69', 'path' => '', 'code' => 'hitpay', 'title' => 'HitPay', 'off_site' => '1', 'status' => '0'),
+        array('id' => '70', 'path' => '', 'code' => 'cyber_source', 'title' => 'Cyber Source', 'off_site' => '0', 'status' => '0'),
+        array('id' => '71', 'path' => '', 'code' => 'orange_pay', 'title' => 'Orange Pay', 'off_site' => '0', 'status' => '0'),
       );
 
 

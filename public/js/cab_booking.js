@@ -568,6 +568,12 @@ $(document).ready(function () {
                     }else if(payment_option_id == 62){
                         payWithLivees(reload_route,'',response.data);
                     }
+                    else if(payment_option_id == 70){
+                        paymentViaCyberSourcePay(payment_option_id,response.data);
+                    }
+                    else if(payment_option_id == 71){
+                        paymentViaOrangePay(payment_option_id,response.data);
+                    }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }
                 else if(response.status == 201){
