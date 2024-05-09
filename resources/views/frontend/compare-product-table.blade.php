@@ -3,8 +3,7 @@
 <link rel="stylesheet" href="{{asset('compare-assets/css/style.css')}}">
 
 
-@if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'] && 
-    (in_array($product->category->category_id,getVendorAdditionalPreference($product->vendor_id,'compare_categories'))))
+@if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'])
               
                 {{-- New Section  --}}
 
@@ -29,9 +28,8 @@
                         
                         <div class="cd-products-wrapper custom_scroll-compare">
                             <ul class="cd-products-columns">
-
                             @foreach($suggested_category_products as $compare)
-
+               
                             @php
                             if(isset($compare->media->first()->image)){
                                 $image_fit = $compare->media->first()->image->path['image_fit'];
