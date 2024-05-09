@@ -44,11 +44,14 @@ class MastercardPaymentController extends Controller
 
     public function __construct(Request $request)
     {
+        Log::info("mastercard: request host: " . $request->getHost());
+        Log::info("mastercard: request hit: " . $request->url());
         $pay_option = PaymentOption::where('code', 'mastercard')->where('status', 1)->get(['credentials', 'test_mode', 'status', 'id'])->first();
         if (!$pay_option) {
             (new CustomDomain)->handle($request, fn($_) => $_);
             $pay_option = PaymentOption::where('code', 'mastercard')->where('status', 1)->get(['credentials', 'test_mode', 'status', 'id'])->first();
         }
+        Log::info($pay_option);
         $this->credentials = json_decode($pay_option->credentials);
 
         $this->gatewayUrl = mastercardGateway();
@@ -95,7 +98,9 @@ class MastercardPaymentController extends Controller
 
         $authorization_model
             ->getInteraction()
-            ->setReturnUrl(url(sprintf('/payment/mastercard/return/%s', $reference_id)));
+            ->setReturnUrl($return_url = url(sprintf('/payment/mastercard/return/%s', $reference_id)));
+
+        Log::info("mastercard: return url: $return_url");
 
         switch ($payment_info->payment_from) {
             case 'wallet':
@@ -125,6 +130,8 @@ class MastercardPaymentController extends Controller
         }
 
         $sessionResponse = $this->client->request(Operation::INITIATE_CHECKOUT, $authorization_model);
+        Log::info("mastercard: session response");
+        Log::info($sessionResponse);
         if (!$sessionResponse) return response()->json($this->client->error(), 500);
 
         $session_id = $sessionResponse->session->id;
