@@ -115,7 +115,7 @@ class PaymentOptionController extends BaseController
     }
 
     public function postPaymentVia_mastercard(Request $request) {
-        $gateway = new MastercardPaymentController();
+        $gateway = new MastercardPaymentController($request);
         $request->request->add([
             'payment_from' => $request->action,
             'come_from'    => 'app',
