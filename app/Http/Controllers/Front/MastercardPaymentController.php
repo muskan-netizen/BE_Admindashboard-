@@ -152,6 +152,8 @@ class MastercardPaymentController extends Controller
     public function postPayment(Request $request, string $domain = '', string $order_id)
     {
         $session_data = Cache::store('redis')->get('order-' . $order_id);
+        Log::info("mastercard: payment return response for order_id: $order_id");
+        Log::info($session_data);
 
         if (!$session_data){
             Log::error(sprintf('Mastercard transaction_id: %s has no session data attached', $order_id));
@@ -165,6 +167,7 @@ class MastercardPaymentController extends Controller
         ) = $session_data;
 
 
+        Log::info("mastercard: success indicator: $success_indicator recieved: $request->resultIndicator");
         if ($success_indicator != $request->resultIndicator) {
             Log::error(sprintf('Mastercard payment for transaction_id: %s and session_id: %s was unsuccessfull', $order_id, $session_id));
             return $this->handlePaymentFailure($request, $order_id, $session_data);
@@ -176,6 +179,7 @@ class MastercardPaymentController extends Controller
         $payment->viva_order_id = $order_id;
         $payment->payment_option_id = $this->payopt_id;
 
+        Log::info($payment);
         if ($come_from == 'app') {
             $user_id = $session_data['user_id'];
             $user = User::with('wallet')->find($user_id);
@@ -184,6 +188,7 @@ class MastercardPaymentController extends Controller
 
         $user = auth()->user();
 
+        Log::info("mastercard: payment type: $payment->type");
         switch ($payment->type) {
             case 'wallet':
                 $user->wallet->depositFloat(
@@ -249,6 +254,7 @@ class MastercardPaymentController extends Controller
                 return back();
         }
 
+        Log::info("mastercard: redirecting for application");
         return redirect()->route('payment.gateway.return.response', [
             'gateway' => 'mastercard',
             'status'  => 200,
