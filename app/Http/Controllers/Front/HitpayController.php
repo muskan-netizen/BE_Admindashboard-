@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Traits\HitpayTrait;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
-use App\Models\{ClientCurrency, Order, Payment, PaymentOption, User};
+use App\Models\{Client as ModelsClient, ClientCurrency, Order, Payment, PaymentOption, User};
 use Illuminate\Support\Facades\Auth;
 use App\Models\CaregoryKycDoc;
 use App\Models\Cart;
@@ -57,6 +57,15 @@ class HitpayController extends Controller
         // $redirectUrl = $this->getSuccessUrl($orderNumber);
         $redirectUrl = url('/success-hitpay') . "?orderNumber=" . $orderNumber;
         $amount = number_format($request->amount, 2, '.', '');
+        $code = $request->header('code')??'';
+        if(!empty($code)){
+            $client = ModelsClient::where('code',$code)->first();
+            if(!empty($client->custom_domain)){
+                $domain = $client->custom_domain;
+            }else{
+                $domain = $client->sub_domain.env('SUBMAINDOMAIN');
+            }
+        }
 
         $body = [
             'redirect_url' => $redirectUrl,
