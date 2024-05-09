@@ -109,17 +109,17 @@ class HitpayController extends Controller
     //afterPayment
     public function responseAfterPayment(Request $request)
     {
-
+        \Log::info("return after payment");
         if (isset($request->status) && $request->status == "completed") {
             $url = $this->getSuccessUrl($request->orderNumber);
+            \Log::info("url ".$url);
             return redirect($url);
         }
     }
     //web hook
     public function paymentSuccessHitpay($request)
     {
-       // try {
-            \Log::info(["Webhook hitpay" => $request]);
+        try {
             $transactionId = $request->reference_number;
             $payment = Payment::where('transaction_id', $transactionId)->first();
             if ($payment) {
@@ -174,9 +174,9 @@ class HitpayController extends Controller
                 $orderController = new OrderController();
                 $orderController->tipAfterOrder($request);
             }
-        // } catch (\Exception $e) {
-        //     Log::error($e->getMessage());
-        // }
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+        }
     }
 
     public function orderNumber($request)
