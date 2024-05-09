@@ -67,7 +67,7 @@ class HitpayController extends Controller
             'currency' => $this->currency,
             'amount' => $amount
         ];
-
+        \Log::info( $url);
         $response = $this->createPaymentRequest($this->hitpay_client, $body, $url, $businessKey);
         $responseUrl = $response['url'];
         return response()->json([
