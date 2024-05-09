@@ -109,10 +109,8 @@ class HitpayController extends Controller
     //afterPayment
     public function responseAfterPayment(Request $request)
     {
-        \Log::info("return after payment");
         if (isset($request->status) && $request->status == "completed") {
             $url = $this->getSuccessUrl($request->orderNumber);
-            \Log::info("url ".$url);
             return redirect($url);
         }
     }
