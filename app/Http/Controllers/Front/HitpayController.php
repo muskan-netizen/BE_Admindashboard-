@@ -63,7 +63,7 @@ class HitpayController extends Controller
             'email' => $user->email,
             'phone' => $user->phone_number,
             'reference_number' => $orderNumber,
-            'webhook' => url('payment/hitpay/webhook'),//"https" . $domain . "/payment/hitpay/webhook",
+            'webhook' => "https" . $domain . "/payment/hitpay/webhook",
             'currency' => $this->currency,
             'amount' => $amount
         ];
