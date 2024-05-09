@@ -12,7 +12,7 @@ use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
 use App\Models\ShowSubscriptionPlanOnSignup;
-use App\Models\{VendorSlot, ClientCurrency, Order, Type, ClientPreferenceAdditional, UserVendor, VendorCategory, Product};
+use App\Models\{VendorSlot, ClientCurrency, Order, Type, ClientPreferenceAdditional, UserVendor, VendorCategory, Product,ClientLanguage,Language,};
 use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
@@ -29,8 +29,6 @@ if (!function_exists('setUserCode')) {
         }
     }
 }
-
-
 
 // Returns the values of the additional preferences.
 if (!function_exists('checkColumnExists')) {
@@ -1288,6 +1286,17 @@ if (!function_exists('getPrimaryCurrencyName')) {
 
         $currencyName = $currencyName->iso_code;
         return $currencyName;
+    }
+}
+
+
+if (!function_exists('getPrimaryLanguageName')) {
+    function getPrimaryLanguageName()
+    {
+        $primaryLanguage = ClientLanguage::where('is_primary', '=', 1)->first();
+        $primaryLanguageName = Language::find($primaryLanguage->language_id);
+        $languageName = $primaryLanguageName->sort_code;
+        return $languageName;
     }
 }
 

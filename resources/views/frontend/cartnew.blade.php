@@ -1231,10 +1231,10 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var data_trans_url = "{{route('payment.payByDataTrans')}}";
     var payment_hitpay_url="{{ route('make.hitpay.payment') }}";
     var pesapal_payment_url = "{{ route('pesapal.payment') }}";
-
     var powertrans_payment_url = "{{ route('powertrans.payment') }}";
     var livee_payment_url="{{route('livee.pay')}}";
-
+    var payment_orangepay_url =  "{{ route('orangepay.initiate.payment') }}";
+    var payment_cybersource_url =  "{{ route('cybersource.initiate.payment') }}";
     var mastercard_create_session_url = "{{route('payment.mastercard.createSession')}}";
 
     @if(!empty($client_preference_detail->is_postpay_enable))

@@ -45,4 +45,6 @@
 	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
 	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
     var payment_hitpay_url="{{ route('make.hitpay.payment') }}";
+    var payment_orangepay_url =  "{{ route('orangepay.initiate.payment') }}";
+    var payment_cybersource_url =  "{{ route('cybersource.initiate.payment') }}";
 </script>

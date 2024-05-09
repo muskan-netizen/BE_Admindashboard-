@@ -1770,7 +1770,9 @@ input[type=number]::-webkit-outer-spin-button {
         var accept_bid_by_customer = "{{route('acceptBidByCustomer')}}";
         var livee_payment_url="{{route('livee.pay')}}";
         var payment_hitpay_url="{{ route('make.hitpay.payment') }}";
-
+        var payment_orangepay_url =  "{{ route('orangepay.initiate.payment') }}";
+        var payment_cybersource_url =  "{{ route('cybersource.initiate.payment') }}";
+        
         @if ($client_preference_detail->distance_unit_for_time == 'mile')
             var distance_unit = "IMPERIAL";
         @else
