@@ -43,7 +43,7 @@ class PaymentOptionController extends BaseController
     {
         $payment_codes = $this->paymentOptionArray('payment_codes');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
-
+          
         $payout_codes = $this->paymentOptionArray('payout');
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
 
