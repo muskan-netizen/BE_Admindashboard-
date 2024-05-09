@@ -165,6 +165,7 @@ class MastercardPaymentController extends Controller
         ) = $session_data;
 
 
+        Log::info($session_data);
         if ($success_indicator != $request->resultIndicator) {
             Log::error(sprintf('Mastercard payment for transaction_id: %s and session_id: %s was unsuccessfull', $order_id, $session_id));
             return $this->handlePaymentFailure($request, $order_id, $session_data);
