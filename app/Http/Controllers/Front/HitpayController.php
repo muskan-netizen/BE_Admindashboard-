@@ -118,6 +118,7 @@ class HitpayController extends Controller
                 $payment->payment_option_id = 69;
                 $payment->save();
             }
+
             if ($payment->type == 'cart') {
                 $order = Order::where('order_number', $transactionId)->first();
                 if ($order) {
