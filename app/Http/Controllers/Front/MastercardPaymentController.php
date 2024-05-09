@@ -71,6 +71,9 @@ class MastercardPaymentController extends Controller
             'amount' => 'numeric|required',
         ]);
 
+        Log::info($request->all());
+        Log::info((array)$payment_info);
+
         $user = Auth::user();
 
         $customer = (new Customer($user->name))
@@ -147,10 +150,14 @@ class MastercardPaymentController extends Controller
         Cache::store('redis')->put('order-' . $reference_id, $session_data);
 
         $sessionResponse->referenceId = $reference_id;
-        if ($request->come_from == 'app') return response()->json([
+        if ($request->come_from == 'app'){
+        $response = [
             'status' => 'Success',
             'data'   => sprintf('https://%s/checkout/pay/%s?checkoutVersion=1.0.0', $this->gatewayUrl, $session_id)
-        ]);
+        ];
+        Log::info($response);
+         return response()->json($response);
+        }
         return response()->json($sessionResponse);
     }
 
