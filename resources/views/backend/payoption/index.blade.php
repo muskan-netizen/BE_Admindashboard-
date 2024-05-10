@@ -198,6 +198,19 @@ Options']) @section('css')
                 //hitpay payment Gateway
                 $hitpay_business_key =(isset($creds->hitpay_business_key))?$creds->hitpay_business_key:'';
                 $hitpay_salt_key=(isset($creds->hitpay_salt_key))?$creds->hitpay_salt_key:'';
+                //Orange pay payment Gateway
+				$orangepay_MerchantKey= (isset($creds->orangepay_MerchantKey)) ? $creds->orangepay_MerchantKey:'';
+				$orangepay_MerchantToken= (isset($creds->orangepay_MerchantToken)) ? $creds->orangepay_MerchantToken:'';
+                //Cyber source payment Gateway
+				$cyber_source_merchant_id= (isset($creds->cyber_source_merchant_id)) ? $creds->cyber_source_merchant_id:'';
+				$cyber_source_profile_id= (isset($creds->cyber_source_profile_id)) ? $creds->cyber_source_profile_id:'';
+				$cyber_source_access_key= (isset($creds->cyber_source_access_key)) ? $creds->cyber_source_access_key:'';
+				$cyber_source_secret_key= (isset($creds->cyber_source_secret_key)) ? $creds->cyber_source_secret_key:'';
+				$bill_to_address_line1= (isset($creds->bill_to_address_line1)) ? $creds->bill_to_address_line1:'';
+				$bill_to_address_city= (isset($creds->bill_to_address_city)) ? $creds->bill_to_address_city:'';
+				$bill_to_address_country= (isset($creds->bill_to_address_country)) ? $creds->bill_to_address_country:'';
+				$bill_to_address_state= (isset($creds->bill_to_address_state)) ? $creds->bill_to_address_state:'';
+				$bill_to_address_postal_code= (isset($creds->bill_to_address_postal_code)) ? $creds->bill_to_address_postal_code:'';
 
 				if(strtolower($opt->code) == 'obo') {
 					$opt->title = "O'Pay";
@@ -1957,6 +1970,93 @@ Options']) @section('css')
                         </div>
                     </div>
                     @endif
+
+					@if((strtolower($opt->code) == 'orange_pay'))
+						<div class="mt-2" id="orange_pay_fields_wrapper" @if($opt->
+							status != 1) style="display:none" @endif>
+							<div class="row">
+							<div class="col-12">
+									<div class="form-group mb-2">
+										<label for="orange_pay_MerchantKey" class="mr-3">{{ __("Merchant Key") }}</label>
+										<input type="text" name="orangepay_MerchantKey" id="orange_pay_MerchantKey"
+											class="form-control" value="{{$orangepay_MerchantKey}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+									<div class="form-group mb-2">
+										<label for="orange_pay_MerchantToken" class="mr-3">{{ __("Bearer Token") }}</label>
+										<input type="text" name="orangepay_MerchantToken" id="orange_pay_MerchantToken"
+											class="form-control" value="{{$orangepay_MerchantToken}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+								</div>
+							</div>
+						</div>
+					@endif
+
+					@if((strtolower($opt->code) == 'cyber_source'))
+						<div class="mt-2" id="cyber_source_fields_wrapper" @if($opt->
+							status != 1) style="display:none" @endif>
+							<div class="row">
+							<div class="col-12">
+									<div class="form-group mb-2">
+										<label for="cyber_source_merchant_id" class="mr-3">{{ __("Merchant Id") }}</label>
+										<input type="text" name="cyber_source_merchant_id" id="cyber_source_merchant_id"
+											class="form-control" value="{{$cyber_source_merchant_id}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+									<div class="form-group mb-2">
+										<label for="cyber_source_profile_id" class="mr-3">{{ __("Profile Id") }}</label>
+										<input type="text" name="cyber_source_profile_id" id="cyber_source_profile_id"
+											class="form-control" value="{{$cyber_source_profile_id}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+									<div class="form-group mb-2">
+										<label for="cyber_source_access_key" class="mr-3">{{ __("Access Key") }}</label>
+										<input type="text" name="cyber_source_access_key" id="cyber_source_access_key"
+											class="form-control" value="{{$cyber_source_access_key}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+									<div class="form-group mb-2">
+										<label for="cyber_source_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+										<input type="password" name="cyber_source_secret_key" id="cyber_source_secret_key"
+											class="form-control" value="{{$cyber_source_secret_key}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+									<div class="form-group mb-2">
+										<label for="bill_to_address_line1" class="mr-3">{{ __("Bill address") }}</label>
+										<input type="text" name="bill_to_address_line1" id="bill_to_address_line1"
+											class="form-control" value="{{$bill_to_address_line1}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+									<div class="form-group mb-2">
+										<label for="bill_to_address_city" class="mr-3">{{ __("Bill city") }}</label>
+										<input type="text" name="bill_to_address_city" id="bill_to_address_city"
+											class="form-control" value="{{$bill_to_address_city}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+									<div class="form-group mb-2">
+										<label for="bill_to_address_country" class="mr-3">{{ __("Bill country") }}</label>
+										<input type="text" name="bill_to_address_country" id="bill_to_address_country"
+											class="form-control" value="{{$bill_to_address_country}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+									<div class="form-group mb-2">
+										<label for="bill_to_address_state" class="mr-3">{{ __("Bill state") }}</label>
+										<input type="text" name="bill_to_address_state" id="bill_to_address_state"
+											class="form-control" value="{{$bill_to_address_state}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+									<div class="form-group mb-2">
+										<label for="bill_to_address_postal_code" class="mr-3">{{ __("Bill zip code") }}</label>
+										<input type="text" name="bill_to_address_postal_code" id="bill_to_address_postal_code"
+											class="form-control" value="{{$bill_to_address_postal_code}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+								</div>
+							</div>
+						</div>
+					@endif
+					
                     @if ( (strtolower($opt->code) == 'totalpay') )
 						<div class="mt-2" id="totalpay_fields_wrapper" @if($opt->
 							status != 1) style="display:none" @endif>

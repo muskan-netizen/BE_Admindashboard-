@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\v1\OrderController;
 use App\Http\Controllers\Api\v1\PickupDeliveryController;
 use App\Http\Controllers\Api\v1\UserSubscriptionController;
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\CustomDomain;
 use App\Http\Traits\OrderTrait;
 use App\Models\Cart;
 use App\Models\CartAddon;
@@ -41,9 +42,13 @@ class MastercardPaymentController extends Controller
     private string $gatewayUrl;
     private int $payopt_id;
 
-    public function __construct()
+    public function __construct(Request $request)
     {
-        $pay_option        = PaymentOption::where('code', 'mastercard')->where('status', 1)->get(['credentials', 'test_mode', 'status', 'id'])->firstOrFail();
+        $pay_option = PaymentOption::where('code', 'mastercard')->where('status', 1)->get(['credentials', 'test_mode', 'status', 'id'])->first();
+        if (!$pay_option) {
+            (new CustomDomain)->handle($request, fn($_) => $_);
+            $pay_option = PaymentOption::where('code', 'mastercard')->where('status', 1)->get(['credentials', 'test_mode', 'status', 'id'])->first();
+        }
         $this->credentials = json_decode($pay_option->credentials);
 
         $this->gatewayUrl = mastercardGateway();
@@ -90,7 +95,9 @@ class MastercardPaymentController extends Controller
 
         $authorization_model
             ->getInteraction()
-            ->setReturnUrl(url(sprintf('/payment/mastercard/return/%s', $reference_id)));
+            ->setReturnUrl($return_url = url(sprintf('/payment/mastercard/return/%s', $reference_id)));
+
+        Log::info("mastercard: return url: $return_url");
 
         switch ($payment_info->payment_from) {
             case 'wallet':
@@ -141,6 +148,7 @@ class MastercardPaymentController extends Controller
             'status' => 'Success',
             'data'   => sprintf('https://%s/checkout/pay/%s?checkoutVersion=1.0.0', $this->gatewayUrl, $session_id)
         ]);
+
         return response()->json($sessionResponse);
     }
 
@@ -148,10 +156,7 @@ class MastercardPaymentController extends Controller
     {
         $session_data = Cache::store('redis')->get('order-' . $order_id);
 
-        if (!$session_data){
-            Log::error(sprintf('Mastercard transaction_id: %s has no session data attached', $order_id));
-            return redirect()->back();
-        }
+        if (!$session_data) return redirect()->back();
 
         list(
             'session_id' => $session_id,
@@ -159,13 +164,10 @@ class MastercardPaymentController extends Controller
             'payment_come_from' => $come_from,
         ) = $session_data;
 
-
         if ($success_indicator != $request->resultIndicator) {
             Log::error(sprintf('Mastercard payment for transaction_id: %s and session_id: %s was unsuccessfull', $order_id, $session_id));
             return $this->handlePaymentFailure($request, $order_id, $session_data);
         }
-
-        Log::info(sprintf('Mastercard payment for transaction_id: %s and session_id: %s was successfull', $order_id, $session_id));
 
         $payment = Payment::where('transaction_id', $order_id)->first();
         $payment->viva_order_id = $order_id;

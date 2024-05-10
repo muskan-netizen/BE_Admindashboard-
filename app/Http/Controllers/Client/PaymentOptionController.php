@@ -860,6 +860,43 @@ class PaymentOptionController extends BaseController
                                     'hitpay_salt_key' => $request->hitpay_salt_key,
                                 )
                             );
+                        break;
+
+                        case 'orange_pay':
+                            $request->validate([
+                            'orangepay_MerchantKey' => 'required',
+                            'orangepay_MerchantToken' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'orangepay_MerchantKey' => $request->orangepay_MerchantKey,
+                                'orangepay_MerchantToken' => $request->orangepay_MerchantToken,
+                            ));
+                        break;
+
+                        case 'cyber_source':
+                            $request->validate([
+                            'cyber_source_merchant_id' => 'required',
+                            'cyber_source_profile_id' => 'required',
+                            'cyber_source_access_key' => 'required',
+                            'cyber_source_secret_key' => 'required',
+                            'bill_to_address_line1' => 'required',
+                            'bill_to_address_city' => 'required',
+                            'bill_to_address_state' => 'required',
+                            'bill_to_address_country' => 'required',
+                            'bill_to_address_postal_code' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'cyber_source_merchant_id' => $request->cyber_source_merchant_id,
+                                'cyber_source_profile_id' => $request->cyber_source_profile_id,
+                                'cyber_source_access_key' => $request->cyber_source_access_key,
+                                'cyber_source_secret_key' => $request->cyber_source_secret_key,
+                                'bill_to_address_line1' => $request->bill_to_address_line1,
+                                'bill_to_address_city' => $request->bill_to_address_city,
+                                'bill_to_address_state' => $request->bill_to_address_state,
+                                'bill_to_address_country' => $request->bill_to_address_country,
+                                'bill_to_address_postal_code' => $request->bill_to_address_postal_code,
+                            ));
+                        break;
                     }
                 }
             }

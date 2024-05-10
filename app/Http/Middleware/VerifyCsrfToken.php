@@ -43,7 +43,8 @@ class VerifyCsrfToken extends Middleware
         'dispatch/driver/bids/status/*',
         'square/inventory/event/update',
         'skipcash/webhook',
-
+        'cybersource/process-payment',
+        'success-orangepay',
         'success/pesapal',
         'payment/hitpay/webhook'
     ];

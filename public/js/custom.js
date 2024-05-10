@@ -1975,8 +1975,8 @@ function paymentViaHitpay(address_id, payment_option_id, order) {
         success: function (response) {
             if (response.status == "Success") {
                 console.log(response);
-                // let paymentUrl = response.payment_url;
-                // window.location.href = paymentUrl;
+                let paymentUrl = response.payment_url;
+                window.location.href = paymentUrl;
             }
         },
         error: function (xrh, error, h) {
@@ -6137,6 +6137,19 @@ function paymentViaHitpay(address_id, payment_option_id, order) {
             if (order != '') {
                 paymentViaHitpay(address_id, payment_option_id, order);
             }
+            break;
+            case '70':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaOranngepay('', payment_option_id, '');
+                    paymentViaCyberSourcePay('', payment_option_id, '');
+                }
+            break;
+            case '71':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaOrangePay('', payment_option_id, '');
+                }
             break;
         }
 

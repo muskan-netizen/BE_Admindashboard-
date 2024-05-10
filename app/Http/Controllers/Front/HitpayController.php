@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Traits\HitpayTrait;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
-use App\Models\{ClientCurrency, Order, Payment, PaymentOption, User};
+use App\Models\{Client as ModelsClient, ClientCurrency, Order, Payment, PaymentOption, User};
 use Illuminate\Support\Facades\Auth;
 use App\Models\CaregoryKycDoc;
 use App\Models\Cart;
@@ -57,17 +57,25 @@ class HitpayController extends Controller
         // $redirectUrl = $this->getSuccessUrl($orderNumber);
         $redirectUrl = url('/success-hitpay') . "?orderNumber=" . $orderNumber;
         $amount = number_format($request->amount, 2, '.', '');
+        $code = $request->header('code')??'';
+        if(!empty($code)){
+            $client = ModelsClient::where('code',$code)->first();
+            if(!empty($client->custom_domain)){
+                $domain = $client->custom_domain;
+            }else{
+                $domain = $client->sub_domain.env('SUBMAINDOMAIN');
+            }
+        }
 
         $body = [
             'redirect_url' => $redirectUrl,
             'email' => $user->email,
             'phone' => $user->phone_number,
             'reference_number' => $orderNumber,
-            'webhook' => "https" . $domain . "/payment/hitpay/webhook",
+            'webhook' => "https://" . $domain . "/payment/hitpay/webhook",
             'currency' => $this->currency,
             'amount' => $amount
         ];
-        \Log::info( $url);
         $response = $this->createPaymentRequest($this->hitpay_client, $body, $url, $businessKey);
         $responseUrl = $response['url'];
         return response()->json([
@@ -101,7 +109,6 @@ class HitpayController extends Controller
     //afterPayment
     public function responseAfterPayment(Request $request)
     {
-
         if (isset($request->status) && $request->status == "completed") {
             $url = $this->getSuccessUrl($request->orderNumber);
             return redirect($url);
@@ -113,12 +120,12 @@ class HitpayController extends Controller
         try {
             $transactionId = $request->reference_number;
             $payment = Payment::where('transaction_id', $transactionId)->first();
-            return $payment;
             if ($payment) {
                 $payment->viva_order_id = $transactionId;
                 $payment->payment_option_id = 69;
                 $payment->save();
             }
+
             if ($payment->type == 'cart') {
                 $order = Order::where('order_number', $transactionId)->first();
                 if ($order) {
@@ -169,6 +176,7 @@ class HitpayController extends Controller
             Log::error($e->getMessage());
         }
     }
+
     public function orderNumber($request)
     {
         try {
