@@ -708,3 +708,21 @@ li.seller_comp {
 }
 
 } 
+
+.cd-products-comparison-table .actions .reset {
+  background-color: #cccccc;
+  padding: 10px 20px;
+  border-radius: 5px;
+  color: #000;
+  font-weight: 500;
+}
+.cd-products-comparison-table .actions .filter {
+  background-color: #cccccc;
+  padding: 10px 20px !important;
+  border-radius: 5px;
+  color: #fff !important;
+  font-weight: 500;
+}
+.cd-products-comparison-table .actions .active{
+  background-color: #f5b86b;
+}
