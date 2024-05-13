@@ -49,9 +49,6 @@ class CartReminder extends Command
         $clients = Client::select('database_name', 'sub_domain')->get();
         
         foreach ($clients as $client) {
-            if($client->sub_domain != '192'){
-continue;
-            }
             $database_name = 'royo_' . $client->database_name;
             $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME =  ?";
             $db = DB::select($query, [$database_name]);
@@ -78,9 +75,7 @@ continue;
                 $cartList = Cart::join('cart_products', 'cart_products.cart_id', '=', 'carts.id')->where(function ($query) use ($past_4Hours, $past_5Hours) {
                     $query->whereBetween('carts.updated_at', [$past_5Hours, $past_4Hours]);
                 })->pluck('user_id')->toArray();
-                $cartList = [4];
                 $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $cartList)->pluck('device_token')->toArray();
-                $devices = ['e1aQCqD6Rr-DnYCvhcOlRi:APA91bEt5EgPWFPFU7LYHY7l6g-F_rkERy_D9ixO-3J536RqdF0vFhAA_AY_GD6QPPkYthzXFOM0xBWPccQysuQB9KO5xqAYAEX08OTCspLKgIKEpYazIhtmy_TtzTTQdxW4SfVcgDPq'];
                 if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
                     $notification_content = NotificationTemplate::where(['id' => 10])->first();
                     if ($notification_content) {
@@ -95,12 +90,13 @@ continue;
                                     'body'  => $notification_content->content,
                                     'sound' => "default",
                                     "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                                    'click_action' => $redirect_URL,
+                                    // 'click_action' => $redirect_URL,
                                     "android_channel_id" => "default-channel-id"
                                 ],
                                 "data" => [
                                     'title' => $notification_content->subject,
                                     'body'  => $notification_content->content,
+                                    'click_action' => $redirect_URL,
                                     'type' => "reminder_notification"
                                 ],
                                 "priority" => "high"
