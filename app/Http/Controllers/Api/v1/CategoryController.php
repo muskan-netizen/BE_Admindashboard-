@@ -327,7 +327,14 @@ class CategoryController extends BaseController
             $vendor_ids = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->where('status', 1);
             
             $vendor_ids =  $vendor_ids->pluck('id')->toArray();
+            $dollorCompare = '';
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
+            if($clientCurrency){
+                $dollorCompare = $clientCurrency->doller_compare;
+            }else{
+                $adminCurrency = ClientCurrency::where('is_primary',1)->first();
+                $dollorCompare = $adminCurrency->doller_compare;
+            }
             $products = Product::has('vendor')->with([
                 'category.categoryDetail', 'category.categoryDetail.translation' => function ($q) use ($langId) {
                     $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
@@ -372,7 +379,7 @@ class CategoryController extends BaseController
                             } else {
                                 $v->is_free = false;
                             }
-                            $v->multiplier = $clientCurrency->doller_compare;
+                            $v->multiplier = $dollorCompare;
                         }
                     }
 
@@ -411,13 +418,13 @@ class CategoryController extends BaseController
                     $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
                     $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html)) : '';
                     $product->translation_description = !empty($product->translation_description) ? mb_substr($product->translation_description, 0, 70) . '...' : '';
-                    $product->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                    $product->variant_multiplier = $dollorCompare ? $dollorCompare : 1;
                     $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
                     $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
                     $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
                     if ($product->variant->count() > 0) {
                         foreach ($product->variant as $k => $v) {
-                            $product->variant[$k]->multiplier = $clientCurrency->doller_compare ?? '';
+                            $product->variant[$k]->multiplier = $dollorCompare ? $dollorCompare : 1;
                         }
                     } else {
                         $product->variant =  $product;
