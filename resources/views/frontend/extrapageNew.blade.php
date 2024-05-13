@@ -542,7 +542,7 @@
                                 <div class="form-row">
                                     <div class="col-12 checkbox-input" id="check_conditionsCheckbox">
                                         <input type="checkbox" id="check_conditions" name="check_conditions" value="1">
-                                        <label for="check_conditions" class="font-weight-bold">{{__('I accept the')}} <a href="{{url('page/terms-conditions')}}" target="_blank" class="text-primary">{{__('Terms And Conditions')}}</a> {{__('and have read the')}} <a href="{{url('page/privacy-policy')}}" target="_blank"> {{__('Privacy Policy.')}}</a></label>
+                                        <label for="check_conditions" class="font-weight-bold">{{__('I accept the')}} <a href="{{url('page/terms-conditions')}}" target="_blank" class="text-primary">{{__('Terms And Conditions')}}</a> {{__('and have read the')}} <a href="{{url('page/privacy-policy')}}" target="_blank" class="text-primary"> {{__('Privacy Policy.')}}</a></label>
                                         <span class="invalid-feedback" id="check_conditions_error"><strong></strong></span>
                                     </div>
                                 </div>
