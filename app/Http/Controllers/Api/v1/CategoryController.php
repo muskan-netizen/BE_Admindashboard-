@@ -74,7 +74,7 @@ class CategoryController extends BaseController
             
             $response['category'] = $category;
             $response['filterData'] = $variantSets;
-            $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service, $limit, $page, $request);
+            $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service=null, $limit, $page, $request);
             return $this->successResponse($response);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -417,7 +417,7 @@ class CategoryController extends BaseController
                     $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
                     if ($product->variant->count() > 0) {
                         foreach ($product->variant as $k => $v) {
-                            $product->variant[$k]->multiplier = $clientCurrency->doller_compare;
+                            $product->variant[$k]->multiplier = $clientCurrency->doller_compare ?? '';
                         }
                     } else {
                         $product->variant =  $product;
