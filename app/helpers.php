@@ -213,6 +213,7 @@ if (!function_exists('sendFcmCurlRequest')) {
             //     die('Oops! FCM Send Error: ' . curl_error($ch));
             // }
             curl_close($ch);
+            dd(json_encode($result));
             return $result;
         } else {
             return false;
