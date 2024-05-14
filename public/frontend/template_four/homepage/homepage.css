@@ -11,7 +11,11 @@ body.al_body_template_four section.cab-banner-area.alTaxiBannerStart form.cab-bo
 body.al_body_template_four .col-sm-6.offset-sm-3 {
     margin-bottom: 20px;
 }
-.dark .menu_navigation_al_four .slick-next{background: transparent !important;}
+
+.dark .menu_navigation_al_four .slick-next {
+    background: transparent !important;
+}
+
 body.al_body_template_four .alFourTemplateCartButtons a.shoping i {
     position: inherit;
 }
@@ -23,6 +27,7 @@ body.al_body_template_four .alFourTemplateCartButtons a.shoping i {
     background-size: 12px;
     border-radius: 2px;
 }
+
 .home-slider-wrapper span.carousel-control-next-icon {
     background-color: #000;
     width: 40px !important;
@@ -446,6 +451,7 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
         position: absolute;
         left: 24px;
     }
+
     .booking-experience {
         height: calc(100vh - 150px);
         position: absolute;
@@ -945,6 +951,7 @@ a.brand-box.black-box h6 {
     border-top-right-radius: 5px;
     padding: 5px 0
 }
+
 .pulse {
     display: block;
     width: 8px;
@@ -965,6 +972,7 @@ a.brand-box.black-box h6 {
     0% {
         box-shadow: 0 0 0 0 rgba(0, 0, 0, .2)
     }
+
     100% {
         box-shadow: 0 0 0 20px transparent
     }
@@ -974,6 +982,7 @@ a.brand-box.black-box h6 {
     0% {
         box-shadow: 0 0 0 0 rgba(0, 0, 0, .2)
     }
+
     100% {
         box-shadow: 0 0 0 20px transparent
     }
@@ -1099,6 +1108,7 @@ a.brand-box.black-box h6 {
         -webkit-transform: rotate(0);
         transform: rotate(0)
     }
+
     to {
         -webkit-transform: rotate(1turn);
         transform: rotate(1turn)
@@ -1110,6 +1120,7 @@ a.brand-box.black-box h6 {
         -webkit-transform: rotate(0);
         transform: rotate(0)
     }
+
     to {
         -webkit-transform: rotate(1turn);
         transform: rotate(1turn)
@@ -1911,6 +1922,7 @@ span.org_price {
     font-weight: 600;
     text-transform: uppercase
 }
+
 body .add_vendor_product_btn {
     border: 1px solid;
     height: 30px;
@@ -2805,7 +2817,7 @@ section.section-b-space.light-layout_alFour {
     max-height: 200px;
     overflow-y: auto;
     overflow-x: hidden;
-    width:300px!important;
+    width: 300px !important;
 }
 
 .al_search_viewall {
@@ -3471,12 +3483,24 @@ body[dir=rtl] .alFourThLogo {
     float: right;
 }
 
+.dark .price_box_bottom li {
+    color: #fff
+}
+
+.dark .order_detail:before {
+    border-left: 1px solid #fff;
+    background-color: #fff;
+}
+
+.dark .pulse {
+    background: #ffffff;
+}
 
 /* responsive css start */
 
 
-.dark.al_body_template_four .site-header .icon-ic_currency:before{
-    color:#fff!important;
+.dark.al_body_template_four .site-header .icon-ic_currency:before {
+    color: #fff !important;
 
 }
 
@@ -3484,7 +3508,8 @@ body[dir=rtl] .alFourThLogo {
     .product-m .slick-slide {
         margin: 0;
     }
-    .al_clock b{
+
+    .al_clock b {
         padding: 6px 20px;
     }
 }
@@ -3493,28 +3518,36 @@ body[dir=rtl] .alFourThLogo {
     body .shimmer_effect .grid-row .card_image {
         height: 150px !important;
     }
+
     .slick-slider .img-outer-box {
         height: 150px;
     }
+
     .product-m .slick-slide {
         margin: 0;
     }
+
     .al_body_template_four .cardbanner,
     .al_desktop_banner {
         max-height: 290px
     }
+
     .grid-row.grid-4-4 {
         grid-gap: 40px;
     }
+
     .footer-theme .sub-title .contact-list i {
         top: 8px
     }
+
     .al_body_template_four .btn.btn-solid {
         padding: 7px 10px;
     }
+
     .alFourTemplateCartButtons a span {
         padding-right: 25px;
     }
+
     .box-account button.btn.btn-solid {
         font-size: 10px;
         text-transform: capitalize !important;
@@ -3526,52 +3559,68 @@ body[dir=rtl] .alFourThLogo {
     .grid-row.grid-4-4 {
         grid-template-columns: repeat(2, 1fr);
     }
+
     .al_body_template_four .shimmer_effect .grid-row .cards {
         margin-bottom: 40px;
     }
+
     .al_body_template_four .shimmer_effect .grid-row .cards:nth-child(3),
     .al_body_template_four .shimmer_effect .grid-row .cards:nth-child(4) {
         display: none;
     }
+
     .popular-brands h2.h2-heading.text-capitalize {
         text-align: left;
     }
+
     .custom-select {
         padding: 0
     }
+
     li.onhover-dropdown.mobile-account span.al_BGcolor {
         margin-right: 0;
     }
+
     .container-fliud.mb-5.shimmer_effect.al_tabsShimmer {
         padding: 0 12px;
     }
+
     .al_body_template_four .common-product-box.scale-effect .product-description .d-flex b {
         right: 0;
     }
+
     .cart-main-box {
         width: 240px;
     }
+
     .al_body_template_four .extra-items-price {
         font-size: 10px !important;
     }
+
     .product-banner-img,
     .common-banner {
         height: 200px;
     }
-    .cab-banner-area .card-box{padding:18px !important;}
+
+    .cab-banner-area .card-box {
+        padding: 18px !important;
+    }
 }
 
 @media(max-width:991px) {
     .al_mobile_menu {
         display: block
     }
+
     .icon-ic_lang:before {
         color: var(--theme-deafult)
     }
+
     .scrollspy-menu {
         top: 150px;
         width: 240px
     }
+
     /* .vendor-stories {
         width: 80px;
         height: 80px;
@@ -3581,12 +3630,15 @@ body[dir=rtl] .alFourThLogo {
     .product-banner-img {
         height: 150px
     }
+
     .vender-icon img {
         width: 100%
     }
+
     .order-success-sec .row {
         margin-bottom: 0
     }
+
     .al_body_template_four .product-order.py-3:before {
         height: 1px;
         right: 0;
@@ -3595,91 +3647,115 @@ body[dir=rtl] .alFourThLogo {
         background-color: #eee;
         bottom: -12px
     }
+
     .al_searchType button.btn.px-0 {
         padding: 0 10px !important
     }
+
     .al_mobile_menu .al_menu-drawer.open li {
         padding-bottom: 5px !important;
         padding-top: 5px;
         text-transform: capitalize
     }
+
     .al_mobile_menu .onhover-dropdown,
     .al_mobile_menu .onhover-dropdown_al {
         padding-left: 0;
         padding-right: 0;
         display: block
     }
+
     .al_mobile_menu .onhover-dropdown_al li {
         padding: 8px 0 0
     }
+
     .onhover-show-div li a {
         padding: 0 0
     }
+
     .al_mobile_menu.al_new_mobile_header li {
         margin-bottom: 0;
         border-bottom: 1px solid #eee
     }
+
     li.onhover-dropdown_al.mobile-account_al {
         border-bottom: none
     }
+
     li.onhover-dropdown.change-language {
         margin: 0
     }
+
     .cart_qty_cls {
         top: -40px;
         right: -25px
     }
+
     .displayProducts .product-image {
         height: 150px !important
     }
+
     .product-right {
         text-align: left;
         margin: 0;
         padding-left: 0 !important
     }
+
     .product-buttons {
         margin-bottom: 20px;
     }
+
     .vendors .slick-arrow {
         display: none !important
     }
+
     body .shake-effect i.fa {
         color: var(--theme-deafult)
     }
+
     span#cart_qty_span {
         position: relative;
         top: -4px
     }
+
     a.navbar-brand.m-0 img {
         height: 60px;
     }
+
     .al_menu-drawer {
         top: -6px
     }
+
     #cart_table .number .input-number {
         margin: 0 5px;
         background-color: transparent;
         color: #fff
     }
+
     .alFourTemplateCartButtons a:last-child {
         display: block;
         margin-top: 10px
     }
+
     .alFourTemplateCartButtons a i {
         position: relative
     }
+
     li.onhover-dropdown.change-currency ul.onhover-show-div li a,
     li.onhover-dropdown.change-language ul.onhover-show-div li a {
         padding-left: 10px
     }
+
     li.onhover-dropdown.change-currency,
     li.onhover-dropdown.change-currency ul.onhover-show-div li:last-child,
     li.onhover-dropdown.change-language ul.onhover-show-div li:last-child {
         border-bottom: 0
     }
+
     .dashboard-left {
         z-index: 999
     }
+
     .product-right .detail-section,
     .product-right .product-icon {
         -webkit-box-pack: start;
@@ -3687,104 +3763,132 @@ body[dir=rtl] .alFourThLogo {
         justify-content: left;
         margin-top: 10px;
     }
+
     body.al_body_template_four .nav.nav-tabs.nav-material {
         margin-top: 0 !important;
         display: flex;
         flex-wrap: nowrap;
         overflow-x: scroll !important;
     }
+
     body.al_body_template_four .navigation_tab_al.nav-material.tab-icons .nav-link {
         min-width: 138px;
     }
+
     body.al_body_template_four .al_count_tabs_fourdesign {
         overflow-x: scroll;
     }
-     ::-webkit-scrollbar {
+
+    ::-webkit-scrollbar {
         height: 3px;
     }
-     ::-webkit-scrollbar-track {
+
+    ::-webkit-scrollbar-track {
         background: transparent;
     }
+
     body.al_body_template_four .al_count_tabs_fourdesign::-webkit-scrollbar-track {
         box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
     }
+
     body.al_body_template_four .navigation_tab_al.nav-material.tab-icons {
         border-radius: 0 !important;
     }
+
     body.al_body_template_four .main-menu .container-fluid.text-center.py-md-3.py-1 {
         padding-top: 0 !important;
     }
+
     body.al_body_template_four.p2p-module.homeHeader .collection-content.col-lg-9.outter-fillter-data a.product-box.scale-effect {
         height: auto;
         padding: 10px;
     }
+
     body.al_body_template_four .product-wrapper-grid .inner_spacing.w-100 h4.mt-1 {
         padding: 0 !important;
     }
+
     body.al_body_template_four.p2p-module.homeHeader .inner_spacing span.rating {
         padding: 6px 5px;
         font-size: 12px;
         width: 65px;
         text-align: center;
     }
+
     body.al_body_template_four.p2p-module .product-buttons .btn.btn-solid {
         max-width: 160px !important;
     }
+
     body.al_body_template_four.p2p-module .tab-product {
         margin-top: 30px !important;
     }
+
     body.al_body_template_four.p2p-module .cab-banner-area .card-box {
         padding: 20px !important;
     }
+
     body.al_body_template_four.p2p-module .col-sm-12.p-lg-0.d-flex.align-items-center.justify-content-md-around.justify-content-between.pr-lg-3.pl-lg-0 {
         display: none !important;
     }
+
     body.al_body_template_four.p2p-module a.navbar-brand.m-0 img {
         width: auto !important;
     }
+
     body.al_body_template_four.p2p-module .navbar-brand {
         display: block;
         text-align: center;
     }
+
     body.al_body_template_four.p2p-module .onhover-div.pl-0.ml-xl-3.ml-lg-1.shake-effect.d-block.d-md-none {
         display: block !important;
     }
+
     body.al_body_template_four.p2p-module .product-wrapper-grid .col-md-3 {
         flex: 33%;
         max-width: 33%;
     }
+
     body.al_body_template_four.p2p-module .displayProducts .product-image img {
         width: 100%;
         object-fit: cover;
         border-radius: 10px;
     }
+
     body.al_body_template_four.p2p-module .vendor-reviwes {
         display: none;
     }
+
     body.al_body_template_four.p2p-module .shoping_cart .vendor_products_tr h4 strong {
         display: none;
     }
 }
 
 @media(max-width:767px) {
-    .list-box{
-        width: 100%!important;
+    .list-box {
+        width: 100% !important;
     }
+
     body .shimmer_effect .grid-row .card_image {
         height: 90px !important
     }
+
     body.al_body_template_four .navigation_tab_al.nav-material.tab-icons {
         border: none !important;
     }
+
     .alFourTemplateCartButtons a.btn.btn-solid:before {
         font-size: 18px
     }
+
     .product-description.mt-2.text-left {
         margin: 5px !important
     }
+
     .al_clock {
         height: 30px
     }
+
     /* .product-card-box.position-relative {
     padding: 6px !important;
     box-shadow: 0 0 5px rgb(0 0 0 / 20%);
@@ -3793,6 +3897,7 @@ body[dir=rtl] .alFourThLogo {
     .vendors h2.h2-heading.mb-3 {
         margin-bottom: 10px !important
     }
+
     /* .vendor-stories {
         width: 60px;
         height: 60px;
@@ -3804,183 +3909,237 @@ body[dir=rtl] .alFourThLogo {
         display: inline-block;
         width: auto !important
     }
+
     .shake-effect a.btn.btn-solid.d-flex.align-items-center {
         display: inline-block !important;
         width: auto
     }
+
     .al_body_template_four .breadcrumb-section.bg-transparent {
         padding: 0 !important
     }
+
     .price_box_bottom li {
         font-size: 12px
     }
+
     a.navbar-brand.m-0 {
         width: 100%;
         text-align: center
     }
+
     .al_body_template_four .cardbanner,
     .al_desktop_banner {
         max-height: 200px
     }
+
     .slick-slider .img-outer-box {
         height: 90px
     }
+
     .al_productName p {
         font-size: 14px
     }
+
     .Stars::before {
         font-size: 18px
     }
+
     .vender-icon {
         margin-top: -30px
     }
+
     h6.card_title.m-0.ellips {
         font-size: 12px
     }
+
     .al_clock b {
         padding: 6px 20px;
         font-size: 14px
     }
+
     .filter-main-btn,
     .filter-main-btn span {
         margin: 0
     }
+
     .al_body_template_four .suppliers-img-outer {
         height: 100px !important
     }
+
     .brand-ing {
         width: 100px;
         height: 100px
     }
+
     article#page-container section .vendors section {
         padding: 10px 0 !important
     }
+
     #our_vendor_main_div section:nth-child(even) {
         background-color: transparent
     }
+
     footer#footer {
         margin: 0
     }
+
     .footer-title .according-menu:before {
         font-family: fontawesome;
         display: none
     }
+
     .al_body_template_four .collection-filter-block {
         padding: 0 12px !important
     }
+
     .top-banner-wrapper.mb-4 {
         margin-bottom: 0 !important
     }
+
     span.filter-btn.btn.btn-theme {
         border-radius: 30px;
         padding: 7px 12px
     }
+
     span.filter-btn.btn.btn-theme i.fa.fa-filter {
         color: #fff;
         margin-right: 5px
     }
+
     .footer-title {
-        border: none;padding: 6px 0px;
+        border: none;
+        padding: 6px 0px;
     }
+
     .footer-mobile-contant {
         text-align: left;
         display: block !important
     }
+
     .footer-theme .sub-title .contact-list li {
         padding-left: 0 !important
     }
+
     .footer-theme .sub-title .contact-list i {
         top: 0
     }
+
     ul.contact-list.al {
         margin-bottom: 20px
     }
+
     body .footer-theme .sub-title h4 {
         font-size: 16px;
         margin-bottom: 0
     }
+
     .al_custom_vendors_sec_al h6 {
         font-size: 14px
     }
+
     .productAddonSetOptions {
         padding: 10px 0 0
     }
+
     button.btn.btn-solid.addWishList.mr-2 {
         margin-bottom: 10px
     }
+
     .inner_spacing.w-100 h4.mt-1 {
         right: -20px;
         padding: 6px 30px;
         margin-bottom: 0
     }
+
     .top-banner-content.small-section {
         padding: 0
     }
+
     .al_body_template_four .related-products .common-product-box.scale-effect .product-description .d-flex b {
         right: -10px
     }
+
     .al_body_template_four .number .counter-container {
         padding: 4px
     }
+
     .al_body_template_four .number .counter-container .minus i,
     .al_body_template_four .number .counter-container .plus i {
         font-size: 10px
     }
+
     .number input {
         height: 20px;
         max-width: 30px
     }
+
     .al_body_template_four .number .counter-container .minus,
     .al_body_template_four .number .counter-container .plus {
         padding: 0 8px;
         border-radius: 5px !important
     }
+
     .alFourTemplateCartPage .items-details p.p-0.m-0 {
         font-size: 12px;
         line-height: normal
     }
+
     #cart_table .number .input-number {
         margin: 0 5px
     }
+
     .al_body_template_four .btn.btn-solid {
         font-size: 12px
     }
+
     .al_body_template_four .cart-page-layout .tip_label h5 {
         font-weight: 600;
         font-size: 12px;
         line-height: normal
     }
+
     .radio {
         font-size: 14px;
         line-height: normal
     }
+
     .onhover-dropdown:before {
         right: 20px
     }
+
     .exzoom .exzoom_img_ul_outer {
         border-radius: 40px
     }
+
     .vendors {
         padding: 0 12px
     }
+
     .product-description_list .al_product_category span {
         font-size: 12px
     }
+
     .al_tabsShimmer {
         padding: 0 12px
     }
+
     .shimmer_effect h2.h2-heading {
         margin-left: 12px
     }
+
     .member_no {
         font-size: 14px
     }
+
     select#order_type {
         width: 100%
     }
+
     .qty-box .input-group {
         padding: 5px
     }
+
     .register_body article.BGcenter {
         position: relative;
         top: auto;
@@ -3989,14 +4148,17 @@ body[dir=rtl] .alFourThLogo {
         transform: translate(0, 0);
         margin-top: 10px
     }
+
     .categories-product-list .number {
         padding: 5px
     }
+
     .account-sidebar {
         margin-top: 10px;
         margin-bottom: 10px;
         border-radius: 30px
     }
+
     .scrollspy-menu {
         top: auto;
         bottom: 120px;
@@ -4011,82 +4173,121 @@ body[dir=rtl] .alFourThLogo {
         box-shadow: 0 0 35px 0 rgb(154 161 171 / 15%);
         transition: all .3s
     }
+
     .tap-top.top-cls {
         z-index: 9999;
     }
+
     body.al_body_template_four .nav.nav-tabs.nav-material {
         margin-top: 0 !important;
         display: flex;
         flex-wrap: nowrap;
         overflow-x: scroll !important;
     }
+
     body.al_body_template_four .navigation_tab_al.nav-material.tab-icons .nav-link {
         min-width: 138px;
     }
+
     body.al_body_template_four .al_count_tabs_fourdesign {
         overflow-x: scroll;
     }
-     ::-webkit-scrollbar {
+
+    ::-webkit-scrollbar {
         height: 3px;
     }
-     ::-webkit-scrollbar-track {
+
+    ::-webkit-scrollbar-track {
         background: transparent;
     }
+
     body.al_body_template_four .al_count_tabs_fourdesign::-webkit-scrollbar-track {
         box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
     }
+
     body.al_body_template_four .navigation_tab_al.nav-material.tab-icons {
         border-radius: 0 !important;
     }
+
     body.al_body_template_four .main-menu .container-fluid.text-center.py-md-3.py-1 {
         padding-top: 0 !important;
     }
+
     body.al_body_template_four.p2p-module.homeHeader .collection-content.col-lg-9.outter-fillter-data a.product-box.scale-effect {
         height: auto;
         padding: 10px;
     }
+
     body.al_body_template_four .product-wrapper-grid .inner_spacing.w-100 h4.mt-1 {
         padding: 0 !important;
     }
+
     body.al_body_template_four.p2p-module.homeHeader .inner_spacing span.rating {
         padding: 6px 5px;
         font-size: 12px;
         width: 65px;
         text-align: center;
     }
+
     body.al_body_template_four.p2p-module .product-buttons .btn.btn-solid {
         max-width: 160px !important;
     }
+
     body.al_body_template_four.p2p-module .tab-product {
         margin-top: 30px !important;
     }
-    .vendors h2.h2-heading.mb-3{font-size: 20px;}
 
+    .vendors h2.h2-heading.mb-3 {
+        font-size: 20px;
+    }
+
+    body.al_body_template_four .menu_navigation_al_four .slick-next,
+    body.al_body_template_four .menu_navigation_al_four .slick-prev {
+        display: none;
+    }
 }
 
 @media(max-width:576px) {
     .al_body_template_four .cab-banner-area .card-box {
         padding: 16px;
     }
+
     .al_body_template_four .cab-footer button {
         display: block;
         width: 100%;
         margin: 10px 0px;
     }
+
     .al_body_template_four .pixelstrap ul.alInnerMenu li a span.new-tag {
         font-size: 10px;
         padding: 0px;
     }
+
     .al_body_template_four .pixelstrap ul.alInnerMenu li a {
         padding: 4px 10px !important;
     }
+
     .age-restriction {
         padding-right: 0px !important;
     }
-    .payment-card .payment-card-bottom { margin: 10px 0px;}
-    .payment-card .payment-card-bottom ul li a img {width: 40px;height: auto !important;}
-    .cab-banner-area .container-fluid.p-64.py-64 {padding: 10px !important;}
-    .cab-banner-area .card-box h2 {font-size: 20px;letter-spacing: 0px;}
+
+    .payment-card .payment-card-bottom {
+        margin: 10px 0px;
+    }
+
+    .payment-card .payment-card-bottom ul li a img {
+        width: 40px;
+        height: auto !important;
+    }
+
+    .cab-banner-area .container-fluid.p-64.py-64 {
+        padding: 10px !important;
+    }
+
+    .cab-banner-area .card-box h2 {
+        font-size: 20px;
+        letter-spacing: 0px;
+    }
 }
 
 .side-menu-open {
@@ -4098,6 +4299,7 @@ body[dir=rtl] .alFourThLogo {
     top: auto !important;
     z-index: 10000;
 }
+
 .dark .scrollspy-menu {
     background: #242424
 }
@@ -4207,22 +4409,28 @@ body.dark {
 .order_detail.order_detail_data ul.product_list li {
     position: relative;
 }
-body.al_body_template_four .file.file--upload{border:none;}
+
+body.al_body_template_four .file.file--upload {
+    border: none;
+}
 
 /*===========  07-03-2023 vendor-registration css start ============*/
-body.al_body_template_four .al_details_vendor  .file.file--upload {
+body.al_body_template_four .al_details_vendor .file.file--upload {
     border: 1px solid#ced4da;
 }
-body.al_body_template_four .vendor-signup  .file.file--upload {
+
+body.al_body_template_four .vendor-signup .file.file--upload {
     border: 1px solid#ced4da;
 }
+
 body.al_body_template_four .vendor-signup .form-row input#phone {
-    padding-right: 0!important;
-    padding-left: 76px!important;
+    padding-right: 0 !important;
+    padding-left: 76px !important;
 }
-body.al_body_template_four .vendor-signup  input#phone {
-    padding-left: 76px!important;
-    padding-right: 0!important;
+
+body.al_body_template_four .vendor-signup input#phone {
+    padding-left: 76px !important;
+    padding-right: 0 !important;
 }
 
 /*===========  07-03-2023 vendor-registration css end ============*/
@@ -4293,6 +4501,7 @@ body.al_body_template_four .vendor-signup  input#phone {
     border-radius: 0 !important;
     font-size: 16px
 }
+
 /*
 body.al_body_template_four .inner_spacing.w-100 label.mb-0 {
     font-size: 16px;
@@ -4348,53 +4557,174 @@ body[dir=rtl] .al_searchType button i {
     margin-left: 10px;
     margin-right: auto;
 }
+
 .inner_spacing .border-product .product-icon #social-links ul li a {
     font-size: 20px;
 }
 
 /*----arabic user profile design css start here----*/
 
-  /*----arabic user profile design css start here----*/
-  body[dir=rtl] .dashboard-right .dashboard .page-title h2{text-align: right;}
-  body[dir=rtl] .dashboard-right .col-sm-6.text-right.mt-0.mt-md-0 {text-align: left !important;}
-  body[dir=rtl]  .progress-order{left: 0px; right: -24px;}
-  body[dir=rtl] .order_detail_data h5.m-0{text-align: right;}
-  body[dir=rtl] .status_box{text-align: right;}
-  body[dir=rtl] .order_detail:before{left: auto; right: -1px;}
-  body[dir=rtl] .order_detail_data .pulse{left:auto;right:-4px;}
-  body[dir=rtl]  button.reschedule_order.btn.btn-solid{float: left !important;}
-  body[dir=rtl] .price_box_bottom .rating-star{left: 10px !important;}
-  body[dir=rtl] .order-page .order_head .ellipsis {text-align: right;padding-right: 10px;}
-  body[dir=rtl] .wishlist-table .addWishlistToCart{float:right;}
-  body[dir=rtl] .al_inner_card .offset-md-3.col-md-6{margin-left: 0px;margin-right: 25%;}
-  body[dir=rtl] .box-account.box-info h5.text-17 {text-align: right;}
-  body[dir=rtl] .box-account.box-info .text-36 {text-align: right;}
-  body[dir=rtl] .box-account.box-info .col-md-6.text-md-right {text-align: left !important;}
-  body[dir=rtl] .wallet-transactions tr.table-head th {text-align: right;}
-  body[dir=rtl] .wallet-transactions tr.table-head th.text-right {text-align: left !important;}
-  body[dir=rtl] .scrolling_section h2.category-head{text-align: right;}
-  body[dir=rtl] .dashboard-left .block-content ul li:before{left: 10px;position: absolute;transform: rotate(180deg);transform-origin: 20px 10px;}
-  body[dir=rtl] .footer-theme .sub-title li {text-align: right;}
-  body[dir=rtl] #wallet_topup_form .form-group {text-align: right;}
-  body[dir=rtl]  #wallet_topup_form h5 { text-align: right;}
-  body[dir=rtl] form#wallet_transfer_form {text-align: right;}
+/*----arabic user profile design css start here----*/
+body[dir=rtl] .dashboard-right .dashboard .page-title h2 {
+    text-align: right;
+}
+
+body[dir=rtl] .dashboard-right .col-sm-6.text-right.mt-0.mt-md-0 {
+    text-align: left !important;
+}
+
+body[dir=rtl] .progress-order {
+    left: 0px;
+    right: -24px;
+}
+
+body[dir=rtl] .order_detail_data h5.m-0 {
+    text-align: right;
+}
+
+body[dir=rtl] .status_box {
+    text-align: right;
+}
+
+body[dir=rtl] .order_detail:before {
+    left: auto;
+    right: -1px;
+}
+
+body[dir=rtl] .order_detail_data .pulse {
+    left: auto;
+    right: -4px;
+}
+
+body[dir=rtl] button.reschedule_order.btn.btn-solid {
+    float: left !important;
+}
+
+body[dir=rtl] .price_box_bottom .rating-star {
+    left: 10px !important;
+}
+
+body[dir=rtl] .order-page .order_head .ellipsis {
+    text-align: right;
+    padding-right: 10px;
+}
+
+body[dir=rtl] .wishlist-table .addWishlistToCart {
+    float: right;
+}
+
+body[dir=rtl] .al_inner_card .offset-md-3.col-md-6 {
+    margin-left: 0px;
+    margin-right: 25%;
+}
+
+body[dir=rtl] .box-account.box-info h5.text-17 {
+    text-align: right;
+}
+
+body[dir=rtl] .box-account.box-info .text-36 {
+    text-align: right;
+}
+
+body[dir=rtl] .box-account.box-info .col-md-6.text-md-right {
+    text-align: left !important;
+}
+
+body[dir=rtl] .wallet-transactions tr.table-head th {
+    text-align: right;
+}
+
+body[dir=rtl] .wallet-transactions tr.table-head th.text-right {
+    text-align: left !important;
+}
+
+body[dir=rtl] .scrolling_section h2.category-head {
+    text-align: right;
+}
+
+body[dir=rtl] .dashboard-left .block-content ul li:before {
+    left: 10px;
+    position: absolute;
+    transform: rotate(180deg);
+    transform-origin: 20px 10px;
+}
+
+body[dir=rtl] .footer-theme .sub-title li {
+    text-align: right;
+}
+
+body[dir=rtl] #wallet_topup_form .form-group {
+    text-align: right;
+}
+
+body[dir=rtl] #wallet_topup_form h5 {
+    text-align: right;
+}
+
+body[dir=rtl] form#wallet_transfer_form {
+    text-align: right;
+}
 
 
- /*---vendor form page arabic language  css start here----*/
- body[dir=rtl] .main-top-heading h2 {text-align: right;}
- body[dir=rtl] .main-top-heading p {text-align: right;}
- body[dir=rtl] .vendor-signup h2 {text-align: right;}
- body[dir=rtl] .vendor-signup label {text-align: right;}
- body[dir=rtl] .needs-validation div#phone_numberInput input#phone {padding-left: 0px !important;padding-right: 90px;}
- body[dir=rtl] .checkbox-input label {padding-left: 0px !important;padding-right: 25px;}
- body[dir=rtl] .checkbox-input input {right: 0px;left: auto;}
- body[dir=rtl]  .al_details_vendor .mt-md-1{text-align: right;}
- body[dir=rtl] .al_details_vendor button.btn.btn-solid {float: right;}
- body[dir=rtl]  span.invalid-feedback {display: block;text-align: right;}
- body[dir=rtl] .modal-dialog.modal-dialog-centered .modal-body h6 {text-align: right;}
- body[dir=rtl] .border-product {text-align: right;}
- body[dir=rtl] .border-product .addon-product .productAddonSetOptions .checkbox.checkbox-success label.checkboxAl {
+/*---vendor form page arabic language  css start here----*/
+body[dir=rtl] .main-top-heading h2 {
+    text-align: right;
+}
+
+body[dir=rtl] .main-top-heading p {
+    text-align: right;
+}
+
+body[dir=rtl] .vendor-signup h2 {
+    text-align: right;
+}
+
+body[dir=rtl] .vendor-signup label {
+    text-align: right;
+}
+
+body[dir=rtl] .needs-validation div#phone_numberInput input#phone {
+    padding-left: 0px !important;
+    padding-right: 90px;
+}
+
+body[dir=rtl] .checkbox-input label {
+    padding-left: 0px !important;
+    padding-right: 25px;
+}
+
+body[dir=rtl] .checkbox-input input {
+    right: 0px;
+    left: auto;
+}
+
+body[dir=rtl] .al_details_vendor .mt-md-1 {
+    text-align: right;
+}
+
+body[dir=rtl] .al_details_vendor button.btn.btn-solid {
+    float: right;
+}
+
+body[dir=rtl] span.invalid-feedback {
+    display: block;
+    text-align: right;
+}
+
+body[dir=rtl] .modal-dialog.modal-dialog-centered .modal-body h6 {
+    text-align: right;
+}
+
+body[dir=rtl] .border-product {
+    text-align: right;
+}
+
+body[dir=rtl] .border-product .addon-product .productAddonSetOptions .checkbox.checkbox-success label.checkboxAl {
     padding-left: 0px;
     padding-right: 35px;
 }
-body[dir=rtl] .checkmark{left: auto; right:0px;}
+
+body[dir=rtl] .checkmark {
+    left: auto;
+    right: 0px;
+}

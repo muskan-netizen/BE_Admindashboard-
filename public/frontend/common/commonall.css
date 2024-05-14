@@ -1492,8 +1492,8 @@ body.al_body_template_two .vendor-design_new .product-bottom-bar {
 }
 
 .al_body_template_four .brand-ing {
-    width: 260px;
-    height: 260px;
+    width: 230px;
+    height: 230px;
 }
 
 .al_body_template_four a.suppliers-box.d-block span.rating-number {
@@ -2652,6 +2652,11 @@ body[dir="rtl"] #step-4-ondemand .add-on-main-div {
     .order-success-sec .order-detail li {
         display: block !important;
         margin-bottom: 10px;
+    }
+
+    .custom_banner img {
+        border-radius: 10px;
+        min-height: 100px;
     }
 }
 

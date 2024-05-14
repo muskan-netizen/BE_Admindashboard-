@@ -11,7 +11,7 @@ body .section-space.section-space {
 .product-m.render_recent_orders .slick-list {
     margin-left: 0;
     margin-right: 0;
-    padding-left: 0;
+    padding-left: 5px;
 }
 
 .price_box_bottom li {
@@ -21,6 +21,15 @@ body .section-space.section-space {
 
 .dark .price_box_bottom li {
     color: #fff
+}
+
+.dark .order_detail:before {
+    border-left: 1px solid #fff;
+    background-color: #fff;
+}
+
+.dark .pulse {
+    background: #ffffff;
 }
 
 article#page-container {
@@ -465,6 +474,19 @@ article#page-container {
 
 .dark .status_box li img {
     opacity: 1;
+    filter: brightness(13.5);
+}
+
+.dark .price_box_bottom li label {
+    color: #fff;
+}
+
+.dark .recent-orders-8 .card-box {
+    background-color: transparent;
+}
+
+.dark .recent-orders-8 .items_price {
+    color: #ffffff;
 }
 
 .status_box li img {
