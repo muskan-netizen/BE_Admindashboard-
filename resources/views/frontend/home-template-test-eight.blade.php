@@ -551,7 +551,7 @@
 </script><!-- cities cities end -->
 
 <!-- our_vendor_main_div start -->
-<section class="section-b-space ratio_asos pt-0 mt-0 pb-0 {{isset($client_preference_detail) && $client_preference_detail->business_type == 'taxi' ? 'taxi' : ''}}" id="our_vendor_main_div">
+<section class="section-b-space ratio_asos {{isset($client_preference_detail) && $client_preference_detail->business_type == 'taxi' ? 'taxi' : ''}}" id="our_vendor_main_div">
 
 	<div class="vendors">
 		@foreach($homePageLabels as $key => $homePageLabel)
@@ -559,7 +559,7 @@
 		@if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) @include('frontend.booking.cabbooking-single-module') @endif
 		@elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page')
 		@elseif($homePageLabel->slug == 'brands' && (count($homePageData['brands']) != 0))
-		<section class="p2p-full-width popular-brands left-shape_ position-relative">
+		<section class="p2p-full-width popular-brands left-shape_ position-relative section-space">
 			<div class="container">
 				<div class="top-heading al_top_heading text-center d-flex align-items-center">
 					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
@@ -577,7 +577,7 @@
 			</div>
 		</section>
 		@elseif($homePageLabel->slug == 'cities' && (count($homePageData['cities']) != 0))
-		<section class="suppliers-section container render_full_{{$homePageLabel->slug}}">
+		<section class="suppliers-section container render_full_{{$homePageLabel->slug}} section-space">
 			<div class=" top-heading d-flex justify-content-between align-self-center">
 				<h2 class="col h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : 'Cities'}}</h2>
 			</div>
@@ -599,7 +599,7 @@
 			</div>
 		</section>
 		@elseif($homePageLabel->slug == 'vendors' && (count($homePageData['vendors']) != 0))
-		<section class="suppliers-section  vender_slider">
+		<section class="suppliers-section  vender_slider section-space">
 			<div class="container">
 				<!-- <div class=" top-heading d-flex justify-content-between align-self-center">
 					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
@@ -621,7 +621,7 @@
 			</div>
 		</section>
 		@elseif($homePageLabel->slug == 'trending_vendors' && (count($homePageData['trending_vendors']) != 0))
-		<section class="suppliers-section container" id="homepage_trending_vendors_div">
+		<section class="suppliers-section container section-space" id="homepage_trending_vendors_div">
 			<div class=" top-heading ">
 				<h2 class="h2-heading">{{$homePageLabel->slug=='trending_vendors' ? __('Trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2>
 			</div>
@@ -636,7 +636,7 @@
 			</div>
 		</section>
 		@elseif($homePageLabel->slug == 'recent_orders' && count($homePageData['recent_orders']) != 0 )
-		<section class="best-seller-full mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+		<section class="best-seller-full render_full_{{$homePageLabel->slug}} section-space" id="{{$homePageLabel->slug.$key}} ">
             <div class="container">
                 <div class="top-heading d-flex justify-content-between">
                     <h2 class="h2-heading"> @php
@@ -655,7 +655,7 @@
             </div>
 		</section>
         @elseif($homePageLabel->slug == 'recently_viewed' && (count($homePageData['recently_viewed']) != 0))
-		<section class="main-pro-slider p2p-full-width suppliers-section  mb-4" id="homepage_recently_viewed">
+		<section class="main-pro-slider p2p-full-width suppliers-section section-space" id="homepage_recently_viewed">
 			<div class="container">
 				<div class=" top-heading pt-5">
 					<h2 class="h2-heading">{{$homePageLabel->slug=='recently_viewed' ? __('Recently')." ".getNomenclatureName('Viewed', true) : __($homePageLabel->title)}}</h2>
@@ -669,7 +669,7 @@
 			</div>
 		</section>
 		@elseif($homePageLabel->slug == 'top_rated' && (count($homePageData['top_rated']) != 0))
-		<section class="main-pro-slider suppliers-section  mb-0" id="homepage_top_rated">
+		<section class="main-pro-slider suppliers-section section-space" id="homepage_top_rated">
 			<div class="container p2p-full-width">
 				<div class="row ">
 					<div class="col-md-12">
@@ -691,7 +691,7 @@
 		</section>
 		{{--  && (count($homePageData['nav_categories']) != 0) --}}
 		@elseif(!empty($homePageLabel->nav_categories) && $homePageLabel->slug == 'nav_categories' && (count($homePageLabel->nav_categories) != 0))
-		<section class="popular-brands left-shape_ position-relative bg-light-gray">
+		<section class="popular-brands left-shape_ position-relative bg-light-gray section-space">
 			<div class="container-fluid">
 				<div class="al_top_heading text-center d-flex align-items-center">
 					<h2 class="col h2-heading text-center">{{$homePageLabel->slug=='nav_categories' ? __('Categories') : __($homePageLabel->title)}}</h2>
@@ -729,7 +729,7 @@
 			</div>
 		</section>
 		@elseif($homePageLabel->slug == 'best_sellers' && (count($homePageData['best_sellers']) != 0))
-		<section class=" best-seller-eccomerce mb-0 pb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+		<section class=" best-seller-eccomerce render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}} section-space" >
 			<div class="container">
 				<div class="top-heading d-flex justify-content-between">
 					<h2 class=" h2-heading"> @php
@@ -748,7 +748,7 @@
 			</div>
 		</section>
 		@elseif($homePageLabel->slug == 'single_category_products' && (count($homePageData[$homePageLabel->slug]) != 0))
-		<section class="main-product single_category_products mb-0 pt-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+		<section class="main-product single_category_products section-space render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="container p2p-full-width">
 			<div class="top-heading d-flex justify-content-between">
 			<h2 class="col h2-heading mb-3"> @php
@@ -771,7 +771,7 @@
 		</section>
 		</section>
 		@elseif(@$homePageLabel->slug == 'selected_products' && (@count(@$homePageData[@$homePageLabel->slug]) != 0))
-		<section class="main-product single_category_products mb-2 render_full_{{$homePageLabel->slug}} bg-light-gray" id="{{$homePageLabel->slug.$key}}">
+		<section class="main-product single_category_products section-space render_full_{{$homePageLabel->slug}} bg-light-gray" id="{{$homePageLabel->slug.$key}}">
 			<div class="container p2p-full-width">
 				<div class="top-heading d-flex justify-content-between">
 					<h2 class="col h2-heading mt-3"> @php
@@ -811,7 +811,7 @@
 		</section> --}}
 		@elseif($homePageLabel->slug == 'banner' && (count($homePageData['banners']) != 0))
 		@if(!empty(@$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]))
-			<section class="mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
+			<section class="section-space render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
 				<div class="container p2p-full-width">
 					<div class="top-heading d-flex justify-content-between">
 						<h2 class="h2-heading"> @php
@@ -864,7 +864,7 @@
 				</div>
 			</div>
 		</section> -->
-		<section class="main-product render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+		<section class="main-product render_full_{{$homePageLabel->slug}}  section-space" id="{{$homePageLabel->slug.$key}}">
 			<div class="container p2p-full-width">
 				<div class="row ">
 					<div class="col-md-12 text-center">
