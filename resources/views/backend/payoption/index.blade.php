@@ -282,7 +282,7 @@ Options']) @section('css')
                                     </label>
 
                                     <input type="text" name="mastercard_operator_id" id="mastercard_operator_id" class="form-control"
-                                        value="{{ $mastercard_operator_id }}" <?php if ($opt->status == 1 && $opt->status == 1) echo 'required' ?>>
+                                        value="{{ $mastercard_operator_id }}" <?php if ($opt->status == 1 && $opt->test_mode == 1) echo 'required' ?>>
                                 </div>
 
                                 <div class="form-group mb-2">
