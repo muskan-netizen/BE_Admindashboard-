@@ -665,7 +665,7 @@ a.brand-box.black-box h6 {
     border-radius: 50%;
     height: 100%;
     width: 100%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .al_new_wrapper_design .al_custom_brand .brand-box {
