@@ -2473,7 +2473,6 @@ class VendorController extends BaseController{
                 $endRange = 20000;
                 if ($request->has('range') && !empty($request->range)) {
                     $range = explode(';', $request->range);
-                    $clientCurrency->doller_compare;
                     $startRange = $range[0] * $clientCurrency->doller_compare;
                     $endRange = $range[1] * $clientCurrency->doller_compare;
                 }
