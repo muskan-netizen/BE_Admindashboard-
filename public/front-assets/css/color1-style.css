@@ -107,11 +107,6 @@ button:focus {
     outline: 0
 }
 
-.section-t-space,
-section {
-    padding-top: 70px
-}
-
 .section-b-space {
     padding-bottom: 70px
 }
@@ -21042,10 +21037,6 @@ body.dark {
         padding: 10px 15px
     }
 
-    .section-t-space,
-    section {
-        padding-top: 60px
-    }
 
     .section-b-space {
         padding-bottom: 60px
@@ -21920,11 +21911,6 @@ body.dark {
         font-size: 28px
     }
 
-    .section-t-space,
-    section {
-        padding-top: 50px
-    }
-
     .section-b-space {
         padding-bottom: 50px
     }
@@ -22697,9 +22683,6 @@ body.dark {
         display: block
     }
 
-    .collection .section-t-space {
-        padding-top: 30px
-    }
 
     .collection .partition-collection>div:nth-last-child(1) {
         margin-top: 30px
@@ -23637,10 +23620,6 @@ body.dark {
         padding-top: 85px
     }
 
-    .section-t-space,
-    section {
-        padding-top: 40px
-    }
 
     .section-b-space {
         padding-bottom: 40px
@@ -24822,11 +24801,6 @@ body.dark {
 
     .section-b-space {
         padding-bottom: 30px
-    }
-
-    .section-t-space,
-    section {
-        padding-top: 30px
     }
 
     header.left-header .top-header {
@@ -28152,12 +28126,6 @@ label {
 .form-check-input:checked {
     background-color: var(--theme-deafult);
     border-color: var(--theme-deafult)
-}
-
-.section-t-space,
-section {
-    padding-top: 0 !important;
-    padding-bottom: 40px
 }
 
 .section-b-space {
@@ -56897,11 +56865,6 @@ body[dir=rtl] .slick-slide {
         left: 0
     }
 
-    .section-t-space,
-    section {
-        padding-bottom: 40px
-    }
-
     .section-b-space {
         padding-bottom: 40px
     }
@@ -57872,11 +57835,6 @@ body[dir=rtl] .slick-slide {
         font-size: 28px
     }
 
-    .section-t-space,
-    section {
-        padding-bottom: 30px
-    }
-
     .section-b-space {
         padding-bottom: 30px
     }
@@ -58840,10 +58798,6 @@ body[dir=rtl] .slick-slide {
         display: block
     }
 
-    .collection .section-t-space {
-        padding-bottom: 30px
-    }
-
     .collection .partition-collection>div:nth-last-child(1) {
         margin-top: 30px
     }
@@ -59780,11 +59734,6 @@ body[dir=rtl] .slick-slide {
 
     footer.footer-black .below-section {
         padding-top: 85px
-    }
-
-    .section-t-space,
-    section {
-        padding-bottom: 40px
     }
 
     .section-b-space {
@@ -61386,11 +61335,6 @@ body[dir=rtl] .slick-slide {
     }
 
     .section-b-space {
-        padding-bottom: 30px
-    }
-
-    .section-t-space,
-    section {
         padding-bottom: 30px
     }
 

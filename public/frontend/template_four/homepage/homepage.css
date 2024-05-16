@@ -628,11 +628,6 @@ article#page-container {
     object-fit: cover;
 }
 
-article#page-container section .vendors section {
-    padding: 30px 0 !important;
-    margin-bottom: 0 !important
-}
-
 .slick-slider {
     overflow: visible
 }
@@ -3504,6 +3499,16 @@ body[dir=rtl] .alFourThLogo {
 
 }
 
+body .section-space.section-space {
+    padding-top: 80px !important;
+    margin: 0 auto !important;
+}
+
+h2.h2-heading {
+    margin-bottom: 22px;
+    font-size: 32px;
+}
+
 @media(max-width:1450px) {
     .product-m .slick-slide {
         margin: 0;
@@ -3604,6 +3609,16 @@ body[dir=rtl] .alFourThLogo {
 
     .cab-banner-area .card-box {
         padding: 18px !important;
+    }
+
+    body .section-space.section-space {
+        padding-top: 50px !important;
+        margin: 0 auto !important;
+    }
+
+    h2.h2-heading {
+        font-size: 30px;
+        margin-top: 0;
     }
 }
 
@@ -3862,6 +3877,16 @@ body[dir=rtl] .alFourThLogo {
     body.al_body_template_four.p2p-module .shoping_cart .vendor_products_tr h4 strong {
         display: none;
     }
+
+    body .section-space.section-space {
+        padding-top: 40px !important;
+        margin: 0 auto !important;
+    }
+
+    h2.h2-heading {
+        font-size: 28px;
+        margin-top: 0;
+    }
 }
 
 @media(max-width:767px) {
@@ -3970,10 +3995,6 @@ body[dir=rtl] .alFourThLogo {
     .brand-ing {
         width: 100px;
         height: 100px
-    }
-
-    article#page-container section .vendors section {
-        padding: 10px 0 !important
     }
 
     #our_vendor_main_div section:nth-child(even) {
@@ -4244,6 +4265,16 @@ body[dir=rtl] .alFourThLogo {
     body.al_body_template_four .menu_navigation_al_four .slick-next,
     body.al_body_template_four .menu_navigation_al_four .slick-prev {
         display: none;
+    }
+
+    body .section-space.section-space {
+        padding-top: 30px !important;
+        margin: 0 auto !important;
+    }
+
+    h2.h2-heading {
+        font-size: 22px;
+        margin-top: 0;
     }
 }
 
