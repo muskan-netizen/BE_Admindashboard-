@@ -2252,7 +2252,8 @@ body[dir="rtl"] #step-4-ondemand .add-on-main-div {
 
     .al_body_template_four .common-banner,
     .al_body_template_four .product-banner-img {
-        height: 230px;
+        height: 200px;
+        margin-bottom: 20px;
     }
 
     .al_body_template_four .vender-icon {
@@ -2403,8 +2404,10 @@ body[dir="rtl"] #step-4-ondemand .add-on-main-div {
 
     .al_body_template_four .common-banner,
     .al_body_template_four .product-banner-img {
-        height: 300px;
+        height: 200px;
+        margin-bottom: 20px;
     }
+
 
     .al_body_template_four .vendor-design_new {
         width: 100%;
