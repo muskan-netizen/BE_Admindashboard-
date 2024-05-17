@@ -1280,6 +1280,7 @@ class OrderController extends BaseController
                     @$this->updateBlockchainOrderDetail($newOrder);
                 }
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
+                \Log::info(json_encode($orderData));
                 $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
 
                 $customer = User::find($orderData->user_id);
@@ -3140,14 +3141,14 @@ class OrderController extends BaseController
                 if (!empty($data['admin_email'])) {
                     $email_data['admin_email'] = $data['admin_email'];
                 }
-                // $vendor_id == "" ? $email_data['send_to_cc'] = 1 : $email_data['send_to_cc'] = 0;
+                $vendor_id = $orderData->vendor_id;
 
                 /* -- Sending email to vendor -- */
-                // $vendor = Vendor::where('id', $vendor_id)->first();
-                // if (!empty($vendor)) {
-                //     $email_data['email'] = $vendor->email;
-                //     dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
-                // }
+                $vendor = Vendor::where('id', $vendor_id)->first();
+                if (!empty($vendor)) {
+                    $email_data['email'] = $vendor->email;
+                    dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                }
 
                 /* -- Sending email to customer -- */
                 $email_data['email'] = $user->email;
