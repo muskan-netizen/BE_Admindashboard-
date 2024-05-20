@@ -180,9 +180,6 @@ class CampaignSendNotificationJob implements ShouldQueue
             $result = curl_exec($ch);
             curl_close($ch);
             $resultData = json_decode($result, true);
-            $connectionName = \DB::getDefaultConnection(); // Get the default connection name
-        $databaseName = \Config::get("database.connections.$connectionName.database"); // Retrieve the database name from configuration
-            \Log::info('$roster_ids'. $databaseName);
         
             CampaignRoster::whereIn('id', $roster_ids)->delete();
         } catch (\Exception $e) {
