@@ -1493,7 +1493,7 @@ class OrderController extends BaseController
                 ->update([
                     'borzoe_order_id' => $orderDetails->order->order_id,
                     'borzoe_order_name'=> $orderDetails->order->order_name,
-                    'dispatch_traking_url' => $orderDetails->order->points[0]->tracking_url,
+                    'dispatch_traking_url' => $orderDetails->order->points[1]->tracking_url,
                 ]);
             return 1;
         }
