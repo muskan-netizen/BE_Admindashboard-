@@ -51,9 +51,6 @@ class SendCampaignNotification extends Command
         $intervalTime = now();
         \Log::info($intervalTime);
         foreach ($clients as $client) {
-            if($client->database_name != 'weshopafrica'){
-                continue;
-            }
             
             if($client->is_lumen_enabled == 1)
             {
