@@ -566,7 +566,7 @@
 					<a class="" href="{{route('brand.all')}}">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>
 				</div>
 				<div class="">
-					<div class="al_custom_brand mt-3">
+					<div class="al_custom_brand">
 						<div class="alNewSliderTopBrand render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 							@foreach ($homePageData[$homePageLabel->slug] as $brand )
 							@include('frontend.home_page_8.brands')
@@ -835,7 +835,7 @@
 											$url = 'javascript:void(0)';
 										}
 									@endphp
-									<a href="{{$url}}"><img alt="" title="" class="blur-up lazyload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" height="300"></a>
+									<a href="{{$url}}"><img alt="" title="" class="blur-up lazyload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}"></a>
 								@elseif (in_array($extension, $video_extensions))
 									<video id="video1" width="100%" controls autoplay muted>
 										<source src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" type="video/mp4">

@@ -180,6 +180,7 @@ class CampaignSendNotificationJob implements ShouldQueue
             $result = curl_exec($ch);
             curl_close($ch);
             $resultData = json_decode($result, true);
+        
             CampaignRoster::whereIn('id', $roster_ids)->delete();
         } catch (\Exception $e) {
             \Log::error($resultData);
