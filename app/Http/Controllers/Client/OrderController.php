@@ -3041,9 +3041,9 @@ class OrderController extends BaseController
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
-            if ($order_status_id == 3) {
-                $this->sendCancelledEmail($user_ids, $orderData);
-            }
+            // if ($order_status_id == 3) {
+            //     $this->sendCancelledEmail($user_ids, $orderData);
+            // }
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             if ($order_status_id == 2) {
                 $notification_content = NotificationTemplate::where('id', 5)->first();

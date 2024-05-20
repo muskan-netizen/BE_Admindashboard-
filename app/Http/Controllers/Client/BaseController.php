@@ -8,8 +8,6 @@ use App\Models\{Client, Category, Product, ClientPreference, UserDevice, UserLoy
 use Illuminate\Support\Facades\Storage;
 use Session;
 use GuzzleHttp\Client as GCLIENT;
-use App;
-use Config;
 
 class BaseController extends Controller
 {

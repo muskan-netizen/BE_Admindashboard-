@@ -49,7 +49,6 @@ class SendCampaignNotification extends Command
     {
         $clients = Client::select('database_name', 'sub_domain')->get();
         $intervalTime = now();
-        \Log::info($intervalTime);
         foreach ($clients as $client) {
             
             if($client->is_lumen_enabled == 1)
@@ -87,7 +86,6 @@ class SendCampaignNotification extends Command
                 $chunk_notifications = $chunk_notifications->groupBy(function ($item) {
                     return $item->notofication_type;
                 });
-                \Log::info(json_encode($chunk_notifications));
                 if (count($chunk_notifications) > 0) {
                     CampaignSendNotificationJob::dispatch($chunk_notifications, $client_preferences, $headers);
                     DB::disconnect($database_name);
