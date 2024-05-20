@@ -1713,7 +1713,7 @@ section#homepage_top_rated .slick-slider .slick-next {
 
 section.popular-brands.left-shape_.position-relative.bg-light-gray {
     background: #ebebeb;
-    padding: 40px 0 50px !important;
+    padding: 40px 0 0 !important;
 }
 
 section.main-product.single_category_products .deals-product.product-card-box.position-relative.text-center.al_custom_vendors_sec {
