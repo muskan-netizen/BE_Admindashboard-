@@ -2206,6 +2206,9 @@ class CartController extends FrontController
             if (!empty(ClientCurrency::where('currency_id', 147)->first()->doller_compare)) {
                 $conversion_rate = (float)ClientCurrency::where('currency_id', 147)->first()->doller_compare;
             }
+            if (!empty(ClientCurrency::where('currency_id', $curId)->first()->doller_compare)) {
+                $conversion_rate = (float)ClientCurrency::where('currency_id', $curId)->first()->doller_compare;
+            }
             $cart_details->conversion_rate = $conversion_rate;
             
             $cmsPages = Page::with(['translation' => function ($q) use ($langId) {
