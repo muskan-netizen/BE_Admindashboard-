@@ -2759,17 +2759,19 @@ class StoreController extends BaseController
 
 
 									}
-									if (!empty($insert_arr)) {
-										ProductAttribute::where('product_id', $request->product_id)->delete();
-										ProductAttribute::insert($insert_arr);
-									}
+									// if (!empty($insert_arr)) {
+									// 	ProductAttribute::where('product_id', $request->product_id)->delete();
+									// 	ProductAttribute::insert($insert_arr);
+									// }
 
 
 								}
-								// if( !empty($insert_arr) ) {
-								// 	ProductAttribute::where('product_id',$request->product_id)->delete();
-								// 	ProductAttribute::insert($insert_arr);
-								// }
+
+								
+								if( !empty($insert_arr) ) {
+									ProductAttribute::where('product_id',$request->product_id)->delete();
+									ProductAttribute::insert($insert_arr);
+								}
 							}
 						}
 						if (@$request->date_availability) {	

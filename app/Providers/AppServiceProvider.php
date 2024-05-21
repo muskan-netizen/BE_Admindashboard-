@@ -57,10 +57,10 @@ class AppServiceProvider extends ServiceProvider
         }else{
             $payment_options = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
         }
-       
+
         if(@$payment_options){
             foreach($payment_options as $option){
-          
+
                 $creds = json_decode($option->credentials);
                 if($option->code == 'stripe'){
                     $stripe_publishable_key = (isset($creds->publishable_key) && (!empty($creds->publishable_key))) ? $creds->publishable_key : '';
@@ -112,7 +112,7 @@ class AppServiceProvider extends ServiceProvider
 
         $client_payment_options = PaymentOption::where('status', 1)->pluck('code')->toArray();
        // $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-     
+
         view()->share('last_mile_common_set', $last_mile_common_set);
 
         view()->share('favicon', $favicon_url);
@@ -132,7 +132,7 @@ class AppServiceProvider extends ServiceProvider
         view()->share('payphone_id', $payphone_id??'');
         view()->share('payPhoneToken', $payphone_token??'');
         view()->share('data_trans_script_url', $data_trans_script_url??'');
-       
+
     }
 
     public function connectDynamicDb($request)
@@ -215,20 +215,20 @@ class AppServiceProvider extends ServiceProvider
 
         $preference = ClientPreference::first();
         if( isset($preference)  && $preference->business_type == 'taxi'){
-        
+
                 if($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
                 return $preference;
                 else
                 return false;
-         
-          
+
+
         }elseif(  isset($preference)  &&  $preference->business_type == 'laundry'){
-           
+
                 if($preference->need_laundry_service == 1 && !empty($preference->laundry_service_key) && !empty($preference->laundry_service_key_code) && !empty($preference->laundry_service_key_url))
                 return $preference;
                 else
                 return false;
-           
+
 
         } else{
             if (isset($preference)  ) {

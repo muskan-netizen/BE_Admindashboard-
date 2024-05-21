@@ -320,7 +320,7 @@
                                                         @if ($additionalPreference['is_token_currency_enable'])
                                                             {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->price??0 * (@$vendor_product->days ?? 1))) }}
                                                         @else
-                                                            {{ Session::get('currencySymbol') . decimal_format($vendor_product->pvariant->price ?? 0 * (@$vendor_product->days ?? 1)) }}
+                                                            {{ Session::get('currencySymbol') . decimal_format($vendor_product->pvariant->price*$cart_details->conversion_rate ?? 0 * (@$vendor_product->days ?? 1)) }}
                                                         @endif
                                                         @if (in_array($serviceType, ['appointment', 'on_demand']))
                                                             <span class="">
@@ -498,7 +498,7 @@
 
                                                     @if (isset($vendor_product->product_delivery_fee) && $vendor_product->product_delivery_fee > 0)
                                                         <div class="float-left mt-2">Delivery Fee : <span
-                                                                style="color: #000;font-size: 14px;font-weight: 500;">{{ Session::get('currencySymbol') }}{{ $vendor_product->product_delivery_fee }}</span>
+                                                                style="color: #000;font-size: 14px;font-weight: 500;">{{ Session::get('currencySymbol') }}{{ $vendor_product->product_delivery_fee` }}</span>
                                                         </div>
                                                     @endif
                                                 </div>

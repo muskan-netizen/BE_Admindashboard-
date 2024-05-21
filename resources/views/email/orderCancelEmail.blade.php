@@ -122,44 +122,7 @@
         <tbody>
             <tr>
                 <td>
-                    <table align="left" border="0" cellpadding="0" cellspacing="0" style="text-align: left;" width="100%">
-                        <tr>
-                            <td style="text-align: center;">
-                                <img src="../assets/images/email-temp/delivery-2.png" alt="" style="margin-bottom: 30px;">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <p style="font-size: 14px;"><b>Hi {{$mailData['customer_name']}},</b></p>
-                                <p style="font-size: 14px;">Order Is Successfully Processsed And Your Order Is On The
-                                    Way,</p>
-                                <!-- <p style="font-size: 14px;">Transaction ID : 267676GHERT105467,</p> -->
-                            </td>
-                        </tr>
-                    </table>
-                    <table cellpadding="0" cellspacing="0" border="0" align="left" style="width: 100%;margin-top: 10px;    margin-bottom: 10px;">
-                        <tbody>
-                            <tr>
-                                <td style="background-color: #fafafa;border: 1px solid #ddd;padding: 15px;letter-spacing: 0.3px;width: 50%;">
-                                    <h5 style="font-size: 16px; font-weight: 600;color: #000; line-height: 16px; padding-bottom: 13px; border-bottom: 1px solid #e6e8eb; letter-spacing: -0.65px; margin-top:0; margin-bottom: 13px;">
-                                        Your Shipping Address</h5>
-                                    <p style="text-align: left;font-weight: normal; font-size: 14px; color: #000000;line-height: 21px;    margin-top: 0;">
-                                        {{$mailData['user_address']['address']}}, <br>{{$mailData['user_address']['state']}}, {{$mailData['user_address']['country']}}
-                                        {{$mailData['user_address']['pincode']}}</p>
-                                </td>
-                                <td><img src="../assets/images/email-temp/space.jpg" alt=" " height="25" width="30">
-                                </td>
-                                <!-- <td style="background-color: #fafafa;border: 1px solid #ddd;padding: 15px;letter-spacing: 0.3px;width: 50%;">
-                                    <h5 style="font-size: 16px;font-weight: 600;color: #000; line-height: 16px; padding-bottom: 13px; border-bottom: 1px solid #e6e8eb; letter-spacing: -0.65px; margin-top:0; margin-bottom: 13px;">
-                                        Your Billing Address:</h5>
-                                    <p style="text-align: left;font-weight: normal; font-size: 14px; color: #000000;line-height: 21px;    margin-top: 0;">
-                                        268 Cambridge Lane New Albany,<br> IN 47150268 Cambridge Lane <br>New Albany, IN
-                                        47150</p>
-                                </td> -->
-                            </tr>
-                        </tbody>
-                    </table>
-                    @foreach($mailData['cartData']['products'] as $product)
+                    @foreach($products as $product)
                         <h4>Vendor: {{$product['vendor']['name']}}</h4>
                         <table class="order-detail" border="0" cellpadding="0" cellspacing="0" align="left" style="width: 100%;    margin-bottom: 50px;">
                             <tr align="left">
@@ -190,46 +153,7 @@
                                         </td>
                                     </tr>
                                 @endforeach
-                            <tr class="pad-left-right-space ">
-                                <td class="m-t-5" colspan="2" align="left">
-                                    <p style="font-size: 14px;">Subtotal : </p>
-                                </td>
-                                <td class="m-t-5" colspan="2" align="right">
-                                    <b style>${{$total_products}}</b>
-                                </td>
-                            </tr>
-                            <tr class="pad-left-right-space">
-                                <td colspan="2" align="left">
-                                    <p style="font-size: 14px;">TAX :</p>
-                                </td>
-                                <td colspan="2" align="right">
-                                    <b>${{$product['taxable_amount']}}</b>
-                                </td>
-                            </tr>
-                            <tr class="pad-left-right-space">
-                                <td colspan="2" align="left">
-                                    <p style="font-size: 14px;">SHIPPING Charge :</p>
-                                </td>
-                                <td colspan="2" align="right">
-                                    <b>${{$product['delivery_fee_charges']}}</b>
-                                </td>
-                            </tr>
-                            <tr class="pad-left-right-space">
-                                <td colspan="2" align="left">
-                                    <p style="font-size: 14px;">Discount :</p>
-                                </td>
-                                <td colspan="2" align="right">
-                                    <b> ${{$product['discount_amount']}}</b>
-                                </td>
-                            </tr>
-                            <tr class="pad-left-right-space ">
-                                <td class="m-b-5" colspan="2" align="left">
-                                    <p style="font-size: 14px;">Total :</p>
-                                </td>
-                                <td class="m-b-5" colspan="2" align="right">
-                                    <b>${{$product['payable_amount']}}</b>
-                                </td>
-                            </tr>
+                            
                         </table>
                     @endforeach
                 </td>
@@ -265,24 +189,7 @@
                     </tr>
                 </table>
                 <div style="border-top: 1px solid #ddd; margin: 20px auto 0;"></div>
-                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 20px auto 0;">
-                    <tr>
-                        <td>
-                            <a href="#" style="font-size:13px">Want to change how you receive these emails?</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <p style="font-size:13px; margin:0;">2018 - 19 Copy Right by Themeforest powerd by Pixel
-                                Strap</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <a href="#" style="font-size:13px; margin:0;text-decoration: underline;">Unsubscribe</a>
-                        </td>
-                    </tr>
-                </table>
+               
             </td>
         </tr>
     </table>

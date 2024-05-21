@@ -12,7 +12,7 @@ use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
 use App\Models\ShowSubscriptionPlanOnSignup;
-use App\Models\{VendorSlot, ClientCurrency, Order, Type, ClientPreferenceAdditional, UserVendor, VendorCategory, Product};
+use App\Models\{VendorSlot, ClientCurrency, Order, Type, ClientPreferenceAdditional, UserVendor, VendorCategory, Product,ClientLanguage,Language,};
 use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
@@ -29,8 +29,6 @@ if (!function_exists('setUserCode')) {
         }
     }
 }
-
-
 
 // Returns the values of the additional preferences.
 if (!function_exists('checkColumnExists')) {
@@ -1291,6 +1289,17 @@ if (!function_exists('getPrimaryCurrencyName')) {
     }
 }
 
+
+if (!function_exists('getPrimaryLanguageName')) {
+    function getPrimaryLanguageName()
+    {
+        $primaryLanguage = ClientLanguage::where('is_primary', '=', 1)->first();
+        $primaryLanguageName = Language::find($primaryLanguage->language_id);
+        $languageName = $primaryLanguageName->sort_code;
+        return $languageName;
+    }
+}
+
 if (!function_exists('decimal_format')) {
     // Number Format according to Client preferences
     function decimal_format($number,$format="")
@@ -2207,5 +2216,17 @@ if (!function_exists('recurringCalculationFunction')) {
             }
             return $data??0;
         }
+    }
+}
+
+if (!function_exists('mastercardGateway')) {
+    function mastercardGateway() {
+        $payopt = PaymentOption::where('code', 'mastercard')->get(['test_mode', 'credentials'])->first();
+        $test_url = 'test-gateway.mastercard.com';
+        if(!empty($payopt) && $payopt->test_mode != 1){
+            $creds = json_decode($payopt->credentials);
+            $test_url = $creds->mastercard_gateway??$test_url;
+        }
+        return $test_url;
     }
 }
