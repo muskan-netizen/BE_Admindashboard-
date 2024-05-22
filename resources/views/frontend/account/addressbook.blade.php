@@ -353,7 +353,7 @@
     var update_address_url = "{{ route('address.update', ':id') }}";
     var delete_address_url = "{{ route('deleteAddress', ':id') }}";
     var verify_information_url = "{{ route('verifyInformation', Auth::user()->id) }}";
-   
+
 
     var ajaxCall = 'ToCancelPrevReq';
     $('.verifyEmail').click(function(){
@@ -403,7 +403,7 @@
     });
 
     $(document).on("click", "#saveAddress", function () {
-    
+
         var latitude = $('#add_edit_address_form #latitude').val();
         var longitude = $('#add_edit_address_form #longitude').val();
         if(latitude!='' && longitude!='')
@@ -451,6 +451,8 @@
         let latitude = $('#add_edit_address_form #latitude').val();
         let longitude = $('#add_edit_address_form #longitude').val();
         let address_id = $('#add_edit_address_form #address_id').val();
+        let extra_info = $('#add_edit_address_form #extra_instruction').val();
+        let house_number = $('#add_edit_address_form #house_number').val();
         $.ajax({
             type: "post",
             url: update_address_url.replace(':id', address_id),
@@ -463,6 +465,8 @@
                 "country": country,
                 "pincode": pincode,
                 "latitude": latitude,
+                "extra_instruction":extra_info,
+                "house_number":house_number,
                 "longitude": longitude,
             },
             success: function(response) {
@@ -502,7 +506,7 @@
         if(lngs==0){
             lngs=userLongitude;
         }
-      
+
         var myLatlng = new google.maps.LatLng(lats, lngs);
 
         var infowindow = new google.maps.InfoWindow();
