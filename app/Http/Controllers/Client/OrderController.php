@@ -1040,7 +1040,7 @@ class OrderController extends BaseController
      */
     public function changeStatus(Request $request, $domain = '')
     {
-        try {
+        //try {
             $orderPlaced = true;
             $orderPlacedNo = '';
             $productIds = $request->productIds ?? [];
@@ -1302,14 +1302,14 @@ class OrderController extends BaseController
                 'status' => 'error',
                 'message' => __('Order has already updated !!')
             ]);
-        } catch (\Exception $e) {
-            DB::rollback();
+        // } catch (\Exception $e) {
+        //     DB::rollback();
 
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
-        }
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => $e->getMessage()
+        //     ]);
+        // }
     }
 
     public function changeVendorProductStatus(Request $request, $domain = '')
@@ -1479,7 +1479,7 @@ class OrderController extends BaseController
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
         if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
-            $order_ship = $this->placeOrderToBorzoApi($request->vendor_id, $request->order_id);
+            $order_ship = $this->placeOrderToBorzoApi($checkdeliveryFeeAdded, $request->vendor_id, $request->order_id);
         }
         $orderDetails = json_decode($order_ship);
         if ($order_ship) {
@@ -1487,7 +1487,7 @@ class OrderController extends BaseController
                 ->update([
                     'borzoe_order_id' => $orderDetails->order->order_id,
                     'borzoe_order_name' => $orderDetails->order->order_name,
-                    'dispatch_traking_url' => $orderDetails->order->points[0]->tracking_url,
+                    'dispatch_traking_url' => $orderDetails->order->points[1]->tracking_url,
                 ]);
             return 1;
         }
@@ -3088,7 +3088,7 @@ class OrderController extends BaseController
                 ];
                 sendFcmCurlRequest($data);
             }
-            
+
         }
     }
 
@@ -3126,7 +3126,7 @@ class OrderController extends BaseController
                 $email_template_content = str_ireplace("{order_id}", "#" . $orderData->orderDetail->order_number, $email_template_content);
                 // $email_template_content = str_ireplace("{description}", '', $email_template_content);
                 $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
-                $body_content = 
+                $body_content =
                 $client_name = $client->name;
                 $email_data = [
                     'link' => "link",
