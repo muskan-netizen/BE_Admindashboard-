@@ -1040,7 +1040,7 @@ class OrderController extends BaseController
      */
     public function changeStatus(Request $request, $domain = '')
     {
-        //try {
+        try {
             $orderPlaced = true;
             $orderPlacedNo = '';
             $productIds = $request->productIds ?? [];
@@ -1302,14 +1302,14 @@ class OrderController extends BaseController
                 'status' => 'error',
                 'message' => __('Order has already updated !!')
             ]);
-        // } catch (\Exception $e) {
-        //     DB::rollback();
+        } catch (\Exception $e) {
+            DB::rollback();
 
-        //     return response()->json([
-        //         'status' => 'error',
-        //         'message' => $e->getMessage()
-        //     ]);
-        // }
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 
     public function changeVendorProductStatus(Request $request, $domain = '')
