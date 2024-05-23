@@ -398,7 +398,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
         var code = $(this).attr('data-country-code');
         $('#vendorCountryCode').val(code);
         var dial_code = $(this).attr('data-dial-code');
-        $("input[name='vendor_dial_code']").val(dial_code);
+        $("input[name='nameOfTheInputElement']").val(dial_code);
         console.log(dial_code);
     });
     $(document).on('change', '#Vendor_order_pre_time', function(){
