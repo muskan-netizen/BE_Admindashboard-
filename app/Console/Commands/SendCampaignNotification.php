@@ -50,7 +50,7 @@ class SendCampaignNotification extends Command
         $clients = Client::select('database_name', 'sub_domain')->get();
         $intervalTime = now();
         foreach ($clients as $client) {
-
+            
             if($client->is_lumen_enabled == 1)
             {
                 break;
@@ -82,6 +82,7 @@ class SendCampaignNotification extends Command
                     'Content-Type: application/json',
                 ];
                 $chunk_notifications = CampaignRoster::where('notification_time', '<=', $intervalTime)->where('status', 0)->with('campaign', 'user')->get();
+                
                 $chunk_notifications = $chunk_notifications->groupBy(function ($item) {
                     return $item->notofication_type;
                 });
