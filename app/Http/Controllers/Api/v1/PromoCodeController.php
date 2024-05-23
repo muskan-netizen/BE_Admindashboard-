@@ -417,6 +417,13 @@ class PromoCodeController extends Controller{
             $cart_coupon->save();
             return $this->successResponse($promo_detail, __('Promotion Code Used Successfully'), 201);
         }else{
+            if(isset($request->amount)){
+                if($request->amount < $promo_detail->minimum_spend){
+                    return $this->errorResponse(__('Cart amount is less than required amount'), 422);
+                }
+                if($request->amount > $promo_detail->maximum_spend){
+                    return $this->errorResponse(__('Cart amount is greater than required amount'), 422);
+                }
             // validation from ride booking
             if ($promo_detail->promo_type_id == 2) {
                 $promo_detail['new_amount'] = $promo_detail->amount;
@@ -429,7 +436,10 @@ class PromoCodeController extends Controller{
                     $promo_detail['new_amount'] = 0.00;
             }
             return $this->successResponse($promo_detail, __('Promotion Code Used Successfully'), 201);
+        }else{
+            return $this->errorResponse(__('Invaild cart amount'), 422);
         }
+    }
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
