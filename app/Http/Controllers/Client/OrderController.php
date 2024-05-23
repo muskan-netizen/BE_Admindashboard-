@@ -1486,8 +1486,8 @@ class OrderController extends BaseController
             $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
                 ->update([
                     'borzoe_order_id' => $orderDetails->order->order_id,
-                    'borzoe_order_name' => $orderDetails->order->order_name,
-                    'dispatch_traking_url' => $orderDetails->order->points[0]->tracking_url,
+                    'borzoe_order_name'=> $orderDetails->order->order_name,
+                    'dispatch_traking_url' => $orderDetails->order->points[1]->tracking_url,
                 ]);
             return 1;
         }

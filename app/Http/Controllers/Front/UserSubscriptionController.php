@@ -162,7 +162,7 @@ class UserSubscriptionController extends FrontController
                 }elseif($payment_option->code == 'authorize_net'){
                     $payment_option->title = __('Credit/Debit Card');
                 }elseif($payment_option->code == 'obo'){
-                    $payment_option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
+                    $payment_option->title = __("Momo, Airtel Money by O'Pay");
                 }elseif($payment_option->code == 'livee'){
                     $payment_option->title = __("Livees");
                 }

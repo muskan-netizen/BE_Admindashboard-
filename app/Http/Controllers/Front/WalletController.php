@@ -19,7 +19,7 @@ class WalletController extends FrontController
      *
      * @return \Illuminate\Http\Response
      */
-    
+
     public function index(){
         $langId = Session::get('customerLanguage');
         $currency_id = Session::get('customerCurrency');
@@ -35,9 +35,9 @@ class WalletController extends FrontController
             $public_key_yoco= json_decode($public_key_yoco);
             $public_key_yoco= $public_key_yoco->public_key??'';
         }
-        
+
         $userCardExist =        UserDataVault::where(['user_id' => $auth_user->id])->count();
-        
+
         return view('frontend/account/wallet',compact('public_key_yoco'))->with(['user'=>$user, 'navCategories'=>$navCategories, 'user_transactions'=>$user_transactions, 'clientCurrency'=>$clientCurrency,'userCardExist'=>$userCardExist]);
     }
 
@@ -143,7 +143,7 @@ class WalletController extends FrontController
                 }elseif($payment_option->code == 'authorize_net'){
                     $payment_option->title = __('Credit/Debit Card');
                 }elseif($payment_option->code == 'obo'){
-                    $payment_option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
+                    $payment_option->title = __("Momo, Airtel Money by O'Pay");
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);
@@ -232,9 +232,9 @@ class WalletController extends FrontController
         echo 'Successfully Done';
         echo '</pre>';
     }
-    //    
+    //
     /**
-     * this function is just for testing 
+     * this function is just for testing
      * addWalletAmount
      *
      * @return void

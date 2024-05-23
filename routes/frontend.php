@@ -287,9 +287,24 @@ Route::group(['middleware' => ['domain']], function () {
      //totalpay
      Route::post('/make-payment','Front\TotalpayController@makePayment')->name('make.payment');
      Route::get('/success-totalpay', 'Front\TotalpayController@paymentSuccessTotalpay');
+      //hitpay
+    Route::post('/make-hitpay-payment', 'Front\HitpayController@makePayment')->name('make.hitpay.payment');
+    Route::get('/success-hitpay', 'Front\HitpayController@responseAfterPayment')->name('success.hitpay');
+    Route::any('payment/hitpay/webhook', 'Front\HitpayController@validateHitpayPayment')->name('hitpay.webhook');
 	//thawani Payment Gateway
 	Route::post('/pay-by-thawanipg', 'Front\ThawaniPaymentController@paybythawanipg')->name('pay-by-thawanipg');
     Route::get('/after-payment/{transaction_id}', 'Front\ThawaniPaymentController@afterpayment')->name('after.payment');
+
+	//Cyberservice Pay Controller
+	Route::get('cybersource/initiate-payment','Front\CyberSourcePaymentController@webPayment')->name('cybersource.initiate.payment');
+	Route::get('cybersource/payment/api', 'Front\CyberSourcePaymentController@webMobilePayment')->name('cybersource.webMobileview');
+	Route::any('cybersource/process-payment','Front\CyberSourcePaymentController@processPayment')->name('cybersource.processPayment');
+	//Orange Pay Controller
+	Route::get('orangepay/payment/api', 'Front\OrangePaymentController@webMobilePayment')->name('orangepay.webMobileview');
+	Route::post('orangepay/initiate-payment','Front\OrangePaymentController@web_payment')->name('orangepay.initiate.payment');
+	Route::any('success-orangepay', 'Front\OrangePaymentController@successPage')->name('success.orangepayment');
+	Route::get('cancel-orangepay', 'Front\OrangePaymentController@cancelPage')->name('cancel.orangepayment');
+
     // Route::post('/pay-by-thawanipg', 'Api\v1\ThawaniPaymentController@paybythawanipg')->name('pay-by-thawanipg');
     // Route::get('/after-payment/{transaction_id}', 'Api\v1\ThawaniPaymentController@afterpayment')->name('after.payment');
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
@@ -378,6 +393,9 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/razorpay/pay', 'Front\RazorpayGatewayController@razorpayCompletePurchase')->name('payment.razorpayCompletePurchase');
 	Route::get('payment/razorpay/notify', 'Front\RazorpayGatewayController@razorpayNotify')->name('payment.razorpayNotify');
 	Route::get('payment/razorpay/payout/notify', 'Front\RazorpayGatewayController@razorpayPayoutNotify')->name('payment.razorpay.payout.notify');
+
+    Route::post('payment/mastercard/session-create', 'Front\MastercardPaymentController@createSession')->name('payment.mastercard.createSession');
+    Route::get('payment/mastercard/return/{order_id}', 'Front\MastercardPaymentController@postPayment')->name('payment.mastercard.return');
 
 
 	//Cashfree

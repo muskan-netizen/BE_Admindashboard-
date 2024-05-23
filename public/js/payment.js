@@ -4220,6 +4220,116 @@ $(document).ready(function () {
         });
     }
 
+    window.paymentViaOrangePay = function paymentViaOrangePay(payment_option_id, order) {
+        let tip = 0;
+        let tipElement = $("#cart_tip_amount");
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        let walletElement = $("input[name='wallet_amount']");
+        let cabElement = $("#pickup_now");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscription_id = $("input[name='subscription_id']");
+        var data = {};
+        if (path.indexOf("cart") !== -1) {
+            total_amount = cartElement.val();
+            tip = tipElement.val();
+            data.tip = tip;
+            data.from = 'cart';
+            // data.cart_id = cart_id;
+            data.order_number = order.order_number;
+        } else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            data.from = 'wallet';
+        } else if (cabElement.length > 0) {
+            total_amount = cabElement.data('totalamount');
+            data.from = 'pickup_delivery';
+            data.order_number = order.order_number;
+        } else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            data.order_number = subscription_id.val();
+            data.from = 'subscription';
+        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = walletElement.val();
+            data.from = 'tip';
+            data.order_number = $("#order_number").val();
+        }
+        data.total_amount = total_amount;
+        data.payment_option_id = payment_option_id;
+        data._token = $('input[name=_token]').val();
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: payment_orangepay_url,
+            data: data,
+            success: function (response) {
+                if (response.status == "Success") {
+                    window.location.href = response.data;
+                }
+                else if (response.status == 'Error') {
+                    $(".subscription_confirm_btn").attr("disabled", false);
+                    $(".select_payment_option_done").attr("disabled", false);
+                    $(".topup_wallet_confirm").attr("disabled", false);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'ohh...',
+                        text: response.message,
+                    });
+                }
+                else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Something Went Wrong in Payment',
+                    });
+                }
+            }
+        });
+    }
+    
+    window.paymentViaCyberSourcePay = function paymentViaCyberSourcePay(payment_option_id, order) {
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        //let amt = cartElement.val()*100;
+        let total_amount = 0;
+        let walletElement = $("input[name='wallet_amount']");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscriptionId = $("input[name='subscription_id']");
+        let tipElement = $("#cart_tip_amount");
+        let payment_from = '';
+        let cabElement = $("#pickup_now");
+        if (path.indexOf("cart") !== -1) {
+            total_amount = cartElement.val();
+            payment_from = 'cart';
+            var rowData = 'amt=' + total_amount + '&order_number=' + order.order_number + '&from=' + payment_from;
+        } else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            payment_from = 'wallet';
+            var rowData = 'amt=' + total_amount + '&from=' + payment_from;
+        } else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            subsId = subscriptionId.val();
+            payment_from = 'subscription';
+            var rowData = 'subsid=' + subsId + '&from=' + payment_from + '&amt=' + total_amount;
+        } else if (path.indexOf("giftCard") !== -1) {
+                payment_form = 'giftCard';
+                gift_card_id        = $("#giftCard_id").val();
+                send_card_to_name   = $("input[name='send_card_to_name']").val();
+                send_card_to_mobile = $("input[name='send_card_to_mobile']").val();
+                send_card_to_email  = $("input[name='send_card_to_email']").val();
+                send_card_to_address    = $("input[name='send_card_to_address']").val();
+                send_card_is_delivery   = $("#send_card_is_delivery").val();
+                var rowData = 'gift_card_id=' + total_amount + '&from=' + payment_from + 'send_card_to_name=' + send_card_to_name + '&send_card_to_mobile=' + send_card_to_mobile +'send_card_to_email=' + send_card_to_email + '&send_card_to_address=' + send_card_to_address + '&send_card_is_delivery=' + send_card_is_delivery;
+        }else if (cabElement.length > 0) {
+            total_amount = cabElement.data('totalamount');
+            payment_from = 'pickup_delivery';
+            var rowData = 'amt=' + total_amount + '&from=' + payment_from + '&order_number=' + order.order_number;
+        } 
+        else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = tipElement.val();
+            payment_from = 'tip';
+            var rowData = 'amt=' + total_amount + '&from=' + payment_from + '&order_number=' + $("#order_number").val();
+        }
+        window.location = payment_cybersource_url + '?' + rowData;
+    }
+
     $(document).on("keyup", "#azul-card-element", function () {
         if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
             this.value = this.value.replace(/[^0-9\.]/g, '');

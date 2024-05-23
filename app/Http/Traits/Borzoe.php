@@ -14,7 +14,7 @@ trait Borzoe{
     private $api_key;
     public function brozoConfig()
     {
-      
+
         $shippingOption = ShippingOption::where('code', 'borzo')->first();
         $cred = json_decode($shippingOption->credentials);
         if ($shippingOption->test_mode) {
@@ -34,7 +34,7 @@ trait Borzoe{
             $url = $this->api_url.'calculate-order';
 
             $data = [
-                'matter' => 'Documents',
+                'matter' => 'Food',
                 'points' => [
                     [
                         'address' => $vendor_details->address,
@@ -73,7 +73,7 @@ trait Borzoe{
                 $vendor_details = Vendor::findOrFail($vendor_id);
                 $url = $this->api_url.'create-order';
                     $data = [
-                        'matter' => 'Documents',
+                        'matter' => 'Food',
                         'points' => [
                             [
                                 'address' => $vendor_details->address,

@@ -2219,6 +2219,9 @@ class OrderController extends BaseController
             }
 
             $customerCurrency = ClientCurrency::join('currencies as cu', 'cu.id', 'client_currencies.currency_id')->where('client_currencies.currency_id', $user->currency)->first();
+            if (!$customerCurrency) {
+                $customerCurrency = ClientCurrency::where('is_primary', 1)->get()->first()->currency;
+            }
             $currSymbol = $customerCurrency->symbol;
             $client_name = 'Sales';
             $mail_from = $data->mail_from;
@@ -3954,7 +3957,6 @@ class OrderController extends BaseController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData, $header_code='')
     {
-
         $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon','vendor_fcm_server_key')->first();
         $from = '';
@@ -5221,7 +5223,7 @@ class OrderController extends BaseController
                 ->update([
                     'borzoe_order_id' => $orderDetails->order->order_id,
                     'borzoe_order_name'=> $orderDetails->order->order_name,
-                    'dispatch_traking_url' => $orderDetails->order->points[0]->tracking_url??null,
+                    'dispatch_traking_url' => $orderDetails->order->points[1]->tracking_url??null,
                 ]);
             return 1;
         }
