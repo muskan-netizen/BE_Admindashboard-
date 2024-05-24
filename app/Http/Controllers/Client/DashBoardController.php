@@ -17,8 +17,12 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use App\Services\FirebaseNotification;
 use App\Http\Controllers\Client\BaseController;
 use App\Models\{Banner, Brand, Category, Country, Order, Product, Vendor, VendorOrderStatus, UserAddress, OrderVendor, OrderReturnRequest, User, ClientCurrency, OrderNotificationsLogs, OrderVendorProduct, ServiceArea, UserVendor};
+
+
+
 
 class DashBoardController extends BaseController
 {
@@ -39,6 +43,23 @@ class DashBoardController extends BaseController
 
     public function index(Request $request)
     {   
+        // $token = 'ezVpMQ4OT2SriCILkLhdpb:APA91bEOM8in8QOkO3-CMtQUgpX7aL5gDvV9_VFRAIG41tJLjquHasiUwkoTbiTYgGF4944Y2vNAbE8HiHg-ligtmkrTr1lF20TfZW1BNJ9XzOrjp_3lOUzmrUB0vTiFWVezniJbr3h3';
+        // $title = 'test notification yash';
+        // $body = 'test notification body';
+        // $project_id = 'voltaic-e59be';
+        // $data = [
+        //     'key' => 'value'
+        // ];
+    
+
+        // $result = sendFirebaseNotification($token,$title,$body,$data,$project_id);
+   
+        
+
+        // return $result;
+
+
+
        $managers = User::whereHas('roles',function($q){
             $q->where('name','Manager');
        })->get();
@@ -46,6 +67,10 @@ class DashBoardController extends BaseController
             
         return view('backend/dashboard',compact('managers','setWeekDate'));
     }
+    
+
+  
+
 
     public function dashboard_old()
     {   

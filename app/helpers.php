@@ -19,7 +19,66 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Cache;
+use Google\Auth\Credentials\ServiceAccountCredentials;
 
+
+if (!function_exists('getFcmOauthToken')) {
+
+    function getFcmOauthToken($url = null)
+
+{
+
+    $serviceAccountPath = $url ?? "voltaic-e59be-c73103aa2b73.json";
+
+
+    $scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
+        
+    $credentials = new ServiceAccountCredentials($scopes, $serviceAccountPath);
+
+    $accessToken = $credentials->fetchAuthToken();
+ 
+    
+    return $accessToken['access_token'];
+}
+}
+
+if (!function_exists('sendFirebaseNotification')) {
+
+      function sendFirebaseNotification($tokens,$title,$body,$data,$project_id)
+    {
+    
+        $token = getFcmOauthToken();
+       
+        
+        $headers = [
+            'Authorization: Bearer '.$token ,
+            'Content-Type: application/json',
+        ];
+
+        $data = [
+            'message' => [
+                'token' => $tokens,
+                'notification' => [
+                    'title' => $title,
+                    'body' => $body
+                ],
+                'data' => $data
+            ]
+        ];
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/v1/projects/$project_id/messages:send");
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
+    }
+
+}
 if (!function_exists('setUserCode')) {
     function setUserCode(){
         $userCode = session()->has('userCode');

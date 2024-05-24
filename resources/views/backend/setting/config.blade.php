@@ -1260,6 +1260,18 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mb-2">
+                                <label for="firebase_account_json_file">{{ __('Firebase Service Account Json File') }}</label>
+                                <input type="file" accept="json" data-plugins="dropify"/>
+
+                                @if ($errors->has('firebase_account_json_file'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('firebase_account_json_file') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
                                 <label for="fcm_storage_bucket">{{ __('Storage Bucket') }}</label>
                                 <input type="text" name="fcm_storage_bucket" id="fcm_storage_bucket" placeholder=""
                                     class="form-control"

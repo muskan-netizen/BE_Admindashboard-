@@ -908,6 +908,24 @@ class ClientPreferenceController extends BaseController{
         }
         $preferenceset->save();
         $client = Client::first();
+
+
+
+
+        // if ($request->hasFile($doc_name)) {
+        //     $filePath = $this->folderName . '/' . Str::random(40);
+        //     $file = $request->file($doc_name);
+        //     $orignal_name = $request->file($doc_name)->getClientOriginalName();
+        //     $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+           
+        //     UserDocs::updateOrCreate(
+                
+        //         ['user_id' => $user->id, 'user_registration_document_id' => $user_registration_document->id]
+        //         ,
+        //         ['file_name' => $file_name,'file_original_name'=>$orignal_name]);
+        // }
+
+
         ClientPreferenceAdditional::updateOrCreate(
             ['key_name' => 'is_user_pre_signup', 'client_code' => $client->code],
             ['key_name' => 'is_user_pre_signup', 'key_value' => $request->input('is_user_pre_signup') ? $request->input('is_user_pre_signup') : 0 ,'client_code' => $client->code,'client_id'=> $client->id]);
