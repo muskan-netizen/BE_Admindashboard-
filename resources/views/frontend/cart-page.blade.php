@@ -498,7 +498,7 @@
 
                                                     @if (isset($vendor_product->product_delivery_fee) && $vendor_product->product_delivery_fee > 0)
                                                         <div class="float-left mt-2">Delivery Fee : <span
-                                                                style="color: #000;font-size: 14px;font-weight: 500;">{{ Session::get('currencySymbol') }}{{ $vendor_product->product_delivery_fee` }}</span>
+                                                                style="color: #000;font-size: 14px;font-weight: 500;">{{ Session::get('currencySymbol') }}{{ $vendor_product->product_delivery_fee }}</span>
                                                         </div>
                                                     @endif
                                                 </div>
