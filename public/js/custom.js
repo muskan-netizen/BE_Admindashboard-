@@ -916,7 +916,6 @@ $(document).ready(function () {
 
         $(this).attr("disabled", true);
         var form = document.getElementById('category_kyc_form_in_cart');
-        var formData = new FormData(form);
         var data_uri = post_category_kyc_document;
 
         $.ajaxSetup({
@@ -1730,11 +1729,11 @@ $(document).ready(function () {
         } else if (walletElement.length > 0) {
             total_amount = walletElement.val();
         }
-        
+
         ajaxData.amount = total_amount;
         ajaxData.returnUrl = path;
         ajaxData.cancelUrl = path;
-        
+
         if (typeof tip_for_past_order !== 'undefined') {
             if (tip_for_past_order != undefined && tip_for_past_order == 1) {
                 let order_number = $("#order_number").val();
@@ -1742,8 +1741,8 @@ $(document).ready(function () {
                 order_number = order_number;
             }
         }
- 
-        
+
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -1775,6 +1774,57 @@ $(document).ready(function () {
         });
     }
 
+function paymentViaMastercard(paymentMehod, order) {
+    const walletElement = $('input[name="wallet_amount"]');
+    const cartElement = $("input[name='cart_total_payable_amount']");
+    const subscriptionElement = $('input[name="subscription_amount"]');
+    const subscriptionIdElement = $('#subscription_payment_form #subscription_id');
+
+    let ajaxData = [{ name: 'payment_from', value: paymentMehod }];
+    let total_amount;
+
+    switch (paymentMehod) {
+        case 'wallet':
+            total_amount = walletElement.val();
+            if (typeof tip_for_past_order !== 'undefined' && tip_for_past_order == 1) {
+                ajaxData[0].value = 'tip';
+                ajaxData.push({ name: 'order_number', value: $("#order_number").val() });
+            }
+            break;
+
+        case 'cart':
+            ajaxData.push({ name: 'order_number', value: order['order_number'] });
+            total_amount = cartElement.val();
+            break;
+        case 'subscription':
+            ajaxData.push({ name: 'subscription_id', value: subscriptionIdElement.val() });
+            total_amount = subscriptionElement.val();
+            break;
+
+        case 'pickup_delivery':
+            total_amount = order.total_amount;
+            ajaxData.push({ name: 'order_number', value: order.order_number });
+            break;
+        default: throw new Error('unknown payment method');
+    }
+
+    ajaxData.push({ name: 'amount', value: total_amount });
+
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        data: ajaxData,
+        url: mastercard_create_session_url,
+        success({ session }) {
+            const { id } = session;
+            console.log(id);
+            Checkout.configure({
+                session: { id }
+            })
+            Checkout.showPaymentPage();
+        },
+    });
+}
 
     function paymentViaRazorpay_wallet(address_id, payment_option_id) {
         let walletElement = $("input[name='wallet_amount']");
@@ -1867,7 +1917,77 @@ $(document).ready(function () {
             }
             //totalpay Ends
 
-            
+//hitpay Pg starts
+function paymentViaHitpay(address_id, payment_option_id, order) {
+    let walletElement = $("input[name='wallet_amount']");
+    let subscriptionElement = $("input[name='subscription_amount']");
+    let total_amount = 0;
+    let tip = 0;
+    let tipElement = $("#cart_tip_amount");
+    let cartElement = $("input[name='cart_total_payable_amount']");
+    let ajaxData = [];
+    if (path.indexOf("cart") !== -1) {
+        payment_form = 'cart';
+        total_amount = cartElement.val();
+        tip = tipElement.val();
+        ajaxData.push(
+            { name: 'tip', value: tip },
+            { name: 'order_number', value: order.order_number },
+            { name: 'payment_from', value: payment_form }
+        );
+
+    }
+    else if (path.indexOf("wallet") !== -1) {
+        total_amount = walletElement.val();
+        ajaxData.push({ name: 'payment_from', value: 'wallet' });
+    } else if (path.indexOf("cart") !== -1) {
+        ajaxData.push({ name: 'payment_from', value: 'cart' },
+            { name: 'order_number', value: order['order_number'] }
+        );
+    } else if (path.indexOf("subscription") !== -1) {
+        payment_form = 'subscription';
+        total_amount = subscriptionElement.val();
+        ajaxData = $("#subscription_payment_form").serializeArray();
+
+        ajaxData.push({ name: 'payment_from', value: payment_form });
+        console.log(ajaxData);
+    } else if (typeof tip_for_past_order !== 'undefined' && tip_for_past_order == 1) {
+        total_amount = walletElement.val();
+        ajaxData.push(
+            { name: 'payment_from', value: 'tip' },
+            { name: 'order_number', value: $("#order_number").val() }
+        );
+    }
+
+    ajaxData.push
+        (
+            { name: 'amount', value: total_amount },
+            { name: 'returnUrl', value: path },
+            { name: 'payment_option_id', value: payment_option_id }
+        );
+
+    console.log(payment_hitpay_url);
+    $.ajax({
+        type: "POST",
+        dataType: 'json',
+        url: payment_hitpay_url,
+        data: ajaxData,
+        success: function (response) {
+            if (response.status == "Success") {
+                console.log(response);
+                let paymentUrl = response.payment_url;
+                window.location.href = paymentUrl;
+            }
+        },
+        error: function (xrh, error, h) {
+
+            console.log(xrh, error, h);
+        }
+
+    });
+}
+
+
 //The Thawani Pg  starts
         function paymentViaThawanipg(address_id,payment_option_id,order)
         {
@@ -1935,7 +2055,7 @@ $(document).ready(function () {
             // $('#topup_wallet_btn').trigger('click');
             // $('#wallet_topup_form #radio-paypal').prop("checked", true);
             $("#topup_wallet_btn, .topup_wallet_confirm").attr("disabled", true);
-        } 
+        }
         $.ajax({
             type: "GET",
             dataType: 'json',
@@ -2190,7 +2310,7 @@ $(document).ready(function () {
 
 
     window.creditWallet = function creditWallet(amount, payment_option_id, transaction_id) {
-        
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -3080,7 +3200,7 @@ $(document).ready(function () {
         //var fixed_fee_amount            =initialize_values($('#fixed_fee_amount').val());
         var tip                         =initialize_values($(this).val());
 
-       
+
 
 
         var amount_elem = $("#cart_payable_amount_original");
@@ -5382,6 +5502,8 @@ $(document).ready(function () {
             case 45:
                 paymentViaTelr('', payment_option_id, '');
             break;
+            case 46:
+                paymentViaMastercard('subscription');
             case 47:
                 paymentViaKhalti('', '');
             break;
@@ -5424,6 +5546,9 @@ $(document).ready(function () {
             break;
             case 67:
                 paymentViaThawanipg('', payment_option_id, '');
+            break;
+            case 69:
+            paymentViaHitpay('', payment_option_id, '');
             break;
 
         }
@@ -5870,6 +5995,12 @@ $(document).ready(function () {
                 }
             break;
 
+            case '46': {
+                let order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                paymentViaMastercard('cart', order);
+                break;
+            }
+
             case '47':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 if (order != '') {
@@ -6001,6 +6132,25 @@ $(document).ready(function () {
                 return false;
                 }
             break;
+            case '69':
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaHitpay(address_id, payment_option_id, order);
+            }
+            break;
+            case '70':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaOranngepay('', payment_option_id, '');
+                    paymentViaCyberSourcePay('', payment_option_id, '');
+                }
+            break;
+            case '71':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaOrangePay('', payment_option_id, '');
+                }
+            break;
         }
 
     }
@@ -6008,7 +6158,7 @@ $(document).ready(function () {
 
     function walletPaymentOPtions(payment_option_id)
     {
-         
+
         switch (payment_option_id) {
             case 3:
                     paymentViaPaypal('', payment_option_id);
@@ -6198,6 +6348,9 @@ $(document).ready(function () {
             case 45:
                 paymentViaTelr('', payment_option_id, '');
                 break;
+            case 46:
+                paymentViaMastercard('wallet');
+                break;
             case 47:
                 paymentViaKhalti('', '');
                 break;
@@ -6253,6 +6406,9 @@ $(document).ready(function () {
             break;
             case 67:
                 paymentViaThawanipg('', payment_option_id, '');
+            break;
+            case 69:
+            paymentViaHitpay('', payment_option_id, '');
             break;
         }
     }

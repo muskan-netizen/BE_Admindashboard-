@@ -466,10 +466,10 @@ class UserhomeController extends FrontController
     {
        // pr(Session::get('onDemandPricingSelected'));
         try {
-
+           
+            $startTime = microtime(true); // Start time in seconds with microseconds
             $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
-
-            
+            $client = Client::first();
             $home = array();
             $vendor_ids = array();
             if ($request->has('ref')) {
@@ -670,6 +670,12 @@ class UserhomeController extends FrontController
                     Redis::expire($this->loc_key, $this->cache_minutes);
                 }
 
+            // Your code to be measured goes here
+        
+            $endTime = microtime(true); // End time in seconds with microseconds
+            $executionTime = $endTime - $startTime; // Calculate execution time in seconds
+        
+            // \Log::info('Execution time homepage:'.$client->database_name.':' . $executionTime . ' seconds');
 
                 return view('frontend.'.$view_page)->with($homeData);
             }
@@ -864,7 +870,7 @@ class UserhomeController extends FrontController
         }
         $on_sale_product_details =$on_sale_products = [];
         if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in 
-            $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', 'on_sale', $request->type,$on_sale_title, $p_dim);
+            $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'on_sale', $request->type,$on_sale_title, $p_dim);
         }
         $new_product_details =$new_products = [];
         if (in_array('new_products', $enable_layout)) {  # if enable new_products section in 

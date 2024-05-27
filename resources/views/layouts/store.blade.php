@@ -25,8 +25,8 @@ if($client_preference_detail->show_dark_mode == 1){
 $analytics = getAdditionalPreference(['gtag_id', 'fpixel_id','is_service_product_price_from_dispatch','is_service_price_selection']);
 $getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'),'',$analytics);
 //pr($getOnDemandPricingRule);
-$is_ondemand_multi_pricing = $getOnDemandPricingRule['is_ondemand_multi_pricing']; 
-    
+$is_ondemand_multi_pricing = $getOnDemandPricingRule['is_ondemand_multi_pricing'];
+
 //pr($is_ondemand_multi_pricing);
 $body_class = "al_body_template_one";
 $left_sidebar = 'layouts.store/left-sidebar-template-one';
@@ -34,7 +34,7 @@ $footer_content = 'layouts.store/footer-content-template-one';
 if(isset($set_template))
 {
   $selectedTemplate = $set_template->template_id ?? 1;
- 
+
   switch($selectedTemplate) {
     case 1:
       $body_class = "al_body_template_one";
@@ -70,7 +70,7 @@ if(isset($set_template))
       $footer_content = 'layouts.store/footer-content-template-six';
       break;
     case 7:
-  
+
       break;
     case 8:
     $body_class = "al_body_template_eight p2p-module";
@@ -82,7 +82,7 @@ if(isset($set_template))
     $left_sidebar = 'layouts.store/left-sidebar-template-one';
     $footer_content = 'layouts.store/footer-content-template-one';
       break;
-      
+
     default:
       $body_class = "al_body_template_one";
       $left_sidebar = 'layouts.store/left-sidebar-template-nine';
@@ -111,7 +111,7 @@ if($type == 'p2p'){
     <article class="al_new_wrapper_design">
   @endif
     <header>
-      
+
       <div class="mobile-fix-option_al"></div>
       @include($left_sidebar)
       {{-- @if(isset($set_template)  && $set_template->template_id == 1)
@@ -166,20 +166,37 @@ if($type == 'p2p'){
 
     <script src="{{ asset('/sw.js') }}"></script>
 <script>
-   if ("serviceWorker" in navigator) {
-      // Register a service worker hosted at the root of the
-      // site using the default scope.
-      navigator.serviceWorker.register("/sw.js").then(
-      (registration) => {
-         console.log("Service worker registration succeeded:", registration);
-      },
-      (error) => {
-         console.error(`Service worker registration failed: ${error}`);
-      },
-    );
-  } else {
-     console.error("Service workers are not supported.");
-  }
+
+    // login error print issue (service worker)
+  @if (Route::current()->getName() == 'customer.login')
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+                registration.unregister();
+            }
+        }).then(function() {
+            // console.log('Service worker was stopped.');
+        });
+        if (navigator.serviceWorker.controller) {
+            location.reload();
+        }
+    }
+  @else
+    if ("serviceWorker" in navigator) {
+        // Register a service worker hosted at the root of the
+        // site using the default scope.
+        navigator.serviceWorker.register("/sw.js").then(
+        (registration) => {
+            console.log("Service worker registration succeeded:", registration);
+        },
+        (error) => {
+            console.error(`Service worker registration failed: ${error}`);
+        },
+        );
+    } else {
+        console.error("Service workers are not supported.");
+    }
+  @endif
 </script>
 @endif
 </body>

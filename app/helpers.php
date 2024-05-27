@@ -12,7 +12,7 @@ use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
 use App\Models\ShowSubscriptionPlanOnSignup;
-use App\Models\{VendorSlot, ClientCurrency, Order, Type, ClientPreferenceAdditional, UserVendor, VendorCategory, Product};
+use App\Models\{VendorSlot, ClientCurrency, Order, Type, ClientPreferenceAdditional, UserVendor, VendorCategory, Product,ClientLanguage,Language,};
 use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
@@ -29,8 +29,6 @@ if (!function_exists('setUserCode')) {
         }
     }
 }
-
-
 
 // Returns the values of the additional preferences.
 if (!function_exists('checkColumnExists')) {
@@ -194,9 +192,7 @@ if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
 if (!function_exists('sendFcmCurlRequest')) {
     function sendFcmCurlRequest($data ,$fcm_server_key = '')
     {
-
         $fcm_server_key = ($fcm_server_key =='') ? ClientPreference::select('fcm_server_key')->first()->fcm_server_key :  $fcm_server_key ;
-
          if (!empty($fcm_server_key )) {
 
             $headers = [
@@ -215,7 +211,6 @@ if (!function_exists('sendFcmCurlRequest')) {
             //     die('Oops! FCM Send Error: ' . curl_error($ch));
             // }
             curl_close($ch);
-
             return $result;
         } else {
             return false;
@@ -1294,6 +1289,17 @@ if (!function_exists('getPrimaryCurrencyName')) {
     }
 }
 
+
+if (!function_exists('getPrimaryLanguageName')) {
+    function getPrimaryLanguageName()
+    {
+        $primaryLanguage = ClientLanguage::where('is_primary', '=', 1)->first();
+        $primaryLanguageName = Language::find($primaryLanguage->language_id);
+        $languageName = $primaryLanguageName->sort_code;
+        return $languageName;
+    }
+}
+
 if (!function_exists('decimal_format')) {
     // Number Format according to Client preferences
     function decimal_format($number,$format="")
@@ -2149,7 +2155,7 @@ if (!function_exists('recurringCalculationFunction')) {
         }
     }
 
-    if (!function_exists('productPriceAfterVendorDiscount')) 
+    if (!function_exists('productPriceAfterVendorDiscount'))
     {
          function productPriceAfterVendorDiscount($vendorData,$product_discount_amount,$doller_compare,$cart)
         {
@@ -2178,9 +2184,9 @@ if (!function_exists('recurringCalculationFunction')) {
             $PromoDelete = 0;
             $data['vendor_discount_amount'] = 0;
             $data['deliveryfeeOnCoupon'] = 0;
-            if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) 
+            if (isset($vendorData->coupon) && !empty($vendorData->coupon) )
             {
-                if ( $PromoDelete !=1) 
+                if ( $PromoDelete !=1)
                 {
                         $minimum_spend = 0;
                         if (isset($vendorData->coupon->promo->minimum_spend)) {
@@ -2206,9 +2212,21 @@ if (!function_exists('recurringCalculationFunction')) {
                             unset($vendorData->coupon);
                            return $data;
                         }
-                } 
+                }
             }
             return $data??0;
         }
+    }
+}
+
+if (!function_exists('mastercardGateway')) {
+    function mastercardGateway() {
+        $payopt = PaymentOption::where('code', 'mastercard')->get(['test_mode', 'credentials'])->first();
+        $test_url = 'test-gateway.mastercard.com';
+        if(!empty($payopt) && $payopt->test_mode != 1){
+            $creds = json_decode($payopt->credentials);
+            $test_url = $creds->mastercard_gateway??$test_url;
+        }
+        return $test_url;
     }
 }

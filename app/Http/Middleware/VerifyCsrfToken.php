@@ -26,15 +26,15 @@ class VerifyCsrfToken extends Middleware
         'ccavenue/success',
         'vnpay_respont',
         'payment/vnpay/api',
-        'payment/vnpay/notify', 
-        
+        'payment/vnpay/notify',
+
         'payment/cashfree/notify',
         'verify/payment/otp/app/*',
         'payment/webhook/stripe_ideal',
         /** routes for edit order **/
         'edit-order/*',
         'payment/*',
-        
+
         'payment/paytab/return',
         'payment/paytab/callback',
         'sendNotificationToUserByDispatcher',
@@ -43,7 +43,9 @@ class VerifyCsrfToken extends Middleware
         'dispatch/driver/bids/status/*',
         'square/inventory/event/update',
         'skipcash/webhook',
-
-        'success/pesapal'
+        'cybersource/process-payment',
+        'success-orangepay',
+        'success/pesapal',
+        'payment/hitpay/webhook'
     ];
 }

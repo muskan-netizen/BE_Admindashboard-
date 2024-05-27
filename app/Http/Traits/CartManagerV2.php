@@ -1093,7 +1093,7 @@ trait CartManagerV2
                                                                     $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)):decimal_format($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)).'</option>';
                                                                 }else{
                                                                     if($if_previousdeliveryfee_added == 0 && $opt['rate'] > 0){
-                                                                        $delivery_to_add = $opt['rate'];
+                                                                        $delivery_to_add = $opt['rate'] * $doller_compare;
                                                                     }else{$delivery_to_add = 0;}
                                                                     $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($vendorTotalDeliveryFee + $delivery_to_add)):decimal_format($vendorTotalDeliveryFee + $delivery_to_add)).'</option>';
                                                                 }
@@ -1104,7 +1104,7 @@ trait CartManagerV2
                                                                     $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)):decimal_format($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)).'</option>';
                                                                 }else{
                                                                     if($if_previousdeliveryfee_added == 0 && $opt['rate'] > 0){
-                                                                        $delivery_to_add = $opt['rate'];
+                                                                        $delivery_to_add = $opt['rate'] * $doller_compare;
                                                                     }else{$delivery_to_add = 0;}
                                                                     $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($vendorTotalDeliveryFee + $delivery_to_add)):decimal_format($vendorTotalDeliveryFee + $delivery_to_add)).'</option>';
                                                                 }
@@ -1142,8 +1142,8 @@ trait CartManagerV2
                                                         $if_previousdeliveryfee_added = 1;
                                                     }
                                                 }
-                                                $deliveryCharges_real = $vendorTotalDeliveryFee;
-
+                                                $deliveryCharges_real = $vendorTotalDeliveryFee * $doller_compare;
+                                                
 
                                                 if (isset($vendorTotalDeliveryFee) && !empty($vendorTotalDeliveryFee)) {
                                                     $dtype = explode('_', $code);
@@ -1154,7 +1154,7 @@ trait CartManagerV2
 
                             }//End Pvariant condition
                          if($deliveryfeeOnCoupon == 1){
-                            $free_delivery_amount +=   $deliveryCharges_real;
+                            $free_delivery_amount =   $deliveryCharges_real;
 
                          }
                         $is_slot_from_dispatch =  $prod->product->is_slot_from_dispatch;

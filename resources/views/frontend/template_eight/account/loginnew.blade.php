@@ -11,7 +11,7 @@ $signUpImage = $preferences->signup_image ?? null;
 @endphp
 <section class="wrapper-main py-lg-5 py-3 d-flex align-items-center main-login-page">
     <div class="container">
-        <div class="row align-items-center h-100" id="login-section">  
+        <div class="row align-items-center h-100" id="login-section">
             <div class="col-md-6 p-0">
                 <div class="login_img">
                     <img src="{{ $signUpImage ? $signUpImage['proxy_url'].'400/400'.$signUpImage['image_path'] : asset('images/template-8/login-img.png') }}" class="img-fluid">
@@ -119,7 +119,7 @@ $signUpImage = $preferences->signup_image ?? null;
                             <div class="divider_line mt-3">
                                 <span>OR</span>
                             </div>
-                            
+
                             <ul class="social-media-links d-flex align-items-center justify-content-center mb-4 mt-3">
                                 @if(@session('preferences')->google_login == 1)
                                 <li>
@@ -383,27 +383,31 @@ $signUpImage = $preferences->signup_image ?? null;
                         }
                     }
                 }, error: function (error) {
-                    var response = $.parseJSON(error.responseText);
-                    // let error_messages = response.message;
-
-                    if((response.data != null) && (response.data.user_exists != undefined) && (response.data.user_exists == false)){
-                        Swal.fire({
-                            title: "{{__('User Not Found')}}",
-                            text: response.message,
-                            icon: 'info',
-                            iconColor: '{{getClientPreferenceDetail()->web_color}}',
-                            showCancelButton: true,
-                            confirmButtonText: 'Signup',
-                            confirmButtonColor: '{{getClientPreferenceDetail()->web_color}}'
-                        }).then((result) => {
-                            if(result.value)
-                            {
-                                window.location.href = "{{ route('customer.register') }}";
-                            }
-                        });
-                    }
-                    else{
-                        $("#error-msg").html(response.message);
+                    if (error.hasOwnProperty('responseJSON') && error.status === 404) {
+                        var response = error.responseJSON;
+                        // let error_messages = response.message;
+                        if((response.data != null) && (response.data.user_exists != undefined) && (response.data.user_exists == false)){
+                            Swal.fire({
+                                title: "{{__('User Not Found')}}",
+                                text: response.message,
+                                icon: 'info',
+                                iconColor: '{{getClientPreferenceDetail()->web_color}}',
+                                showCancelButton: true,
+                                confirmButtonText: 'Signup',
+                                confirmButtonColor: '{{getClientPreferenceDetail()->web_color}}'
+                            }).then((result) => {
+                                if(result.value)
+                                {
+                                    window.location.href = "{{ route('customer.register') }}";
+                                }
+                            });
+                        }
+                        else{
+                            $("#error-msg").html(response.message);
+                            $("#error-msg").show();
+                        }
+                    } else {
+                        $("#error-msg").html('Something went wrong');
                         $("#error-msg").show();
                     }
                 }
