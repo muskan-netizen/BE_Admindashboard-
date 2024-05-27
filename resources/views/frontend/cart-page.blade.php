@@ -498,7 +498,7 @@
 
                                                     @if (isset($vendor_product->product_delivery_fee) && $vendor_product->product_delivery_fee > 0)
                                                         <div class="float-left mt-2">Delivery Fee : <span
-                                                                style="color: #000;font-size: 14px;font-weight: 500;">{{ Session::get('currencySymbol') }}{{ $vendor_product->product_delivery_fee }}</span>
+                                                                style="color: #000;font-size: 14px;font-weight: 500;">{{ Session::get('currencySymbol') }}{{ $vendor_product->product_delivery_fee  }}</span>
                                                         </div>
                                                     @endif
                                                 </div>
@@ -517,7 +517,7 @@
                                         @if($serviceType == 'rental')
                                             <hr class="my-2">
                                             <div class="row align-items-md-center alRentalStartDate">
-                                                <div class="col-3">
+                                                   <div class="col-3">
                                                     <h6 class="m-0 pl-0">{{ __('Start Date') }}</h6>
                                                     <p>{{ date('m/d/Y g:i A', strtotime($vendor_product->start_date_time)) }}
                                                     </p>
@@ -765,7 +765,7 @@
                             @endforeach
 
                             {{-- End Product Detail Loop --}}
-                 
+
                             <div class="row my-2">
                                 @if (!$cart_details->guest_user)
                                     <div class="col-lg-6">
@@ -948,7 +948,7 @@
                                             <p class="total_amt m-0">
 
                                                 @if ($additionalPreference['is_token_currency_enable'])
-                                              
+
                                                     {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($product->product_total_amount)) }}
                                                     @else
                                                     @if($serviceType == 'rental')
@@ -1181,7 +1181,7 @@
 
                         </div>
 
-                        
+
                         <div class="col-lg-12 mt-3 cart-price">
 
                             @if ($cart_details->sub_total > 0)
@@ -1190,9 +1190,9 @@
                                     {{-- <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->sub_total - $cart_details->bid_total_discount)}}</b></div> --}}
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
-                                            
+
                                             {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->total_gross_amount )) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->total_gross_amount   +@$additionalPrice) }}
-                                           
+
                                             @endif
                                         </b>
                                     </div>
@@ -1217,8 +1217,8 @@
                                 </div> --}}
                                 <hr class="my-2">
                             @endif
-                            
-                          
+
+
                             @if ($serviceType == 'rental' || $serviceType == 'p2p')
                                 <div class="row">
                                     <div class="col-6">{{ __('Security Amount') }}</div>
@@ -1283,10 +1283,10 @@
                             @endphp
                             <input type="hidden" id="other_taxes_string" value="{{ $other_taxes_string }}">
                             @if ($serviceType == 'rental' || $serviceType == 'p2p')
-                             
+
                             @endif
 
-                   
+
 
                             @if ($cart_details->total_taxable_amount + $other_taxes > 0)
                                 <div class="row">
