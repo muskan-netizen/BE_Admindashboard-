@@ -20,64 +20,162 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Cache;
 use Google\Auth\Credentials\ServiceAccountCredentials;
+use Illuminate\Support\Facades\Storage;
 
+// if (!function_exists('getFcmOauthToken')) {
+//     function getFcmOauthToken($url = null) {
+//         try {
+//             $preference = ClientPreferenceAdditional::where('key_name', 'firebase_account_json_file')->first();
+//             $fileName = $preference->key_value ?? null;
+
+//             if ($fileName) {
+//                 // Generate a temporary URL with the Content-Disposition header set to attachment
+//                 $url = Storage::disk('s3')->temporaryUrl($fileName, now()->addHour(), [
+//                     'ResponseContentDisposition' => 'attachment; filename="' . basename($fileName) . '"'
+//                 ]);
+//             }
+         
+
+           
+//             $serviceAccountPath = "voltaic-e59be-c73103aa2b73.json";
+//             $scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
+
+           
+            
+//             $credentials = new ServiceAccountCredentials($scopes, $serviceAccountPath);
+
+//             $accessToken = $credentials->fetchAuthToken();
+
+           
+
+//             return $accessToken['access_token'];
+//         } catch (\Exception $e) {
+
+//             pr($e->getMessage());
+//             \Log::error('Error fetching FCM OAuth token: ' . $e->getMessage());
+//             return null;
+//         }
+//     }
+// }
 
 if (!function_exists('getFcmOauthToken')) {
+    function getFcmOauthToken($url = null) {
+        try {
+            $preference = ClientPreferenceAdditional::where('key_name', 'firebase_account_json_file')->first();
+            $fileName = $preference->key_value ?? null;
+            $scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
+            if ($fileName) {
+                // Generate a temporary URL with the Content-Disposition header set to attachment
+                $url = Storage::disk('s3')->temporaryUrl($fileName, now()->addHour(), [
+                    'ResponseContentDisposition' => 'attachment; filename="' . basename($fileName) . '"'
+                ]);
+            }
 
-    function getFcmOauthToken($url = null)
+            // If the URL is null, use the local file path
+            $serviceAccountPath = $url ?? "voltaic-e59be-c73103aa2b73.json";
 
-{
+           
+            // Determine if the file is local or on S3 based on the URL scheme
+            if (filter_var($serviceAccountPath, FILTER_VALIDATE_URL)) {
+                // Fetch the content from the URL and save it temporarily
+                $serviceAccountContent = file_get_contents($serviceAccountPath);
+                if ($serviceAccountContent === false) {
+                    throw new \Exception('Failed to fetch the service account JSON file from S3.');
+                }
 
-    $serviceAccountPath = $url ?? "voltaic-e59be-c73103aa2b73.json";
+                // Save the content to a temporary file
+                $tempFilePath = tempnam(sys_get_temp_dir(), 'service_account');
+                file_put_contents($tempFilePath, $serviceAccountContent);
+              
+                // Use the temporary file path for credentials
+                $credentials = new ServiceAccountCredentials($scopes, $tempFilePath);
+            } else {
+                // Use the local file path for credentials
+                $credentials = new ServiceAccountCredentials($scopes, $serviceAccountPath);
+            }
 
+            $accessToken = $credentials->fetchAuthToken();
 
-    $scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
         
-    $credentials = new ServiceAccountCredentials($scopes, $serviceAccountPath);
-
-    $accessToken = $credentials->fetchAuthToken();
- 
-    
-    return $accessToken['access_token'];
-}
-}
-
-if (!function_exists('sendFirebaseNotification')) {
-
-      function sendFirebaseNotification($tokens,$title,$body,$data,$project_id)
-    {
-    
-        $token = getFcmOauthToken();
-       
-        
-        $headers = [
-            'Authorization: Bearer '.$token ,
-            'Content-Type: application/json',
-        ];
-
-        $data = [
-            'message' => [
-                'token' => $tokens,
-                'notification' => [
-                    'title' => $title,
-                    'body' => $body
-                ],
-                'data' => $data
-            ]
-        ];
-        
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/v1/projects/$project_id/messages:send");
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        $result = curl_exec($ch);
-        curl_close($ch);
-        return $result;
+            return $accessToken['access_token'] ?? "N/A";
+        } catch (\Exception $e) {
+            Log::error('Error fetching FCM OAuth token: ' . $e->getMessage());
+            return null;
+        }
     }
+}
 
+
+/* 
+
+sample notification code new 
+
+     $token = 'ezVpMQ4OT2SriCILkLhdpb:APA91bEOM8in8QOkO3-CMtQUgpX7aL5gDvV9_VFRAIG41tJLjquHasiUwkoTbiTYgGF4944Y2vNAbE8HiHg-ligtmkrTr1lF20TfZW1BNJ9XzOrjp_3lOUzmrUB0vTiFWVezniJbr3h3';
+        $title = 'test notification yash';
+        $body = 'test notification body';
+        $project_id = 'voltaic-e59be';
+        $data = [
+            'key' => 'value'
+        ];
+    
+
+        $result = sendFirebaseNotification($token,$title,$body,$data,$project_id);
+   
+
+
+
+
+
+
+
+
+
+*/
+if (!function_exists('sendFirebaseNotification')) {
+    function sendFirebaseNotification($tokens, $title, $body, $data, $project_id) {
+        try {
+            $token = getFcmOauthToken();
+            if (!$token) {
+                \Log::error('Failed to retrieve FCM OAuth token');
+                return false;
+            }
+
+            $headers = [
+                'Authorization: Bearer ' . $token,
+                'Content-Type: application/json',
+            ];
+
+            $payload = [
+                'message' => [
+                    'token' => $tokens,
+                    'notification' => [
+                        'title' => $title,
+                        'body' => $body,
+                    ],
+                    'data' => $data,
+                ],
+            ];
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/v1/projects/$project_id/messages:send");
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+            $result = curl_exec($ch);
+
+            if (curl_errno($ch)) {
+                \Log::error('Curl error: ' . curl_error($ch));
+            }
+
+            curl_close($ch);
+            return $result;
+        } catch (\Exception $e) {
+            \Log::error('Error sending Firebase notification: ' . $e->getMessage());
+            return false;
+        }
+    }
 }
 if (!function_exists('setUserCode')) {
     function setUserCode(){

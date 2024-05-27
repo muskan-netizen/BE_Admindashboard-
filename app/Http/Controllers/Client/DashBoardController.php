@@ -43,24 +43,8 @@ class DashBoardController extends BaseController
 
     public function index(Request $request)
     {   
-        // $token = 'ezVpMQ4OT2SriCILkLhdpb:APA91bEOM8in8QOkO3-CMtQUgpX7aL5gDvV9_VFRAIG41tJLjquHasiUwkoTbiTYgGF4944Y2vNAbE8HiHg-ligtmkrTr1lF20TfZW1BNJ9XzOrjp_3lOUzmrUB0vTiFWVezniJbr3h3';
-        // $title = 'test notification yash';
-        // $body = 'test notification body';
-        // $project_id = 'voltaic-e59be';
-        // $data = [
-        //     'key' => 'value'
-        // ];
-    
-
-        // $result = sendFirebaseNotification($token,$title,$body,$data,$project_id);
    
-        
-
-        // return $result;
-
-
-
-       $managers = User::whereHas('roles',function($q){
+        $managers = User::whereHas('roles',function($q){
             $q->where('name','Manager');
        })->get();
        $setWeekDate = $this->setWeekDate;
