@@ -32,7 +32,6 @@ class RazorpayGatewayController extends FrontController
         $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
         $api_secret_key = (isset($creds_arr->api_secret_key)) ? $creds_arr->api_secret_key : '';
         $this->test_mode = (isset($razorpay_creds->test_mode) && ($razorpay_creds->test_mode == '1')) ? true : false;
-        \Log::info($api_key);
         $this->API_KEY = $api_key;
         $this->API_SECRET_KEY = $api_secret_key;
         $this->api = new Api($api_key, $api_secret_key);
