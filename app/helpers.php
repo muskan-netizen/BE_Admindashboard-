@@ -59,11 +59,8 @@ if (!function_exists('getFcmOauthToken')) {
             $accessToken = $credentials->fetchAuthToken();
             
 
-            \Log::info('access token');
-            \Log::info($accessToken);
             return $accessToken['access_token'] ?? "N/A";
         } catch (\Exception $e) {
-            pr($e->getMessage());
             Log::error('Error fetching FCM OAuth token: ' . $e->getMessage());
             return null;
         }
@@ -322,6 +319,10 @@ if (!function_exists('sendFcmCurlRequest')) {
     function sendFcmCurlRequest($data)
     { 
         
+
+        \Log::info('curl fcm data');
+        \Log::info($data);
+
         // Fetch FCM project ID from database
         $preference = ClientPreference::select('fcm_project_id')->first();
         if (!$preference) {
@@ -333,7 +334,10 @@ if (!function_exists('sendFcmCurlRequest')) {
 
         // Get OAuth Token
         $accessToken = getFcmOauthToken();
-
+         \Log::info('curl fcm data');
+        \Log::info($data);
+         \Log::info('accessToken data');
+        \Log::info($accessToken);
         if ($accessToken) {
             $headers = [
                 'Authorization: Bearer ' . $accessToken,
@@ -362,7 +366,7 @@ if (!function_exists('sendFcmCurlRequest')) {
                 
                     // Transform data to FCM v1 format
                     $transformedData = transformToFcmV1Format($data,$token);
-        
+                    
         
                     
                     if (!$transformedData) {
@@ -372,6 +376,8 @@ if (!function_exists('sendFcmCurlRequest')) {
         
                     $payload = ['message' => $transformedData];
         
+                    \Log::info('payload data');
+                    \Log::info($payload);
                     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
                     $result = curl_exec($ch);
          
