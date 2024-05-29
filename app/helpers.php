@@ -293,16 +293,12 @@ if (!function_exists('transformToFcmV1Format')) {
                 "notification" => [
                     'title' =>(string) $oldData['notification']['title'] ?? '',
                     'body'  =>(string)  $oldData['notification']['body'] ?? '',
-                    // 'sound' => $oldData['notification']['sound'] ?? '',
-                    // "icon" => $oldData['notification']['icon'] ?? '',
-                    // 'click_action' => $oldData['notification']['click_action'] ?? '',
-                    // "android_channel_id" => $oldData['notification']['android_channel_id'] ?? ''
+                    'sound' => (string)$oldData['notification']['sound'] ?? '',
+                    "icon" => (string)$oldData['notification']['icon'] ?? '',
+                    'click_action' =>(string) $oldData['notification']['click_action'] ?? '',
+                    "android_channel_id" => (string) $oldData['notification']['android_channel_id'] ?? ''
                 ],
-                "data" => [
-                    'title' => (string) $oldData['notification']['title'] ?? '',
-                    'body'  => (string) $oldData['notification']['body'] ?? '',
-                    'type' => (string) $oldData['data']['type'] ?? ''
-                ],
+                "data" => $oldData['data'],
                 // "priority" => $oldData['priority'] ?? ''
             ];
 
@@ -342,6 +338,8 @@ if (!function_exists('sendFcmCurlRequest')) {
             $deviceTokens = $data['registeration_ids'] ?? [];
 
 
+
+            try{
  
             if(!empty($deviceTokens)){
 
@@ -382,6 +380,13 @@ if (!function_exists('sendFcmCurlRequest')) {
                 }
 
             }
+        }
+
+        catch(\Exception $e)
+        {
+            \Log::info('error',$e->getMessage());
+            return false;
+        }
            
         } else {
             \Log::error('FCM Send Error: Unable to fetch OAuth token.');
