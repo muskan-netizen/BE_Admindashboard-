@@ -5216,7 +5216,7 @@ class OrderController extends BaseController
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
         if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
-            $order_ship = $this->placeOrderToBorzoApi($request->vendor_id, $request->order_id);
+            $order_ship = $this->placeOrderToBorzoApi($checkdeliveryFeeAdded , $request->vendor_id, $request->order_id);
         }
         $orderDetails = json_decode($order_ship);
         if ($order_ship) {
@@ -5224,7 +5224,7 @@ class OrderController extends BaseController
                 ->update([
                     'borzoe_order_id' => $orderDetails->order->order_id,
                     'borzoe_order_name'=> $orderDetails->order->order_name,
-                    'dispatch_traking_url' => $orderDetails->order->points[0]->tracking_url??null,
+                    'dispatch_traking_url' => $orderDetails->order->points[1]->tracking_url??null,
                 ]);
             return 1;
         }
