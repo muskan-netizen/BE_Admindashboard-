@@ -381,8 +381,7 @@ trait ProductActionTrait{
                             $whereProductType
 
                             GROUP BY `products`.`id`
-
-                             LIMIT 6";
+                            ORDER BY RAND() LIMIT 6";
 
                 $products = DB::select( DB::raw($raw_query));
 
@@ -417,7 +416,7 @@ trait ProductActionTrait{
                 $venid = '0';
             }
            $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
-
+\Log::info($vendorWhereIN);
             if($where!=='all' && $where!=='on_sale'){
 
                     if($where =='single_category_products' || $where == 'selected_products' || $where == 'popular_products' || $where == 'top_rated_products' ||  $where == 'recent_viewed'){
@@ -545,7 +544,8 @@ trait ProductActionTrait{
             $getSubCatIdsIn
             $whereProductType
             GROUP BY `products`.`id`
-             LIMIT 6";
+            ORDER BY RAND()
+            LIMIT 6";
 
 
             $returnArray = DB::select( DB::raw($raw_query));
