@@ -293,10 +293,10 @@ if (!function_exists('transformToFcmV1Format')) {
                 "notification" => [
                     'title' =>(string) $oldData['notification']['title'] ?? '',
                     'body'  =>(string)  $oldData['notification']['body'] ?? '',
-                    'sound' => (string)$oldData['notification']['sound'] ?? '',
-                    "icon" => (string)$oldData['notification']['icon'] ?? '',
+                    // 'sound' => (string)$oldData['notification']['sound'] ?? '',
+                    // "icon" => (string)$oldData['notification']['icon'] ?? '',
                     // 'click_action' =>(string) $oldData['notification']['click_action'] ?? '',
-                    "android_channel_id" => (string) $oldData['notification']['android_channel_id'] ?? ''
+                    // "android_channel_id" => (string) $oldData['notification']['android_channel_id'] ?? ''
                 ],
                 "data" => $oldData['data'],
                 // "priority" => $oldData['priority'] ?? ''
