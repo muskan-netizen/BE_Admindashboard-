@@ -415,8 +415,7 @@ trait ProductActionTrait{
             } else{
                 $venid = '0';
             }
-           $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
-\Log::info($vendorWhereIN);
+            $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
             if($where!=='all' && $where!=='on_sale'){
 
                     if($where =='single_category_products' || $where == 'selected_products' || $where == 'popular_products' || $where == 'top_rated_products' ||  $where == 'recent_viewed'){
