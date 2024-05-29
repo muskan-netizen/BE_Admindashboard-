@@ -343,7 +343,7 @@ if (!function_exists('sendFcmCurlRequest')) {
                 'Authorization: Bearer ' . $accessToken,
                 'Content-Type: application/json',
             ];
-            $deviceTokens = $data['registeration_ids'] ?? [];
+            $deviceTokens = $data['registration_ids'] ?? [];
 
 
             \Log::info('deviceTokens data');
