@@ -58,6 +58,9 @@ if (!function_exists('getFcmOauthToken')) {
 
             $accessToken = $credentials->fetchAuthToken();
             
+
+            \Log::info('access token');
+            \Log::info($accessToken);
             return $accessToken['access_token'] ?? "N/A";
         } catch (\Exception $e) {
             pr($e->getMessage());
@@ -317,7 +320,8 @@ if (!function_exists('transformToFcmV1Format')) {
 
 if (!function_exists('sendFcmCurlRequest')) {
     function sendFcmCurlRequest($data)
-    {
+    { 
+        
         // Fetch FCM project ID from database
         $preference = ClientPreference::select('fcm_project_id')->first();
         if (!$preference) {
