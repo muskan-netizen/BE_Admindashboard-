@@ -299,8 +299,8 @@ if (!function_exists('transformToFcmV1Format')) {
                     // "android_channel_id" => (string) $oldData['notification']['android_channel_id'] ?? ''
                 ],
                 "data" => [
-                    'title' => $oldData['notification']['subject'],
-                    'body'  => $oldData['notification']['content'],
+                    'title' => $oldData['data']['title'] ?? "",
+                    'body'  => $oldData['data']['body']?? ""
                 ],
                 // "priority" => $oldData['priority'] ?? ''
             ];
