@@ -170,20 +170,22 @@ class CampaignSendNotificationJob implements ShouldQueue
                 "priority" => "high"
             ];
             $dataString = $data;
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-            $result = curl_exec($ch);
-            curl_close($ch);
-            $resultData = json_decode($result, true);
+
+            sendFcmCurlRequest($data);
+            // $ch = curl_init();
+            // curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+            // curl_setopt($ch, CURLOPT_POST, true);
+            // curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            // curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
+            // $result = curl_exec($ch);
+            // curl_close($ch);
+            // $resultData = json_decode($result, true);
         
             CampaignRoster::whereIn('id', $roster_ids)->delete();
         } catch (\Exception $e) {
-            \Log::error($resultData);
+            \Log::error($e->getMessage());
             $resultData = ['success' => false, 'message' => $e->getMessage()];
             CampaignRoster::whereIn('id', $roster_ids)->update(array('status' => 2));
         }

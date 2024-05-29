@@ -22,41 +22,6 @@ use Illuminate\Support\Facades\Cache;
 use Google\Auth\Credentials\ServiceAccountCredentials;
 use Illuminate\Support\Facades\Storage;
 
-// if (!function_exists('getFcmOauthToken')) {
-//     function getFcmOauthToken($url = null) {
-//         try {
-//             $preference = ClientPreferenceAdditional::where('key_name', 'firebase_account_json_file')->first();
-//             $fileName = $preference->key_value ?? null;
-
-//             if ($fileName) {
-//                 // Generate a temporary URL with the Content-Disposition header set to attachment
-//                 $url = Storage::disk('s3')->temporaryUrl($fileName, now()->addHour(), [
-//                     'ResponseContentDisposition' => 'attachment; filename="' . basename($fileName) . '"'
-//                 ]);
-//             }
-         
-
-           
-//             $serviceAccountPath = "voltaic-e59be-c73103aa2b73.json";
-//             $scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
-
-           
-            
-//             $credentials = new ServiceAccountCredentials($scopes, $serviceAccountPath);
-
-//             $accessToken = $credentials->fetchAuthToken();
-
-           
-
-//             return $accessToken['access_token'];
-//         } catch (\Exception $e) {
-
-//             pr($e->getMessage());
-//             \Log::error('Error fetching FCM OAuth token: ' . $e->getMessage());
-//             return null;
-//         }
-//     }
-// }
 
 if (!function_exists('getFcmOauthToken')) {
     function getFcmOauthToken($url = null) {
@@ -66,14 +31,12 @@ if (!function_exists('getFcmOauthToken')) {
             $scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
             if ($fileName) {
                 // Generate a temporary URL with the Content-Disposition header set to attachment
-                $url = Storage::disk('s3')->temporaryUrl($fileName, now()->addHour(), [
-                    'ResponseContentDisposition' => 'attachment; filename="' . basename($fileName) . '"'
-                ]);
+                $url = Storage::disk('s3')->url($fileName);
             }
 
             // If the URL is null, use the local file path
             $serviceAccountPath = $url ?? "voltaic-e59be-c73103aa2b73.json";
-
+    
            
             // Determine if the file is local or on S3 based on the URL scheme
             if (filter_var($serviceAccountPath, FILTER_VALIDATE_URL)) {
@@ -86,7 +49,6 @@ if (!function_exists('getFcmOauthToken')) {
                 // Save the content to a temporary file
                 $tempFilePath = tempnam(sys_get_temp_dir(), 'service_account');
                 file_put_contents($tempFilePath, $serviceAccountContent);
-              
                 // Use the temporary file path for credentials
                 $credentials = new ServiceAccountCredentials($scopes, $tempFilePath);
             } else {
@@ -95,10 +57,10 @@ if (!function_exists('getFcmOauthToken')) {
             }
 
             $accessToken = $credentials->fetchAuthToken();
-
-        
+            
             return $accessToken['access_token'] ?? "N/A";
         } catch (\Exception $e) {
+            pr($e->getMessage());
             Log::error('Error fetching FCM OAuth token: ' . $e->getMessage());
             return null;
         }
@@ -121,62 +83,9 @@ sample notification code new
 
         $result = sendFirebaseNotification($token,$title,$body,$data,$project_id);
    
-
-
-
-
-
-
-
-
-
 */
-if (!function_exists('sendFirebaseNotification')) {
-    function sendFirebaseNotification($tokens, $title, $body, $data, $project_id) {
-        try {
-            $token = getFcmOauthToken();
-            if (!$token) {
-                \Log::error('Failed to retrieve FCM OAuth token');
-                return false;
-            }
 
-            $headers = [
-                'Authorization: Bearer ' . $token,
-                'Content-Type: application/json',
-            ];
 
-            $payload = [
-                'message' => [
-                    'token' => $tokens,
-                    'notification' => [
-                        'title' => $title,
-                        'body' => $body,
-                    ],
-                    'data' => $data,
-                ],
-            ];
-
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/v1/projects/$project_id/messages:send");
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-            $result = curl_exec($ch);
-
-            if (curl_errno($ch)) {
-                \Log::error('Curl error: ' . curl_error($ch));
-            }
-
-            curl_close($ch);
-            return $result;
-        } catch (\Exception $e) {
-            \Log::error('Error sending Firebase notification: ' . $e->getMessage());
-            return false;
-        }
-    }
-}
 if (!function_exists('setUserCode')) {
     function setUserCode(){
         $userCode = session()->has('userCode');
@@ -346,8 +255,8 @@ if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
     }
 }
 
-if (!function_exists('sendFcmCurlRequest')) {
-    function sendFcmCurlRequest($data ,$fcm_server_key = '')
+if (!function_exists('sendFcmCurlRequest3')) {
+    function sendFcmCurlRequest3($data ,$fcm_server_key = '')
     {
         $fcm_server_key = ($fcm_server_key =='') ? ClientPreference::select('fcm_server_key')->first()->fcm_server_key :  $fcm_server_key ;
          if (!empty($fcm_server_key )) {
@@ -374,6 +283,113 @@ if (!function_exists('sendFcmCurlRequest')) {
         }
     }
 }
+
+
+if (!function_exists('transformToFcmV1Format')) {
+    function transformToFcmV1Format($oldData,$token)
+    {
+        try {
+            $newData = [
+                "notification" => [
+                    'title' =>(string) $oldData['notification']['title'] ?? '',
+                    'body'  =>(string)  $oldData['notification']['body'] ?? '',
+                    // 'sound' => $oldData['notification']['sound'] ?? '',
+                    // "icon" => $oldData['notification']['icon'] ?? '',
+                    // 'click_action' => $oldData['notification']['click_action'] ?? '',
+                    // "android_channel_id" => $oldData['notification']['android_channel_id'] ?? ''
+                ],
+                "data" => [
+                    'title' => (string) $oldData['notification']['title'] ?? '',
+                    'body'  => (string) $oldData['notification']['body'] ?? '',
+                    'type' => (string) $oldData['data']['type'] ?? ''
+                ],
+                // "priority" => $oldData['priority'] ?? ''
+            ];
+
+            // Check if 'registration_ids' is present in the old data
+            $newData['token'] =(string)  $token ??  null;
+
+            return $newData;
+        } catch (\Exception $e) {
+            Log::error('FCM Data Transformation Error: ' . $e->getMessage());
+            return null;
+        }
+    }
+}
+
+
+
+if (!function_exists('sendFcmCurlRequest')) {
+    function sendFcmCurlRequest($data)
+    {
+        // Fetch FCM project ID from database
+        $preference = ClientPreference::select('fcm_project_id')->first();
+        if (!$preference) {
+            \Log::error('FCM Send Error: FCM project ID not found in database.');
+            return false;
+        }
+
+        $project_id = $preference->fcm_project_id;
+
+        // Get OAuth Token
+        $accessToken = getFcmOauthToken();
+
+        if ($accessToken) {
+            $headers = [
+                'Authorization: Bearer ' . $accessToken,
+                'Content-Type: application/json',
+            ];
+            $deviceTokens = $data['registeration_ids'] ?? [];
+
+
+ 
+            if(!empty($deviceTokens)){
+
+
+                foreach($deviceTokens as $token)
+                {
+
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/v1/projects/{$project_id}/messages:send");
+                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+         
+        
+                
+                    // Transform data to FCM v1 format
+                    $transformedData = transformToFcmV1Format($data,$token);
+        
+        
+                    
+                    if (!$transformedData) {
+                        \Log::error('FCM Send Error: Failed to transform data to FCM v1 format.');
+                        return false;
+                    }
+        
+                    $payload = ['message' => $transformedData];
+        
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+                    $result = curl_exec($ch);
+        
+                    if ($result === FALSE) {
+                        \Log::error('FCM Send Error: ' . curl_error($ch));
+                    }
+        
+                    curl_close($ch);
+                    return $result;
+                }
+
+            }
+           
+        } else {
+            \Log::error('FCM Send Error: Unable to fetch OAuth token.');
+            return false;
+        }
+    }
+}
+
 
 if (! function_exists('sendNotificationToCustomer')) {
     function sendNotificationToCustomer($devices,$order_number=''){
