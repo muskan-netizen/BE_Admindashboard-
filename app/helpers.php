@@ -295,7 +295,7 @@ if (!function_exists('transformToFcmV1Format')) {
                     'body'  =>(string)  $oldData['notification']['body'] ?? '',
                     'sound' => (string)$oldData['notification']['sound'] ?? '',
                     "icon" => (string)$oldData['notification']['icon'] ?? '',
-                    'click_action' =>(string) $oldData['notification']['click_action'] ?? '',
+                    // 'click_action' =>(string) $oldData['notification']['click_action'] ?? '',
                     "android_channel_id" => (string) $oldData['notification']['android_channel_id'] ?? ''
                 ],
                 "data" => $oldData['data'],
