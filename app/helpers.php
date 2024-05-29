@@ -346,11 +346,12 @@ if (!function_exists('sendFcmCurlRequest')) {
             $deviceTokens = $data['registeration_ids'] ?? [];
 
 
-
+            \Log::info('deviceTokens data');
+            \Log::info($deviceTokens);
             // try{
  
             if(!empty($deviceTokens)){
-
+                \Log::info('in data');
 
                 foreach($deviceTokens as $token)
                 {
