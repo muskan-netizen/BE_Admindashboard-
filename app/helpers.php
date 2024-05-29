@@ -343,7 +343,7 @@ if (!function_exists('sendFcmCurlRequest')) {
 
 
 
-            try{
+            // try{
  
             if(!empty($deviceTokens)){
 
@@ -374,7 +374,10 @@ if (!function_exists('sendFcmCurlRequest')) {
         
                     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
                     $result = curl_exec($ch);
-        
+         
+
+                    \Log::info('result');
+                    \Log::info($result);
                     if ($result === FALSE) {
                         \Log::error('FCM Send Error: ' . curl_error($ch));
                     }
@@ -384,13 +387,13 @@ if (!function_exists('sendFcmCurlRequest')) {
                 }
 
             }
-        }
+        // }
 
-        catch(\Exception $e)
-        {
-            \Log::info('error',$e->getMessage());
-            return false;
-        }
+        // catch(\Exception $e)
+        // {
+        //     \Log::info('error',$e->getMessage());
+        //     return false;
+        // }
            
         } else {
             \Log::error('FCM Send Error: Unable to fetch OAuth token.');
