@@ -1482,7 +1482,7 @@ class OrderController extends BaseController
             $order_ship = $this->placeOrderToBorzoApi($checkdeliveryFeeAdded, $request->vendor_id, $request->order_id);
         }
         $orderDetails = json_decode($order_ship);
-        \Log::info($orderDetails);
+        \Log::info([$orderDetails]);
         if ($order_ship) {
             $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
                 ->update([
