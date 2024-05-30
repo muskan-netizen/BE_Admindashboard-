@@ -1584,7 +1584,8 @@ class TempCartController extends FrontController
     public function getCartForApproval($cart, $order, $langId = '1', $currency = '1', $type = 'delivery')
     {
         $additionalPreference =  getAdditionalPreference(['is_service_product_price_from_dispatch']);
-     
+        $is_service_product_price_from_dispatch = 0;
+
         if(($additionalPreference['is_service_product_price_from_dispatch'] ==1 )&& ( $order->luxury_option_id ==6)){ // luxury_option_id for ondemand 
             $is_service_product_price_from_dispatch = $additionalPreference['is_service_product_price_from_dispatch'];
         }
