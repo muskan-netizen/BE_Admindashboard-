@@ -64,40 +64,66 @@ trait Borzoe{
         }
     }
 
-    public function placeOrderToBorzoApi($vendor_id, $order_id){
-                $this->brozoConfig();
-                $order = Order::find($order_id);
-                $customer = User::findOrFail($order->user_id);
-                $cus_address = UserAddress::where('id', $order->address_id)->orderBy('is_primary', 'desc')->first();
-                $amountPay = $order->ordervendor->where('vendor_id',$vendor_id)->value('payable_amount')??0;
-                $vendor_details = Vendor::findOrFail($vendor_id);
-                $url = $this->api_url.'create-order';
-                    $data = [
-                        'matter' => 'Food',
-                        'points' => [
-                            [
-                                'address' => $vendor_details->address,
-                                'contact_person' => [
-                                    'phone' => $vendor_details->phone_no,
-                                ],
-                            ],
-                            [
-                                'address' => $cus_address->address,
-                                'contact_person' => [
-                                    'phone' => $customer->phone_number,
-                                ],
-                            ],
-                        ],
-                    ];
-                    $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, $url);
-                    curl_setopt($ch, CURLOPT_POST, 1);
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-DV-Auth-Token: '.$this->api_key.'']);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    $response = curl_exec($ch);
-                    curl_close($ch);
-                    return $response;
+    public function placeOrderToBorzoApi($order_vendor, $vendor_id, $order_id){
+        $this->brozoConfig();
+        $order = Order::find($order_id);
+        $customer = User::findOrFail($order->user_id);
+        $cus_address = UserAddress::where('id', $order->address_id)->orderBy('is_primary', 'desc')->first();
+        $amountPay = $order->ordervendor->where('vendor_id',$vendor_id)->value('payable_amount')??0;
+        $note = '';
+        if(!empty($cus_address)){
+            $note .= $cus_address->house_number.', '.$cus_address->street.', '.$cus_address->pincode.", ".$cus_address->extra_instruction;
+        }
+
+        $amountPay = $order_vendor->payable_amount??0;
+        $vendor_details = Vendor::findOrFail($vendor_id);
+        $is_cod_cash_voucher_required = false;
+        $taking_amount = '';
+        if ($order->payment_option_id == 1) {
+            $payable_amount = $amountPay - $order->loyalty_amount_saved - $order->wallet_amount_used;
+            $is_cod_cash_voucher_required = true; // It is mandatory for Cash-On-Delivery Orders
+            $taking_amount = $payable_amount; // Required only if payment_type is COD
+        } else {
+            if ($order->is_postpay == 1 && $order->payment_status == 0) {
+                $payable_amount = $amountPay - $order->loyalty_amount_saved - $order->wallet_amount_used;
+                $is_cod_cash_voucher_required = true; // It is mandatory for Cash-On-Delivery Orders
+                $taking_amount = $payable_amount; // Required only if payment_type is COD
+            }
+        }
+        $url = $this->api_url.'create-order';
+        $data = [
+            'matter' => 'Food',
+            'points' => [
+                [
+                    'address' => $vendor_details->address,
+                    'contact_person' => [
+                        'phone' => $vendor_details->phone_no,
+                    ],
+                    'latitude' => $vendor_details->latitude??'',
+                    'longitude' =>$vendor_details->longitude??''
+                ],
+                [
+                    'address' => $cus_address->address,
+                    'contact_person' => [
+                        'phone' => $customer->phone_number,
+                    ],
+                    'latitude' => $cus_address->latitude??'',
+                    'longitude' =>$cus_address->longitude??'',
+                    'is_cod_cash_voucher_required' => $is_cod_cash_voucher_required,
+                    'taking_amount' => $taking_amount,
+                    'note' => $note
+                ],
+            ],
+        ];
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-DV-Auth-Token: '.$this->api_key.'']);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);
+        curl_close($ch);
+        return $response;
     }
 
     public function cancleOrderToBorzoApi($vendor_id, $order_id){
