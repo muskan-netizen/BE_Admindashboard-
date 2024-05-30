@@ -86,7 +86,7 @@ class ProductVariant extends Model
         }else{
             return $this->hasOne('App\Models\ProductVariantByRole', 'product_variant_id', 'id')->where('role_id', 1);
         }
-		
+
 	}
 
     public function checkIfInCart()
@@ -137,7 +137,7 @@ class ProductVariant extends Model
                 return $this->productVariantByRole->amount;
             }
         }
-        
+
         return $this->price;
     }
 
@@ -167,7 +167,7 @@ class ProductVariant extends Model
             $checkMarkup = Cache::remember($cacheKey, 60, function () use($vendor) {
                 return Vendor::where('id',$vendor->vendor_id)->value('add_markup_price');
             });
-        
+
             //if vendor price add with markup price
             $user = auth()->user();
             if($user !=null && $user->is_admin == 1 ){
@@ -206,19 +206,17 @@ class ProductVariant extends Model
         $vendor = Cache::remember($cacheKey, 60, function () {
             return Product::where('id', $this->product_id)->select('vendor_id')->first();
         });
-
-        $cacheKey = 'markup_price_'.$vendor->vendor_id;
-        $checkMarkup = Cache::remember($cacheKey, 60, function () use($vendor) {
-            return Vendor::where('id', $vendor->vendor_id)->value('add_markup_price');
-        });
-
+        if(!empty($vendor)){
+            $cacheKey = 'markup_price_'.$vendor->vendor_id;
+            $checkMarkup = Cache::remember($cacheKey, 60, function () use($vendor) {
+                return Vendor::where('id', $vendor->vendor_id)->value('add_markup_price');
+            });
+        }
         //if vendor price add with markup price
-           if($checkMarkup){
-                return decimal_format($value);
-            }
-
-            return 0;
-
+        if($checkMarkup){
+            return decimal_format($value);
+        }
+        return 0;
     }
 
 }
