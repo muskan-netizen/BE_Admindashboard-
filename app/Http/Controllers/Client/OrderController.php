@@ -1040,7 +1040,7 @@ class OrderController extends BaseController
      */
     public function changeStatus(Request $request, $domain = '')
     {
-        try {
+     //   try {
             $orderPlaced = true;
             $orderPlacedNo = '';
             $productIds = $request->productIds ?? [];
@@ -1302,14 +1302,14 @@ class OrderController extends BaseController
                 'status' => 'error',
                 'message' => __('Order has already updated !!')
             ]);
-        } catch (\Exception $e) {
+        //} catch (\Exception $e) {
             DB::rollback();
 
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
-        }
+            // return response()->json([
+            //     'status' => 'error',
+            //     'message' => $e->getMessage()
+            // ]);
+       // }
     }
 
     public function changeVendorProductStatus(Request $request, $domain = '')
@@ -3088,7 +3088,7 @@ class OrderController extends BaseController
                 ];
                 sendFcmCurlRequest($data);
             }
-            
+
         }
     }
 
@@ -3126,7 +3126,7 @@ class OrderController extends BaseController
                 $email_template_content = str_ireplace("{order_id}", "#" . $orderData->orderDetail->order_number, $email_template_content);
                 // $email_template_content = str_ireplace("{description}", '', $email_template_content);
                 $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
-                $body_content = 
+                $body_content =
                 $client_name = $client->name;
                 $email_data = [
                     'link' => "link",
