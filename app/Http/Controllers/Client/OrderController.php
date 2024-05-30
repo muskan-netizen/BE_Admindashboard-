@@ -1040,7 +1040,7 @@ class OrderController extends BaseController
      */
     public function changeStatus(Request $request, $domain = '')
     {
-     //   try {
+        try {
             $orderPlaced = true;
             $orderPlacedNo = '';
             $productIds = $request->productIds ?? [];
@@ -1302,14 +1302,14 @@ class OrderController extends BaseController
                 'status' => 'error',
                 'message' => __('Order has already updated !!')
             ]);
-        //} catch (\Exception $e) {
+        } catch (\Exception $e) {
             DB::rollback();
 
-            // return response()->json([
-            //     'status' => 'error',
-            //     'message' => $e->getMessage()
-            // ]);
-       // }
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 
     public function changeVendorProductStatus(Request $request, $domain = '')
@@ -1482,12 +1482,11 @@ class OrderController extends BaseController
             $order_ship = $this->placeOrderToBorzoApi($checkdeliveryFeeAdded, $request->vendor_id, $request->order_id);
         }
         $orderDetails = json_decode($order_ship);
-        \Log::info([$orderDetails]);
         if ($order_ship) {
             $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
                 ->update([
                     'borzoe_order_id' => $orderDetails->order->order_id,
-                    'borzoe_order_name'=> $orderDetails->order->order_name,
+                    'borzoe_order_name' => $orderDetails->order->order_name,
                     'dispatch_traking_url' => $orderDetails->order->points[1]->tracking_url,
                 ]);
             return 1;
