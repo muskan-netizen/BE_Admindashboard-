@@ -38,13 +38,13 @@ class RazorpayGatewayController extends FrontController
         $this->api = new Api($api_key, $api_secret_key);
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'INR';
-   
+
         $this->token = base64_encode($api_key.':'.$api_secret_key);
         $this->api_url = 'https://api.razorpay.com/v1/';
-    
+
     }
 
-    public function razorpayPurchase(Request $request) 
+    public function razorpayPurchase(Request $request)
     {
         try {
             $user = Auth::user();
@@ -57,7 +57,7 @@ class RazorpayGatewayController extends FrontController
                 $order_number = 0;
             }
             $api_key = $this->API_KEY;
-            $orderResponse = $this->api->order->create(array('amount' => $amount, 'currency' => 'INR'));
+            $orderResponse = $this->api->order->create(array('amount' => $amount, 'currency' => 'INR','payment' => array('capture' => 'automatic','capture_options' => array('automatic_expiry_period' => 12,'manual_expiry_period' => 7200,'refund_speed' => 'optimum'))));
             $data = $request->all();
             $data['order_number'] = $order_number;
             $data['order_id'] = $orderResponse->id;
@@ -68,7 +68,7 @@ class RazorpayGatewayController extends FrontController
 
             return $this->successResponse($data);
             // return $this->successResponse(url('/payment/razorpay/view?amount=' . $amount . '&order=' . $order_number . '&api_key=' . $api_key));
-        } catch (\Exception $ex) {            
+        } catch (\Exception $ex) {
             return $this->errorResponse($ex->getMessage(), 400);
         }
     }
@@ -89,8 +89,8 @@ class RazorpayGatewayController extends FrontController
             $orderData = [
                 'amount'          => (int)$amount,
                 'currency'        => 'INR'
-            ];   
-            
+            ];
+
             $payment = $this->api->payment->fetch($request->razorpay_payment_id);
             // $payment = $this->api->payment->fetch($request->razorpay_payment_id)->capture($orderData);
 
@@ -101,7 +101,7 @@ class RazorpayGatewayController extends FrontController
             //     \Log::info('razor paymen1111t22 status');
             //     \Log::info([$payment]);
             // }
-           
+
 
             // $capture = $payment->capture(['amount'=>$payment['amount']]);
             if ($payment['status'] == 'captured') {
@@ -150,10 +150,10 @@ class RazorpayGatewayController extends FrontController
                     CartCoupon::where('cart_id', $cart->id)->delete();
                     CartProduct::where('cart_id', $cart->id)->delete();
                     CartProductPrescription::where('cart_id', $cart->id)->delete();
-                    
+
                     // send success sms
                     $this->sendSuccessSMS($request, $order);
-                    
+
                     // Send Notification
                     if (!empty($order->vendors)) {
                         foreach ($order->vendors as $vendor_value) {
