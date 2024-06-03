@@ -919,10 +919,10 @@ class OrderController extends BaseController
                                 $deliveryfeeOnCoupon = 1;
                             }
 
-                            if(isset($rate) && $total_discount > 0 ){
-                               $discount = ($total_discount*$rate) / 100;
-                               $vendor_taxable_amount -= $discount;
-                            }
+                            // if(isset($rate) && $total_discount > 0 ){
+                            //    $discount = ($total_discount*$rate) / 100;
+                            //    $vendor_taxable_amount -= $discount;
+                            // }
                             //-------------Coupon Related discount calculations Ends here----------------------
                         }
                         //Start applying service fee on vendor products total
@@ -951,26 +951,29 @@ class OrderController extends BaseController
                         $vendor_payable_amount += $delivery_fee;
                         $vendor_payable_amount += $vendor_taxable_amount;
 
-                        // check if is_tax_price_inclusive is on than no tax
-                        if (! $additionalPreferences->is_tax_price_inclusive) {
-                            $new_vendor_taxable_amount = number_format((($actual_amount-$total_discount) * $rate) / 100, 2);
-                        } else {
-                            $new_vendor_taxable_amount = number_format((($actual_amount-$total_discount) * $rate) / (100 + $rate), 2);
-                        }
-
-                        $new_vendor_taxable_amount = str_replace(',', '', $new_vendor_taxable_amount);
-                        $new_vendor_taxable_amount = floatval($new_vendor_taxable_amount);
-
                         $order_vendor->coupon_id = $coupon_id;
                         $order_vendor->coupon_paid_by = $coupon_paid_by??1;
                         $order_vendor->coupon_code = $coupon_name;
                         $order_vendor->order_status_option_id = 1;
                         $order_vendor->delivery_fee = $delivery_fee;
+                        $order_vendor->discount_amount = $vendor_discount_amount;
+
+                        if($deliveryfeeOnCoupon)
+                            $vendor_discount_amount =  $vendor_discount_amount - $delivery_fee;
+                        // check if is_tax_price_inclusive is on than no tax
+                        if (! $additionalPreferences->is_tax_price_inclusive) {
+                            $new_vendor_taxable_amount = number_format((($actual_amount-$vendor_discount_amount) * $rate) / 100, 2);
+                        } else {
+                            $new_vendor_taxable_amount = number_format((($actual_amount-$vendor_discount_amount) * $rate) / (100 + $rate), 2);
+                        }
+
+                        $new_vendor_taxable_amount = str_replace(',', '', $new_vendor_taxable_amount);
+                        $new_vendor_taxable_amount = floatval($new_vendor_taxable_amount);
+
                         $order_vendor->subtotal_amount = $actual_amount;
                         $order_vendor->payable_amount = $vendor_payable_amount+$total_fixed_fee_amount;
                         $order_vendor->total_markup_price = $vendor_markup_amount;
                         $order_vendor->taxable_amount = $new_vendor_taxable_amount;
-                        $order_vendor->discount_amount = $vendor_discount_amount;
                         $order_vendor->payment_option_id = $request->payment_option_id;
                         $order_vendor->total_container_charges = $vendor_total_container_charges;
 
