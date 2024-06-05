@@ -1476,7 +1476,7 @@ trait CartManagerV2
                 $vendorData->is_vendor_closed = $is_vendor_closed;
                 // $slotsDate = findSlot('',$vendorData->vendor->id,'');
                 // $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
-                $vendorData->closed_store_order_scheduled = (($slotsDate) ? $product->vendor->closed_store_order_scheduled : 0);
+                $vendorData->closed_store_order_scheduled = (($slotsDate && isset($vendorData->vendor)) ? $vendorData->vendor->closed_store_order_scheduled : 0);
 
                 $vendorData->delOptions = $select ?? '';
 
