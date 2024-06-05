@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Cache;
 use Google\Auth\Credentials\ServiceAccountCredentials;
 use Illuminate\Support\Facades\Storage;
-
+use App\Services\FirebaseService;
 
 if (!function_exists('getFcmOauthToken')) {
     function getFcmOauthToken($url = null) {
@@ -255,34 +255,6 @@ if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
     }
 }
 
-if (!function_exists('sendFcmCurlRequest3')) {
-    function sendFcmCurlRequest3($data ,$fcm_server_key = '')
-    {
-        $fcm_server_key = ($fcm_server_key =='') ? ClientPreference::select('fcm_server_key')->first()->fcm_server_key :  $fcm_server_key ;
-         if (!empty($fcm_server_key )) {
-
-            $headers = [
-                'Authorization: key='.$fcm_server_key ,
-                'Content-Type: application/json',
-            ];
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-            $result = curl_exec($ch);
-            // if ($result === FALSE) {
-            //     die('Oops! FCM Send Error: ' . curl_error($ch));
-            // }
-            curl_close($ch);
-            return $result;
-        } else {
-            return false;
-        }
-    }
-}
 
 
 if (!function_exists('transformToFcmV1Format')) {
@@ -319,12 +291,53 @@ if (!function_exists('transformToFcmV1Format')) {
 
 
 if (!function_exists('sendFcmCurlRequest')) {
-    function sendFcmCurlRequest($data)
+    function sendFcmCurlRequest($data ,$fcm_server_key = '')
+    {
+        \Log::info('fcm curl function ');
+        $response = FirebaseService::sendNotification($data);
+        \Log::info('fcm curl firebase response');
+        \Log::info($response);
+        return $response;
+
+        $fcm_server_key = ($fcm_server_key =='') ? ClientPreference::select('fcm_server_key')->first()->fcm_server_key :  $fcm_server_key ;
+
+         if (!empty($fcm_server_key )) {
+
+            $headers = [
+                'Authorization: key='.$fcm_server_key ,
+                'Content-Type: application/json',
+            ];
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            $result = curl_exec($ch);
+            // if ($result === FALSE) {
+            //     die('Oops! FCM Send Error: ' . curl_error($ch));
+            // }
+            curl_close($ch);
+
+            return $result;
+        } else {
+            return false;
+        }
+    }
+}
+
+
+if (!function_exists('sendFcmCurlRequest2')) {
+    function sendFcmCurlRequest2($data)
     { 
         
+        \Log::info('come sin notification');
+        $response = FirebaseService::sendNotification($data);
+        \Log::info($response);
+        return $response;
 
-        \Log::info('curl fcm data');
-        \Log::info($data);
+
 
         // Fetch FCM project ID from database
         $preference = ClientPreference::select('fcm_project_id')->first();
