@@ -4,7 +4,7 @@ namespace App\Services;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use App\Models\{Order};
+use App\Models\{ClientPreference, Order};
 
 class FirebaseService
 {
@@ -63,7 +63,16 @@ class FirebaseService
     public function sendNotification($data) //$token, $title, $body
     {
         $client = new Client();
-        $projectId = config('services.firebase.project_id');
+
+        $preference = ClientPreference::select('fcm_project_id')->first();
+        if (!$preference) {
+            \Log::error('FCM Send Error: FCM project ID not found in database.');
+            return false;
+        }
+
+        $projectId = $preference->fcm_project_id;
+
+
         \Log::info('projectId');
         \Log::info($projectId);
         \Log::info('projectId');
