@@ -612,6 +612,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var pesapal_payment_url = "{{ route('pesapal.payment') }}";
     var payment_mpesa_safari_url = "{{route('mpesasafari.pay')}}";
     var livee_payment_url = "{{route('livee.pay')}}"
+    var payment_orangepay_url =  "{{ route('orangepay.initiate.payment') }}";
+    var payment_cybersource_url =  "{{ route('cybersource.initiate.payment') }}";
     // var livee_email={{auth()->user()->email}};
 
     $('#wallet_amount').keypress(function(event) {
