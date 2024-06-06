@@ -498,6 +498,28 @@ $(document).ready(function () {
                         //var stripe_token = $('#stripe_token').val();
                        // paymentViaStripe(stripe_token,order_id, payment_option_id,vendor_id);
                     }
+                    else if (payment_option_id == 69) {
+                        let payment_from = "pickup_delivery";
+                        $.ajax({
+                            type: "POST",
+                            dataType: 'json',
+                            url: payment_hitpay_url,
+                            data: { user_product_order_form: product_order_form_element_data, time_zone: time_zone, payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: totalamount, tasks: tasks, task_type: task_type, schedule_datetime: schedule_datetime, stripe_token: stripe_token, payment_from: payment_from, reload_route: reload_route, order_number: order_number, order_id: order_id },
+                            success: function (resp) {
+                                if (resp.status == 'Success') {
+
+
+                                    window.location.replace(resp.payment_url);
+                                }
+                            },
+                            error: function (error) {
+                                $('#show_error_of_booking').html(response.message);
+
+                                var response = $.parseJSON(error.responseText);
+                            }
+                        });
+
+                    }
                     else if(payment_option_id == 5){
                         $res = paymentViaPaystack('',response.data);
                     }
@@ -509,8 +531,10 @@ $(document).ready(function () {
                         payphoneButton(response.data);
                     }else if(payment_option_id == 42){
                         payWithDpo(response.data);
-                    }else if(payment_option_id == 30){
+                    } else if (payment_option_id == 30) {
                         payWithFlutterWave(response.data);
+                    } else if (payment_option_id == 46) {
+                        paymentViaMastercard('pickup_delivery', response.data)
                     }else if(payment_option_id == 49){
 
                         paymentViaplugnpay(reload_route,'',response.data);
@@ -543,6 +567,12 @@ $(document).ready(function () {
                         window.location.replace(response.data.route);
                     }else if(payment_option_id == 62){
                         payWithLivees(reload_route,'',response.data);
+                    }
+                    else if(payment_option_id == 70){
+                        paymentViaCyberSourcePay(payment_option_id,response.data);
+                    }
+                    else if(payment_option_id == 71){
+                        paymentViaOrangePay(payment_option_id,response.data);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }

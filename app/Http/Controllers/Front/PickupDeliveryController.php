@@ -45,7 +45,7 @@ class PickupDeliveryController extends FrontController{
                 $json = json_decode($option->credentials);
                 $option->title = $json->manule_payment_title;
             }elseif($option->code == 'obo'){
-                $option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
+                $option->title = __("Momo, Airtel Money by O'Pay");
             }
             elseif($option->code == 'livee'){
                 $option->title = __("Livees");
@@ -293,6 +293,9 @@ class PickupDeliveryController extends FrontController{
 
         $curId = Session::get('customerCurrency');
         $customerCurrency = ClientCurrency::where('currency_id', $curId)->first();
+        if (!$customerCurrency) {
+            $customerCurrency = ClientCurrency::where('is_primary', 1)->get()->first()->currency;
+        }
         $price_in_doller_compare = $product->total_tags_price  * $customerCurrency->doller_compare;
         //Add Tax on product
         $taxData = array();
@@ -1441,6 +1444,7 @@ class PickupDeliveryController extends FrontController{
                     'order_id' =>  $order->id,
                     'dispatcher_status_option_id' =>  1,
                     'vendor_id' =>  $vendor]);
+
                     $ex_gateways_wallet = [4,36,40,41,22]; // stripe,mycash,userede,openpay,ccavenue
                     if (in_array($order->payment_option_id, $ex_gateways_wallet )){
                         $wal =   $wallet->forceWithdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);

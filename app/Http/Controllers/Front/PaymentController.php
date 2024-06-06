@@ -81,13 +81,13 @@ class PaymentController extends FrontController{
         $serviceType =  Session::get('vendorType');
         $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','is_cod_payment','is_prepaid_payment']);
         if($serviceType == 'takeaway' && !empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
-            
+
             $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->where('status', 1)->where('id', '!=', 1)->get();
         }else{
-           
+
             $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->where('status', 1)->get();
         }
-                 
+
         if(@$getAdditionalPreference['is_cod_payment']==1 && @$getAdditionalPreference['is_prepaid_payment']==1){
             $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->where('status', 1)->get();
         }elseif(@$getAdditionalPreference['is_prepaid_payment']==1){
@@ -120,7 +120,7 @@ class PaymentController extends FrontController{
                 }elseif($payment_option->code == 'authorize_net'){
                     $payment_option->title = __('Credit/Debit Card');
                 }elseif($payment_option->code == 'obo'){
-                    $payment_option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
+                    $payment_option->title = __("MoMo, Airtel Money by O'Pay");
                 }elseif($payment_option->code == 'livee'){
                     $payment_option->title = __("Livees");
                 }
@@ -131,7 +131,7 @@ class PaymentController extends FrontController{
                 unset($payment_options[$k]);
             }
         }
-  
+
         return $this->successResponse($payment_options);
     }
 

@@ -101,7 +101,7 @@ trait WebStylingTrait
     public function getHomePageSelectedProducts($type=0)
     {
         //0 for web and 1 for App type
-        $selectedIds = HomeProduct::where(['type' => $type, 'slug' => 'selected_products'])->value('products');
+        $selectedIds = HomeProduct::where(['type' => $type, 'slug' => 'selected_products'])->latest()->value('products');
         return json_decode($selectedIds);
     }
 

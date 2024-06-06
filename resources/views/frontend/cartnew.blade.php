@@ -1105,6 +1105,9 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @if(in_array('khalti',$client_payment_options))
     <script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
 @endif
+@if (in_array('mastercard', $client_payment_options))
+    <script src="https://{{mastercardGateway()}}/static/checkout/checkout.min.js"></script>
+@endif
 <script src="{{ asset('assets/libs/dropzone/dropzone.min.js') }}"></script>
 <script src="{{ asset('assets/libs/dropify/dropify.min.js') }}"></script>
 <script type="text/javascript" src="{{asset('assets/js/intlTelInput.js')}}"></script>
@@ -1226,11 +1229,13 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
     var success_error_container = ".cart_response";
     var data_trans_url = "{{route('payment.payByDataTrans')}}";
-
+    var payment_hitpay_url="{{ route('make.hitpay.payment') }}";
     var pesapal_payment_url = "{{ route('pesapal.payment') }}";
-
     var powertrans_payment_url = "{{ route('powertrans.payment') }}";
     var livee_payment_url="{{route('livee.pay')}}";
+    var payment_orangepay_url =  "{{ route('orangepay.initiate.payment') }}";
+    var payment_cybersource_url =  "{{ route('cybersource.initiate.payment') }}";
+    var mastercard_create_session_url = "{{route('payment.mastercard.createSession')}}";
 
     @if(!empty($client_preference_detail->is_postpay_enable))
         var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Http\Traits\{ApiResponser, OrderTrait};
-use App\Models\{ClientCurrency, Order, Payment, PaymentOption, User};
+use App\Models\{Client, ClientCurrency, Order, Payment, PaymentOption, User};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Auth, Http};
 
@@ -17,21 +17,23 @@ class OboPaymentController extends Controller
     private $obo_client_id;
     private $obo_key_id;
     private $obo_market_place_id;
+    private $obo_company_reference;
     private $testMode;
     const TEST_MODE_TOKEN_API = 'https://www.obo-pay.co.rw/test/payments/v1/token';
-    const TOKEN_API           = "https://www.obo-pay.co.rw/api/payments/v1/token";
+    const TOKEN_API           = "https://www.obo-pay.co.rw/application/payments/v1/token";
     const TEST_MODE_URL_API   = "https://www.obo-pay.co.rw/test/payments/v1/payment";
-    const URL_API             = "https://www.obo-pay.co.rw/api/payments/v1/payment";
+    const URL_API             = "https://www.obo-pay.co.rw/application/payments/v1/payment";
 
     public function __construct()
     {
         $payOption = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'obo')->where('status', 1)->first();
         $credentials = json_decode($payOption->credentials);
-        $this->obo_business_name   = $credentials->obo_business_name;
-        $this->obo_client_id       = $credentials->obo_client_id;
-        $this->obo_key_id          = $credentials->obo_key_id;
-        $this->obo_market_place_id = $credentials->obo_market_place_id;
-        $this->testMode            = $payOption->test_mode;
+        $this->obo_business_name     = $credentials->obo_business_name;
+        $this->obo_client_id         = $credentials->obo_client_id;
+        $this->obo_key_id            = $credentials->obo_key_id;
+        $this->obo_market_place_id   = $credentials->obo_market_place_id;
+        $this->obo_company_reference = $credentials->obo_company_reference;
+        $this->testMode              = $payOption->test_mode;
 
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
@@ -42,6 +44,11 @@ class OboPaymentController extends Controller
     public function beforePayment(Request $request, $domain = '', $app = '')
     {
         try {
+            $client = Client::where('id', '>', 0)->select([
+                'phone_number',
+                'company_name'
+            ])->first();
+
             $tokenData =  $this->token();
             if (isset($tokenData['httpStatus']) &&  $tokenData['httpStatus'] == "OK") {
                 $token = $tokenData['token'];
@@ -70,26 +77,29 @@ class OboPaymentController extends Controller
                     } else {
                         $apiUrl = SELF::URL_API;
                     }
-                    $header = [
-                        'Content-Type' => 'application/json',
-                        'token' => $token
-                    ];
+
+                    $header = compact('token');
                     $input = json_encode([
-                        "amount"        => $request->amount,
-                        "currency"      => $this->currency,
-                        "email"         => $userEmail,
-                        "phone"         => $userPhone,
-                        "reference_id"  => $orderNumber,
-                        "first_name"    => $userFirstName,
-                        "last_name"     => $userLastName,
-                        "merchant"      => $this->obo_business_name,
-                        "cancel_url"    => url(($request->cancelUrl) ?? ('after-payment/obo' . '?success=false')),
-                        "return_url"    => url('after-payment/obo' . '?' . $urlParams),
-                        "custom_pg_id"  => $this->obo_market_place_id,
+                        //
+                        "amount"           => $request->amount,
+                        "currency"         => $this->currency,
+                        "email"            => $userEmail,
+                        "phone"            => $userPhone,
+                        "reference_id"     => $orderNumber,
+                        "first_name"       => $userFirstName,
+                        "last_name"        => $userLastName,
+                        "merchant"         => $this->obo_business_name,
+                        "cancel_url"       => url(($request->cancelUrl) ?? ('after-payment/obo' . '?success=false')),
+                        "return_url"       => url('after-payment/obo' . '?' . $urlParams),
+                        "timeout_url"      => url($request->cancelUrl),
+                        "custom_pg_id"     => $this->obo_market_place_id,
+                        "companyname"      => $client->company_name,
+                        "companycontact"   => $client->phone_number,
+                        "companyreference" => $this->obo_company_reference,
                     ], JSON_UNESCAPED_SLASHES);
                     $responce = Http::withBody($input, 'application/json')->withHeaders($header)->post($apiUrl);
                     $responceData = json_decode($responce->body(), true);
-                    if (isset($responceData['status']) && $responceData['status'] ===  "200") {
+                    if (isset($responceData['status']) && $responceData['status'] === "200") {
                         $redirectUrl =  $responceData['data']['url'];
                         return response()->json([
                             'status' => 'Success',

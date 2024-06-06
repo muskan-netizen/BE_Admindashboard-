@@ -10,7 +10,7 @@ use Session,Auth,DB,Timezonelist,Log;
 use App\Http\Traits\Giftcard\GiftCardTrait;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Mail; 
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
     use App\Models\{GiftCard,UserGiftCard,User, Cart, ClientPreference, Client, ClientCurrency , Payment, PaymentOption};
@@ -63,7 +63,7 @@ class GiftcardController extends FrontController
         }
     }
 
-   
+
 
     /**
      * get user subscriptions.
@@ -82,7 +82,7 @@ class GiftcardController extends FrontController
         $active_giftcard =$this->getUserActiveGiftCard();
         return view('frontend.account.giftcard')->with(['navCategories'=>$navCategories, 'GiftCard'=>$GiftCard, 'active_giftcards'=>$active_giftcard, 'clientCurrency'=>$clientCurrency]);
     }
-    
+
     /**
      * select user subscription.
      *
@@ -96,7 +96,7 @@ class GiftcardController extends FrontController
         $currencySymbol = Session::get('currencySymbol');
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         $GiftCard       = GiftCard::where('id', $id)->first();
-      
+
         $code = array('stripe','ccavenue');
         $ex_codes = array('cod');
         $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
@@ -123,7 +123,7 @@ class GiftcardController extends FrontController
                 }elseif($payment_option->code == 'authorize_net'){
                     $payment_option->title = __('Credit/Debit Card');
                 }elseif($payment_option->code == 'obo'){
-                    $payment_option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
+                    $payment_option->title = __("Momo, Airtel Money by O'Pay");
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);
@@ -135,7 +135,7 @@ class GiftcardController extends FrontController
         return response()->json(["status"=>"Success", "GiftCard" => $GiftCard, "payment_options" => $payment_options, "currencySymbol"=>$currencySymbol]);
     }
 
-    
+
 
     /**
      * buy user giftCard.
@@ -144,7 +144,7 @@ class GiftcardController extends FrontController
      */
     public function purchaseGiftCard(Request $request, $domain = '', $gift_card_id = '')
     {
-       
+
         if( (isset($request->user_id)) && (!empty($request->user_id)) ){
             $user = User::find($request->user_id);
         }else{
@@ -169,7 +169,7 @@ class GiftcardController extends FrontController
                 $UserGiftCard->amount       = $GiftCard->amount;
                 $UserGiftCard->expiry_date  = $GiftCard->expiry_date;
                 $UserGiftCard->gift_card_code = $code;
-                $UserGiftCard->buy_for_data = !empty($request->senderData) ? $request->senderData : ''; 
+                $UserGiftCard->buy_for_data = !empty($request->senderData) ? $request->senderData : '';
                 $UserGiftCard->save();
                 if($sendToMail != ''){
                    // Log::info('GiftCardMail');
@@ -187,11 +187,11 @@ class GiftcardController extends FrontController
                 $payment->type                  = 'giftCard';
                 $payment->save();
             }
-            
+
             $message = __('Your Gift Card has been activated successfully.');
             Session::put('success', $message);
             return $this->successResponse('', $message);
-            
+
         }else{
             return $this->errorResponse(__('Invalid Data'), 402);
         }
@@ -212,7 +212,7 @@ class GiftcardController extends FrontController
             $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             $returnHTML = view('frontend.cart.giftCard')->with(['giftcardList'=>$giftcardList, 'clientCurrency'=>$clientCurrency])->render();
             return response()->json(array('success' => true, 'html' => $returnHTML));
-           
+
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
@@ -227,17 +227,17 @@ class GiftcardController extends FrontController
         try {
             $user = Auth::user();
             $now = Carbon::now()->toDateTimeString();
-           
+
             $cart_detail = Cart::where('id', $request->cart_id)->first();
             if(!$cart_detail){
                 return $this->errorResponse('Invalid Cart Id', 422);
             }
-          
+
             $giftcard = UserGiftCard::with('giftCard')->whereHas('giftCard',function ($query) use ($now,$request){
                 return  $query->whereDate('expiry_date', '>=', $now);
             })->where(['is_used'=>'0','gift_card_code' => $request->giftCardCode])->first(); //,'gift_card_code'=>$request->giftCardCode
 
-          
+
             if($giftcard){
                 if($cart_detail->gift_card_id ==  $giftcard->gift_card_id){
                     return $this->errorResponse('Gift Card already applied.', 422);
@@ -248,7 +248,7 @@ class GiftcardController extends FrontController
                 return $this->successResponse($giftcard, 'Gift Card Used Successfully.', 200);
             }
             return $this->errorResponse('Invalid gift Card', 422);
-           
+
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
@@ -258,13 +258,13 @@ class GiftcardController extends FrontController
         // try {
             //pr($request->all());
              $user = Auth::user();
-             
+
            // pr( $user);
              $cart_detail = Cart::where('id', $request->cart_id)->first();
              if(!$cart_detail){
                  return $this->errorResponse('Invalid Cart Id', 422);
              }
-          
+
             if($cart_detail){
             // pr($cart_detail);
                 $cart_detail->gift_card_id = null;
@@ -273,11 +273,11 @@ class GiftcardController extends FrontController
                 return $this->successResponse($cart_detail, 'Gift Card Delete Successfully.', 200);
             }
              return $this->errorResponse('Invalid gift Card Id', 422);
-            
+
          // } catch (Exception $e) {
          //     return $this->errorResponse($e->getMessage(), $e->getCode());
          // }
      }
-   
+
 }
 

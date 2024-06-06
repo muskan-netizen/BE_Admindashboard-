@@ -342,7 +342,7 @@ trait ProductActionTrait{
             $single_category_products = [];
 
             if (($type == 'single_category_products' || $type == 'selected_products')) {
-                $single_category_products = HomeProduct::whereSlug($type)->first();
+                $single_category_products = HomeProduct::whereSlug($type)->latest()->first();
             }
 
             if($type == 'single_category_products' && !empty($single_category_products)){
@@ -402,7 +402,8 @@ trait ProductActionTrait{
         try
         {
             $user = Auth::user();
-            $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+            $user_currency  = $user->currency ?? $currency;
+            $clientCurrency = ClientCurrency::where('currency_id', $user_currency)->first();
             $comparePrice = $clientCurrency->doller_compare ?? 1.00;
 
             $vendorWhereIN = ' ';
@@ -462,7 +463,7 @@ trait ProductActionTrait{
             if(count($single_category_product_ids) > 0){
                 $single_category_product_ids = @implode(',',$single_category_product_ids);
                 if($single_category_product_ids){
-                    $completeWhere = ' AND  `products`.`id` IN  ('.$single_category_product_ids.')';
+                    $completeWhere .= ' AND  `products`.`id` IN  ('.$single_category_product_ids.')';
                 }
             }
 
@@ -578,9 +579,17 @@ trait ProductActionTrait{
             $current_date = Carbon::now()->format('Y-m-d');
             $multiply = Session::get('currencyMultiplier') ?? 1;
             $currencySymbol = Session::get('currencySymbol');
+            $earth_radius = 6371;
             if( (empty($latitude)) && (empty($longitude)) ){
                 $latitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_latitude) : 0;
                 $longitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_longitude) : 0;
+            }
+            //------based on hyper location------------
+            if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+                $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+                $unit_abbreviation = ($distance_unit == 'mile') ? 'miles' : 'km';
+                $earth_radius = ($distance_unit == 'mile') ? 3959 : 6371;
+                $distance_to_time_multiplier = ($preferences->distance_to_time_multiplier > 0) ? $preferences->distance_to_time_multiplier : 2;
             }
 
             $selectQuery = "`vendors`.`id`,
@@ -607,13 +616,13 @@ trait ProductActionTrait{
                 GROUP_CONCAT(DISTINCT `category_translations`.`name` SEPARATOR ', ') AS `categoriesList`,
                 (SELECT count(`order_vendors`.`id`) FROM `order_vendors` WHERE `order_vendors`.`vendor_id` = `vendors`.`id`) AS `selling_count`,
                 (SELECT CONCAT(`vendor_slot_dates`.`start_time`, '##', `vendor_slot_dates`.`end_time`) FROM `vendor_slot_dates` WHERE `vendor_slot_dates`.`vendor_id` = `vendors`.`id` LIMIT 0,1) AS `slotdate_start_end_time`,
-                (SELECT CONCAT(`vendor_slots`.`start_time`, '##', `vendor_slots`.`end_time`) FROM `vendor_slots`  left join `slot_days` on `vendor_slots`.`id` = `slot_days`.`slot_id` WHERE `vendor_slots`.`vendor_id` = `vendors`.`id` AND  `slot_days`.`day` = ".$day." AND `vendor_slots`.`start_time` < CAST('".$current_time."' AS time) AND `vendor_slots`.`end_time` > CAST('".$current_time."' AS time)  LIMIT 0,1) AS `slot_start_end_time`,
-                6371 * acos(cos(radians(" . $latitude . "))
+                (SELECT CONCAT(`vendor_slots`.`start_time`, '##', `vendor_slots`.`end_time`) FROM `vendor_slots` left join `slot_days` on `vendor_slots`.`id` = `slot_days`.`slot_id` WHERE `vendor_slots`.`vendor_id` = `vendors`.`id` AND  `slot_days`.`day` = ".$day." AND `vendor_slots`.`start_time` < CAST('".$current_time."' AS time) AND `vendor_slots`.`end_time` > CAST('".$current_time."' AS time)  LIMIT 0,1) AS `slot_start_end_time`,
+                ROUND( $earth_radius * acos(cos(radians(" . $latitude . "))
                                             * cos(radians(`vendors`.`latitude`))
                                             * cos(radians(`vendors`.`longitude`) - radians(" . $longitude . "))
                                             + sin(radians(" .$latitude. "))
-                                            * sin(radians(`vendors`.`latitude`))) AS `lineOfSightDistance`
-                ";
+                                            * sin(radians(`vendors`.`latitude`))),2
+                                            ) AS `lineOfSightDistance`";
 
                 $joinQuery  = " LEFT JOIN `vendor_categories` ON `vendor_categories`.`vendor_id`= `vendors`.`id` ";
                 $joinQuery .= " LEFT JOIN `categories` ON `categories`.`id`= `vendor_categories`.`category_id` ";
@@ -628,16 +637,7 @@ trait ProductActionTrait{
 
             $mainQuery = "SELECT $selectQuery FROM `vendors` $joinQuery $whereQuery $whereInQuery";
 
-
-
             $mainQuery .= " GROUP BY `vendors`.`id` ORDER BY `lineOfSightDistance` ASC";
-
-            //------based on hyper location------------
-            if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-                $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
-                $unit_abbreviation = ($distance_unit == 'mile') ? 'miles' : 'km';
-                $distance_to_time_multiplier = ($preferences->distance_to_time_multiplier > 0) ? $preferences->distance_to_time_multiplier : 2;
-            }
 
             if ($vendor_title == "best_sellers") {
                 $mainQuery.= " ORDER BY `selling_count` DESC";

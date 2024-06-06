@@ -25,6 +25,7 @@ class PaymentMethodSeeder extends Seeder
             array('id' => '8','name' => __('Vodafone'),'image' => 'vodafone.png','slug' => 'vodafone', 'is_show' => '0'),
             array('id' => '9','name' => __('Airteltigo'),'image' => 'airteltigo.png','slug' => 'airteltigo', 'is_show' => '0'),
             array('id' => '10','name' => __('MTN Mobile Money'),'image' => 'mtn-mobile.png','slug' => 'mtn-mobile', 'is_show' => '0'),
+            array('id' => '11','name' => __('Telecel Cash'),'image' => 'telecel-cash.png','slug' => 'telecel-cash', 'is_show' => '0'),
           );
        
       if($option_count == 0)
