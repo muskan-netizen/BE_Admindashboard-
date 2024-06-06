@@ -31,7 +31,7 @@ class OrangePaymentController extends Controller
             $client_language = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->first();
             $this->client_language = isset($client_language) ?  $client_language->language->sort_code ?? 'en' : 'en';
             if($payOption->test_mode =='1'){
-                $this->url = 'https://api.orange.com/orange-money-webpay/dev/v1/webpayment'; 
+                $this->url = 'https://api.orange.com/orange-money-webpay/dev/v1/webpayment';
                 $this->currency = 'OUV';
             }
             else{
@@ -62,13 +62,13 @@ class OrangePaymentController extends Controller
     {
         try {
             $user = Auth::user();
-            if(isset($request->auth_token) && !empty($request->auth_token)){
-              $user = User::where('auth_token', $request->auth_token)->first();
-              Auth::login($user);
-              $user->auth_token = $request->auth_token;
-              $user->save();
-           }
-            $response = $this->paymentRequest($request); 
+        //     if(isset($request->auth_token) && !empty($request->auth_token)){
+        //       $user = User::where('auth_token', $request->auth_token)->first();
+        //       Auth::login($user);
+        //       $user->auth_token = $request->auth_token;
+        //       $user->save();
+        //    }
+            $response = $this->paymentRequest($request);
             if (isset($response['status']) && $response['status'] == 201) {
                 Payment::create(['amount' => 0, 'transaction_id' => $response['pay_token'], 'balance_transaction' => $request->total_amount, 'type' => $request->from, 'date' => date('Y-m-d'), 'payment_detail' => $request->order_number,'user_id'=>$user->id]);
                 return $this->successResponse($response['payment_url']);
@@ -84,7 +84,7 @@ class OrangePaymentController extends Controller
     {
         try {
             $user = auth()->user();
-            $response = $this->paymentRequest($request); 
+            $response = $this->paymentRequest($request);
             if (isset($response['status']) && $response['status'] == 201) {
                 Payment::create(['amount' => 0, 'transaction_id' => $response['pay_token'], 'balance_transaction' => $request->total_amount, 'type' => $request->from, 'date' => date('Y-m-d'), 'payment_detail' => $request->order_number,'user_id'=>$user->id]);
                 return $this->successResponse($response['payment_url'], __('Payment has been initiated successfully'), 200);
@@ -97,7 +97,7 @@ class OrangePaymentController extends Controller
     }
     public function paymentRequest($request)
     {
-        $order_number = (string) $this->orderNumber($request); 
+        $order_number = (string) $this->orderNumber($request);
         $data['action'] = $action = isset($request->action) ? $request->action : 'web';
         $data['from'] =$from = isset($request->from) ? $request->from : '';
         $total_amount = isset($request->total_amount)? $request->total_amount : $request->amt;
@@ -134,8 +134,8 @@ class OrangePaymentController extends Controller
     }
     public function completeOrderCart($request)
     {
-        $order = Order::where('order_number', $request->order_id)->firstOrFail();
         if (isset($request->order_status) && $request->order_status == 'SUCCESS') {
+            $order = Order::where('order_number', $request->order_id)->firstOrFail();
             //Success from cart
             $order->payment_status = '1';
             $order->save();
@@ -232,7 +232,7 @@ class OrangePaymentController extends Controller
                 $url = $this->url;
                 $response = $this->makeCurlRequest($url, 'POST', $data, $formattedHeaders);
                 $response = json_decode($response, true);
-                $request->merge(['order_id' => $response['order_id'],'transaction_id' => $response['txnid'],'order_status' => $response['status']]);
+                $request->merge(['order_id' => $response['order_id']?? $request->order_id,'transaction_id' => $response['txnid'],'order_status' => $response['status']]);
                 Auth::login($user);
             }
             if($payment_data->type =='cart'){
@@ -250,12 +250,12 @@ class OrangePaymentController extends Controller
 
     public function completeOrderWallet($request)
     {
-        if (isset($request->order_status) && $request->order_status == 'SUCCESS') {   
+        if (isset($request->order_status) && $request->order_status == 'SUCCESS') {
             $data = Payment::where('transaction_id',$request->order_id)->first();
             $user = auth()->user();
             $wallet = $user->wallet;
             $wallet->depositFloat($data->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $request->order_id . '</b>']);
- 
+
             if(isset($request->action) && $request->action=='mob')
             {
               $returnUrl = route('payment.gateway.return.response').'/?gateway=orange_pay'.'&status=200&from=wallet&transaction_id='.$request->order_id.'&action=wallet';
@@ -264,22 +264,22 @@ class OrangePaymentController extends Controller
               return Redirect::to(route('user.wallet'));
             }
           }else{
-            $data = Payment::where('transaction_id',$request->order_id)->first();
-            $data->delete();
+            $data = Payment::where('transaction_id',$request->order_id)->delete();
             if(isset($request->action) && $request->action=='mob')
             {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=orange_pay'.'&status=204&from=wallet';
                 return Redirect::to($returnUrl);
             }else{
-              return Redirect::to(route('user.wallet'))->with('error','Order Cancelled.');
+                return Redirect::to(route('user.wallet'))->with('error','Payment Cancelled.');
             }
           }
     }
 
     public function completeOrderPickup($request)
     {
+
+        if (isset($request->order_status) && ($request->order_status == 'SUCCESS')) {
         $order = Order::where('order_number',$request->order_id)->firstOrFail();
-        if (isset($request->order_status) && ($request->order_status == 'SUCCESS')) {   
         $user = auth()->user();
         $order->payment_status = '1';
         $order->save();
@@ -324,24 +324,24 @@ class OrangePaymentController extends Controller
      }elseif($request->from == 'wallet')
          {
              $time = ($request->transaction_id)??'W_'.time();
-             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'wallet','date'=>date('Y-m-d')]);
- 
+             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->total_amount,'type'=>'wallet','date'=>date('Y-m-d')]);
+
          }elseif($request->from == 'tip')
          {
               $time = 'T_'.time().'_'.$request->order_number;
               Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'tip','date'=>date('Y-m-d')]);
- 
+
          }elseif($request->from == 'subscription')
          {
              $time = ($request->subscription_id)??'S_'.time();
              Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d')]);
- 
+
          }
          elseif($request->from == 'giftCard')
          {
              $time = ($request->transaction_id)??'W_'.time();
              Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'giftCard','date'=>date('Y-m-d')]);
- 
+
          }
          return $time;
     }
@@ -367,14 +367,14 @@ class OrangePaymentController extends Controller
                 CURLOPT_HTTPHEADER => $headers,
                 CURLOPT_POSTFIELDS => $postData,
             ));
-    
+
             $response = curl_exec($curl);
             curl_close($curl);
             return $response;
         } catch (\Exception $e) {
             return $e->getMessage().' '.$e->getLine();
         }
-     
+
     }
 
     public function cancelPage(Request $request)
