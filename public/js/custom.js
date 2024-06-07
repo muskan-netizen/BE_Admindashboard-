@@ -6416,6 +6416,12 @@ function paymentViaHitpay(address_id, payment_option_id, order) {
             case 69:
             paymentViaHitpay('', payment_option_id, '');
             break;
+            case 70:
+                paymentViaCyberSourcePay('', payment_option_id, '');
+            break;
+            case 71:
+                paymentViaOrangePay('', payment_option_id, '');
+            break;
         }
     }
 
