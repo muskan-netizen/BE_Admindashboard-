@@ -94,6 +94,10 @@ trait Borzoe{
                 $taking_amount = $payable_amount; // Required only if payment_type is COD
             }
         }
+        if($payable_amount <= 0){
+            $is_cod_cash_voucher_required = false; // It is mandatory for Cash-On-Delivery Orders
+            $taking_amount = 0.00;
+        }
         $url = $this->api_url.'create-order';
         $data = [
             'matter' => 'Food',
