@@ -108,7 +108,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         <div class="col-sm-12 mb-2">
             <div class="row align-items-center ">
                 <div class="col">
-                    
+
                 </div>
 
             </div>
@@ -140,8 +140,8 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     </a>
                     <div class="material-border"></div>
                 </li>
-                
-                
+
+
                 @if ($client_preferences->business_type == 'rental')
                     <li class="nav-item">
                         <a class="nav-link" id="rental_pending_delivery-tab" data-toggle="tab" href="#rental_pending_delivery" role="tab" aria-selected="true" data-rel="rental_pending_delivery">
@@ -175,7 +175,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                             <i class="icofont icofont-ui-home"></i>{{ __('Active '. $ordersNom) }} <sup class="total-items" id="active-orders" data-count="{{$active_order_count}}">({{$active_order_count}})</sup>
                         </a>
                         <div class="material-border"></div>
-                    </li> 
+                    </li>
                 @endif
                 <li class="nav-item">
                     <a class="nav-link" id="orders_history_tab" data-toggle="tab" href="#orders_history" role="tab" aria-selected="false" data-rel="orders_history">
@@ -183,11 +183,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     </a>
                     <div class="material-border"></div>
                 </li>
-               
+
             </ul>
             <div class="page-title-box page-title-box text-left ">
                 <a class="return-btn mr-1" href="{{route('backend.order.returns',['Pending'])}}">
-                    <b>{{ __("Return Request") }} 
+                    <b>{{ __("Return Request") }}
                         <span class="total-items">({{$return_requests}})</span>
                         {{-- <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> --}}
                     </b>
@@ -200,7 +200,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 </a>
                 @if ($client_preferences->business_type == 'laundry')
                 <a class="return-btn" href="{{route('rescheduled.orders')}}">
-                    <b>{{ __("Rescheduled Orders") }} 
+                    <b>{{ __("Rescheduled Orders") }}
                         <span class="total-items">({{$rescheduleOrderCount}})</span>
                         {{-- <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i> --}}
                     </b>
@@ -208,7 +208,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 @endif
                 @if ($client_preferences->business_type == 'rental' || $client_preferences->business_type == 'super_app')
                 <a class="return-btn" href="{{route('return.dispatcher.form')}}">
-                    <b>{{ __("Rental Return Order Form") }} 
+                    <b>{{ __("Rental Return Order Form") }}
                         <span class="total-items">({{$returnFormRequestCount}})</span>
                         {{-- <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i> --}}
                     </b>
@@ -217,7 +217,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             </div>
         </div>
         </div>
-        
+
         <div class="col-12 pl-2 pr-2">
             <div class="tabs_radio_controls">
                 @php
@@ -270,7 +270,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         <div class="tab-pane fade past-order position-relative h-100" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
             <div id="orders_history_row" class="row"></div>
             <div class="row mt-4 mb-4" id="orders_history_pagination"></div>
-           
+
         </div>
         @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
             @php
@@ -335,7 +335,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     });
     $("#range-datepicker").flatpickr({
         mode: "range",
-        dateFormat: "d M Y", //change format also 
+        dateFormat: "d M Y", //change format also
 
         onClose: function(selectedDates, dateStr, instance) {
             //initDataTable();
@@ -372,7 +372,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     var vendor_id = $('#vendor_select_box option:selected').val();
     // var sort_order = $('#sort_order option:selected').val();
     var order_type = $('.tabs_radio:checked').val();
-    
+
         ajaxCall = $.ajax({
             url: url,
             type: "POST",
@@ -449,9 +449,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                             await $(`#${filter_order_status}_pagination`).html('');
                         }
 
-                        
-                
-                } 
+
+
+                }
                 await spinnerJS.hideSpinner();
 
             },
@@ -485,7 +485,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             $("#search_via_keyword").val("");
             // $(".tab-pane").html('');
             init(rel, url, '', false);
-            
+
         });
         // $(function() {
         //     var url = window.location.href;
@@ -535,11 +535,10 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 e.preventDefault();
                 var reject_reason = $('#addRejectForm #AddRejectBox .reject_reason').val();
 
-
-                //  var reject_reason = document.getElementById('reject_reason').value;
-
-                // var formData = new FormData(form);
-                // console.log(formData);
+                // var that = document.getElementById('reject');
+                var count = $("#reject").data("count");
+                var full_div = $("#reject").data("full_div");
+                var single_div =$("#reject").data("single_div");
                 $.ajax({
                     url: "{{ route('order.changeStatus') }}",
                     type: "POST",
@@ -556,8 +555,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                     success: function(response) {
                         if (response.status == 'success') {
-                            // $(".modal .close").click();
-                            location.reload();
+                            $(".modal .close").click();
+                            $.NotificationApp.send('{{__("Success")}}', response.message, "top-right", "#5ba035", "success");
+                            //location.reload();
                         } else if (response.status == 'error') {
                             $('#error-case').empty();
                             $('#error-case').append(response.message);
@@ -570,9 +570,6 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                 // $(".modal .close").click();
                                 location.reload();
                             }
-
-
-
                         } else {
                             $(single_div).slideUp(1000, function() {
                                 $(this).remove();
@@ -581,10 +578,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                 //   $(".modal .close").click();
                                 location.reload();
                             }
-
                         }
-
-
                     },
                     error: function(response) {
                         if (response.status == 'error') {
@@ -603,7 +597,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
         // update status
         $(document).on("click", ".update-status-ar", function() {
-		
+
             let that = $(this);
             that.prop("disabled",true);
             var count = that.data("count");
@@ -630,7 +624,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             }else{
                  title = "{{__('Complete the delivery?')}}";
             }
-            
+
             $('.productIdsCheck_'+order_id+':checked').each(function(i){
                 productIds[i] = $(this).val();
             });
@@ -646,7 +640,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 return openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id, order_luxury_option_id);
             } else {
                 if(productIds.length === 0 && order_luxury_option_id == 4 && status_option_id == 2){
-                    Swal.fire({ 
+                    Swal.fire({
                     title: "{{__('Error')}}",
                     icon: 'warning',
                     text: "Please select atleast one product",
@@ -714,12 +708,12 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                                         if (count == 0) {
                                             if(totalCount>2){
-                                               
+
                                                 $(single_div).slideUp(1000, function() {
                                                 $(this).remove();
                                             });
                                             }else{
-                                                
+
                                             $(full_div).slideUp(1000, function() {
                                                 $(this).remove();
                                             });
@@ -747,14 +741,14 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                     if (status_option_id == 6){
                                         that.prop("disabled",false);
                                     	getOrderCount("active-orders","history-orders");
-                                    	$.NotificationApp.send('{{__("Success")}}', response.message, "top-right", "#5ba035", "success");                                 	
+                                    	$.NotificationApp.send('{{__("Success")}}', response.message, "top-right", "#5ba035", "success");
                                     }
                                 },
                             });
                         }else{
-                        	that.prop("disabled",false);    
+                        	that.prop("disabled",false);
                         }
-                    });  
+                    });
                 }
             }
         });
@@ -784,7 +778,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             var order_product_id = that.data("vendor_product_id");
             var order_vendor_product_id = that.data("order_vendor_product_id");
             var alertMessage = "";
-            
+
             Swal.fire({
                 title: "{{__('Proceed with Accepting Order')}}",
                 // icon: 'info',
@@ -813,7 +807,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                     text: response.message,
                                     showCancelButton: false,
                                     confirmButtonText: 'Ok',
-                                }) 
+                                })
                             }else if(response.status=='success'){
                                 Swal.fire({
                                     icon: 'success',
@@ -821,7 +815,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                     showCancelButton: false,
                                     confirmButtonText: 'Ok',
                                 })
-                            }                            
+                            }
                         },
                     });
                 }
