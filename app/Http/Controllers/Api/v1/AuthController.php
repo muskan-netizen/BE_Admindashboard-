@@ -26,6 +26,7 @@ use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Co
 use Log;
 use App\Http\Traits\CustomerSignupSuccessEmailTrait;
 use App\Http\Traits\InfluencerTrait;
+use Illuminate\Support\Facades\Log as FacadesLog;
 
 class AuthController extends BaseController
 {
@@ -806,6 +807,7 @@ class AuthController extends BaseController
     public function verifyToken(Request $request, $domain = '')
     {
         try {
+            FacadesLog::info($request->all());
             $user = User::where('id', Auth::user()->id)->first();
             if (!$user || !$request->has('type')) {
                 return $this->errorResponse(__('User not found.'), 404);
@@ -836,9 +838,11 @@ class AuthController extends BaseController
                 return $this->successResponse(getUserDetailViaApi($user), $message);
             } elseif ($request->type == 'email') {
                 $message = 'Email verified successfully.';
-                $user_detail_exist = User::where('email', $request->email)->where('id', '!=', $user->id)->first();
-                if ($user_detail_exist) {
-                    return $this->errorResponse(__('Email already in use!'), 404);
+                if ($request->has('email')) {
+                    $user_detail_exist = User::where('email', $request->email)->whereNotIn('id', [$user->id])->first();
+                    if ($user_detail_exist) {
+                        return $this->errorResponse(__('Email already in use!'), 404);
+                    }
                 }
                 if ($user->email_token != $request->otp) {
                     return $this->errorResponse(__('OTP is not valid'), 404);
