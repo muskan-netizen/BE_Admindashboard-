@@ -125,6 +125,43 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 .slick-slide .inner_spacing p {
     display: block;
 }
+
+.border-product {
+    border: 1px solid #e0e0e0;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 20px;
+    background-color: #f9f9f9;
+}
+
+.product-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead {
+    background-color: #343a40;
+    color: #fff;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+}
+
     </style>
 
 @endsection
@@ -363,7 +400,6 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     @if(!empty($product->translation) && isset($product->translation->first()->body_html))
                                         <div class="border-product al_disc">
                                             <h6 class="product-title">{{__('Product Details')}}</h6>
-
                                             <?php
                                             $content = strip_tags($product->translation->first()->body_html); // Strip HTML tags
                                             $maxContentLength = 200; // Set the maximum length (adjust as needed)
@@ -384,13 +420,60 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                     <a href="#" id="readMoreLink" class="read-more-button btn btn-solid">Read More</a>
                                                   </span>
                                                 @endif
-                                              </p>
-
-
-
+                                            </p>                                         
                                         </div>
                                     @endif
+                                    @if($getAdditionalPreference['product_measurment'] == 1)
+                                        <div class="border-product al_disc">
+                                            <h6 class="product-title">{{ __('Product Measurement Details') }}</h6>
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover">
+                                                    <thead class="thead-dark">
+                                                        <tr>
+                                                            @if($product->has_variant)
+                                                            <th>{{ __('Variant') }}</th>
+                                                            @endif
+                                                            @foreach($measurements as $keyData)
+                                                                <th>{{ $keyData->key }} ({{ __('cm') }})</th>
+                                                            @endforeach
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        
+                                                        @if($product->has_variant)
+                                                            @foreach($variants as $varnt)
+                                                                @php
+                                                                    $title = $varnt->title;
+                                                                    $parts = explode('-', $title);
+                                                                    $letterAfterDash = end($parts);
+                                                                @endphp
+                                                                    <tr class="measurement-row">
+                                                                        <td class="variant-cell">
+                                                                            <label>{{$letterAfterDash}}</label>
+                                                                        </td>
+                                                                        @foreach($measurements as $data)
+                                                                            <td>
+                                                                                <span>{{$productMeasurementData[$data->id][$varnt->id] ?? '' }}</span>
+                                                                            </td>
+                                                                        @endforeach
+                                                                    </tr>
+                                                            @endforeach
+                                                            @else
+                                                            <tr class="measurement-row">
+                                                                @foreach($measurements as $data)
+                                                                <td>
+                                                                    <span>{{ $productMeasurementData[$data->id][null] .'(cm)' ? : '' }}</span>
+                                                                </td>
+                                                                @endforeach
+                                                            </tr>
+                                                        @endif
+                                                    </tr>
 
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    @endif
                                     @if(isset($processorProduct))
                                     @if (!empty($processorProduct) && $processorProduct->is_processor_enable == 1)
                                         <div class="border-product al_disc">

@@ -6,14 +6,16 @@ use DB;
 use Auth;
 use Session;
 use Redirect;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+use App\Models\Measurements;
 use Illuminate\Http\Request;
+
+use App\Models\ProductMeasurement;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed, Attribute, Client, ProductAttribute,DeliverySlotProduct, UserVendor, DeliverySlot,UserAddress,ProcessorProduct, ProductAvailability, ProductBooking, VendorDocs, VendorRegistrationDocument};
-
-use Carbon\Carbon;
 use App\Http\Traits\{ProductActionTrait, ProductTrait,ProductVariantActionTrait};
-use Carbon\CarbonPeriod;
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed, Attribute, Client, ProductAttribute,DeliverySlotProduct, UserVendor, DeliverySlot,UserAddress,ProcessorProduct, ProductAvailability, ProductBooking, VendorDocs, VendorRegistrationDocument};
 
 class ProductController extends FrontController{
     private $field_status = 2;
@@ -33,9 +35,9 @@ class ProductController extends FrontController{
      */
     public function index(Request $request, $domain = '',$vendor,$url_slug)
     {
-
+        $productMeasurementData=0;
         $startTime = microtime(true); // Start time in seconds with microseconds
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role','product_measurment']);
         $pickup_time = $request->pickup;
         $drop_time = $request->drop;
         $user = Auth::user();
@@ -448,7 +450,23 @@ class ProductController extends FrontController{
             $template = WebStylingOption::where('is_selected','1')->first();
    
         // Your code to be measured goes here
-    
+        //Product Measurements Code
+        $measurements =Measurements::where('category_id',$product->category_id)->where('vendor_id',$product->vendor_id)->get();
+
+        if($getAdditionalPreference['product_measurment'] == 1){
+            $productMeasurements=ProductMeasurement::with('measurements')->where('product_id',$product->id)->get();
+            $uniqueVariantIds = ProductMeasurement::where('product_id', $product->id)
+            ->pluck('product_variant_id')
+            ->unique();
+            $variants = ProductVariant::whereIn('id', $uniqueVariantIds)->get();
+            $productMeasurementData = [];
+            foreach ($productMeasurements as $mment) {
+                $productMeasurementData[$mment->key_id][$mment->product_variant_id] = $mment->key_value;
+            }
+        
+        }
+        //end here
+        
         $endTime = microtime(true); // End time in seconds with microseconds
         $executionTime = $endTime - $startTime; // Calculate execution time in seconds
     
@@ -458,7 +476,7 @@ class ProductController extends FrontController{
               
                 return view('frontend.yacht.'.$product_page)->with(['productAttributes' => $productAttributes, 'pickup_time' => $pickup_time,'drop_time' => $drop_time,'user_vendor' => $user_vendor, 'shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array, 'set_template' => $set_template, 'current_time_response' => $current_time_response, 'processorProduct'=> $processorProduct, 'productBookingsCount' => $productBookingsCount]);
             } else{
-            return view('frontend.'.$product_page)->with(['productAvailability' => $productAvailability,'productAttributes' => $productAttributes, 'pickup_time' => $pickup_time,'drop_time' => $drop_time,'user_vendor' => $user_vendor, 'shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array, 'set_template' => $set_template, 'current_time_response' => $current_time_response, 'processorProduct'=> $processorProduct]);
+            return view('frontend.'.$product_page)->with(['variants'=>$variants,'productMeasurementData'=>$productMeasurementData,'measurements'=>$measurements,'productAvailability' => $productAvailability,'productAttributes' => $productAttributes, 'pickup_time' => $pickup_time,'drop_time' => $drop_time,'user_vendor' => $user_vendor, 'shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array, 'set_template' => $set_template, 'current_time_response' => $current_time_response, 'processorProduct'=> $processorProduct]);
             }
      
 

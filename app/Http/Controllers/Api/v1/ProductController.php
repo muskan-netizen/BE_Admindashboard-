@@ -123,6 +123,11 @@ class ProductController extends BaseController
             $product = Product::with(['variant','inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },'product_availability',
+                        'measurements' 
+                        => function($query) {
+                            $query->with('productVariants:id,title');
+                        }
+                        ,
                         'category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
                             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
                             ->where('category_translations.language_id', $langId);
@@ -166,7 +171,7 @@ class ProductController extends BaseController
                         },
 
                     ]);
-                    $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
+                    $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price','product_measurment']);
                     if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
                         $product = $product->with(['OrderProduct' => function($q) {
                             $q->select('end_date_time', 'product_id', 'start_date_time');
@@ -478,6 +483,56 @@ class ProductController extends BaseController
                     'profile' => $product->captain_profile
                 ]
             ];
+            if ($getAdditionalPreference['product_measurment'] == 1) {
+                if ($product->has_variant == 1) {
+                    $groupedData = [];
+                    foreach ($product->measurements as $measurement) {
+                        $filteredVariants = $measurement->productVariants->filter(function ($variant) use ($measurement) {
+                            return $variant->id == $measurement->pivot->product_variant_id;
+                        });
+            
+                        foreach ($filteredVariants as $variant) {
+                            $parts = explode('-', $variant->title);
+                            $letter = end($parts);
+            
+                            $productVariantId = $measurement->pivot->product_variant_id;
+                            if (!isset($groupedData[$productVariantId])) {
+                                $groupedData[$productVariantId] = [
+                                    'variant_id' => $productVariantId,
+                                    'title' => $letter,
+                                    'data' => []
+                                ];
+                            }
+            
+                            $groupedData[$productVariantId]['data'][] = [
+                                'measurement_key' => $measurement->key,
+                                'measurement_key_id' => $measurement->id,
+                                'key_value' => $measurement->pivot->key_value,
+                                'product_variant_id' => $productVariantId,
+                                'product_variant_title' => $letter,
+                                'metric'=>'cm'
+                            ];
+                        }
+                    }
+                    unset($product->measurements);
+                    $product->measurements = array_values($groupedData);
+                } else {
+                    $groupedData = [];
+                    foreach ($product->measurements as $measurement) {
+                        $groupedData[] = [
+                            'measurement_key' => $measurement->key,
+                            'measurement_key_id' => $measurement->id,
+                            'key_value' => $measurement->pivot->key_value,
+                            'product_id' => $measurement->pivot->product_id,
+                            'metric'=>'cm'
+                        ];
+                    }
+                    unset($product->measurements);
+                    $product->measurements = $groupedData;
+                }
+            }
+            
+            
             
             $response['suggested_category_products'] =  $suggested_category_products;
             $response['suggested_brand_products'] =  $suggested_brand_products;
