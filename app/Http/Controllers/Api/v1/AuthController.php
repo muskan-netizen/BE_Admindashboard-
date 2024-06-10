@@ -758,6 +758,7 @@ class AuthController extends BaseController
                     }
                 }
             } else {
+                FacadesLog::info($request->email);
                 if ($user->is_email_verified == 0) {
                     $otp = getUserToken($data)['otp'];
                     $user->email_token = $otp;
@@ -807,7 +808,6 @@ class AuthController extends BaseController
     public function verifyToken(Request $request, $domain = '')
     {
         try {
-            FacadesLog::info($request->all());
             $user = User::where('id', Auth::user()->id)->first();
             if (!$user || !$request->has('type')) {
                 return $this->errorResponse(__('User not found.'), 404);
