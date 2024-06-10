@@ -8,7 +8,7 @@ Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], funct
     Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() { //, 'apilog
         Route::get('logout', 'Api\v1\AuthController@logout');
         Route::post('sendToken', 'Api\v1\AuthController@sendToken');
-        Route::post('verifyAccount', 'Api\v1\AuthController@verifyToken')->middleware('AppAuth');
+        Route::post('verifyAccount', 'Api\v1\AuthController@verifyToken');
         Route::get('deleteUser', 'Api\v1\AuthController@deleteUser');
 
 
@@ -41,7 +41,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('check-product-availability/{id}','Api\v1\YachtController@checkProductAvailability');
     });
     Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() {
-        
+
         /**Chat resourses */
         //Route::resource('chat', 'Client\ChatController');
         Route::get('chat/all/{room_id?}', 'Api\v1\ChatController@index');

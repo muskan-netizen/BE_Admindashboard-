@@ -26,6 +26,7 @@ use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Co
 use Log;
 use App\Http\Traits\CustomerSignupSuccessEmailTrait;
 use App\Http\Traits\InfluencerTrait;
+use Illuminate\Support\Facades\Log as FacadesLog;
 
 class AuthController extends BaseController
 {
@@ -757,6 +758,7 @@ class AuthController extends BaseController
                     }
                 }
             } else {
+                FacadesLog::info($request->email);
                 if ($user->is_email_verified == 0) {
                     $otp = getUserToken($data)['otp'];
                     $user->email_token = $otp;
@@ -817,10 +819,12 @@ class AuthController extends BaseController
             }
             if ($request->type == 'phone') {
                 $message = 'Mobile number verified successfully.';
-                $phone_number = str_ireplace(' ', '', $request->phone_number);
-                $user_detail_exist = User::where('phone_number', $phone_number)->whereNotIn('id', [$user->id])->first();
-                if ($user_detail_exist) {
-                    return response()->json(['error' => __('phone number in use!')], 404);
+                if ($request->has('phone_number')) {
+                    $phone_number = str_ireplace(' ', '', $request->phone_number);
+                    $user_detail_exist = User::where('phone_number', $phone_number)->whereNotIn('id', [$user->id])->first();
+                    if ($user_detail_exist) {
+                        return response()->json(['error' => __('phone number in use!')], 404);
+                    }
                 }
                 if ($user->phone_token != $request->otp) {
                     return $this->errorResponse(__('OTP is not valid'), 404);
@@ -836,9 +840,11 @@ class AuthController extends BaseController
                 return $this->successResponse(getUserDetailViaApi($user), $message);
             } elseif ($request->type == 'email') {
                 $message = 'Email verified successfully.';
-                $user_detail_exist = User::where('email', $request->email)->where('id', '!=', $user->id)->first();
-                if ($user_detail_exist) {
-                    return $this->errorResponse(__('Email already in use!'), 404);
+                if ($request->has('email')) {
+                    $user_detail_exist = User::where('email', $request->email)->whereNotIn('id', [$user->id])->first();
+                    if ($user_detail_exist) {
+                        return $this->errorResponse(__('Email already in use!'), 404);
+                    }
                 }
                 if ($user->email_token != $request->otp) {
                     return $this->errorResponse(__('OTP is not valid'), 404);
