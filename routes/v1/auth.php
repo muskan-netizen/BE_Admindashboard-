@@ -8,7 +8,7 @@ Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], funct
     Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() { //, 'apilog
         Route::get('logout', 'Api\v1\AuthController@logout');
         Route::post('sendToken', 'Api\v1\AuthController@sendToken');
-        Route::post('verifyAccount', 'Api\v1\AuthController@verifyToken');
+        Route::post('verifyAccount', 'Api\v1\AuthController@verifyToken')->middleware('AppAuth');
         Route::get('deleteUser', 'Api\v1\AuthController@deleteUser');
 
 
