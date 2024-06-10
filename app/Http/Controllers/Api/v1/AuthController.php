@@ -819,10 +819,12 @@ class AuthController extends BaseController
             }
             if ($request->type == 'phone') {
                 $message = 'Mobile number verified successfully.';
-                $phone_number = str_ireplace(' ', '', $request->phone_number);
-                $user_detail_exist = User::where('phone_number', $phone_number)->whereNotIn('id', [$user->id])->first();
-                if ($user_detail_exist) {
-                    return response()->json(['error' => __('phone number in use!')], 404);
+                if ($request->has('phone_number')) {
+                    $phone_number = str_ireplace(' ', '', $request->phone_number);
+                    $user_detail_exist = User::where('phone_number', $phone_number)->whereNotIn('id', [$user->id])->first();
+                    if ($user_detail_exist) {
+                        return response()->json(['error' => __('phone number in use!')], 404);
+                    }
                 }
                 if ($user->phone_token != $request->otp) {
                     return $this->errorResponse(__('OTP is not valid'), 404);
