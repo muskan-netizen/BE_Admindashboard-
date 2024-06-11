@@ -2840,8 +2840,6 @@ class OrderController extends FrontController
                 $vendor_payable_amount += $delivery_fee;
                 $vendor_payable_amount += $vendor_taxable_amount;
 
-
-
                 $payable_amount += $additionalPrice;
                 $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
                 if (@$getAdditionalPreference['is_rental_weekly_monthly_price']) {
@@ -2859,6 +2857,8 @@ class OrderController extends FrontController
                 $OrderVendor->delivery_fee = $delivery_fee;
                 $OrderVendor->subtotal_amount = $actual_amount;
                 $OrderVendor->discount_amount = $vendor_discount_amount;
+                if($deliveryfeeOnCoupon)
+                    $vendor_discount_amount =  $vendor_discount_amount - $delivery_fee;
 
                 // check if is_tax_price_inclusive is on than no tax
                 if (!$additionalPreferences->is_tax_price_inclusive) {
