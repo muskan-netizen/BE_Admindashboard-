@@ -26,7 +26,6 @@ use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Co
 use Log;
 use App\Http\Traits\CustomerSignupSuccessEmailTrait;
 use App\Http\Traits\InfluencerTrait;
-use Illuminate\Support\Facades\Log as FacadesLog;
 
 class AuthController extends BaseController
 {
@@ -758,7 +757,6 @@ class AuthController extends BaseController
                     }
                 }
             } else {
-                FacadesLog::info($request->email);
                 if ($user->is_email_verified == 0) {
                     $otp = getUserToken($data)['otp'];
                     $user->email_token = $otp;
