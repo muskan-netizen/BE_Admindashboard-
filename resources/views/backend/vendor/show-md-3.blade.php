@@ -935,72 +935,86 @@ aria-hidden="true">
         list-style-type: none;
     }
 </style>
-<div class="card-box">
-    <div class="row text-left">
-        <div class="col-md-12">
-            <div class="row">
-                <div class="col-md-12">
-                    <h4 class="mb-2"> <span class="">{{ __("Category Setup") }}</span> ({{ __("Visible For Admin") }})</h4>
+@if (Auth::user()->is_superadmin == 1)
+    <div class="card-box">
+        <div class="row text-left">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="mb-2"> <span class="">{{ __("Category Setup") }}</span> ({{ __("Visible For Admin")
+                            }})</h4>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        @if($client_preference_detail->business_type != 'taxi')
-        <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-            {!! Form::label('title', __('Can Add Category'),['class' => 'control-label']) !!}
-            <input type="checkbox" data-plugin="switchery" name="can_add_category" class="form-control can_add_category1" data-color="#43bee1" @if($vendor->add_category == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
-        </div>
-        <div class="col-md-12">
-            {!! Form::label('title', __('Vendor Detail To Show'),['class' => 'control-label ']) !!}
-        </div>
+        <div class="row">
+            @if($client_preference_detail->business_type != 'taxi')
+            <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                {!! Form::label('title', __('Can Add Category'),['class' => 'control-label']) !!}
+                <input type="checkbox" data-plugin="switchery" name="can_add_category"
+                    class="form-control can_add_category1" data-color="#43bee1" @if($vendor->add_category == 1) checked
+                @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+            </div>
+            <div class="col-md-12">
+                {!! Form::label('title', __('Vendor Detail To Show'),['class' => 'control-label ']) !!}
+            </div>
 
-        <div class="col-md-12 mb-3">
-            <select class="selectize-select form-control assignToSelect" id="assignTo" {{$vendor->status == 1 ? '' : 'disabled'}}>
-                @foreach($templetes as $templete)
-                    <option value="{{$templete->id}}" {{$vendor->vendor_templete_id == $templete->id ? 'selected="selected"' : ''}}>{{ __($templete->title)}}</option>
-                @endforeach
-            </select>
-        </div>
-        @endif
-        <div class="col-md-12">
-            {!! Form::label('title', __('Vendor Category'),['class' => 'control-label']) !!}
-            <div class="col-sm-12 text-sm-left catalogupdate" style="display: none">
-                <div class="alert alert-success">
-                    <span class="cattxt"></span>
-                </div>
+            <div class="col-md-12 mb-3">
+                <select class="selectize-select form-control assignToSelect" id="assignTo" {{$vendor->status == 1 ? '' :
+                    'disabled'}}>
+                    @foreach($templetes as $templete)
+                    <option value="{{$templete->id}}" {{$vendor->vendor_templete_id == $templete->id ? 'selected="selected"'
+                        : ''}}>{{ __($templete->title)}}</option>
+                    @endforeach
+                </select>
             </div>
-            <div class="custom-dd dd nestable_list_1" id="nestable_list_1">
-                <ol class="dd-list">
-                    @forelse($builds as $build)
-                    @if($build['translation_one'])
-                    <li class="dd-item dd3-item" data-category_id="{{$build['id']}}">
-                        <div class="dd3-content">
-                            <img class="rounded-circle mr-1" src="{{$build['icon']['proxy_url']}}30/30{{$build['icon']['image_path']}}"> {{$build['translation_one']['name']}}
-                            <span class="inner-div text-right">
-                                <a class="action-icon" data-id="3" href="javascript:void(0)">
-                                    @if(in_array($build['id'], $VendorCategory))
-                                        <input type="checkbox" data-category_id="{{ $build['id'] }}" data-color="#43bee1" class="form-control activeCategory" data-plugin="switchery" checked {{$vendor->status == 1 ? '' : 'disabled'}}>
-                                    @else
-                                        <input type="checkbox" data-category_id="{{ $build['id'] }}" data-color="#43bee1" class="form-control activeCategory" data-plugin="switchery" {{$vendor->status == 1 ? '' : 'disabled'}}>
-                                    @endif
-                                    <input type="hidden" value="{{ $build['id'] }}">
-                                </a>
-                            </span>
-                        </div>
-                        @if(isset($build['children']))
-                            <x-category :categories="$build['children']" :vendorcategory="$VendorCategory" :vendor="$vendor"/>
-                        @endif
+            @endif
+            <div class="col-md-12">
+                {!! Form::label('title', __('Vendor Category'),['class' => 'control-label']) !!}
+                <div class="col-sm-12 text-sm-left catalogupdate" style="display: none">
+                    <div class="alert alert-success">
+                        <span class="cattxt"></span>
+                    </div>
+                </div>
+                <div class="custom-dd dd nestable_list_1" id="nestable_list_1">
+                    <ol class="dd-list">
+                        @forelse($builds as $build)
+                        @if($build['translation_one'])
+                        <li class="dd-item dd3-item" data-category_id="{{$build['id']}}">
+                            <div class="dd3-content">
+                                <img class="rounded-circle mr-1"
+                                    src="{{$build['icon']['proxy_url']}}30/30{{$build['icon']['image_path']}}">
+                                {{$build['translation_one']['name']}}
+                                <span class="inner-div text-right">
+                                    <a class="action-icon" data-id="3" href="javascript:void(0)">
+                                        @if(in_array($build['id'], $VendorCategory))
+                                        <input type="checkbox" data-category_id="{{ $build['id'] }}" data-color="#43bee1"
+                                            class="form-control activeCategory" data-plugin="switchery" checked
+                                            {{$vendor->status == 1 ? '' : 'disabled'}}>
+                                        @else
+                                        <input type="checkbox" data-category_id="{{ $build['id'] }}" data-color="#43bee1"
+                                            class="form-control activeCategory" data-plugin="switchery" {{$vendor->status ==
+                                        1 ? '' : 'disabled'}}>
+                                        @endif
+                                        <input type="hidden" value="{{ $build['id'] }}">
+                                    </a>
+                                </span>
+                            </div>
+                            @if(isset($build['children']))
+                            <x-category :categories="$build['children']" :vendorcategory="$VendorCategory"
+                                :vendor="$vendor" />
+                            @endif
                         </li>
-                    </li>
-                    @endif
-                    @empty
-                    @endforelse
-                </ol>
+                        </li>
+                        @endif
+                        @empty
+                        @endforelse
+                    </ol>
+                </div>
             </div>
         </div>
     </div>
-</div>
+@endif
 
 <style type="text/css">
     #nestable_list_1 ol, #nestable_list_1 ul{

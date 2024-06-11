@@ -485,7 +485,7 @@ class DispatcherController extends FrontController
                   default:
                    $request->status_option_id = null;
                 }
-
+                $orderUserInfo= User::where('id',$checkiftokenExist->user_id)->first();
                 if(isset($request->status_option_id) && !empty($request->status_option_id) &&  (in_array($request->status_option_id ,[6,3])) && $type == 2){
                     $checkif= VendorOrderStatus::where(['order_id' =>  $checkiftokenExist->order_id,
                     'order_status_option_id' =>  $request->status_option_id,
@@ -509,7 +509,7 @@ class DispatcherController extends FrontController
                 // AAA
                     $to = "";
                     $username = "";
-                    $orderUserInfo= User::where('id',$checkiftokenExist->user_id)->first();
+                    
                     $to = '+' . $orderUserInfo->dial_code . $orderUserInfo->phone_number;
                     $username = $orderUserInfo->name;
 
@@ -585,8 +585,6 @@ class DispatcherController extends FrontController
 
         }
     }
-
-
 
     /******************    ---- share all details of order for dispatcher -----   ******************/
     public function dispatchOrderDetails(Request $request, $domain = '', $web_hook_code)

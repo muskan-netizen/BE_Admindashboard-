@@ -43,7 +43,7 @@ class PaymentOptionController extends BaseController
     {
         $payment_codes = $this->paymentOptionArray('payment_codes');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
-
+          
         $payout_codes = $this->paymentOptionArray('payout');
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
 
@@ -747,12 +747,14 @@ class PaymentOptionController extends BaseController
                                 'obo_client_id' => 'required',
                                 'obo_key_id' => 'required',
                                 'obo_market_place_id' => 'required',
+                                'obo_company_reference' => 'required',
                             ]);
                             $json_creds = json_encode(array(
                                 'obo_business_name' => $request->obo_business_name,
                                 'obo_client_id' => $request->obo_client_id,
                                 'obo_key_id' => $request->obo_key_id,
                                 'obo_market_place_id' => $request->obo_market_place_id,
+                                'obo_company_reference' => $request->obo_company_reference,
                             ));
                         break;
                             break;
@@ -831,13 +833,69 @@ class PaymentOptionController extends BaseController
                                     $validatedData = $request->validate([
                                     'thawani_Apikey' => 'required',
                                     'thawani_publishKey' => 'required',
-                                    
-                                    
+
+
                                     ]);
                                     $json_creds = json_encode(array(
                                     'thawani_Apikey' => $request->thawani_Apikey,
                                     'thawani_publishKey' => $request->thawani_publishKey,
                                     ));
+                        break;
+                        case 'mastercard':
+                            $json_creds = json_encode($request->validate([
+                                'mastercard_merchant_id' => 'required|string',
+                                'mastercard_merchant_key' => 'required|string',
+                                'mastercard_operator_id' => 'required|string',
+                                'mastercard_gateway' => 'required_if:sandbox[46],!=,"on"|nullable|string',
+                            ]));
+                            break;
+                        case 'hitpay':
+                            $validatedData = $request->validate([
+                                'hitpay_business_key' => 'required',
+                                'hitpay_salt_key' => 'required',
+                            ]);
+                            $json_creds = json_encode(
+                                array(
+                                    'hitpay_business_key' => $request->hitpay_business_key,
+                                    'hitpay_salt_key' => $request->hitpay_salt_key,
+                                )
+                            );
+                        break;
+
+                        case 'orange_pay':
+                            $request->validate([
+                            'orangepay_MerchantKey' => 'required',
+                            'orangepay_MerchantToken' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'orangepay_MerchantKey' => $request->orangepay_MerchantKey,
+                                'orangepay_MerchantToken' => $request->orangepay_MerchantToken,
+                            ));
+                        break;
+
+                        case 'cyber_source':
+                            $request->validate([
+                            'cyber_source_merchant_id' => 'required',
+                            'cyber_source_profile_id' => 'required',
+                            'cyber_source_access_key' => 'required',
+                            'cyber_source_secret_key' => 'required',
+                            'bill_to_address_line1' => 'required',
+                            'bill_to_address_city' => 'required',
+                            'bill_to_address_state' => 'required',
+                            'bill_to_address_country' => 'required',
+                            'bill_to_address_postal_code' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'cyber_source_merchant_id' => $request->cyber_source_merchant_id,
+                                'cyber_source_profile_id' => $request->cyber_source_profile_id,
+                                'cyber_source_access_key' => $request->cyber_source_access_key,
+                                'cyber_source_secret_key' => $request->cyber_source_secret_key,
+                                'bill_to_address_line1' => $request->bill_to_address_line1,
+                                'bill_to_address_city' => $request->bill_to_address_city,
+                                'bill_to_address_state' => $request->bill_to_address_state,
+                                'bill_to_address_country' => $request->bill_to_address_country,
+                                'bill_to_address_postal_code' => $request->bill_to_address_postal_code,
+                            ));
                         break;
                     }
                 }

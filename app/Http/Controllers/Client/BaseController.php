@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Storage;
 use Session;
 use GuzzleHttp\Client as GCLIENT;
 
-
 class BaseController extends Controller
 {
     private $htmlData = '';

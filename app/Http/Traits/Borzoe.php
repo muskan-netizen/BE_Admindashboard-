@@ -122,6 +122,9 @@ trait Borzoe{
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-DV-Auth-Token: '.$this->api_key.'']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
+        $error = json_decode($response);
+        if(!$error->is_successful)
+            \Log::info(['borzo' => $response]);
         curl_close($ch);
         return $response;
     }

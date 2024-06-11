@@ -2860,6 +2860,8 @@ class OrderController extends FrontController
                 $OrderVendor->subtotal_amount = $actual_amount;
                 $OrderVendor->discount_amount = $vendor_discount_amount;
 
+                if($deliveryfeeOnCoupon)
+                    $vendor_discount_amount =  $vendor_discount_amount - $delivery_fee;
                 // check if is_tax_price_inclusive is on than no tax
                 if (!$additionalPreferences->is_tax_price_inclusive) {
                     $new_vendor_taxable_amount = number_format((($actual_amount - $vendor_discount_amount) * $rate) / 100, 2);
@@ -3185,6 +3187,7 @@ class OrderController extends FrontController
                 43,
                 44,
                 45,
+                46,
                 47,
                 52,
                 53,

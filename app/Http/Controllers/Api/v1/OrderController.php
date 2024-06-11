@@ -919,10 +919,10 @@ class OrderController extends BaseController
                                 $deliveryfeeOnCoupon = 1;
                             }
 
-                            if(isset($rate) && $total_discount > 0 ){
-                               $discount = ($total_discount*$rate) / 100;
-                               $vendor_taxable_amount -= $discount;
-                            }
+                            // if(isset($rate) && $total_discount > 0 ){
+                            //    $discount = ($total_discount*$rate) / 100;
+                            //    $vendor_taxable_amount -= $discount;
+                            // }
                             //-------------Coupon Related discount calculations Ends here----------------------
                         }
                         //Start applying service fee on vendor products total
@@ -951,16 +951,6 @@ class OrderController extends BaseController
                         $vendor_payable_amount += $delivery_fee;
                         $vendor_payable_amount += $vendor_taxable_amount;
 
-                        // check if is_tax_price_inclusive is on than no tax
-                        if (! $additionalPreferences->is_tax_price_inclusive) {
-                            $new_vendor_taxable_amount = number_format((($actual_amount-$total_discount) * $rate) / 100, 2);
-                        } else {
-                            $new_vendor_taxable_amount = number_format((($actual_amount-$total_discount) * $rate) / (100 + $rate), 2);
-                        }
-
-                        $new_vendor_taxable_amount = str_replace(',', '', $new_vendor_taxable_amount);
-                        $new_vendor_taxable_amount = floatval($new_vendor_taxable_amount);
-
                         $order_vendor->coupon_id = $coupon_id;
                         $order_vendor->coupon_paid_by = $coupon_paid_by??1;
                         $order_vendor->coupon_code = $coupon_name;
@@ -971,6 +961,19 @@ class OrderController extends BaseController
                         $order_vendor->total_markup_price = $vendor_markup_amount;
                         $order_vendor->taxable_amount = $new_vendor_taxable_amount;
                         $order_vendor->discount_amount = $vendor_discount_amount;
+
+                        if($deliveryfeeOnCoupon)
+                            $vendor_discount_amount =  $vendor_discount_amount - $delivery_fee;
+                        // check if is_tax_price_inclusive is on than no tax
+                        if (! $additionalPreferences->is_tax_price_inclusive) {
+                            $new_vendor_taxable_amount = number_format((($actual_amount-$vendor_discount_amount) * $rate) / 100, 2);
+                        } else {
+                            $new_vendor_taxable_amount = number_format((($actual_amount-$vendor_discount_amount) * $rate) / (100 + $rate), 2);
+                        }
+
+                        $new_vendor_taxable_amount = str_replace(',', '', $new_vendor_taxable_amount);
+                        $new_vendor_taxable_amount = floatval($new_vendor_taxable_amount);
+
                         $order_vendor->payment_option_id = $request->payment_option_id;
                         $order_vendor->total_container_charges = $vendor_total_container_charges;
 
@@ -2219,6 +2222,9 @@ class OrderController extends BaseController
             }
 
             $customerCurrency = ClientCurrency::join('currencies as cu', 'cu.id', 'client_currencies.currency_id')->where('client_currencies.currency_id', $user->currency)->first();
+            if (!$customerCurrency) {
+                $customerCurrency = ClientCurrency::where('is_primary', 1)->get()->first()->currency;
+            }
             $currSymbol = $customerCurrency->symbol;
             $client_name = 'Sales';
             $mail_from = $data->mail_from;
@@ -4005,12 +4011,11 @@ class OrderController extends BaseController
                 sendFcmCurlRequest($data);
             }
 
-            // Individual Vendor App User Token
             $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
             if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
                 $from = $client_preferences->vendor_fcm_server_key;
                 $data['registration_ids'] = $vendorAppUserDevices;
-                $result = sendFcmCurlRequest($data, $from);
+                $result = sendFcmCurlRequest($data,$from);
             }
         }
     }

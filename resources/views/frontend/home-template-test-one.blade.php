@@ -502,7 +502,7 @@ $preference = $client_preference_detail;
                               $video_extensions = ['mp4', 'avi', 'mov', 'wmv']; // list of video extensions
                            @endphp
                            @if(in_array($extension, $image_extensions))
-                              <img alt="" title="" class="blur blurload w-100" data-src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" height="300">	
+                              <img alt="" title="" class="blur blurload w-100" data-src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}">	
                            @elseif (in_array($extension, $video_extensions))
                               <video id="video1" width="100%" controls autoplay muted>
                                  <source data-src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" type="video/mp4">
