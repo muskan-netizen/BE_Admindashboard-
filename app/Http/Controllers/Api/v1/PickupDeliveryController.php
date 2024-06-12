@@ -199,7 +199,7 @@ class PickupDeliveryController extends BaseController{
                     foreach ($product->variant as $k => $v) {
                         $product->variant[$k]->price = $product->tags_price;
                         $product->variant[$k]->toll_fee = $product->toll_fee;
-                        $product->variant[$k]->multiplier = $clientCurrency->doller_compare;
+                        $product->variant[$k]->multiplier = $clientCurrency->doller_compare ?? 1;
                     }
                     $now = Carbon::now()->toDateTimeString();
                     $subscriptionInvoiceUser = SubscriptionInvoicesUser::with('features')->whereUserId($userid)->where('end_date', '>', $now)
