@@ -51,6 +51,12 @@ class PickupDeliveryController extends BaseController{
 
             $paginate = $request->has('limit') ? $request->limit : 12;
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+
+            if(empty($clientCurrency))
+            {
+                $clientCurrency = ClientCurrency::first();
+ 
+            }
             $langId = $user->language;
             $vendor = Vendor::select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude',
                         'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery')
@@ -480,8 +486,8 @@ class PickupDeliveryController extends BaseController{
             }
 
             return $this->successResponse($product);
-        } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage().''.$e->getLine(), $e->getCode());
         }
 
     }
