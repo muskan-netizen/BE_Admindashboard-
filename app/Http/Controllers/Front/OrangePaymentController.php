@@ -208,13 +208,12 @@ class OrangePaymentController extends Controller
     {
         try {
             if(isset($request->order_id) ){
-                $payment_data = Payment::where('payment_detail',$request->order_id)->firstOrFail();
+                   $payment_data = Payment::where('payment_detail',$request->order_id)->firstOrFail();
                 $user = User::findOrFail($payment_data->user_id);
                 $response = $this->create_token($request);
                 $data = json_decode($response, true);
 
                 $accessToken = $data['access_token'];
-                $curl = curl_init();
                 $headers = [
                     'Accept'=> 'application/json',
                     'Authorization' => 'Bearer ' . $accessToken,
@@ -230,9 +229,10 @@ class OrangePaymentController extends Controller
                     $formattedHeaders[] = $key . ': ' . $value;
                 }
                 $url = $this->url;
+                
                 $response = $this->makeCurlRequest($url, 'POST', $data, $formattedHeaders);
                 $response = json_decode($response, true);
-                $request->merge(['order_id' => $response['order_id']?? $request->order_id,'transaction_id' => $response['txnid'],'order_status' => $response['status']]);
+                $request->merge(['order_id' => $response['order_id']?? $request->order_id,'transaction_id' => $response['txnid'] ?? '','order_status' => $response['status'] ?? 'CANCELLED']);
                 Auth::login($user);
             }
             if($payment_data->type =='cart'){
@@ -362,7 +362,6 @@ class OrangePaymentController extends Controller
                 CURLOPT_FOLLOWLOCATION => true,
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => $method,
-                CURLOPT_POSTFIELDS => 'grant_type=client_credentials',
                 CURLOPT_HTTPHEADER => $headers,
                 CURLOPT_POSTFIELDS => $postData,
             ));
