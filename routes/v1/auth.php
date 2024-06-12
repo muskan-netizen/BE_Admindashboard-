@@ -41,7 +41,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('check-product-availability/{id}','Api\v1\YachtController@checkProductAvailability');
     });
     Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() {
-        
+
         /**Chat resourses */
         //Route::resource('chat', 'Client\ChatController');
         Route::get('chat/all/{room_id?}', 'Api\v1\ChatController@index');
