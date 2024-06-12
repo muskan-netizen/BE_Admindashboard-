@@ -1280,7 +1280,6 @@ class OrderController extends BaseController
                     @$this->updateBlockchainOrderDetail($newOrder);
                 }
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
-                \Log::info(json_encode($orderData));
                 $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
 
                 $customer = User::find($orderData->user_id);
