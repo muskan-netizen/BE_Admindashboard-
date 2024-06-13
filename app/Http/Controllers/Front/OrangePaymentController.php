@@ -62,12 +62,12 @@ class OrangePaymentController extends Controller
     {
         try {
             $user = Auth::user();
-            if(isset($request->auth_token) && !empty($request->auth_token)){
-              $user = User::where('auth_token', $request->auth_token)->first();
-              Auth::login($user);
-              $user->auth_token = $request->auth_token;
-              $user->save();
-           }
+        //     if(isset($request->auth_token) && !empty($request->auth_token)){
+        //       $user = User::where('auth_token', $request->auth_token)->first();
+        //       Auth::login($user);
+        //       $user->auth_token = $request->auth_token;
+        //       $user->save();
+        //    }
             $response = $this->paymentRequest($request); 
             if (isset($response['status']) && $response['status'] == 201) {
                 Payment::create(['amount' => 0, 'transaction_id' => $response['pay_token'], 'balance_transaction' => $request->total_amount, 'type' => $request->from, 'date' => date('Y-m-d'), 'payment_detail' => $request->order_number,'user_id'=>$user->id]);
@@ -134,8 +134,8 @@ class OrangePaymentController extends Controller
     }
     public function completeOrderCart($request)
     {
-        $order = Order::where('order_number', $request->order_id)->firstOrFail();
         if (isset($request->order_status) && $request->order_status == 'SUCCESS') {
+            $order = Order::where('order_number', $request->order_id)->firstOrFail();
             //Success from cart
             $order->payment_status = '1';
             $order->save();
@@ -208,13 +208,12 @@ class OrangePaymentController extends Controller
     {
         try {
             if(isset($request->order_id) ){
-                $payment_data = Payment::where('payment_detail',$request->order_id)->firstOrFail();
+                   $payment_data = Payment::where('payment_detail',$request->order_id)->firstOrFail();
                 $user = User::findOrFail($payment_data->user_id);
                 $response = $this->create_token($request);
                 $data = json_decode($response, true);
 
                 $accessToken = $data['access_token'];
-                $curl = curl_init();
                 $headers = [
                     'Accept'=> 'application/json',
                     'Authorization' => 'Bearer ' . $accessToken,
@@ -230,9 +229,10 @@ class OrangePaymentController extends Controller
                     $formattedHeaders[] = $key . ': ' . $value;
                 }
                 $url = $this->url;
+                
                 $response = $this->makeCurlRequest($url, 'POST', $data, $formattedHeaders);
                 $response = json_decode($response, true);
-                $request->merge(['order_id' => $response['order_id'],'transaction_id' => $response['txnid'],'order_status' => $response['status']]);
+                $request->merge(['order_id' => $response['order_id']?? $request->order_id,'transaction_id' => $response['txnid'] ?? '','order_status' => $response['status'] ?? 'CANCELLED']);
                 Auth::login($user);
             }
             if($payment_data->type =='cart'){
@@ -264,22 +264,21 @@ class OrangePaymentController extends Controller
               return Redirect::to(route('user.wallet'));
             }
           }else{
-            $data = Payment::where('transaction_id',$request->order_id)->first();
-            $data->delete();
+            $data = Payment::where('transaction_id',$request->order_id)->delete();
             if(isset($request->action) && $request->action=='mob')
             {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=orange_pay'.'&status=204&from=wallet';
                 return Redirect::to($returnUrl);
             }else{
-              return Redirect::to(route('user.wallet'))->with('error','Order Cancelled.');
+              return Redirect::to(route('user.wallet'))->with('error','Payment Cancelled.');
             }
           }
     }
 
     public function completeOrderPickup($request)
     {
-        $order = Order::where('order_number',$request->order_id)->firstOrFail();
         if (isset($request->order_status) && ($request->order_status == 'SUCCESS')) {   
+        $order = Order::where('order_number',$request->order_id)->firstOrFail();
         $user = auth()->user();
         $order->payment_status = '1';
         $order->save();
@@ -324,7 +323,7 @@ class OrangePaymentController extends Controller
      }elseif($request->from == 'wallet')
          {
              $time = ($request->transaction_id)??'W_'.time();
-             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'wallet','date'=>date('Y-m-d')]);
+             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->total_amount,'type'=>'wallet','date'=>date('Y-m-d')]);
  
          }elseif($request->from == 'tip')
          {
@@ -363,7 +362,6 @@ class OrangePaymentController extends Controller
                 CURLOPT_FOLLOWLOCATION => true,
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => $method,
-                CURLOPT_POSTFIELDS => 'grant_type=client_credentials',
                 CURLOPT_HTTPHEADER => $headers,
                 CURLOPT_POSTFIELDS => $postData,
             ));
