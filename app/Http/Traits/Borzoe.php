@@ -74,8 +74,9 @@ trait Borzoe{
         if(!empty($cus_address)){
             $note .= $cus_address->house_number.', '.$cus_address->street.', '.$cus_address->pincode.", ".$cus_address->extra_instruction;
         }
-
+      
         $amountPay = $order_vendor->payable_amount??0;
+        $payable_amount  = $amountPay;
         $vendor_details = Vendor::findOrFail($vendor_id);
         $is_cod_cash_voucher_required = false;
         $taking_amount = '';
