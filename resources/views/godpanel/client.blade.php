@@ -50,6 +50,8 @@
                                     <th>{{ __("SUB Domain") }}</th>
                                     <th>{{ __("Client Code") }}</th>
                                     <th style="width: 85px;">{{ __("Action") }}</th>
+                                    <th style="width: 85px;">{{ __("lumen microservice") }}</th>
+                                    <th style="width: 85px;">{{ __("Lumen Access Token") }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -72,6 +74,21 @@
                                       
                                         
                                     </td>
+                                    <td>
+                                        <div class="col-md-12">
+                                            <div class="form-group d-flex justify-content-between mb-3">
+                                                <label for="lumen" class="mr-2 mb-0">{{__("Enable")}} </label>
+                                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                                    <div class="custom-control custom-switch">
+                                                        <input type="checkbox" class="custom-control-input is_lumen" id="is_lumen_enabled{{$client->id}}" name="is_lumen_enabled" data-id = "{{$client->id}}" @if($client->is_lumen_enabled == 1) checked  @endif>
+                                                        <label class="custom-control-label" for="is_lumen_enabled{{$client->id}}"></label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td> {{$client->lumen_access_token}} </td>
+
                                   
                                 </tr>
                                 @endforeach
@@ -112,5 +129,33 @@
             return false;
         });
     }); 
+
+    $('.is_lumen').on('change',function(){
+        var is_lumen  = 0;
+        var client_id  = $(this).data('id');
+        if ($(this).is(":checked")) {
+            is_lumen  = 1;
+        }else{
+            is_lumen  = 0;
+
+        }
+
+        $.ajax({
+                    url: "{{route('enable-lumen-service')}}",
+                    type: "POST",
+                    dataType: 'json',
+                    data: 
+                    { 
+                      client_id:client_id,
+                      is_lumen:is_lumen
+                    },
+                    headers: {Accept: "application/json"},
+                    success: function(response) {
+                        console.log('in success');
+                    }
+                });
+      
+
+});
 </script>
 @endsection

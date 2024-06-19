@@ -24,6 +24,7 @@
 </style>
 @endsection
 @section('content')
+
 <!-- Shimmer Efferct Start -->
 <section class="section-b-space_  p-0 ratio_asos banner_shimmer">
 	<div class="container-fulid shimmer_effect  main_shimer topBar">
@@ -197,6 +198,7 @@
 @endif
 
 <!-----------------categores------------>
+
 @if(!empty($navCategories) && count($navCategories))
 <section class="p2p-categories">
 	<div class="container">
@@ -205,11 +207,11 @@
 				<h2>Categories</h2>
 			</div>
 		</div>
-		<div class="row align-items-center justify-content-center" >
+		<div class="categories_slider" >
 			{{-- @dump($navCategories) --}}
 			@foreach($navCategories as $cate)
 				@if($cate['name'])
-					<div class="col-md-2">
+					<div class="item">
 						<div class="cate-item text-center">
 							<a href="{{route('categoryDetail', $cate['slug'])}}">
 								<img
@@ -503,7 +505,7 @@
 								$video_extensions = ['mp4', 'avi', 'mov', 'wmv']; // list of video extensions
 							@endphp
 							@if(in_array($extension, $image_extensions))
-								<img alt="" title="" class="blur-up lazyload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" height="300">	
+								<img alt="" title="" class="blur-up lazyload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}">	
 							@elseif (in_array($extension, $video_extensions))
 								<video id="video1" width="100%" controls autoplay muted>
 									<source src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" type="video/mp4">
@@ -774,7 +776,7 @@
 		</section> -->
 		@if( $homePageLabel->slug == 'featured_products' )
 			<section class="product-1 main-product mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-				<div class="container p2p-full-width">
+				<div class="container">
 					<div class="row">
 						<div class="col-md-12 text-center">
 							<div class="top-heading d-flex justify-content-between">
@@ -786,8 +788,10 @@
 						</div>
 					</div>
 				<div class="product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-					<div class="row">
+					<div class="featured_slider">
 								@foreach ($homePageData[$homePageLabel->slug] as $product )
+
+								
 								@include('frontend.home_page_9.product')
 								@endforeach
 						</div>
@@ -797,7 +801,7 @@
 
 		@elseif( $homePageLabel->slug == 'new_products' )
 			<section class="product-2 main-product mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-				<div class="container p2p-full-width">
+				<div class="container">
 					<div class="row">
 						<div class="col-md-12 text-center">
 							<div class="top-heading d-flex justify-content-between">
@@ -809,7 +813,7 @@
 						</div>
 					</div>
 				<div class="product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-					<div class="row">
+					<div class="featured_slider">
 								@foreach ($homePageData[$homePageLabel->slug] as $product )
 								@include('frontend.home_page_9.product')
 								@endforeach
@@ -819,7 +823,7 @@
 			</section>
 		@elseif( $homePageLabel->slug == 'on_sale' )
 			<section class="main-product mb-0 render_full_{{$homePageLabel->slug}} pt-0" id="{{$homePageLabel->slug.$key}}">
-				<div class="container p2p-full-width">
+				<div class="container">
 					<div class="row">
 						<div class="col-md-12 text-center">
 							<div class="top-heading d-flex justify-content-between">
@@ -831,9 +835,11 @@
 						</div>
 					</div>
 				<div class="product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-					<div class="row">
+					<div class="featured_slider">
 						{{-- @dd($homePageData[$homePageLabel->slug]) --}}
 								@foreach ($homePageData[$homePageLabel->slug] as $product )
+
+								
 								@include('frontend.home_page_9.product')
 								@endforeach
 						</div>

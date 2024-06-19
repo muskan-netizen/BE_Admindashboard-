@@ -4,6 +4,7 @@
     var idealBank = {};
     var ajaxCall = 'ToCancelPrevReq';
     var credit_wallet_url = "{{route('user.creditWallet')}}";
+    var payment_paypal_transaction = "{{route('payment.paypal.transaction')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var create_payphone_url = "{{route('payphone.createHash')}}";
@@ -25,6 +26,8 @@
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
+    var pyment_totalpay_url= "{{ route('make.payment') }}";
+    var payment_thawani_url= "{{ route('pay-by-thawanipg') }}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var wallet_payment_options_url = "{{route('wallet.payment.option.list')}}";
     var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
@@ -38,9 +41,15 @@
     var payment_method_required_error_msg = "{{__('Please select payment method.')}}";
     var wallet_balance_insufficient_msg = "{{ __('Insufficient funds in wallet') }}";
     var user_wallet_balance = parseFloat("{{ $user_wallet_balance }}");
-    var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
+    var create_mtn_momo_token = "{{route('mtn.momo.createToken')}}";
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
+	var payment_mpesa_safari_url = "{{route('mpesasafari.pay')}}";
 	var payment_nmi_url = "{{route('nmi.pay')}}";
+    var payment_obo_url = "{{route('obo.pay')}}";
 	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+    var data_trans_url = "{{route('payment.payByDataTrans')}}";
+    var livee_payment_url = "{{url('livee.pay')}}";
+    var mastercard_create_session_url = "{{ route('payment.mastercard.createSession') }}";
+    var payment_hitpay_url="{{ route('make.hitpay.payment') }}";
 </script>

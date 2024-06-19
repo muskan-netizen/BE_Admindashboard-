@@ -42,6 +42,9 @@ if(session()->has('applocale')){
                     @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
                         <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
                     @endif
+                    @if( $is_ondemand_multi_pricing ==1 )
+                        @include('layouts.store.onDemandTopBarli')
+                    @endif
                         @if($client_preference_detail->header_quick_link == 1)
                         <li class="onhover-dropdown quick-links quick-links">
                             <a href="javascript:void(0)">
@@ -279,7 +282,7 @@ c0 -287 129 -543 350 -697 139 -97 286 -145 448 -146 105 0 162 50 162 143 0
                                 @if(Auth::user())
                                 @if(@auth()->user()->can('dashboard-view') || Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                                     <li>
-                                        <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                                        <a href="{{route('client.dashboard')}}" data-lng="en">{{getNomenclatureName('Control Panel', true)}}</a>
                                     </li>
                                     @endif
                                     <li>
@@ -289,12 +292,24 @@ c0 -287 129 -543 350 -697 139 -97 286 -145 448 -146 105 0 162 50 162 143 0
                                         <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a>
                                     </li>
                                 @else
+                                
+                               @php
+                                $getAdditionalPreference = getAdditionalPreference(['is_user_pre_signup']);
+                                @endphp
+                                @if(isset($getAdditionalPreference) && ($getAdditionalPreference['is_user_pre_signup'] == 1))
+                                
+                                 <li>
+                                    <a href="{{route('customer.register')}}" data-lng="es">{{__('Pre Signup')}}</a>
+                                </li>
+                               @else
+                                  
                                 <li>
                                     <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
                                 </li>
                                 <li>
                                     <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
                                 </li>
+                                @endif
                                 @endif
                             </ul>
                         </li>
@@ -451,7 +466,7 @@ c0 -287 129 -543 350 -697 139 -97 286 -145 448 -146 105 0 162 50 162 143 0
                                           @if (auth()->user())
                                           @if ($client_preference_detail->show_wishlist == 1)
                                               <div class="icon-nav mx-2 d-none d-sm-block"> <a class="fav-button"
-                                                      href="{{ route('user.wishlists') }}"> <i class="fa fa-heart" aria-hidden="true"></i> </a> </div>
+                                                      href="{{ route('user.wishlists') }}"> <i class="fa fa-heart-o wishListCount" aria-hidden="true"></i> </a> </div>
                                               @endif
                                           @endif
                                           <div class="icon-nav d-none d-sm-inline-block">
@@ -632,7 +647,7 @@ c42 -28 59 -60 59 -112 0 -76 -59 -135 -135 -135 -80 0 -135 58 -135 144 0 43
                 @if($client_preference_detail->show_wishlist == 1)
                 <li class="mobile-wishlist d-inline d-sm-none">
                     <a href="{{route('user.wishlists')}}">
-                        <i class="fa fa-heart" aria-hidden="true"></i>
+                        <i class="fa fa-heart-o wishListCount" aria-hidden="true"></i>
                     </a>
                 </li>
                 @endif
@@ -667,7 +682,15 @@ c42 -28 59 -60 59 -112 0 -76 -59 -135 -135 -135 -80 0 -135 58 -135 144 0 43
     </div>--}}
 </div>
 <div class="al_mobile_menu al_new_mobile_header">
-
+                <div class="d-flex">
+                    @if( Session::get('vendorType') == 'p2p' )
+                    <li class="add_post pr-2"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn">
+                        <span>
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                            {{ __('Add Post') }}</span>
+                        </a></li>
+                @endif
+                
                 <div class="al_new_cart">
                     @if($client_preference_detail->cart_enable == 1)
                     <div class="onhover-dropdown_al onhover-div mobile-cart">
@@ -679,11 +702,13 @@ c42 -28 59 -60 59 -112 0 -76 -59 -135 -135 -135 -80 0 -135 58 -135 144 0 43
                     </div>
                     @endif
                 </div>
+            
                 <a class="al_toggle-menu" href="javascript:void(0)">
                     <i></i>
                     <i></i>
                     <i></i>
                 </a>
+            </div>
                 <div class="al_menu-drawer" id="navbarsfoodTemplate">
                     <ul class="header-dropdown ml-auto">
                         <li class="onhover-dropdown_al mobile-account_al">
@@ -691,7 +716,7 @@ c42 -28 59 -60 59 -112 0 -76 -59 -135 -135 -135 -80 0 -135 58 -135 144 0 43
                                 @if(Auth::user())
                                     @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                                     <li>
-                                        <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                                        <a href="{{route('client.dashboard')}}" data-lng="en">{{getNomenclatureName('Control Panel', true)}}</a>
                                     </li>
                                     @endif
                                     <li>

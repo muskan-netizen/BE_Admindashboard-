@@ -19,7 +19,7 @@ class WalletController extends FrontController
      *
      * @return \Illuminate\Http\Response
      */
-    
+
     public function index(){
         $langId = Session::get('customerLanguage');
         $currency_id = Session::get('customerCurrency');
@@ -35,9 +35,9 @@ class WalletController extends FrontController
             $public_key_yoco= json_decode($public_key_yoco);
             $public_key_yoco= $public_key_yoco->public_key??'';
         }
-        
+
         $userCardExist =        UserDataVault::where(['user_id' => $auth_user->id])->count();
-        
+
         return view('frontend/account/wallet',compact('public_key_yoco'))->with(['user'=>$user, 'navCategories'=>$navCategories, 'user_transactions'=>$user_transactions, 'clientCurrency'=>$clientCurrency,'userCardExist'=>$userCardExist]);
     }
 
@@ -48,14 +48,12 @@ class WalletController extends FrontController
      */
     public function creditWallet(Request $request, $domain = '')
     {
-
         if( (isset($request->user_id)) && (!empty($request->user_id)) ){
             $user = User::find($request->user_id);
         }elseif( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
             $user = User::whereHas('device',function  ($qu) use ($request){
                 $qu->where('access_token', $request->auth_token);
             })->first();
-
         }else{
             $user = Auth::user();
         }
@@ -69,8 +67,10 @@ class WalletController extends FrontController
                 }
 
                 $wallet->depositFloat($credit_amount, [__("Wallet has been").' <b>Credited</b> by transaction reference <b>'.$request->transaction_id.'</b>']);
-
-                $payment = new Payment();
+                $payment = Payment::where('transaction_id',$request->transaction_id)->first();
+                if(!$payment){
+                    $payment = new Payment();
+                }
                 $payment->date = date('Y-m-d');
                 $payment->user_id = $user->id;
                 $payment->transaction_id = $request->transaction_id;
@@ -142,6 +142,8 @@ class WalletController extends FrontController
                     $payment_option->title = __('iDEAL');
                 }elseif($payment_option->code == 'authorize_net'){
                     $payment_option->title = __('Credit/Debit Card');
+                }elseif($payment_option->code == 'obo'){
+                    $payment_option->title = __("Momo, Airtel Money by O'Pay");
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);
@@ -230,9 +232,9 @@ class WalletController extends FrontController
         echo 'Successfully Done';
         echo '</pre>';
     }
-    //    
+    //
     /**
-     * this function is just for testing 
+     * this function is just for testing
      * addWalletAmount
      *
      * @return void

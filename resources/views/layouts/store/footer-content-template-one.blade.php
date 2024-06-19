@@ -82,30 +82,30 @@ $company_name = \App\Models\ClientPreferenceAdditional::where('key_name','bottom
                             <div class="footer-contant">
                                 <ul>
                                     @foreach($pages as $page)
-                                    @if(isset($page->primary->type_of_form) && ($page->primary->type_of_form == 2))
-                                    @if(isset($last_mile_common_set) && $last_mile_common_set != false)
-                                    <li>
-                                        <a href="{{route('extrapage',['slug' => $page->slug])}}">
-                                            @if(isset($page->translations) && $page->translations->first()->title != null)
-                                            {{ $page->translations->first()->title ?? ''}}
-                                            @else
-                                            {{ $page->primary->title ?? ''}}
-                                            @endif
-                                        </a>
-                                    </li>
-                                    @endif
-                                    @else
-                                    <li>
-                                        <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_blank">
-                                            @if(isset($page->translations) && $page->translations->first()->title != null)
-                                            {{ $page->translations->first()->title ?? ''}}
-                                            @else
-                                            {{ $page->primary->title ?? ''}}
-                                            @endif
-                                        </a>
-                                    </li>
-                                    @endif
-                                    @endforeach
+                                @if(isset($page->primary->type_of_form) && ($page->primary->type_of_form == 2))
+                                @if(isset($last_mile_common_set) && $last_mile_common_set != false)
+                                <li>
+                                    <a href="{{route('extrapage',['slug' => $page->slug])}}">
+                                        @if(isset($page->translations) && $page->translations->first()->title != null)
+                                        {{ __($page->translations->first()->title) ?? ''}}
+                                        @else
+                                        {{ __($page->primary->title) ?? ''}}
+                                        @endif
+                                    </a>
+                                </li>
+                                @endif
+                                @else
+                                <li>
+                                    <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_blank">
+                                        @if(isset($page->translations) && $page->translations->first()->title != null)
+                                        {{ __($page->translations->first()->title) ?? ''}}
+                                        @else
+                                        {{ __($page->primary->title) ?? ''}}
+                                        @endif
+                                    </a>
+                                </li>
+                                @endif
+                                @endforeach
                                 </ul>
                             </div>
                         </div>

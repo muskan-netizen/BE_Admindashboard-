@@ -24,11 +24,12 @@ class DispatcherController extends Controller
         
             $categories = [];
             if(@$dispatcher_service_key_url && !empty($dispatcher_service_code)){
-                $categories = Category::with(['primary','products.primary','products.variant'])->whereHas('products')
+                $categories = Category::with(['primary','products.primary','products.variant'])
                 // ->chunk(10, function($inspectors) use($client_preferences) {
                 //     $this->sendDataToDispatcher($client_preferences , $inspectors);
                 // });
                 ->get();
+               
                 
                 $categories = $categories->toArray();
               

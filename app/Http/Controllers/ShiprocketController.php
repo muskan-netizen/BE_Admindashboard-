@@ -173,7 +173,6 @@ class ShiprocketController extends Controller
 
     public function checkShiprocket()
     {
-		//\Log::info('sdfsd');
 		$this->configuration();
     	$token = $this->getAuthToken();
     	$order = $this->createOrder($token->token,[]);
@@ -264,13 +263,15 @@ class ShiprocketController extends Controller
 				'weight' => ($weightSum>0)? $weightSum : $this->weight,
 			  );
 		}
-			//\Log::info(json_encode($data));
-    	$orderSuc = $this->createOrder($token->token,$data);
+		$orderSuc = $this->createOrder($token->token,$data);
 		if($orderSuc->status_code == 1)
 		{
-		  return $this->AWBForShipment($orderSuc->shipment_id,$orderVendor->courier_id,$token->token);
+		  $awb = $this->AWBForShipment($orderSuc->shipment_id,$orderVendor->courier_id,$token->token);
+			\Log::info('awb');
+			\Log::info([$awb]);
+		// return $awb;
 		}
-		return 0;
+		return (($awb==0)?$orderSuc:$awb);
 		//Response Result
 		//"order_id": 181022136
   		//"shipment_id": 180553979

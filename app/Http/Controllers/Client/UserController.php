@@ -31,7 +31,7 @@ use App\Models\UserDevice;
 use Session;
 use DB;
 use Spatie\Permission\Models\Role;
-use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImport, Currency, Language, UserVerification, RoleOld, Transaction, UserDocs, UserRegistrationDocuments, OrderVendor, VendorOrderStatus, ClientCurrency, ServiceArea};
+use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImport, Currency, Language, UserVerification, RoleOld, Transaction, UserDocs, UserRegistrationDocuments, OrderVendor, VendorOrderStatus, ClientCurrency, Company, ServiceArea};
 
 class UserController extends BaseController
 {
@@ -52,6 +52,10 @@ class UserController extends BaseController
 
     public function index()
     {
+        if(!auth()->user()->can('customers-view') && !auth()->user()->is_superadmin)
+        {
+            return redirect('client/dashboard')->with('error','You do not have permission to do this task.');
+        }
         $roles = RoleOld::all();
         $countries = Country::all();
         $active_users = User::where('status', 1)->where('is_superadmin', '!=', 1)->count();
@@ -71,17 +75,20 @@ class UserController extends BaseController
             }
         }
         $csvCustomers = CsvCustomerImport::all();
-        return view('backend/users/index')->with(['inactive_users' => $inactive_users, 'social_logins' => $social_logins, 'active_users' => $active_users, 'users' => $users, 'roles' => $roles, 'countries' => $countries, 'csvCustomers' => $csvCustomers, 'user_registration_documents' => $user_registration_documents]);
+        $companies = Company::get();
+        return view('backend/users/index')->with(['inactive_users' => $inactive_users, 'social_logins' => $social_logins, 'active_users' => $active_users, 'users' => $users, 'roles' => $roles, 'countries' => $countries, 'csvCustomers' => $csvCustomers, 'user_registration_documents' => $user_registration_documents,'companies'=>$companies]);
     }
-    
+
     public function getFilterData(Request $request)
     {
 
 
         $current_user = Auth::user();
         $users = User::with('orders')->withCount(['orders', 'currentlyWorkingOrders'])->where('is_superadmin', '!=', 1)->orderBy('id', 'desc');
+
         if (!empty($request->date_filter)) {
             $date = explode(",", $request->date_filter);
+            // dd($date);
             if (isset($date[0]) && isset($date[1])) {
 
                 $e_day      = date('Y-m-d', strtotime($date[1]. ' + 1 day'));
@@ -89,26 +96,30 @@ class UserController extends BaseController
                 $end_date   = Carbon::parse($e_day)->format('Y-m-d');
                 $start_date = $start_date . ' 00:00:00';
                 $end_date   = $end_date . ' 00:00:00';
-                $query      = 'SELECT * FROM users WHERE EXISTS (SELECT 1 FROM orders WHERE orders.user_id = users.id AND orders.created_at >= "'.$start_date.'" AND orders.created_at <= "'.$end_date.'")';
-                $user_ids   = DB::select($query); 
-               
+                $query      = 'SELECT * FROM users WHERE EXISTS (SELECT 1 FROM orders WHERE orders.user_id = users.id AND orders.created_at >= ? AND orders.created_at <= ?)';
+
+                $user_ids   = DB::select($query, [$start_date, $end_date]);
                 $user_ids   = array_column($user_ids, 'id');
-               
+
                 $users = User::with('orders')->withCount(['orders', 'currentlyWorkingOrders'])->whereNotIn('id',$user_ids)->where('is_superadmin', '!=', 1)->where('created_at', '<=', $end_date )
                 ->orderBy('id', 'desc');
-                
 
-             
+
+
 
             }
         }
 
 
         if ($request->type == 'active') {
-            $users->where('status', 1);
+                $users->where('status', 1)->where('is_superadmin', '!=', 1);
         } else if ($request->type == 'inactive') {
             $users->where('status', 3);
         }
+        if ($request->company_filter) {
+            $users->where('company_id', $request->company_filter);
+        }
+
         return Datatables::of($users)
             ->addColumn('edit_url', function ($users) {
                 return route('customer.new.edit', $users->id);
@@ -141,7 +152,7 @@ class UserController extends BaseController
                 }
             })
             ->addColumn('is_superadmin', function ($users) use ($current_user) {
-                return $current_user->is_superadmin;
+                return $current_user->is_superadmin??'-';
             })
             ->addColumn('wallet_id', function ($users) {
                 return $users->wallet->id ?? '';
@@ -201,6 +212,24 @@ class UserController extends BaseController
     public function deleteCustomer($domain = '', $uid, $action)
     {
         $user = User::where('id', $uid)->firstOrFail();
+
+        if($user->status == 3)
+        {
+            User::where('id', $uid)->update([
+                'email' => $user->email.'_'.$user->id."_D",
+                'phone_number' => $user->phone_number.'_'.$user->id."_D",
+                'auth_token' =>'',
+                'system_id' =>'',
+                'remember_token' => '',
+                'facebook_auth_id' => '',
+                'twitter_auth_id' => '',
+                'google_auth_id' => '',
+                'apple_auth_id' => ''
+                ]);
+
+            $user->delete();
+            return redirect()->back()->with('success', 'Customer account successfully!');
+        }
         $user->status = 3;
         $user->save();
         $msg = 'activated';
@@ -265,8 +294,8 @@ class UserController extends BaseController
     {
         $customer = new User();
 
-        $validation  = Validator::make($request->all(), $customer->rules())->validate();
-        //$validator = $this->validator($request->all())->validate();
+                    $validation  = Validator::make($request->all(), $customer->rules())->validate();
+                //$validator = $this->validator($request->all())->validate();
 
         $saveId = $this->save($request, $customer, 'false');
         if ($saveId > 0) {
@@ -377,9 +406,9 @@ class UserController extends BaseController
     public function newEdit($domain = '', $id)
     {
         $subadmin = User::find($id);
-        $geoIds = explode(',',$subadmin->geo_ids);
-        // dd($geoIds);
         $userRole = @$subadmin->roles[0]->id;
+        $geoIds = explode(',',$subadmin->geo_ids);
+
         $permissions = PermissionsOld::where('status', 1)->whereNotin('id', [4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 22, 23, 24, 25])->get();
         $user_permissions = UserPermissions::where('user_id', $id)->get();
         $vendor_permissions = UserVendor::where('user_id', $id)->pluck('vendor_id')->toArray();
@@ -430,6 +459,13 @@ class UserController extends BaseController
     public function newUpdate(Request $request, $domain = '', $id)
     {
         $user = User::where('id', $id)->first();
+
+        $vendorRole = @$user->roles[0]->id;
+        if(@$vendorRole && $vendorRole == 4){
+         //Need to remove vendor permissons from user table
+         $this->removeVendorPermissionAndRole($id);
+        }
+
         $data = [
             'status'        => $request->status,
             'role_id'       => $request->has('role_id') ? $request->get('role_id') : $user->role_id,
@@ -492,8 +528,8 @@ class UserController extends BaseController
                 }
             }
         }
-        //Need to remove vendor permissons from user table 
-        $this->removeVendorPermissionAndRole($id);
+        // //Need to remove vendor permissons from user table
+        // $this->removeVendorPermissionAndRole($id);
         return redirect()->back()->with('success','Customer Updated successfully!');
     }
 
@@ -665,7 +701,7 @@ class UserController extends BaseController
                 if (!empty($request->get('search'))) {
                     $search = $request->get('search');
                     $instance->where(function ($query) use ($search) {
-                        $query->where('date', 'LIKE', '%' . $search . '%')
+                        $query->where('created_at', 'LIKE', '%' . $search . '%')
                             ->orWhere('meta', 'LIKE', '%' . $search . '%')
                             ->orWhere('amount', 'LIKE', '%' . $search . '%');
                     });
@@ -674,15 +710,15 @@ class UserController extends BaseController
     }
 
     public function export(Request $request)
-    {   
-       
+    {
+
         $fileName ="users.xlsx";
         if(!empty($request->start_date) && !empty($request->end_date)){
             $daterange = $request->start_date.' to '.$request->end_date;
             $fileName ="no_order_by_users_for($daterange).xlsx";
         }
 
-       
+
         return Excel::download(new CustomerExport($request),$fileName);
     }
 
@@ -805,7 +841,7 @@ class UserController extends BaseController
                         return $this->errorResponse(__('Amount is greater than customer available funds'), 422);
                     }
                     $wallet->withdrawFloat($amount, [
-                        'description' => 'Wallet has been <b>Dedited</b>',
+                        'description' => 'Wallet has been <b>Debited</b>',
                         'remarks' => $request->remarks,
                         'created_by' => Auth::id()
                     ]);

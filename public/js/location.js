@@ -43,7 +43,7 @@ $(document).ready( async function () {
     else{
         $(".shimmer_effect").hide();
     }
-
+   
     $(".age_restriction_no").click(function () {
         window.location.replace("https://google.com");
     });
@@ -210,11 +210,10 @@ $(document).ready( async function () {
     }
 
     //$(".navigation-tab-item").click(function() {
-    $(document).on('click','.navigation-tab-item > a',function() {
+    $(document).on('click','.navigation-tab-item > a', async function() {
         // if($.hasAjaxRunning()){
         //     return false;
         // }
-        
       
         //$(".navigation-tab-item").removeClass("active");
         $('.vendor_mods').find('.nav-link').removeClass('active');
@@ -234,12 +233,12 @@ $(document).ready( async function () {
         let type = "";
         let sessionType = "";
         //var id = $(this).attr('id');
-        type = $(this).attr('VendorType');
+        type = $(this).attr('vendortype');
         sessionType = $(this).data("sessiontype");
-        console.log(type, sessionType);
+      
         if(type == sessionType){
-        window.location.href = home_page_url;
-        return false;
+            window.location.href = home_page_url;
+            return false;
         }
         if($("#address-latitude").length > 0){
             latitude = $("#address-latitude").val();
@@ -269,10 +268,11 @@ $(document).ready( async function () {
         if(cartProductCount > 0){
             $("#remove_cart_modal").modal('show');
             $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", cartData.id);
+            
             $(".nav-tabs.vendor_mods").attr("data-mod", type);
             return false;
         }
-        $.ajax({
+        await $.ajax({
             type: "get",
             dataType: 'json',
             url: `/setSessionIndex?type=${type}`,
@@ -337,12 +337,12 @@ $(document).ready( async function () {
         // return 0;
         let selected_place_id = $("#address-place-id").val();
         $(".homepage-address span").text(selected_address).attr({ "title": selected_address, "data-original-title": selected_address });
-        $("#edit-address").modal('hide');
         let ajaxData = { type: vendor_type };
         if ((latitude) && (longitude) && (selected_address)) {
             ajaxData.latitude = latitude;
             ajaxData.longitude = longitude;
-            ajaxData.selectedAddress = selected_address;
+            ajaxData.selectedAddress = sele
+            cted_address;
             ajaxData.selectedPlaceId = selected_place_id;
         }
        /// remove_spinner('#our_vendor_main_div');
@@ -883,7 +883,7 @@ $(document).ready( async function () {
         let latitude = $("#address-latitude").val();
         let longitude = $("#address-longitude").val();
         let address = $("#address-input").val();
-       
+
         setSessionLocatin(latitude,longitude,address)
         //bindLatestCoords(latitude, longitude);
         
@@ -914,12 +914,19 @@ $(document).ready( async function () {
     });
 
     $(document).delegate("#remove_cart_button", "click", function () {
+        let latitude = $("#address-latitude").val();
+        let longitude = $("#address-longitude").val();
+        let address = $("#address-input").val();
+        setSessionLocatin(latitude,longitude,address);
+        
         let cart_id = $(this).attr("data-cart_id");
+        let ondemand_pricing_mode = $(this).attr("data-ondemand_vendor_type");
         $("#remove_cart_modal").modal('hide');
-        removeCartData(cart_id);
+        removeCartData(cart_id,ondemand_pricing_mode);
     });
 
-    function removeCartData(cart_id) {
+    function removeCartData(cart_id,ondemand_pricing_mode='') {
+       
         $.ajax({
             type: "post",
             dataType: 'json',
@@ -934,6 +941,9 @@ $(document).ready( async function () {
                         vendor_mod = $(".nav-tabs.vendor_mods").attr("data-mod");
                     }
                     OrderStorage.setStorageSingle('cartProductCount',0);
+                    if(ondemand_pricing_mode !='' && ondemand_pricing_mode != undefined ){
+                        setSessionOndemandPricing(ondemand_pricing_mode);
+                    }
                     setSession(vendor_mod);
                     //getHomePageCategoryMenu(latitude, longitude, vendor_mod);
                     //getHomePage(latitude, longitude, vendor_mod);
@@ -1086,6 +1096,52 @@ $(document).ready( async function () {
 
 
 });
+function emptyCart(type = vendor_type){
+    var return_val = 1;
+    var cartData = (OrderStorage.getStorage('cartData') != '') ? JSON.parse(OrderStorage.getStorage('cartData')) : [];
+        var cartProductCount = OrderStorage.getStorage('cartProductCount');
+        if(cartProductCount > 0){
+            $("#remove_cart_modal").modal('show');
+            $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", cartData.id);
+            
+            $(".nav-tabs.vendor_mods").attr("data-mod", type);
+            
+            return_val = 0;
+        }
+    return return_val;
+}
+
+$(document).on("click",'.on_demand_top_selection', async function(e) {
+    $("#ondemand_price_selection_model").modal("show");
+});
+
+$(document).on("click",'.select_on_demand_pricing_by_user', async function(e) { 
+    e.preventDefault();
+    var type  = document.querySelector('input[name="onDemandpricingselection"]:checked').value;
+    if(type== undefined || type =='' ){
+        console.log('not selecter');
+    }
+    if(ondemand_selected_price  == type){
+        return false
+    }
+    var cart_check = await emptyCart();
+    if(cart_check == 0){
+        $("#remove_cart_modal #remove_cart_button").attr("data-ondemand_vendor_type", type);
+        return false;
+    }
+  
+    //  var cartData = (OrderStorage.getStorage('cartData') != '') ? JSON.parse(OrderStorage.getStorage('cartData')) : [];
+    //  var cartProductCount = OrderStorage.getStorage('cartProductCount');
+    //  if(cartProductCount > 0){
+    //      $("#remove_cart_modal").modal('show');
+    //      $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", cartData.id);
+    //      $("#remove_cart_modal #remove_cart_button").attr("data-ondemand_vendor_type", type);
+    //      $(".nav-tabs.vendor_mods").attr("data-mod", type);
+    //      return false;
+    //}
+   setSessionOndemandPricing(type);
+  //console.log(type);
+});
 
 async function setSessionLocatin(latitude, longitude,address){
     var cartData = (OrderStorage.getStorage('cartData') != '') ? JSON.parse(OrderStorage.getStorage('cartData')) : [];
@@ -1093,13 +1149,16 @@ async function setSessionLocatin(latitude, longitude,address){
     if(cartProductCount > 0){
         $("#remove_cart_modal").modal('show');
         $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", cartData.id);
-        $(".nav-tabs.vendor_mods").attr("data-mod", type);
+        $(".nav-tabs.vendor_mods").attr("data-mod");
         return false;
     }
     let url = `/updateLocation?latitude=${latitude}&&longitude=${longitude}&&address=${address}` ;
     window.location.href = url;
 }
-
+async function setSessionOndemandPricing(type = "vendor"){
+    let url = `/ondemandPricing?type=${type}` ;
+    window.location.href = url;
+}
 function addressInputDisplay(locationWrapper, inputWrapper, input) {
     $(inputWrapper).removeClass("d-none").addClass("d-flex");
     $(locationWrapper).removeClass("d-flex").addClass("d-none");
@@ -1141,6 +1200,10 @@ function initMap() {
         const autocomplete = new google.maps.places.Autocomplete(input);
         autocomplete.bindTo('bounds', bindMap);
         autocomplete.key = fieldKey;
+        if(is_map_search_perticular_country){
+            autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+        }
+
         autocompletes.push({ input: input, map: map, marker: marker, autocomplete: autocomplete });
     }
 
@@ -1149,7 +1212,7 @@ function initMap() {
         let autocomplete = autocompletes[i].autocomplete;
         const map = autocompletes[i].map;
         const marker = autocompletes[i].marker;
-
+    
         google.maps.event.addListener(autocomplete, 'place_changed', function () {
             marker.setVisible(false);
             const place = autocomplete.getPlace();
@@ -1233,7 +1296,9 @@ function initMap() {
                         console.log(marker.getPosition().lat());
                         console.log(marker.getPosition().lng());
                         $('#address-input').val(results[0].formatted_address);
+                        setSessionLocatin( marker.getPosition().lat(), marker.getPosition().lng(),autocomplete.key)
                         setLocationCoordinates(autocomplete.key, marker.getPosition().lat(), marker.getPosition().lng());
+
                     }
                 }
             });
@@ -1271,6 +1336,9 @@ $(document).delegate("#edit-address #address-input", "focus", function(){
   function initializeNewCabHome(random_id,rel) {
     var input = document.getElementById(random_id);
     var autocomplete = new google.maps.places.Autocomplete(input);
+    if(is_map_search_perticular_country){
+        autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+    }
     autocomplete.bindTo('bounds', bindMap);
 
     google.maps.event.addListener(autocomplete, 'place_changed', function () {

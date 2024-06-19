@@ -30,7 +30,9 @@ use App\Models\ {
     EmailTemplate,
     UserRegistrationDocuments,
     Product,
-    UserDocs
+    UserDocs,
+    UserVendorWishlist,
+    Vendor
 };
 use App\Models\UserDataVault;
 use App\Http\Controllers\Front\AzulPaymentController;
@@ -46,9 +48,24 @@ class ProfileController extends BaseController
 
     private $folderName = '/user/document';
 
-    public function postSendReffralCode(SendReferralRequest $SendReferralRequest)
+    public function postSendReffralCode(Request $SendReferralRequest)
     {
         try {
+            $validator = Validator::make($SendReferralRequest->all(), [
+                'email' => 'required|email|max:50|unique:users'
+            ],[
+                'email.required' => 'The email field is required.',
+                'email.email' => 'The email must be a valid email address.',
+                'email.unique' => 'This email is already registered.',
+            ]);
+
+            if ($validator->fails()) {
+                foreach ($validator->errors()->toArray() as $error_key => $error_value) {
+                    $errors['error'] = __($error_value[0]);
+                    return response()->json($errors, 422);
+                }
+            }
+
             $user = Auth::user();
             $client = Client::first();
             $client_preference_detail = ClientPreference::first();
@@ -84,7 +101,9 @@ class ProfileController extends BaseController
                                 $message->from($mail_from, $client_name);
                                 $message->to($sendto)->subject('Referral For Registration');
                             });
-                        } catch (\Exception $e) {}
+                        } catch (\Exception $e) {
+                            \Log::error($e->getMessage());
+                        }
                     }
                     return response()->json(array(
                         'success' => true,
@@ -92,7 +111,8 @@ class ProfileController extends BaseController
                     ));
                 }
             }
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
     }
 
     /**
@@ -391,7 +411,7 @@ class ProfileController extends BaseController
                         $file = $request->file($doc_name);
                         $orignal_name = $request->file($doc_name)->getClientOriginalName();
                         $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
-                       //// Log::info($orignal_name);
+                       
                         UserDocs::updateOrCreate(
                             
                             ['user_id' => $user->id, 'user_registration_document_id' => $user_registration_document->id]
@@ -492,5 +512,69 @@ class ProfileController extends BaseController
             'message' => __('Card does\'nt exist')
         ]);
         
+    }
+
+    public function updateWishlistVendor(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'vendor_id' => 'required|exists:vendors,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 201, 'message' => $validator->errors()->first()], 201);
+        }
+
+        $vendor = UserVendorWishlist::where(['user_id' => Auth::id(), 'vendor_id' => $request->vendor_id])->first();
+        if($vendor){
+            $vendor->delete();
+            return response()->json([
+                'success' => 200,
+                'message' => __('Vendor has been removed from wishlist.')
+            ]);
+        }
+
+        UserVendorWishlist::create([
+            'user_id' => Auth::id(),
+            'vendor_id' => $request->vendor_id
+        ]);
+
+        return response()->json([
+            'success' => 200,
+            'message' => __('Vendor has been added in wishlist.')
+        ]);
+    }
+
+    public function wishlistVendors(Request $request)
+    {
+        $user = Auth::user();
+        $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'is_service_area_for_banners','subscription_mode')->first();
+        $latitude = !empty($request->latitude) ? ($request->latitude ?? $user->latitude ) :  $preferences->Default_latitude ;
+        $longitude =!empty($request->longitude) ? ($request->longitude ?? $user->longitude ) :  $preferences->Default_longitude ;
+        $type = $request->has('type') ? $request->type : 'delivery';
+
+        // $wishlist = UserVendorWishlist::with('vendor')->where('user_id', Auth::id())->get();
+        $vendors = Vendor::wherehas('wishlistByUsers', function($q){
+            $q->where('user_id', Auth::id());
+        })->withAvg('product', 'averageRating','closed_store_order_scheduled')->get();
+
+        $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+        $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+
+        foreach($vendors as $vendor){
+            $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences, $type);
+        }
+
+        if(count($vendors)){
+            return response()->json([
+                'success' => 200,
+                'message' => __('List for all wishlist vendors.'),
+                'data' => $vendors
+            ]);
+        }
+        return response()->json([
+            'success' => 200,
+            'message' => __('No Record Found.'),
+            'data' => []
+        ]);
     }
 }

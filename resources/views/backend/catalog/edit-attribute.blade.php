@@ -1,18 +1,16 @@
 <div class="row">
     <div class="col-md-12">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="form-group">
                     {!! Form::label('title', __('Select Category'),['class' => 'control-label']) !!}
-                    <select class="form-control selectize-select" required id="edit_cateSelectBox" name="cate_id">
+                    <select class="form-control selectize-select" required id="edit_cateSelectBox" name="cate_id[]" multiple>
                         <option value="">{{ __("Select Category") }}...</option>
                         @foreach($categories as $cate)
-                            <option value="{{$cate['id']}}" @if(@$variant->varcategory->category_id == $cate['id']) selected @endif>{{$cate['hierarchy']}}</option>
-                        @endforeach
-                        {{-- @foreach($categories as $cate)
-                            <option value="{{$cate->id}}" @if(@$variant->varcategory->category_id == $cate->id) selected @endif>{{$cate->translation_one['name']}}</option>
-                        @endforeach --}}
+                        <option value="{{$cate['id']}}" @if(@$variant->varcategory->category_id == $cate['id']) selected @endif>{{$cate['hierarchy']}}</option>
+                    @endforeach
                     </select>
+
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
                     </span>
@@ -31,6 +29,15 @@
                         <option value="6" @if($variant->type == 6) selected @endif>Location</option>
                         <option value="7" @if($variant->type == 7) selected @endif>DatePicker</option>
                     </select>
+                    <span class="invalid-feedback" role="alert">
+                        <strong></strong>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('title', __('Icon'),['class' => 'control-label']) !!}
+                    <input type="file" class="form-control"  name="icon">
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
                     </span>
@@ -113,8 +120,8 @@
                             @endforeach
 
                             <td>
-                                <input type="hidden" name="opt_id[{{$langs->language_id}}][]" class="form-control" value="{{$optDataId}}" @if($langs->is_primary == 1) required @endif>
-                                <input type="text" name="opt_title[{{$langs->language_id}}][]" class="form-control" value="{{$optData}}" @if($langs->is_primary == 1) required @endif>
+                                <input type="hidden" name="opt_id[{{$langs->language_id}}][]" class="form-control" value="{{$optDataId}}" @if($variant->type <= 3) required @endif>
+                                <input type="text" name="opt_title[{{$langs->language_id}}][]" class="form-control" value="{{$optData}}" @if($variant->type <= 3) required @endif>
                             </td>
                         @endforeach
 

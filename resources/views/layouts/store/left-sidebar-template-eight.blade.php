@@ -41,6 +41,9 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
             </div>
             <div class="col-sm-9 col-md-10 top-header bg-transparent">
                <ul class="header-dropdown d-flex align-items-center justify-content-md-end justify-content-center">
+                    @if( $is_ondemand_multi_pricing ==1 )
+                        @include('layouts.store.onDemandTopBarli')
+                    @endif
                   @if ($client_preference_detail->header_quick_link == 1)
                   <li class="onhover-dropdown quick-links quick-links">
                      <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
@@ -140,7 +143,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                         @if (Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                         <li>
                            <a href="{{ route('client.dashboard') }}"
-                              data-lng="en">{{ __('Control Panel') }}</a>
+                              data-lng="en">{{getNomenclatureName('Control Panel', true)}}</a>
                         </li>
                         @endif
                         <li>
@@ -281,7 +284,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                               @include('layouts.store.search_template')
                               @if(auth()->user()) @if($client_preference_detail->show_wishlist==1)
                               <div class="icon-nav mr-2 d-none d-lg-block"> <a class="fav-button" href="{{route('user.wishlists')}}">
-                                  <i class="fa fa-heart" aria-hidden="true"></i>
+                                  <i class="fa fa-heart-o wishListCount" aria-hidden="true"></i>
                               </a> </div>
                               @endif @endif
                               <div class="icon-nav d-none d-lg-inline-block">
@@ -381,7 +384,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                           @if (auth()->user())
                                           @if ($client_preference_detail->show_wishlist == 1)
                                               <div class="icon-nav mx-2 d-none d-sm-block"> <a class="fav-button"
-                                                      href="{{ route('user.wishlists') }}"> <i class="fa fa-heart" aria-hidden="true"></i> </a> </div>
+                                                      href="{{ route('user.wishlists') }}"> <i class="fa fa-heart-o wishListCount" aria-hidden="true"></i> </a> </div>
                                               @endif
                                           @endif
                                           <div class="icon-nav d-none d-sm-inline-block">
@@ -597,17 +600,4 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
 </div>
 @endif
 @endif
-<div class="modal fade remove-cart-modal" id="remove_cart_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="remove_cartLabel" style="background-color: rgba(0,0,0,0.8);">
-   <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-         <div class="modal-header pb-0">
-            <h5 class="modal-title" id="remove_cartLabel">{{__('Remove Cart')}}</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">×</span> </button>
-         </div>
-         <div class="modal-body text-center">
-            <h6 class="m-0 px-3">{{__('This change will remove all your cart products. Do you really want to continue ?')}}</h6>
-         </div>
-         <div class="modal-footer flex-nowrap justify-content-center align-items-center"> <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button> <button type="button" class="btn btn-solid" id="remove_cart_button" data-cart_id="">{{__('Remove')}}</button> </div>
-      </div>
-   </div>
-</div>
+@include('layouts.store.remove_cart_model')

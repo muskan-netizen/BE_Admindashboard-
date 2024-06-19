@@ -60,7 +60,7 @@
                                         <span class="invalid-feedback" id="phone_number_error"><strong></strong></span>
                                         <input type="hidden" id="countryData" name="countryData" value="us">
                                         <input type="hidden" id="dialCode" name="dialCode" value="{{$user ? $user->dial_code : ''}}">
-                                        
+
                                     </div>
                                     <div class="col-md-3 mb-2" id="titleInput">
                                         <label for="fullname">{{__('Title')}}</label>
@@ -107,7 +107,7 @@
                                         <span class="invalid-feedback" id="phone_number_error"><strong></strong></span>
                                         <input type="hidden" id="countryData" name="countryData" value="in">
                                         <input type="hidden" id="dialCode" name="dialCode" value="{{$user ? $user->dial_code : '91'}}">
-                                        
+
                                     </div>
                                     <div class="col-md-3 mb-2" id="titleInput">
                                         <label for="fullname">{{__('Title')}}</label>
@@ -123,17 +123,17 @@
                                 <div class="form-row">
 
                                     @if(!$user)
-                                        <div class="col-md-3 mb-3 resgiter_password" id="passwordInput" > 
+                                        <div class="item_password col-md-3 mb-3 resgiter_password" id="passwordInput" >
                                             <label for="password">{{__('Password')}}</label>
                                             <input type="password" class="form-control" name="password" value="" required="">
                                             <span class="invalid-feedback" id="password_error"><strong></strong></span>
-                                            <span toggle="#password-field" class="fa fa-eye-slash toggle-password" aria-hidden="true"></span>                                            
+                                            <span toggle="#password-field" class="fa fa-eye-slash toggle-password" aria-hidden="true"></span>
                                         </div>
-                                        <div class="col-md-3 mb-3 resgiter_password"  id="confirm_passwordInput">
+                                        <div class="item_password col-md-3 mb-3 resgiter_password"  id="confirm_passwordInput">
                                             <label for="confirm_password">{{__('Confirm Password')}}</label>
                                             <input type="password" class="form-control" name="confirm_password" value="" required="">
                                             <span class="invalid-feedback" id="confirm_password_error"><strong></strong></span>
-                                            <span toggle="#password-field" class="fa fa-eye-slash toggle-password" aria-hidden="true"></span>                                            
+                                            <span toggle="#password-field" class="fa fa-eye-slash toggle-password" aria-hidden="true"></span>
                                         </div>
                                     @endif
                                 </div>
@@ -160,18 +160,18 @@
                             <div class="al_vendor_signup col-md-12 p-3 mb-3">
                                 <div class="form-row">
                                     <div class="col-md-3 mb-2" id="account_nameInput">
-                                        <label for="accountname">{{__('Account Name')}}</label>
-                                        <input type="text" class="form-control" name="account_name" placeholder="Account Name" value="{{$user ? $user->name : ''}}" {{$user ? 'disabled' : ''}}>
+                                        <label for="accountname">{{getNomenclatureName('Account Name', true)}}</label>
+                                        <input type="text" class="form-control" name="account_name" placeholder="{{getNomenclatureName('Account Name', true) .' '. __('Account Name')}}" value="{{$user ? $user->name : ''}}" {{$user ? 'disabled' : ''}}>
                                         <span class="invalid-feedback" id="account_name_error"><strong></strong></span>
                                     </div>
                                     <div class="col-md-3 mb-2" id="bank_nameInput">
-                                        <label for="bankname">{{__('Bank Name')}}</label>
-                                        <input type="text" class="form-control" name="bank_name" placeholder="Bank Name" value="{{$user ? $user->title : ''}}" placeholder="">
+                                        <label for="bankname">{{getNomenclatureName('Bank Name', true)}}</label>
+                                        <input type="text" class="form-control" name="bank_name" placeholder="{{getNomenclatureName('Bank Name', true) .' '. __('Account Name')}}" value="{{$user ? $user->title : ''}}" placeholder="">
                                         <span class="invalid-feedback" id="title_error"><strong></strong></span>
                                     </div>
                                     <div class="col-md-3 mb-2" id="account_numberInput">
-                                        <label for="accountnumber">{{__('Account Number')}}</label>
-                                        <input type="text" class="form-control" name="account_number" placeholder="Account Number" value="{{$user ? $user->title : ''}}" placeholder="">
+                                        <label for="accountnumber">{{getNomenclatureName('Bank Name', true)}}</label>
+                                        <input type="text" class="form-control" name="account_number" placeholder="{{getNomenclatureName('Bank Name', true) .' '. __('Account Number')}}" value="{{$user ? $user->title : ''}}" placeholder="">
                                         <span class="invalid-feedback" id="account_number_error"><strong></strong></span>
                                     </div>
                                     <div class="col-md-3 mb-2" id="ifsc_codeInput">
@@ -348,7 +348,7 @@
                                         @if(isset($vendor_registration_document->primary->slug) && !empty($vendor_registration_document->primary->slug))
                                             @if(strtolower($vendor_registration_document->file_type) == 'selector')
                                             <div class="col-md-6 mb-3" id="{{$vendor_registration_document->primary->slug??''}}Input">
-                                                <label for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}</label>
+                                                <label for="">{{$vendor_registration_document->primary ? __($vendor_registration_document->primary->name) : ''}}</label>
                                                 <select class="form-control {{ (!empty($vendor_registration_document->is_required))?'required':''}}" name="{{$vendor_registration_document->primary->slug}}"  id="input_file_selector_{{$vendor_registration_document->id}}">
                                                     <option value="" >{{__('Please Select '). ($vendor_registration_document->primary ? $vendor_registration_document->primary->name : '') }}</option>
                                                     @foreach ($vendor_registration_document->options as $key =>$value )
@@ -359,7 +359,7 @@
                                             </div>
                                             @else
                                                 <div class="col-md-6 mb-3" id="{{$vendor_registration_document->primary->slug??''}}Input">
-                                                    <label for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}</label>
+                                                    <label for="">{{$vendor_registration_document->primary ? __($vendor_registration_document->primary->name) : ''}}</label>
                                                     @if(strtolower($vendor_registration_document->file_type) == 'text')
                                                     <input id="input_file_logo_{{$vendor_registration_document->id}}" type="text" name="{{$vendor_registration_document->primary->slug}}" class="form-control {{ (!empty($vendor_registration_document->is_required))?'required':''}}">
                                                     <span class="invalid-feedback" id="{{$vendor_registration_document->primary->slug??''}}_error"><strong></strong></span>
@@ -542,7 +542,7 @@
                                 <div class="form-row">
                                     <div class="col-12 checkbox-input" id="check_conditionsCheckbox">
                                         <input type="checkbox" id="check_conditions" name="check_conditions" value="1">
-                                        <label for="check_conditions">{{__('I accept the')}} <a href="{{url('page/terms-conditions')}}" target="_blank">{{__('Terms And Conditions')}}</a> {{__('and have read the')}} <a href="{{url('page/privacy-policy')}}" target="_blank"> {{__('Privacy Policy.')}}</a></label>
+                                        <label for="check_conditions" class="font-weight-bold">{{__('I accept the')}} <a href="{{url('page/terms-conditions')}}" target="_blank" class="text-primary">{{__('Terms And Conditions')}}</a> {{__('and have read the')}} <a href="{{url('page/privacy-policy')}}" target="_blank" class="text-primary"> {{__('Privacy Policy.')}}</a></label>
                                         <span class="invalid-feedback" id="check_conditions_error"><strong></strong></span>
                                     </div>
                                 </div>
@@ -662,6 +662,9 @@ function isNumberKey(evt) {
     function vendorAddressInitialize() {
         var addressInput = document.getElementById('vendor_address');
         var autocomplete = new google.maps.places.Autocomplete(addressInput);
+        if(is_map_search_perticular_country){
+                autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+            }
         google.maps.event.addListener(autocomplete, 'place_changed', function() {
             var place = autocomplete.getPlace();
             document.getElementById('vendor_longitude').value = place.geometry.location.lng();
@@ -772,7 +775,7 @@ function isNumberKey(evt) {
         $("#input_file_banner").change(function() {
             readURL(this, '#upload_banner_preview');
         });
-        
+
         var input = document.querySelector("#phone");
         var iti = window.intlTelInput(input, {
             separateDialCode: true,
@@ -806,7 +809,7 @@ function isNumberKey(evt) {
             $('#register_btn_loader').show();
             $('.form-control').removeClass("is-invalid");
             $('.invalid-feedback').children("strong").html('');
-            
+
             $.ajax({
                 type: "POST",
                 data: formData,
@@ -894,7 +897,7 @@ function isNumberKey(evt) {
             var lats = addressLatitude.value;
             var lngs = addressLongitude.value;
         }
-        
+
         document.getElementById('map_for').value = no;
 
         if (lats == null || lats == '0' || lats =='') {
@@ -947,7 +950,7 @@ function isNumberKey(evt) {
             }
             });
         });
-       
+
         $('#add-customer-modal').addClass('fadeIn');
         $('#show-map-modal').modal({
             //backdrop: 'static',
@@ -969,8 +972,8 @@ function isNumberKey(evt) {
 
     $('#show-map-modal').modal('hide');
    });
-    
-    //// end vendor register page map icon 
+
+    //// end vendor register page map icon
 </script>
 
 <script>

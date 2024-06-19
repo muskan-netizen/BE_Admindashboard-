@@ -78,9 +78,9 @@ $applocale = session()->get('applocale');
                                 <li>
                                     <a href="{{route('extrapage',['slug' => $page->slug])}}">
                                         @if(isset($page->translations) && $page->translations->first()->title != null)
-                                        {{ $page->translations->first()->title ?? ''}}
+                                        {{ __($page->translations->first()->title) ?? ''}}
                                         @else
-                                        {{ $page->primary->title ?? ''}}
+                                        {{ __($page->primary->title) ?? ''}}
                                         @endif
                                     </a>
                                 </li>
@@ -89,9 +89,9 @@ $applocale = session()->get('applocale');
                                 <li>
                                     <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_blank">
                                         @if(isset($page->translations) && $page->translations->first()->title != null)
-                                        {{ $page->translations->first()->title ?? ''}}
+                                        {{ __($page->translations->first()->title) ?? ''}}
                                         @else
-                                        {{ $page->primary->title ?? ''}}
+                                        {{ __($page->primary->title) ?? ''}}
                                         @endif
                                     </a>
                                 </li>
@@ -235,7 +235,12 @@ $applocale = session()->get('applocale');
         </div>
     </div>
 </footer>
-
+@php
+if(@getAdditionalPreference(['is_enable_google_analytics'])['is_enable_google_analytics'] == 1){ 
+$footer_script = getAdditionalPreference(['footer_script'])['footer_script'];
+@endphp
+{!! $footer_script !!}
+ @php } @endphp
 </article>
 
 <div class="modal fade single-vendor-order-modal" id="single_vendor_order_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="s_vendor_remove_cartLabel" style="background-color: rgba(0,0,0,0.8);">

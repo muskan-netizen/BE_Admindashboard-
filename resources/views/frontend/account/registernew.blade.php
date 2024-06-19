@@ -156,6 +156,21 @@
                                     </div>
                                 </div>
 
+                                @if(@getAdditionalPreference(['is_enable_allergic_items'])['is_enable_allergic_items'])
+                                <label for="">{{ __('Allergic Items') }}</label>
+                                    <div class="form-group">
+                                        <select class="form-control select2-multiple" id="multiple" multiple name="allergic_item_ids[]"  data-placeholder="Select Allergic Item">
+                                            @foreach ($allergic_items as $item)
+                                            <option value="{{$item->id}}">{{$item->title??''}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="custom_allergic_items" placeholder="Enter Custom Allergic Items" value="{{ auth()->user()->custom_allergic_items ?? ''}}">
+                                    </div>
+                                @endif
+
                                 @if (count($user_registration_documents) > 0)    
                                     <div class="user-info d-block w-100">
                                         <h5 class="py-1">User Document</h5>
@@ -246,15 +261,23 @@
                                 </div>
                                 <div class="form-check mb-4">
                                     <input type="checkbox" name="term_and_condition" class="form-check-input @error('term_and_condition') is-invalid @enderror" id="html">
-                                    <label for="html" class="mr-3">{{ __('I accept the') }}
-                                        <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
-                                            target="_blank">{{ __('Terms And Conditions') }} </a>
-                                        {{ __('and have read the') }}
-                                        <a href="{{ $privacy ? route('extrapage', $privacy->slug) : '#' }}"
-                                            target="_blank">
-                                            {{ __('Privacy Policy') }}.
-                                        </a>
-                                    </label>
+                                            @if(session()->get("customerLanguage") == "59")
+                                            <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
+                                                target="_blank"> {{ __('I accept the Terms And Conditions and and have read the Privacy Policy.') }}
+                                            </a>
+                                             @else
+
+                                            <label for="html" class="mr-3">{{ __('I accept the') }}
+                                            <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
+                                                target="_blank">{{ __('Terms And Conditions') }} </a>
+                                                {{ __('and have read the') }}
+                                                <a href="{{ $privacy ? route('extrapage', $privacy->slug) : '#' }}"
+                                                target="_blank">
+                                                {{ __('Privacy Policy') }}
+                                                </a>
+                                            </label>
+                                            @endif
+                                       
                                     @if($errors->first('term_and_condition'))
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $errors->first('term_and_condition') }}</strong>
@@ -329,15 +352,34 @@
                     });
                 @endif
             @endif
+
+            jQuery.validator.addMethod("indianMobile", function(value, element) {
+                var dialCode = $("#dialCode").val();
+                // Regular expression for Indian mobile numbers
+                if(dialCode == 91) {
+                    var regex = /^[6-9]\d{9}$/;
+                    return this.optional(element) || regex.test(value);
+                } else {
+                    return true;
+                }
+                
+                }, "Please enter a valid Indian mobile number.");
+
+            jQuery.validator.addMethod("alphanumeric", function(value, element) {
+                return this.optional(element) || /^[a-zA-Z0-9 ]+$/i.test(value);
+            }, "Name should contains alphanumeric data.");
             $("#register").validate({
                 errorClass: 'errors',
                 rules: {
                     name : {
                         required: true,
+                        minlength: 3,
+                        alphanumeric: true
                     },
                     phone_number: {
                         required: true,
-                        number: true
+                        //number: true,
+                        indianMobile: true
                     },
                     email: {
                         required: true,
@@ -354,7 +396,11 @@
                     this.element(element); // triggers validation
                 },
                 messages : {
-                    name: "{{ __('Please enter your name')}}",
+                    name: {
+                        required:"{{ __('Please enter your name')}}",
+                        minlength:"{{__('The name must be at least 3 characters.')}}",
+                        alphanumeric:"{{ __('Name should contains alphanumeric data')}}"
+                    },
                     phone_number: {
                         required: "{{ __('Please enter your phone')}}",
                         number: "{{ __('Please enter a numerical value')}}"

@@ -20,7 +20,7 @@ class SearchController extends FrontController
         $language_id = Session::get('customerLanguage');
        // $preferences = getClientPreferenceDetail();
         $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'):  getClientPreferenceDetail();
-   
+
         $latitude = session('latitude');
         $longitude = session('longitude');
         $selectedAddress = session('selectedPlaceId');
@@ -31,7 +31,7 @@ class SearchController extends FrontController
         if (count($allowed_vendors) > 0) {
             $vendors = $vendors->whereIn('id', $allowed_vendors);
         }
-      
+
 
         if (@$preferences) {
             if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
@@ -89,7 +89,7 @@ class SearchController extends FrontController
         $products = $products->whereIn('vendor_id', $allowed_vendors);
         //}
         $products = $products->whereNull('deleted_at')->groupBy('products.id')->get();
-        $product_results = [];
+        // $product_results = [];
         foreach ($products as $product) {
             $redirect_url = route('productDetail', [$product->vendor_slug, $product->url_slug]);
             $image_url = $product->media->first() ? $product->media->first()->image->path['proxy_url'] . '80/80' . $product->media->first()->image->path['image_path'] : '';
@@ -99,7 +99,7 @@ class SearchController extends FrontController
             $response[] = ['title' => '', 'result' => $product_results];
         }
         if (@$vender_results) {
-            $response[] = ['title' => __('Venders'), 'result' => $vender_results];
+            $response[] = ['title' => __('Vendors'), 'result' => $vender_results];
         }
 
         $brands = Brand::join('brand_translations as bt', 'bt.brand_id', 'brands.id')
@@ -170,7 +170,7 @@ class SearchController extends FrontController
         $vendorType = Session::get('vendorType');
         $vendorMapView = '';
         $vendors = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'name', 'logo', 'slug', 'latitude', 'longitude', 'address', 'dial_code', 'phone_no')->where($vendorType, 1);
-        
+
         if (@$preferences) {
             if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
                 $selectedAddress = @$preferences->Default_location_name;
@@ -253,7 +253,7 @@ class SearchController extends FrontController
 
 
         if (@$vender_results) {
-            $response[] = ['title' => __('Venders'), 'result' => $vender_results];
+            $response[] = ['title' => __('Vendors'), 'result' => $vender_results];
         }
         $brands = Brand::join('brand_translations as bt', 'bt.brand_id', 'brands.id')
             ->select('brands.id', 'bt.title as name', 'image')

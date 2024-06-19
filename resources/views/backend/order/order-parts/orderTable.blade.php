@@ -1,4 +1,6 @@
     @if(count($orders['orders']) > 0)
+
+   
     @foreach ($orders['orders'] as $k => $order)
 
         <div class="{{$ClassName}} al_order_sec" id="full-order-div{{ $k }}">
@@ -24,7 +26,7 @@
                 </div>
                 <div class="col-md-3 alOrderStatus">
                     <h4>{{ __('Customer') }}</h4>
-                    <span>{{ $order['user']['name'] }}</span>
+                    <span>{{ @$order['user']['name']??'' }}</span>
                 </div>
                 @if (Auth::user()->is_superadmin || $client_preference_detail->hide_order_address == 0)
                     <div class="col-md-3">
@@ -42,7 +44,7 @@
                 @endif
             </div>
 
-            <div class="row">
+            <div class="row mb-3">
                 <div class="col-md-9">
 
                     @foreach ($order['vendors'] as $ve => $vendor)
@@ -59,8 +61,8 @@
                                             <li>
                                                 <a data-toggle="tooltip" data-placement="top" title="Start Chat"
                                                     class="start_chat btn-info" data-vendor_order_id="{{ $vendor->id }}"
-                                                    data-vendor_id="{{ $vendor['vendor_id'] }}>"
-                                                    data-orderId="{{ $order['order_id'] }}>"
+                                                    data-vendor_id="{{ $vendor['vendor_id'] }}"
+                                                    data-orderId="{{ $order['order_id'] }}"
                                                     data-order_id="{{ $order['id'] }}"><svg
                                                         xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                         fill="currentColor" class="bi bi-chat-dots-fill"
@@ -118,7 +120,7 @@
                                                                     @endif
                                                                 @else
                                                                     <span class="ml-2">{{ __('Order scheduled for') }}
-                                                                        {{ $order->scheduled_date_time }},
+                                                                        {{ $order->order_schedule_date }},
                                                                         {{ __('Slot') }} :
                                                                         {{ $order->scheduled_slot }}</span>
                                                                 @endif
@@ -143,7 +145,7 @@
                                                 </li>
                                             </ul>
                                         </div>
-                                        <div class="col-7 col-sm-6">
+                                        <div class="col-6 col-sm-5">
                                             <div class="row no-gutters product_list align-items-center flex-wrap">
 
                                                 @foreach ($vendor['products'] as $pr => $product)
@@ -159,14 +161,14 @@
                                                         </div>
 
                                                         <label class="items_price">
-                                                            ({{ $product['product_name'] }})
+                                                            ({{ $product['product_title'] }})
                                                             {{ $clientCurrency->currency->symbol }}{{ decimal_format($product['price']) }}</label>
                                                     </div>
                                                 @endforeach
                                             </div>
                                         </div>
-                                        
-                                        <div class="col-md-3 mt-md-0 mt-sm-2">
+
+                                        <div class="col-md-4 mt-md-0 mt-sm-2">
                                             <ul class="price_box_bottom m-0 p-0">
 
                                                 @if ($vendor['subtotal_amount'] > 0 || $vendor['subtotal_amount'] < 0)
@@ -210,11 +212,11 @@
                                                     </li>
                                                 @endif
 
-                                                @if ($vendor['taxable_amount'] > 0 || $vendor['taxable_amount'] < 0)
+                                                @if ($order->total_other_taxes_amount > 0 || $order->total_other_taxes_amount < 0)
                                                     <li class="d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Tax') }}</label>
-                                                        @if ($vendor['taxable_amount'] !== null)
-                                                            <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor['taxable_amount']) }}</span>
+                                                        @if ($order->total_other_taxes_amount !== null)
+                                                            <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($order->total_other_taxes_amount) }}</span>
                                                         @else
                                                             <span>{{ $clientCurrency->currency->symbol }}0.00</span>
                                                         @endif
@@ -267,11 +269,7 @@
 
                                                 <li class="grand_total d-flex align-items-center justify-content-between">
                                                     <label class="m-0">{{ __('Amount') }}</label>
-                                                    @if ($vendor['delivery_fee'] == '' || $vendor['delivery_fee'] == null)
-                                                        {{ $vendor['delivery_fee'] = 0 }}
-                                                    @endif
-
-                                                    <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor['subtotal_amount'] - $vendor['discount_amount'] + $vendor['total_container_charges'] + $vendor['taxable_amount'] + $vendor['service_fee_percentage_amount'] + $vendor['fixed_fee'] + $vendor['delivery_fee'] + $vendor['additional_price'] + $vendor['toll_amount']-$order->wallet_amount_used) }}
+                                                    <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor['subtotal_amount'] - $vendor['discount_amount']  + $order->total_other_taxes_amount + $vendor['service_fee_percentage_amount'] + $vendor['fixed_fee'] + $vendor['delivery_fee'] + $vendor['additional_price'] + $vendor['toll_amount']-$order->wallet_amount_used) }}
                                                     </span>
                                                 </li>
                                             </ul>
@@ -281,12 +279,9 @@
 
                                     </a>
                                     <div id="update-single-status" class="my-2">
-
-
-
                                         @if ($vendor['order_status_option_id'] == 1)
                                             @if ($order->vendors->first()->exchanged_of_order)
-                                                <button class="update-status btn-info"
+                                                <button class="update-status-ar btn-info"
                                                     data-full_div="#full-order-div{{ $k }}"
                                                     data-single_div="#single-order-div{{ $k . $ve }}"
                                                     data-count="{{ $ve }}" data-order_id="{{ $order->id }}"
@@ -295,7 +290,7 @@
                                                     data-is_alert="{{ $vendor->isAlert }}"
                                                     data-alert_message="{{ $vendor->alertMessage }}">{{ __('Exchange Accept') }}</button>
                                             @else
-                                                <button class="update-status btn-info"
+                                                <button class="update-status-ar btn-info"
                                                     data-full_div="#full-order-div{{ $k }}"
                                                     data-single_div="#single-order-div{{ $k . $ve }}"
                                                     data-count="{{ $ve }}"
@@ -306,7 +301,7 @@
                                                     data-alert_message="{{ $vendor->alertMessage }}">{{ __('Accept') }}</button>
                                             @endif
                                         @elseif($vendor->order_status_option_id == 2)
-                                            <button class="update-status btn-warning"
+                                            <button class="update-status-ar btn-warning"
                                                 data-full_div="#full-order-div{{ $k }}"
                                                 data-single_div="#single-order-div{{ $k . $ve }}"
                                                 data-count="{{ $ve }}" data-order_id="{{ $order->id }}"
@@ -314,7 +309,7 @@
                                                 data-order_vendor_id="{{ $vendor->id }}"
                                                 data-order_luxury_option="{{ $order->luxury_option_id }}">{{ __('Processing') }}</button>
                                         @elseif($vendor->order_status_option_id == 4)
-                                            <button class="update-status btn-success"
+                                            <button class="update-status-ar btn-success"
                                                 data-full_div="#full-order-div{{ $k }}"
                                                 data-single_div="#single-order-div{{ $k . $ve }}"
                                                 data-count="{{ $ve }}" data-order_id="{{ $order->id }}"
@@ -327,7 +322,7 @@
                                                 @endif
                                             </button>
                                         @elseif($vendor->order_status_option_id == 5)
-                                            <button class="update-status btn-info"
+                                            <button class="update-status-ar btn-info"
                                                 data-full_div="#full-order-div{{ $k }}>"
                                                 data-single_div="#single-order-div{{ $k . $ve }}"
                                                 data-count="{{ $ve }}" data-order_id="{{ $order->id }}"
@@ -341,7 +336,7 @@
                                                     $vendor->order_status_option_id != 3 &&
                                                     $vendor->order_status_option_id != 9))
                                             @if ($order->vendors->first()->exchanged_of_order)
-                                                <button class="update-status btn-danger" id="reject"
+                                                <button class="update-status-ar btn-danger" id="reject"
                                                     data-full_div="#full-order-div{{ $k }}"
                                                     data-single_div="#single-order-div{{ $k . $ve }}"
                                                     data-count="{{ $ve }}"
@@ -349,7 +344,7 @@
                                                     data-vendor_id="{{ $vendor->vendor_id }}" data-status_option_id="3"
                                                     data-order_vendor_id="{{ $vendor->id }}">{{ __('Exchange Reject') }}</button>
                                             @else
-                                                <button class="update-status btn-danger" id="reject"
+                                                <button class="update-status-ar btn-danger" id="reject"
                                                     data-full_div="#full-order-div{{ $k }}"
                                                     data-single_div="#single-order-div{{ $k }}{{ $ve }}"
                                                     data-count="{{ $ve }}"
@@ -394,12 +389,12 @@
                                 </li>
                             @endif
 
-                            @if ($order->taxable_amount > 0 || $order->taxable_amount < 0)
+                       {{--     @if ($order->taxable_amount > 0 || $order->taxable_amount < 0)
                                 <li class="d-flex align-items-center justify-content-between">
                                     <label class="m-0">{{ __('Tax') }}</label>
                                     <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($order->taxable_amount) }}</span>
                                 </li>
-                            @endif
+                            @endif--}}
 
                             {{-- need to check --}}
 
@@ -479,6 +474,25 @@
                                 </li>
                             @endif
 
+                            @if ($order->rental_protection_amount > 0 || $order->rental_protection_amount < 0)
+                                <li class="d-flex align-items-center justify-content-between">
+                                    <label class="m-0">{{ __('Rental Protection Amount') }}</label>
+                                    <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($order->rental_protection_amount) }}</span>
+                                </li>
+                            @endif
+
+                            @if ($order->booking_option_price > 0 || $order->booking_option_price < 0)
+                                <li class="d-flex align-items-center justify-content-between">
+                                    <label class="m-0">{{ __('Booking Option Amount') }}</label>
+                                    <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($order->booking_option_price) }}</span>
+                                </li>
+                            @endif
+                            @if($order->luxury_option_id == 4)
+                                <li class="d-flex align-items-center justify-content-between">
+                                    <label class="m-0">{{ __('Security Amount') }} </label>
+                                    <span>{{Session::get('currencySymbol').decimal_format($order->security_amount)}}</span>
+                                </li>
+                            @endif
                             <li class="grand_total d-flex align-items-center justify-content-between">
                                 <label class="m-0">{{ __('Payable') }} </label>
                                 <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($order->payable_amount) }}</span>
@@ -503,9 +517,13 @@
         </div>
     @endforeach
 @else
+@php
+    $ordersNom = getNomenclatureName('Orders', true);
+    $ordersNom = ($ordersNom=="Orders")?__('Orders'):__($ordersNom);
+@endphp
 <div class="error-msg mt-3">
     <img class="mb-2" src="{{asset('images/no-order.svg')}}">
-    <p>{{ __("You don't have orders right now.") }}</p>
+    <p>{{ __("You don't have ".$ordersNom." right now.") }}</p>
 </div>
 @endif
 

@@ -271,10 +271,26 @@ body .rating-form .btn-reset {
 </div> -->
 
 {{-- @if(auth()->user()->can('vendor-setting') || auth()->user()->is_superadmin) --}}
+
 @php
-    $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery']);
+    $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery','is_marg_enable','is_vendor_marg_configuration']);
 @endphp
-@if( !p2p_module_status() )
+
+@if(Auth::user()->is_admin == 1 && isset($getAdditionalPreference['is_vendor_marg_configuration']) && $getAdditionalPreference['is_vendor_marg_configuration'] == '1')
+    <div class="card-box cate-vendor">
+        <div class="row text-left">
+            <div class="col-md-12">
+                <a class="" href="{{ route('vendor.margConfig',$vendor->id) }}">
+                @php
+                    $vendormenu = getNomenclatureName('Marg Configuration', true);
+                @endphp
+                    <span>{{ __('Marg Configuration') }}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+@endif
+@if( p2p_module_status())
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
@@ -286,7 +302,32 @@ body .rating-form .btn-reset {
                     </div>
                 </div>
                 <div class="row mb-2">
-                   
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('24*7 Availability'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="show_slot" class="form-control" data-color="#43bee1" @if($vendor->show_slot == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
+@if( !p2p_module_status() )
+<div class="card-box cate-vendor">
+    <div class="row text-left">
+        <div class="col-md-12">
+            <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" id="slot-configs" method="post">
+                @csrf
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="mb-2 "> <span class="">{{ __("Settings") }}</span></h4>
+                    </div>
+                </div>
+                <div class="row mb-2">
+
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12">
                         <div class="form-group" id="order_pre_timeInput">
@@ -298,6 +339,19 @@ body .rating-form .btn-reset {
                         </div>
                     </div>
                     @endif
+
+                    @if(@getAdditionalPreference(['vendor_online_status'])['vendor_online_status'])
+                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Online'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="is_online" class="form-control" data-color="#43bee1" @if($vendor->is_online == 1) checked @endif>
+                    </div>
+                    @endif
+
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Featured'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="is_featured" class="form-control" data-color="#43bee1" @if($vendor->is_featured == 1) checked @endif>
+                    </div>
+
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('24*7 Availability'),['class' => 'control-label']) !!}
@@ -357,7 +411,7 @@ body .rating-form .btn-reset {
                         {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if($vendor->auto_accept_order == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
-               
+
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Need Container Charges?'),['class' => 'control-label']) !!}
@@ -380,7 +434,7 @@ body .rating-form .btn-reset {
                         {!! Form::label('title', __('Return Auto Approve'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="return_auto_approve" class="form-control" data-color="#43bee1" @if($vendor->return_auto_approve == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
-                    
+
                     @if(isset($getAdditionalPreference['is_same_day_delivery']) && $getAdditionalPreference['is_same_day_delivery'] == '1')
                         <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                             {!! Form::label('title', __('Same Day Delivery'),['class' => 'control-label']) !!}
@@ -401,8 +455,8 @@ body .rating-form .btn-reset {
                             <input type="checkbox" data-plugin="switchery" name="hyper_local_delivery" class="form-control" data-color="#43bee1" @if($vendor->hyper_local_delivery == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     @endif
-                    
-                    @if($getAdditionalPreference['is_same_day_delivery'] == '1' || $getAdditionalPreference['is_next_day_delivery'] == '1')                    
+
+                    @if($getAdditionalPreference['is_same_day_delivery'] == '1' || $getAdditionalPreference['is_next_day_delivery'] == '1')
                         <div class="col-md-12 d-none" id="cutOff_timeInput">
                             <div class="form-group">
                                 {!! Form::label('title', __('Cut Off Time'),['class' => 'control-label']) !!}
@@ -503,14 +557,15 @@ body .rating-form .btn-reset {
                             </textarea>
                         </div>
                     </div> --}}
-                   
+
+
                     @if(Auth::user()->is_superadmin == 1 && $client_preferences->is_one_push_book_enable == 1 && $vendor->pick_drop == 1)
                         <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                             {!! Form::label('title', __('Instant Booking'),['class' => 'control-label']) !!}
                             <input type="checkbox" data-plugin="switchery" name="is_vendor_instant_booking" class="form-control" data-color="#43bee1" @if($vendor->is_vendor_instant_booking == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     @endif
-                    
+
 
                     <div class="col-12">
                         <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
@@ -880,72 +935,86 @@ aria-hidden="true">
         list-style-type: none;
     }
 </style>
-<div class="card-box">
-    <div class="row text-left">
-        <div class="col-md-12">
-            <div class="row">
-                <div class="col-md-12">
-                    <h4 class="mb-2"> <span class="">{{ __("Category Setup") }}</span> ({{ __("Visible For Admin") }})</h4>
+@if (Auth::user()->is_superadmin == 1)
+    <div class="card-box">
+        <div class="row text-left">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="mb-2"> <span class="">{{ __("Category Setup") }}</span> ({{ __("Visible For Admin")
+                            }})</h4>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        @if($client_preference_detail->business_type != 'taxi')
-        <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-            {!! Form::label('title', __('Can Add Category'),['class' => 'control-label']) !!}
-            <input type="checkbox" data-plugin="switchery" name="can_add_category" class="form-control can_add_category1" data-color="#43bee1" @if($vendor->add_category == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
-        </div>
-        <div class="col-md-12">
-            {!! Form::label('title', __('Vendor Detail To Show'),['class' => 'control-label ']) !!}
-        </div>
+        <div class="row">
+            @if($client_preference_detail->business_type != 'taxi')
+            <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                {!! Form::label('title', __('Can Add Category'),['class' => 'control-label']) !!}
+                <input type="checkbox" data-plugin="switchery" name="can_add_category"
+                    class="form-control can_add_category1" data-color="#43bee1" @if($vendor->add_category == 1) checked
+                @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+            </div>
+            <div class="col-md-12">
+                {!! Form::label('title', __('Vendor Detail To Show'),['class' => 'control-label ']) !!}
+            </div>
 
-        <div class="col-md-12 mb-3">
-            <select class="selectize-select form-control assignToSelect" id="assignTo" {{$vendor->status == 1 ? '' : 'disabled'}}>
-                @foreach($templetes as $templete)
-                    <option value="{{$templete->id}}" {{$vendor->vendor_templete_id == $templete->id ? 'selected="selected"' : ''}}>{{ __($templete->title)}}</option>
-                @endforeach
-            </select>
-        </div>
-        @endif
-        <div class="col-md-12">
-            {!! Form::label('title', __('Vendor Category'),['class' => 'control-label']) !!}
-            <div class="col-sm-12 text-sm-left catalogupdate" style="display: none">
-                <div class="alert alert-success">
-                    <span class="cattxt"></span>
-                </div>
+            <div class="col-md-12 mb-3">
+                <select class="selectize-select form-control assignToSelect" id="assignTo" {{$vendor->status == 1 ? '' :
+                    'disabled'}}>
+                    @foreach($templetes as $templete)
+                    <option value="{{$templete->id}}" {{$vendor->vendor_templete_id == $templete->id ? 'selected="selected"'
+                        : ''}}>{{ __($templete->title)}}</option>
+                    @endforeach
+                </select>
             </div>
-            <div class="custom-dd dd nestable_list_1" id="nestable_list_1">
-                <ol class="dd-list">
-                    @forelse($builds as $build)
-                    @if($build['translation_one'])
-                    <li class="dd-item dd3-item" data-category_id="{{$build['id']}}">
-                        <div class="dd3-content">
-                            <img class="rounded-circle mr-1" src="{{$build['icon']['proxy_url']}}30/30{{$build['icon']['image_path']}}"> {{$build['translation_one']['name']}}
-                            <span class="inner-div text-right">
-                                <a class="action-icon" data-id="3" href="javascript:void(0)">
-                                    @if(in_array($build['id'], $VendorCategory))
-                                        <input type="checkbox" data-category_id="{{ $build['id'] }}" data-color="#43bee1" class="form-control activeCategory" data-plugin="switchery" checked {{$vendor->status == 1 ? '' : 'disabled'}}>
-                                    @else
-                                        <input type="checkbox" data-category_id="{{ $build['id'] }}" data-color="#43bee1" class="form-control activeCategory" data-plugin="switchery" {{$vendor->status == 1 ? '' : 'disabled'}}>
-                                    @endif
-                                    <input type="hidden" value="{{ $build['id'] }}">
-                                </a>
-                            </span>
-                        </div>
-                        @if(isset($build['children']))
-                            <x-category :categories="$build['children']" :vendorcategory="$VendorCategory" :vendor="$vendor"/>
-                        @endif
+            @endif
+            <div class="col-md-12">
+                {!! Form::label('title', __('Vendor Category'),['class' => 'control-label']) !!}
+                <div class="col-sm-12 text-sm-left catalogupdate" style="display: none">
+                    <div class="alert alert-success">
+                        <span class="cattxt"></span>
+                    </div>
+                </div>
+                <div class="custom-dd dd nestable_list_1" id="nestable_list_1">
+                    <ol class="dd-list">
+                        @forelse($builds as $build)
+                        @if($build['translation_one'])
+                        <li class="dd-item dd3-item" data-category_id="{{$build['id']}}">
+                            <div class="dd3-content">
+                                <img class="rounded-circle mr-1"
+                                    src="{{$build['icon']['proxy_url']}}30/30{{$build['icon']['image_path']}}">
+                                {{$build['translation_one']['name']}}
+                                <span class="inner-div text-right">
+                                    <a class="action-icon" data-id="3" href="javascript:void(0)">
+                                        @if(in_array($build['id'], $VendorCategory))
+                                        <input type="checkbox" data-category_id="{{ $build['id'] }}" data-color="#43bee1"
+                                            class="form-control activeCategory" data-plugin="switchery" checked
+                                            {{$vendor->status == 1 ? '' : 'disabled'}}>
+                                        @else
+                                        <input type="checkbox" data-category_id="{{ $build['id'] }}" data-color="#43bee1"
+                                            class="form-control activeCategory" data-plugin="switchery" {{$vendor->status ==
+                                        1 ? '' : 'disabled'}}>
+                                        @endif
+                                        <input type="hidden" value="{{ $build['id'] }}">
+                                    </a>
+                                </span>
+                            </div>
+                            @if(isset($build['children']))
+                            <x-category :categories="$build['children']" :vendorcategory="$VendorCategory"
+                                :vendor="$vendor" />
+                            @endif
                         </li>
-                    </li>
-                    @endif
-                    @empty
-                    @endforelse
-                </ol>
+                        </li>
+                        @endif
+                        @empty
+                        @endforelse
+                    </ol>
+                </div>
             </div>
         </div>
     </div>
-</div>
+@endif
 
 <style type="text/css">
     #nestable_list_1 ol, #nestable_list_1 ul{
@@ -1620,7 +1689,7 @@ $("input[name='need_container_charges']").change(function() {
     $('body').on('click', '.add_edit_driver_review', function(event) {
             event.preventDefault();
             var id= $('#vendor_id').val();
-            var route="{{url('client/get-vendor-rating')}}/"+id 
+            var route="{{url('client/get-vendor-rating')}}/"+id
             $.get(route,
                 function(markup) {
                     console.log(markup);

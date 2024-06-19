@@ -172,6 +172,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <span class="alTemplateName mt-3 w-100">{{$homepage_style->name}}</span>
                                     </div>
                             @endforeach
                         </div>
@@ -257,7 +258,7 @@
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
                                 @endif
-                               
+
 
                                 @if($home_page_label->slug == 'selected_products')
                                 <a class="action-icon openProductsModal" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
@@ -265,7 +266,7 @@
                                     <select class="form-control select2-multiple" id='product' name="selected_products[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required>
                                         <option value="">{{ __("Select Product") }}</option>
                                         @foreach($select_products as $products)
-                                        <option value="{{$products->id}}" @if(in_array($products->id, $selected_ids)) selected @endif>{{$products->title}}</option>
+                                        <option value="{{$products->id}}" @if(!empty($selected_ids) && in_array($products->id, $selected_ids)) selected @endif>{{$products->title}}</option>
                                         @endforeach
                                     </select>
                                     </div>
@@ -286,7 +287,7 @@
                                             @if(!is_null($category->vendor)) ({{@$category->vendor->name}}) @endif
                                         </option>
                                         @endforeach
-                         
+
                                 </div>
                                 </div>
                                 </div>
@@ -307,12 +308,6 @@
                                 @else
                                 <input type="hidden" name="for_no_product_found_html[{{$key}}]">
                                 @endif
-                                @if($home_page_label->slug == 'banner')
-                                <a class="action-icon openBannerModal" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
-
-                                    <input required type="file" accept="image/*,.pdf,.doc" data-plugins="dropify" name="banner_image[{{$key}}][check]" class="dropify" data-default-file="">
-                                </a>
-                                @endif
                                 <div class="mb-0 ml-1">
                                     <input class="form-control" type="hidden" value="{{$home_page_label->id}}" name="pickup_labels[]">
 
@@ -322,7 +317,7 @@
                                 <a class="action-icon deletePickupSectionx" href="{{route('pickup.delete.section', $home_page_label->id)}}" onclick="return confirm('Are you sure you want to delete this section?');"  dataid="{{$home_page_label->id}}" href="javascript:void(0);">
                                     <i class="mdi mdi-delete"></i>
                                 </a>
-                              
+
                     </li>
 
                     @endforeach
@@ -702,7 +697,7 @@ $("#save_home_page_pickup").click(function(event) {
             }
         });
     }
-  
+
     function submitSecondaryColorForm() {
         var data_uri = "{{route('styling.updateColor')}}";
         $.ajaxSetup({

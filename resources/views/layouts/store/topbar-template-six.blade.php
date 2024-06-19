@@ -23,7 +23,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                @if(Auth::user())
                @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                <li>
-                  <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                  <a href="{{route('client.dashboard')}}" data-lng="en">{{getNomenclatureName('Control Panel', true)}}</a>
                </li>
                @endif
                <li>
@@ -38,6 +38,9 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                   <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
                </li>
                @endif
+               @endif
+               @if( $is_ondemand_multi_pricing ==1 )
+                     @include('layouts.store.onDemandTopBarli')
                @endif
                @if($client_preference_detail->show_wishlist == 1)
                <li class="onhover-dropdown_al mobile-wishlist_al">
@@ -55,6 +58,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                   <ul class="show-div shopping-cart"></ul>
                </li>
                @endif
+             
                @if($client_preference_detail->header_quick_link == 1)
                @foreach($pages as $page)
                @if(isset($page->primary->type_of_form) && ($page->primary->type_of_form == 2))
@@ -142,7 +146,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                   </div>
                   <!-- logo end -->
                   <!-- alFindSec start -->
-                  <div class="alFindSec d-none d-lg-block">
+                  <div class="alFindSec  d-lg-block">
                      <ul class="p-0 m-0 d-flex align-items-center justify-content-between">
                         @if(isset($preference))
                         @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
@@ -170,12 +174,12 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                               <input type="input" class="form-control" value="{{session('selectedDate') ?? ''}}"
                                id="inputDate" placeholder="{{session('selectedDate') ? session('selectedDate') : __('Choose Date') }} ">
                            </div>
-                        </li> --}}
+                        </li> 
                         <li class="pr-0">
                            <div class="alFindGo">
                               <button class="btn">{{__('Go')}}</button>
                            </div>
-                        </li>
+                        </li>--}}
                      </ul>
                   </div>
                   <!-- alFindSec end -->
@@ -185,9 +189,10 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                <div class="rightHead d-flex align-items-end">
                   <ul class="p-0 m-0 d-flex align-items-center ml-auto">
                      <!-- alUserIcon start -->
-                     @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                     @if( Session::get('vendorType') == 'p2p' )
                         <li class="add_post pr-3"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span> {{__('Add Post')}}</span></a></li>
                     @endif
+
                      <li class="alUserIcon onhover-dropdown">
                         <a href="#">
                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -198,7 +203,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                            @if(Auth::user())
                            @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                            <li>
-                              <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                              <a href="{{route('client.dashboard')}}" data-lng="en">{{getNomenclatureName('Control Panel', true)}}</a>
                            </li>
                            @endif
                            <li>
@@ -222,7 +227,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                      @if($client_preference_detail)
                      @if($client_preference_detail->cart_enable==1)
                      <li class="alShoppingBag mx-md-4 mx-2 dropdown">
-                        <a href="#" class="alShopIcon" href="{{route('showCart')}}">
+                        <a class="alShopIcon" href="{{route('showCart')}}">
                            <span class="navbar-tool-label" id="cart_qty_span"> </span>
                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <g clip-path="url(#clip0_160_410)">

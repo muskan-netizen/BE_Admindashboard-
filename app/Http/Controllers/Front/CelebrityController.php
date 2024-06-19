@@ -31,7 +31,7 @@ class CelebrityController extends FrontController
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             if(Session::has('vendors')){
                 $vendors = Session::get('vendors');
-                $vendors = $vendors->toArray();
+                $vendors = is_array($vendors)?$vendors:$vendors->toArray();
             }else{
                 abort(404);
             }
@@ -40,7 +40,7 @@ class CelebrityController extends FrontController
             $vendorIds = $vendors;
         }else{
             $vendorIds = array();
-            $vendorList = Vendor::select('id', 'name')->where('status', '!=', $this->field_status)->get();
+            $vendorList = Vendor::vendorOnline()->select('id', 'name')->where('status', '!=', $this->field_status)->get();
             if(!empty($vendorList)){
                 foreach ($vendorList as $key => $value) {
                     $vendorIds[] = $value->id;

@@ -39,7 +39,6 @@ class ProductEstimationController extends Controller
     public function getProductEstimationWithAddons(Request $request)
     {
         try{
-          //\Log::info(json_encode($request->all()));
             $langID = $request->header('language')??"1";
             $estimateProductsWithAddons = EstimateProduct::with(['estimate_product_addons.estimate_addon_set.option','category.primary' , 'estimate_product_translation' => function($q) use($langID) {
                 $q->where('language_id', '=', $langID);
@@ -48,7 +47,6 @@ class ProductEstimationController extends Controller
             //     $estimateProductsWithAddons = $estimateProductsWithAddons->where('category_id',$request->category_id);
             // }
             // $estimateProductsWithAddons =$estimateProductsWithAddons->get();
-            //\Log::info(json_encode($request->all()));
             return $this->successResponse($estimateProductsWithAddons);
         }catch (\Exception $e)
         {
@@ -289,11 +287,11 @@ class ProductEstimationController extends Controller
 
             $data = array();
             //FEtch Vendor with Products
-            $vendorsgb = DB::select("SELECT v.id as vid,v.address,v.name as vname,v.logo,ps.title as ptitle,p.id as pid,pv.price as pprice from vendors as v join products as p on v.id=p.vendor_id join product_translations as ps on p.id=ps.product_id join product_variants as pv  on p.id=pv.product_id where v.status='1' and ps.title IN ($pkeys) and is_live='1' group by v.id");
+            $vendorsgb = DB::select("SELECT v.id as vid,v.address,v.name as vname,v.logo,ps.title as ptitle,p.id as pid,pv.price as pprice from vendors as v join products as p on v.id=p.vendor_id join product_translations as ps on p.id=ps.product_id join product_variants as pv  on p.id=pv.product_id where v.status='1' and ps.title IN (?) and is_live='1' group by v.id", [$pkeys]);
             foreach($vendorsgb as $vpg)
             {
                 $products = array();
-                $vendors = DB::select("SELECT v.id as vid,p.sku,v.address,v.name as vname,v.logo,ps.title as ptitle,p.id as pid,pv.id  as variant_id,pv.price as pprice from vendors as v join products as p on v.id=p.vendor_id join product_translations as ps on p.id=ps.product_id join product_variants as pv  on p.id=pv.product_id where v.status='1' and ps.title IN ($pkeys) and is_live='1' and v.id='$vpg->vid' group by ps.title ");
+                $vendors = DB::select("SELECT v.id as vid,p.sku,v.address,v.name as vname,v.logo,ps.title as ptitle,p.id as pid,pv.id  as variant_id,pv.price as pprice from vendors as v join products as p on v.id=p.vendor_id join product_translations as ps on p.id=ps.product_id join product_variants as pv  on p.id=pv.product_id where v.status='1' and ps.title IN (?) and is_live='1' and v.id=? group by ps.title ", [$pkeys, $vpg->vid]);
                 foreach($vendors as $vp)
                 {
 
@@ -313,7 +311,7 @@ class ProductEstimationController extends Controller
                         $option_id = array();
                         $addon_price = array(); 
                         //Fetch Products Addon set
-                        $addon = DB::select("SELECT paj.addon_id as aid,sa.title,ado.id as aoid from product_addons as paj join addon_sets as sa on sa.id=paj.addon_id join addon_options as ado on paj.addon_id=ado.addon_id join addon_option_translations as adot on ado.id=adot.addon_opt_id where sa.status='1' and product_id='$vp->pid' and adot.title IN ($addonsKeys) group by paj.addon_id ");
+                        $addon = DB::select("SELECT paj.addon_id as aid,sa.title,ado.id as aoid from product_addons as paj join addon_sets as sa on sa.id=paj.addon_id join addon_options as ado on paj.addon_id=ado.addon_id join addon_option_translations as adot on ado.id=adot.addon_opt_id where sa.status='1' and product_id=? and adot.title IN (?) group by paj.addon_id ", [$vp->pid, $addonsKeys]);
                         foreach($addon as $vpa)
                         {
                         
@@ -322,7 +320,7 @@ class ProductEstimationController extends Controller
                             $addoptiont = array();
 
                             //Fetch Addon options
-                            $addonSetOpt = DB::select("SELECT ao.id as aoid,ao.price,ao.title from addon_options as ao join addon_option_translations as aot on ao.id=aot.addon_opt_id where addon_id='$vpa->aid' and  aot.title IN ($addonsKeys) group by ao.title");
+                            $addonSetOpt = DB::select("SELECT ao.id as aoid,ao.price,ao.title from addon_options as ao join addon_option_translations as aot on ao.id=aot.addon_opt_id where addon_id=? and  aot.title IN (?) group by ao.title", [$vpa->aid, $addonsKeys]);
                             foreach($addonSetOpt as $opts)
                             {
                                 $addoption[] = array(

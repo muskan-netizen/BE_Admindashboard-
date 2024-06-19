@@ -449,8 +449,6 @@
 
         <!-- End Ship Rocket -->
 
-
-
         <!--- Dunzo Code -->
 
         @if($optDunzo)
@@ -573,6 +571,205 @@
         @endif
 
         <!-- End Dunzo -->
+        @if($d4b_dunzo)
+
+        <div class="col-md-6 mb-3">
+            <form method="POST" id="payment_option_form" action="{{route('delivery.d4b_dunzo')}}" class="h-100">
+                @csrf
+                @method('POST')
+                <div class="card-box h-100">
+                    <input type="hidden" name="method_id" id="{{$d4b_dunzo->id}}" value="{{$d4b_dunzo->id}}">
+                    <input type="hidden" name="method_name" id="{{$d4b_dunzo->code}}" value="{{$d4b_dunzo->code}}">
+                    <?php
+                    $creds = json_decode($d4b_dunzo->credentials);
+
+                    if($d4b_dunzo->test_mode == 1){
+                        $app_url = 'https://apis-staging.dunzo.in/api';
+                    }else{
+                        $app_url = 'https://api.dunzo.in/api';
+                    }
+                    $client_id = (isset($creds->client_id)) ? $creds->client_id : '';
+                    $client_secret = (isset($creds->client_secret)) ? $creds->client_secret : '';
+                    $base_price = (isset($creds->base_price)) ? $creds->base_price : '0';
+                    $distance = (isset($creds->distance)) ? $creds->distance : '0';
+                    $amount_per_km = (isset($creds->amount_per_km)) ? $creds->amount_per_km : '0';
+                    ?>
+                    <div class="row">
+                    <div class="col-md-6">
+                        <h3 class="mb-1"> <span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$d4b_dunzo->code.'.png')}}" alt=""></span>  {{__($d4b_dunzo->title)}}</h3>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
+                    </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="" class="mr-3">{{ __("Enable") }}</label>
+                                <input type="checkbox" data-id="{{$d4b_dunzo->id}}" data-title="{{$d4b_dunzo->code}}" data-plugin="switchery" name="active" class="chk_box all_select" data-color="#43bee1" @if($d4b_dunzo->status == 1) checked @endif>
+                            </div>
+                        </div>
+                        @if ( (strtolower($d4b_dunzo->code) == 'd4b_dunzo'))
+                        <div class="col-6">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="" class="mr-3 ">{{ __('Sandbox') }}</label>
+                                <input type="checkbox" data-id="{{$d4b_dunzo->id}}" data-title="{{$d4b_dunzo->code}}" data-plugin="switchery" name="sandbox" class="chk_box" data-color="#43bee1" @if($d4b_dunzo->test_mode == 1) checked @endif>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                    @if ( (strtolower($d4b_dunzo->code) == 'd4b_dunzo') )
+                    <div id="d4b_dunzo_fields_wrapper" @if($d4b_dunzo->status != 1) style="display:none" @endif>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-0">
+                                    <label for="dunzo_app_url" class="mr-3">{{ __("App URL") }}</label>
+                                    <input type="text" name="app_url" id="dunzo_app_url" class="form-control" value="{{$app_url}}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-0">
+                                    <label for="d4b_dunzo_client_id" class="mr-3">{{ __("Client ID ") }}</label>
+                                    <input type="text" name="client_id" id="d4b_dunzo_client_id" class="form-control" value="{{$client_id}}" @if($d4b_dunzo->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-0">
+                                    <label for="d4b_dunzo_client_secret" class="mr-3">{{ __("Client Secret ") }}</label>
+                                    <input type="text" name="client_secret" id="d4b_dunzo_client_secret" class="form-control" value="{{$client_secret}}" @if($d4b_dunzo->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mt-3 p-0">
+                            {{-- <h5 class="d-inline-block ">
+                                <span>{{ __('Webhook Url') }} : </span>
+                                <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('dunzoWebhook')}}</span></a>
+                            </h5> --}}
+                            <sup class="position-relative">
+                                {{-- <a class="copy-icon ml-2" id="copy_icon2" data-url="{{route('dunzoWebhook')}}" style="cursor:pointer;">
+                                    <i class="fa fa-copy"></i>
+                                </a> --}}
+                                <h6 id="copy_message2" class="copy-message mt-2"></h6>
+                            </sup>
+                            {{-- <div class="form-group mt-2 switchery-demo">
+                                <label for="" class="mr-3">{{ __("Set Base Price Fare") }}</label>
+                                <input type="checkbox"  data-title="{{$d4b_dunzo->code}}" data-plugin="switchery" name="base_active" class="chk_box base_select" data-color="#43bee1" @if($base_price > 0) checked @endif>
+                            </div> --}}
+                        <hr/>
+                        </div>
+                    {{-- <div class="row mt-3" id="d4b_dunzo_fields_wrapper_base_test" @if($base_price < 1) style="display:none" @endif >
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label for="d4b_dunzo_base_price" class="mr-3">{{ __("Base Price") }}</label>
+                                <input type="text" name="base_price" id="d4b_dunzo_base_price" class="form-control" value="{{@$base_price}}" >
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label for="d4b_dunzo_distance" class="mr-3">{{ __("Distance") }}</label>
+                                <input type="text" name="distance" id="d4b_dunzo_distance" class="form-control" value="{{@$distance}}" >
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label for="d4b_dunzo_amount_per_km" class="mr-3">{{ __("Amount Per Killometer") }}</label>
+                                <input type="text" name="amount_per_km" id="d4b_dunzo_amount_per_km" class="form-control" value="{{@$amount_per_km}}" >
+                            </div>
+                        </div>
+                    </div> --}}
+                    </div>
+                    @endif
+                </div>
+            </form>
+        </div>
+        @endif
+        <!--- Roadie Code -->
+
+        @if($roadieOption)
+        <div class="col-md-6 mb-3">
+            <form method="POST" id="payment_option_form" action="{{route('delivery.roadie')}}" class="h-100">
+                @csrf
+                @method('POST')
+                <div class="card-box h-100">
+                    <input type="hidden" name="method_id" id="{{$roadieOption->id}}" value="{{$roadieOption->id}}">
+                    <input type="hidden" name="method_name" id="{{$roadieOption->code}}" value="{{$roadieOption->code}}">
+
+                    <?php
+                    $creds = json_decode($roadieOption->credentials);
+
+                    $api_access_token = (isset($creds->api_access_token)) ? $creds->api_access_token : '';
+                    $api_base_url = (isset($creds->api_base_url)) ? $creds->api_base_url : '';
+
+                    ?>
+                    <div class="row">
+                        <div class="col-md-12 d-flex justify-content-between align-items-center">
+                            <h3 class="mb-1"> <span class="alPaymentImage"> <img style="width:8%;" src="{{asset('deliveryLogo/'.$roadieOption->code.'.png')}}" alt=""></span>  {{__($roadieOption->title)}}</h3>
+                            <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
+                        </div>
+
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-6">
+                            <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
+                                <label for="" class="mr-3">{{ __("Enable") }}</label>
+                                <input type="checkbox" data-id="{{$roadieOption->id}}" data-title="{{$roadieOption->code}}" data-plugin="switchery" name="active" class="chk_box all_select" data-color="#43bee1" @if($roadieOption->status == 1) checked @endif>
+                            </div>
+                        </div>
+                        @if ( (strtolower($roadieOption->code) == 'roadie'))
+                        <div class="col-6">
+                            <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
+                                <label for="" class="mr-3 ">{{ __('Sandbox') }}</label>
+                                <input type="checkbox" data-id="{{$roadieOption->id}}" data-title="{{$roadieOption->code}}" data-plugin="switchery" name="sandbox" class="chk_box" data-color="#43bee1" @if($roadieOption->test_mode == 1) checked @endif>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+
+
+
+                    @if ( (strtolower($roadieOption->code) == 'roadie') )
+                    <div id="roadie_fields_wrapper" @if($roadieOption->status != 1) style="display:none" @endif>
+                        <hr>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-0">
+                                    <label for="roadie_app_url" class="mr-3">{{ __("API Base URL") }}</label>
+                                    <input type="text" name="api_base_url" id="roadie_api_base_url" class="form-control" value="{{$api_base_url}}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-0">
+                                    <label for="roadie_api_key" class="mr-3">{{ __("API Access Token") }}</label>
+                                    <input type="text" name="api_access_token" id="roadie_api_access_token" class="form-control" value="{{$api_access_token}}" @if($roadieOption->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mt-3 p-0">
+
+                            <h5 class="d-inline-block ">
+                                <span>{{ __('Webhook Url') }} : </span>
+                                <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('roadieWebhook')}}</span></a>
+                            </h5>
+                            <sup class="position-relative">
+                                <a class="copy-icon ml-2" id="copy_icon2" data-url="{{route('roadieWebhook')}}" style="cursor:pointer;">
+                                    <i class="fa fa-copy"></i>
+                                </a>
+                                <h6 id="copy_message2" class="copy-message mt-2"></h6>
+                            </sup>
+                            <hr/>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </form>
+        </div>
+        @endif
+
+        <!-- End Roadie -->
 
 
 
@@ -871,12 +1068,12 @@
                       $email = (isset($creds->api_email)) ? $creds->api_email : '';
                       $pass = (isset($creds->api_pass)) ? $creds->api_pass : '';
                       $domain = (isset($creds->domain_name)) ? $creds->domain_name : '';
-                    
- 
+
+
                       $base_price = (isset($creds->base_price)) ? $creds->base_price : '0';
                       $distance = (isset($creds->distance)) ? $creds->distance : '0';
                       $amount_per_km = (isset($creds->amount_per_km)) ? $creds->amount_per_km : '0';
- 
+
                       $height = (isset($creds->height)) ? $creds->height : '0';
                       $width = (isset($creds->width)) ? $creds->width : '0';
                       $weight = (isset($creds->weight)) ? $creds->weight : '0';
@@ -887,7 +1084,7 @@
                              <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
                          </div>
                       </div>
- 
+
                       <div class="row">
                           <div class="col-6">
                               <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
@@ -904,11 +1101,11 @@
                           </div>
                           @endif
                       </div>
- 
+
                       @if ( (strtolower($kwikOption->code) == 'kwikapi') )
                       <div id="kwikapi_fields_wrapper" @if($kwikOption->status != 1) style="display:none" @endif>
                           <hr>
- 
+
                           <div class="row">
                               <div class="col-sm-6">
                                   <div class="form-group mb-0">
@@ -916,7 +1113,7 @@
                                       <input type="text" name="kwikapi_email" id="kwikapi_email" class="form-control" value="{{$email}}" @if($kwikOption->status == 1) required @endif autofill="off">
                                   </div>
                               </div>
-                      
+
                             <div class="col-sm-6">
                                 <div class="form-group mb-0">
                                     <label for="kwikapi_pass" class="mr-3">{{ __("Vendor Password") }}</label>
@@ -932,11 +1129,11 @@
                             </div>
                         </div>
                     </div>
- 
- 
- 
+
+
+
                           <div class="col-md-12 mt-3 p-0">
- 
+
                              <h5 class="d-inline-block ">
                                  <span>{{ __('Webhook Url') }} : </span>
                                  <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('quick-api')}}</span></a>
@@ -947,31 +1144,31 @@
                                  </a>
                                  <h6 id="copy_message2" class="copy-message mt-2"></h6>
                              </sup>
- 
+
                               <div class="form-group mt-2 switchery-demo">
                                   <label for="" class="mr-3">{{ __("Set Base Price Fare") }}</label>
                                   <input type="checkbox"  data-title="{{$kwikOption->code}}" data-plugin="switchery" name="base_active" class="chk_box base_select" data-color="#43bee1" @if($base_price > 0) checked @endif>
                               </div>
                           <hr/>
                           </div>
- 
- 
+
+
                       <div class="row mt-3" id="kwikapi_fields_wrapper_base" @if($base_price < 1) style="display:none" @endif >
- 
+
                           <div class="col-md-4">
                               <div class="form-group mb-0">
                                   <label for="kwikapi_base_price" class="mr-3">{{ __("Base Price") }}</label>
                                   <input type="text" name="base_price" id="kwikapi_base_price" class="form-control" value="{{$base_price??0}}" >
                               </div>
                           </div>
- 
+
                           <div class="col-md-4">
                               <div class="form-group mb-0">
                                   <label for="kwikapi_distance" class="mr-3">{{ __("Distance") }}</label>
                                   <input type="text" name="distance" id="kwikapi_distance" class="form-control" value="{{@$distance??0}}" >
                               </div>
                           </div>
- 
+
                           <div class="col-md-4">
                               <div class="form-group mb-0">
                                   <label for="kwikapi_amount_per_km" class="mr-3">{{ __("Amount Per Killometer") }}</label>
@@ -979,17 +1176,218 @@
                               </div>
                           </div>
                       </div>
- 
- 
-                      
+
+
+
                       </div>
                       @endif
                   </div>
               </form>
           </div>
           @endif
- 
+
           <!-- End Kwik Api -->
+
+
+          <!----------       Borzoe Code             -->
+
+            @if($borzoOption)
+                <div class="col-md-6 mb-3">
+                    <form method="POST" id="payment_option_form" action="{{route('borzoe.updateAll')}}" class="h-100">
+                        @csrf
+                        @method('POST')
+                        <div class="card-box h-100">
+                            <input type="hidden" name="method_id" id="{{$borzoOption->id}}" value="{{$borzoOption->id}}">
+                            <input type="hidden" name="method_name" id="{{$borzoOption->code}}" value="{{$borzoOption->code}}">
+
+                            <?php
+                                $creds = json_decode($borzoOption->credentials);
+                                $api_key = (isset($creds->api_key)) ? $creds->api_key : '';
+                                $service_code = (isset($creds->service_code)) ? $creds->service_code : '';
+                            ?>
+
+                            <div class="row">
+                                <div class="col-md-12 d-flex justify-content-between align-items-center">
+                                    <h3 class="mb-1"><span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$borzoOption->code.'.png')}}" alt=""></span>  {{$borzoOption->title}}</h3>
+                                    <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
+                                        <label for="" class="mr-3">{{ __("Enable") }}</label>
+                                        <input type="checkbox" data-id="{{$borzoOption->id}}" data-title="{{$borzoOption->code}}" data-plugin="switchery" name="active" class="chk_box all_select" data-color="#43bee1" @if($borzoOption->status == 1) checked @endif>
+                                    </div>
+                                </div>
+                                @if ( (strtolower($borzoOption->code) == 'borzo'))
+                                    <div class="col-6">
+                                        <div class="form-group mb-0 switchery-demo d-flex justify-content-between align-items-center">
+                                            <label for="" class="mr-3 ">{{ __('Sandbox') }}</label>
+                                            <input type="checkbox" data-id="{{$borzoOption->id}}" data-title="{{$borzoOption->code}}" data-plugin="switchery" name="sandbox" class="chk_box" data-color="#43bee1" @if($borzoOption->test_mode == 1) checked @endif>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                            @if ( (strtolower($borzoOption->code) == 'borzo') )
+                                <div id="borzo_fields_wrapper" @if($borzoOption->status != 1) style="display:none" @endif>
+                                    
+                                    <hr>
+
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group mb-0">
+                                                <label for="api_key" class="mr-3">{{ __("Api Token") }}</label>
+                                                <input type="text" name="api_key" id="api_key" class="form-control" value="{{$api_key}}" @if($borzoOption->status == 1) required @endif autofill="off">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group mb-0">
+                                                <label for="callback_token" class="mr-3">{{ __("Callback Token") }}</label>
+                                                <input type="text" name="callback_token" id="callback_token" class="form-control" value="{{$service_code}}" @if($borzoOption->status == 1) required @endif autofill="off">
+                                            </div>
+                                        </div>
+                                        {{-- <div class="col-sm-6">
+                                            <div class="form-group mb-0">
+                                                <label for="carrier_ids" class="mr-3">{{ __("Carrier Id") }}</label>
+                                                <input type="text" name="carrier_ids" id="carrier_ids" class="form-control" value="{{$carrier_ids}}" @if($borzoOption->status == 1) required @endif autofill="off">
+                                            </div>
+                                        </div> --}}
+                                    </div>
+
+                                    <div class="col-md-12 mt-3 p-0">
+
+                                    <hr/>
+                                    </div>
+
+                                </div>
+                            @endif
+                        </div>
+                    </form>
+                </div>
+            @endif
+
+        <!---  End Borzoe Code   -->
+
+          <!--- deliveryoptionOption Code -->
+
+          @if($shipEngineOption)
+            <div class="col-md-6 mb-3">
+                <form method="POST" id="payment_option_form" action="{{route('shipengine.updateAll')}}" class="h-100">
+                    @csrf
+                    @method('POST')
+                    <div class="card-box h-100">
+                        <input type="hidden" name="method_id" id="{{$shipEngineOption->id}}" value="{{$shipEngineOption->id}}">
+                        <input type="hidden" name="method_name" id="{{$shipEngineOption->code}}" value="{{$shipEngineOption->code}}">
+
+                        <?php
+                            $creds = json_decode($shipEngineOption->credentials);
+                            $api_key = (isset($creds->api_key)) ? $creds->api_key : '';
+                            $service_code = (isset($creds->service_code)) ? $creds->service_code : '';
+                            $carrier_ids = (isset($creds->carrier_ids)) ? $creds->carrier_ids : '';
+
+                            $base_price = (isset($creds->base_price)) ? $creds->base_price : '0';
+                            $distance = (isset($creds->distance)) ? $creds->distance : '0';
+                            $amount_per_km = (isset($creds->amount_per_km)) ? $creds->amount_per_km : '0';
+                        ?>
+
+                        <div class="row">
+                            <div class="col-md-12 d-flex justify-content-between align-items-center">
+                                <h3 class="mb-1"><span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$shipEngineOption->code.'.png')}}" alt=""></span>  {{$shipEngineOption->title}}</h3>
+                                <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
+                                    <label for="" class="mr-3">{{ __("Enable") }}</label>
+                                    <input type="checkbox" data-id="{{$shipEngineOption->id}}" data-title="{{$shipEngineOption->code}}" data-plugin="switchery" name="active" class="chk_box all_select" data-color="#43bee1" @if($shipEngineOption->status == 1) checked @endif>
+                                </div>
+                            </div>
+                            @if ( (strtolower($shipEngineOption->code) == 'shipengine'))
+                                <div class="col-6">
+                                    <div class="form-group mb-0 switchery-demo d-flex justify-content-between align-items-center">
+                                        <label for="" class="mr-3 ">{{ __('Sandbox') }}</label>
+                                        <input type="checkbox" data-id="{{$shipEngineOption->id}}" data-title="{{$shipEngineOption->code}}" data-plugin="switchery" name="sandbox" class="chk_box" data-color="#43bee1" @if($shipEngineOption->test_mode == 1) checked @endif>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+
+                        @if ( (strtolower($shipEngineOption->code) == 'shipengine') )
+                            <div id="shipengine_fields_wrapper" @if($shipEngineOption->status != 1) style="display:none" @endif>
+                                <hr>
+
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group mb-0">
+                                            <label for="api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                            <input type="text" name="api_key" id="api_key" class="form-control" value="{{$api_key}}" @if($shipEngineOption->status == 1) required @endif autofill="off">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group mb-0">
+                                            <label for="service_code" class="mr-3">{{ __("Service Code") }}</label>
+                                            <input type="text" name="service_code" id="service_code" class="form-control" value="{{$service_code}}" @if($shipEngineOption->status == 1) required @endif autofill="off">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group mb-0">
+                                            <label for="carrier_ids" class="mr-3">{{ __("Carrier Id") }}</label>
+                                            <input type="text" name="carrier_ids" id="carrier_ids" class="form-control" value="{{$carrier_ids}}" @if($shipEngineOption->status == 1) required @endif autofill="off">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 mt-3 p-0">
+                                    <h5 class="d-inline-block ">
+                                        <span>{{ __('Webhook Url') }} : </span>
+                                        <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('quick-api')}}</span></a>
+                                    </h5>
+                                    <sup class="position-relative">
+                                        <a class="copy-icon ml-2" id="copy_icon2" data-url="{{route('quick-api')}}" style="cursor:pointer;">
+                                            <i class="fa fa-copy"></i>
+                                        </a>
+                                        <h6 id="copy_message2" class="copy-message mt-2"></h6>
+                                    </sup>
+
+                                    {{-- <div class="form-group mt-2 switchery-demo">
+                                        <label for="" class="mr-3">{{ __("Set Base Price Fare") }}</label>
+                                        <input type="checkbox"  data-title="{{$shipEngineOption->code}}" data-plugin="switchery" name="base_active" class="chk_box base_select" data-color="#43bee1" @if($base_price > 0) checked @endif>
+                                    </div> --}}
+                                    <hr/>
+                                </div>
+
+                                {{-- <div class="row mt-3" id="{{$shipEngineOption->code}}_fields_wrapper_base" @if($base_price < 1) style="display:none" @endif >
+
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-0">
+                                            <label for="kwikapi_base_price" class="mr-3">{{ __("Base Price") }}</label>
+                                            <input type="text" name="base_price" id="kwikapi_base_price" class="form-control" value="{{$base_price??0}}" >
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-0">
+                                            <label for="kwikapi_distance" class="mr-3">{{ __("Distance") }}</label>
+                                            <input type="text" name="distance" id="kwikapi_distance" class="form-control" value="{{@$distance??0}}" >
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-0">
+                                            <label for="kwikapi_amount_per_km" class="mr-3">{{ __("Amount Per Killometer") }}</label>
+                                            <input type="text" name="amount_per_km" id="kwikapi_amount_per_km" class="form-control" value="{{@$amount_per_km??0}}" >
+                                        </div>
+                                    </div>
+                                </div> --}}
+                            </div>
+                        @endif
+                    </div>
+                </form>
+            </div>
+          @endif
+
+          <!-- End shipEngineOption Api -->
 
     </div>
 </div>
@@ -1021,6 +1419,7 @@
          //console.log(id);
         var title = $(this).data('title');
         var code = title.toLowerCase();
+        console.log("code", code);
         if ($(this).is(":checked")) {
             $("#" + code + "_fields_wrapper").show();
             $("#" + code + "_fields_wrapper").find('input').attr('required', true);

@@ -69,7 +69,7 @@
             <div class="col-md-6">
                 <div class="form-group" id="postal_codeInput">
                     {!! Form::label('title', 'Postal Code',['class' => 'control-label']) !!}
-                    {!! Form::text('postal_code', $taxRate->zip_code, ['class' => 'form-control', 'placeholder' => 'Tax Identifier', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                    {!! Form::text('postal_code', $taxRate->zip_code, ['class' => 'form-control', 'placeholder' => 'Tax Identifier']) !!}
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
                     </span>

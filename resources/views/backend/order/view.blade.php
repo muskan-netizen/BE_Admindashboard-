@@ -82,6 +82,9 @@
         border: 1px solid#eee;
         border-radius: 10px !important;
     }
+
+
+
 </style>
 @endsection
 @section('content')
@@ -117,10 +120,17 @@ $timezone = Auth::user()->timezone;
             </div>
             @endif
         </div>
-
+        @if(getAdditionalPreference(['document_report'])['document_report'] == 1)
+            <div class="uploadDocument">
+                <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#exampleModal">
+                    Upload Report
+                </button>
+            </div>
+        @endif
         @if ($order->vendors->first())
         @if ($order->vendors->first()->cancel_request && $order->vendors->first()->cancel_request->status == 'Pending')
         <div class="row">
+
             <div class="col-lg-12 mb-3">
                 <div class="card mb-0 h-100" id="cancel-request-card">
                     <div class="card-body">
@@ -177,12 +187,12 @@ $timezone = Auth::user()->timezone;
                                 @endif
                                 @endif
                               @foreach ($order->vendors as $vendor)
-                                
+
                                 @if($vendor->vendor_id == $vendor_id)
                                 @if(isset($order->vendors) && isset($vendor->dispatch_traking_url) && $vendor->dispatch_traking_url!=null)
                                 <div class="col-lg-6">
                                     <div class="mb-4">
-                                        <h5 class="mt-0">{{ __('Tracking ID') }}:</h5>
+                                        <h5 class="mt-0">{{ __('Tracking ID') }}: </h5>
                                         <p>
                                             @php
                                             $track = explode('/', $vendor->dispatch_traking_url);
@@ -190,6 +200,9 @@ $timezone = Auth::user()->timezone;
                                             @endphp
                                             <a href="{{ $vendor->dispatch_traking_url }}" target="_blank">#{{ $track_code }}</a>
                                         </p>
+                                        @if (isset($vendor->label_pdf))
+                                            <a href="{{ $vendor->label_pdf }}" target="_blank">{{ __("Label PDF")}}</a>
+                                        @endif
                                     </div>
                                 </div>
                                 @elseif(isset($order->vendors) &&
@@ -305,8 +318,6 @@ $timezone = Auth::user()->timezone;
                                     </ul>
                                 </div>
 
-
-
                                 @if (isset($order->vendors) &&
                                 ($order->vendors->first()->dispatch_traking_url != null ||
                                 $order->vendors->first()->lalamove_tracking_url != null ||
@@ -327,7 +338,7 @@ $timezone = Auth::user()->timezone;
 
                                         $date = isset($dispatcher_status_option->vendorOrderDispatcherStatus) ? $dispatcher_status_option->vendorOrderDispatcherStatus->created_at : '';
                                         @endphp
-                                        <li class="{{ $class }} {{ $glow }}" data-status_option_id="{{ $dispatcher_status_option->id }}">
+                                        <li class="{{ @$class }} {{ @$glow }}" data-status_option_id="{{ $dispatcher_status_option->id }}">
                                             <h5 class="mt-0 mb-1">{{ $dispatcher_status_option->title }}</h5>
                                             <p class="text-muted" id="dispatch_text_muted_{{ $dispatcher_status_option->id }}">
                                                 @if ($date)
@@ -372,10 +383,10 @@ $timezone = Auth::user()->timezone;
 
                             {{ __("Exchange To") }}<a href="{{$order->vendors[0]->exchanged_to_order->vendor_detail_url }}"><span>#{{ $order->vendors[0]->exchanged_to_order->orderDetail->order_number }}</span></a>
                             @endIf
-                           
-                         
-                            <button class=" badge badge-info"  data-toggle="modal" data-target="#showDelayTimeModal">{{ __('Add Delay Time') }} <img src=""> </button>
- 
+
+
+                            <button class=" badge badge-info border-0"  data-toggle="modal" data-target="#showDelayTimeModal">{{ __('Add Delay Time') }} <img src=""> </button>
+
 
                             @if(@$order->vendors[0]->exchanged_of_order)
                             {{ __("Exchange Of") }}
@@ -411,11 +422,11 @@ $timezone = Auth::user()->timezone;
                                         <th>{{ __("Total") }}</th>
                                     </tr>
                                 </thead>
-                           
+
                                 @foreach ($order->vendors as $vendor)
-                                
+
                                 @if($vendor->vendor_id == $vendor_id)
-                                        
+
                                 <tbody>
                                     @php
                                     $sub_total = 0;
@@ -424,7 +435,7 @@ $timezone = Auth::user()->timezone;
                                     $storeRevenue = 0;
                                     $revenue = $vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount + $vendor->total_markup_price;
                                     @endphp
-                                 
+
                                     @foreach ($vendor->products as $product)
                                     @if ($product->order_id == $order->id)
                                     @php
@@ -441,8 +452,8 @@ $timezone = Auth::user()->timezone;
                                         <th scope="row" class="product-modal2">
 
 
-                                            <a href={{ $product_url }}" @if ($product_url !='javascript:void(0)' ) target="_blank" @endif>
-                                                {{ $product->product_name }} @if(@$product->product->is_long_term_service && $product->product->is_long_term_service ==1) <span class="badge badge-info"> {{ __('Long Term Service') }}</span> @endif
+                                            <a href="{{ $product_url }}" @if ($product_url !='javascript:void(0)' ) target="_blank" @endif>
+                                                {{ $product->product_title }} @if(@$product->product->is_long_term_service && $product->product->is_long_term_service ==1) <span class="badge badge-info"> {{ __('Long Term Service') }}</span> @endif
                                             </a>
 
                                             @if (isset($product->product) &&
@@ -534,7 +545,7 @@ $timezone = Auth::user()->timezone;
 
                                             {{-- mohit sir branch code added by sohail --}}
                                             @php
-                                                $getAdditionalPreference = getAdditionalPreference(['update_order_product_price']);
+                                                $getAdditionalPreference = getAdditionalPreference(['update_order_product_price','is_enable_allergic_items','blockchain_route_formation']);
                                             @endphp
                                             @if( @getAdditionalPreference(['update_order_product_price'])['update_order_product_price'] == '1')
                                                 <a href="javascript:void(0);" data-toggle="modal" data-target="#addModal" class="badge badge-info ml-3 update_product_price" data-or_prod_old_price="{{decimal_format($product->total_amount)}}" data-or_vend_prod_id="{{$product->id}}">Update Price <img src=""> </a>
@@ -570,9 +581,8 @@ $timezone = Auth::user()->timezone;
                                         <td></td>
                                     </tr>
                                     @endif
-                                    {{-- {{dd($product)}} --}}
 
-                                    @if( isset($product->recurring_bookings))
+                                    @if(isset($recurring_booking) && !empty($recurring_booking))
                                         <tr class="route">
                                             <th scope="row" colspan="4" class="text-end">
                                                 <div class="outer_div p-2 mb-2">
@@ -584,7 +594,7 @@ $timezone = Auth::user()->timezone;
                                                             <th width="40%">{{ __('Scheduled date time') }}</th>
                                                             <th width="20%">{{ __('Dispatch Traking Url') }}</th>
 
-                                                            @foreach ($product->recurring_bookings as $key=>$booking)
+                                                            @foreach ($recurring_booking as $key=>$booking)
                                                                 <tr>
                                                                     <td>{{ $key + 1 }}</td>
                                                                     <td>{{ $booking->schedule_date }} </td>
@@ -716,7 +726,7 @@ $timezone = Auth::user()->timezone;
                         @endif
                         <tr>
                             <th scope="row" colspan="4" class="text-end">{{ __("Estimated Tax") }} :</th>
-                            <td>{{$clientCurrency->currency->symbol}}{{decimal_format($taxable_amount)}}</td>
+                            <td>{{$clientCurrency->currency->symbol}}{{decimal_format($order->total_other_taxes_amount)}}</td>
                         </tr>
                         @if($vendor->additional_price > 0)
                         <tr>
@@ -770,9 +780,9 @@ $timezone = Auth::user()->timezone;
 
                         @php
 
-                        $adminRevenue = ($revenue + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount - number_format($vendor->orderDetail->loyalty_amount_saved);
+                        $adminRevenue = ($revenue + $order->total_other_taxes_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminDiscount - number_format($vendor->orderDetail->loyalty_amount_saved);
 
-                        $storeRevenue = ($sub_total + $order->fixed_fee_amount + $taxable_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
+                        $storeRevenue = ($sub_total + $order->fixed_fee_amount +  $order->total_other_taxes_amount + $container_charges + $vendor_service_fee + $vendor->delivery_fee) - $adminRevenue - $vendorDiscount;
 
                         @endphp
                         @endif
@@ -827,8 +837,18 @@ $timezone = Auth::user()->timezone;
                         <tr>
                             <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                             <td>
+                                @php
+                            if($order->luxury_option_id == 4) // 'rental'
+                                {
 
-                              <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($order->payable_amount)}}</div>
+                                    $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges+$order->rental_protection_amount+$order->booking_option_price - $order->wallet_amount_used +$order->total_other_taxes_amount;
+                                }else{
+
+                                    $total = $order->total_service_fee+$order->fixed_fee_amount+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount - $order->wallet_amount_used + $order->total_other_taxes_amount;
+                                }
+                                @endphp
+
+                              <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($total)}}</div>
                             </td>
                     </tr>
 
@@ -854,7 +874,7 @@ $timezone = Auth::user()->timezone;
                     @endif
                     </tbody>
                     @endif
-                    
+
                     @endforeach
                     </table>
                 </div>
@@ -1026,8 +1046,16 @@ $timezone = Auth::user()->timezone;
                 </p>
                 @endif
             </div>
+            @if ($getAdditionalPreference['blockchain_route_formation'] == 1)
 
+            <div class="card-body">
+                <h4 class="header-title mb-3">{{ __('Blockchain Order Information') }}</h4>
+                <a href="{{ route('orders.getBlockchainOrderDetail', ['order_id' => $order->id]) }}" target="_blank">
+                    <button type="button" id="blockchain_order_data" data-id="{{ $order->id }}" class="btn btn-primary">Get Blockchain Order Data</button>
+                </a>
+            </div>
 
+            @endif
             <div class="card-body">
                 <h4 class="header-title mb-3 ">{{ __('Comment/Schedule Information') }}</h4>
 
@@ -1071,6 +1099,23 @@ $timezone = Auth::user()->timezone;
 
             </div>
 
+            @if ($getAdditionalPreference['is_enable_allergic_items'] == 1)
+            <div class="card-body">
+                @if (count($order->user->allergicItems))
+                    <h4 class="header-title mb-3 "> {{ __('Customer Allergic Items')}} </h4>
+                @endif
+                @forelse ($order->user->allergicItems as $item)
+                    {{ $item->title }}@if(!$loop->last),@endif
+                @empty
+                    <b>{{ __('No Allergic Item Found')}}</b><br>
+                @endforelse
+
+                @if ($order->user->custom_allergic_items)
+                    <h4 class="header-title mb-3 "> {{ __('Custom Allergic Items')}} </h4>
+                    {{ $order->user->custom_allergic_items }}
+                @endif
+            </div>
+            @endif
 
         </div>
     </div>
@@ -1178,8 +1223,57 @@ $timezone = Auth::user()->timezone;
 </div>
 </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Upload Report</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form method="post" enctype="multipart/form-data" action="{{route('orderDocument',['order_id' => $order->id, 'vendor_id' => $order->vendors[0]->vendor_id]) }}" >
+                @csrf
+                <div class="form-group">
+                    <input type="file" name="document[]" multiple class="form-control mb-2" >
+                    <input type="submit" class="btn btn-success text-center" value="Upload" />
+                </div>
+            </form>
+        </div>
+        <div class="card-body">
+            @if(count($order->vendors) > 0)
+                <h4 class="header-title mb-3">{{__('Reports') }}</h4>
+                @foreach($order->vendors as $doc)
+                    @foreach($doc->orderDocument as $file)
+                        @php
+                            $files = Storage::disk('s3')->url($file['document']);
+                        @endphp
+                        <div class="mb-2 d-flex ">
+                            <div class="col-9">
+                                <img  src="{{url('file-download' . '/pdf.png')}}"    ><a href="{{$files}}"> {{$file['file_name']}}   </a>
+                            </div>
+                            <div class="col-3">
+                                <a  href="{{route('deleteDocument',$file->id)}}" > <i class="fa fa-trash"></i></a>
+                            </div>
+                        </div>
+                    @endforeach
+                @endforeach
+            @endif
+        </div>
+
+        <div class="modal-footer">
+          {{-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button> --}}
+        </div>
+      </div>
+    </div>
+  </div>
+
       <!-- modal for Delay Time -->
-<div class="modal fade" id="showDelayTimeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade delay_time" id="showDelayTimeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
    <div class="modal-dialog" role="document">
       <div class="modal-content">
          <div class="modal-header">
@@ -1190,25 +1284,25 @@ $timezone = Auth::user()->timezone;
          </div>
          @foreach ($order->vendors as $vendor)
          @if($vendor->vendor_id == $vendor_id)
-         <div class="modal-body">
+         <div class="modal-body mt-0 pt-0">
             <div class="form-group">
                <label for="message-text" class="col-form-label">Enter Time(in minutes):</label>
-               <input type="number" class="form-control" value="{{$vendor->extra_time}}" id="buffer_time">               
+               <input type="number" class="form-control" value="{{$vendor->extra_time}}" id="buffer_time">
             </div>
          </div>
-         <div class="modal-footer">
+         <div class="modal-footer pt-0">
             @php
             $track = explode('/', $vendor->dispatch_traking_url);
             $track_code = end($track);
             @endphp
-            <button class="buffer_time_btn  badge badge-info"   data-tracking_id={{$track_code}} data-tracking_url={{$vendor->dispatch_traking_url}}   data-order_id={{$order->id}} data-vendor_id={{$vendor_id}}>{{ __('Save') }} <img src=""> </button>
+            <button class="buffer_time_btn  badge badge-info border-0"   data-tracking_id={{$track_code}} data-tracking_url={{$vendor->dispatch_traking_url}}   data-order_id={{$order->id}} data-vendor_id={{$vendor_id}}>{{ __('Save') }} <img src=""> </button>
          </div>
          @endif
          @endforeach
       </div>
    </div>
 </div>
-   
+
 <!-- product return modal -->
 <div class="modal fade return-order" id="return_order" tabindex="-1" aria-labelledby="return_orderLabel">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -1284,6 +1378,7 @@ $timezone = Auth::user()->timezone;
 
 
 
+
     <!-- Order Invoice Code -->
     <div style="display: none;">
         @include('backend.order.print')
@@ -1291,6 +1386,39 @@ $timezone = Auth::user()->timezone;
     <!--End Order Invoice Code -->
     @endsection
     @section('script')
+
+
+
+
+    <div id="blockchain_order_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="blockchain_order_modal_label" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="blockchain_order_modal_label">Order Details</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody id="order_data_table">
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
     <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
     <script>
         $('body').on('click', '.show-return-product-modal', function(event) {
@@ -1398,7 +1526,7 @@ $timezone = Auth::user()->timezone;
                                     "#5ba035", "success");
                             //location.reload();
                             setTimeout(function() {
-                                location.reload();
+                               // location.reload();
                             }, 3000);
                         },
                         beforeSend: function() {
@@ -1601,6 +1729,9 @@ $timezone = Auth::user()->timezone;
             }, 10);
         }
 
+
+
+
         $(document).on('click', '.buffer_time_btn', function(e) {
             var time = $("#buffer_time").val();
             var order_id = $(this).data('order_id');
@@ -1628,7 +1759,7 @@ $timezone = Auth::user()->timezone;
                                 $('#showDelayTimeModal').modal('hide');
                                 $.NotificationApp.send("Success", response.message, "top-right",
                                     "#5ba035", "success");
-                               
+
                             }else{
                                   $.NotificationApp.send("Error", response.message, "top-right",
                                     "#5ba035", "error");

@@ -106,7 +106,7 @@
                                     <tr class="trForClone">
 
                                         @foreach($languages as $lang)
-                                            <th>{{$lang->langName}}</th>
+                                            <th>{{isset($lang->language)?$lang->language->name:'N/A'}}</th>
                                         @endforeach
                                         <th></th>
                                     </tr>
@@ -114,8 +114,8 @@
                                         <tr>
                                         @foreach($languages as $key => $lang)
                                             <td>
-                                                <input class="form-control" name="language_id[{{$key}}]" type="hidden" value="{{$lang->langId}}">
-                                                <input class="form-control" name="name[{{$key}}]" type="text" id="product_tag_name_{{$lang->langId}}">
+                                                <input class="form-control" name="language_id[{{$key}}]" type="hidden" value="{{$lang->language_id}}">
+                                                <input class="form-control" name="name[{{$key}}]" type="text" id="product_tag_name_{{$lang->language_id}}">
                                             </td>
                                             @if($key == 0)
                                             <span class="text-danger error-text product_tag_err"></span>

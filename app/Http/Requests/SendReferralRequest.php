@@ -24,7 +24,17 @@ class SendReferralRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|email|max:50||unique:users',
+            'email' => 'required|email|max:50|unique:users',
+        ];
+    }
+    
+    public function messages()
+    {
+        return [
+            'email.required' => 'The email field is required.',
+            'email.email' => 'The email must be a valid email address.',
+            'email.max' => 'The email may not be greater than :max characters.',
+            'email.unique' => 'This email is already registered.',
         ];
     }
 }

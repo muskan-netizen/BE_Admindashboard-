@@ -36,12 +36,14 @@ class EasypaisaController extends FrontController
     public function __construct()
     {
         $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'easypaisa')->where('status', 1)->first();
-        $json = json_decode($payOpt->credentials);
-        $this->storeId = $json->easypaisa_store_id;
-        if ($payOpt->test_mode == '1') {
-            $this->token_url = 'https://easypaystg.easypaisa.com.pk/tpg/?';
-        } else {
-            $this->token_url = 'https://easypay.easypaisa.com.pk/tpg/?';
+        if(@$payOpt->status){
+            $json = json_decode($payOpt->credentials);
+            $this->storeId = $json->easypaisa_store_id;
+            if ($payOpt->test_mode == '1') {
+                $this->token_url = 'https://easypaystg.easypaisa.com.pk/tpg/?';
+            } else {
+                $this->token_url = 'https://easypay.easypaisa.com.pk/tpg/?';
+            }
         }
     }
 
@@ -231,6 +233,7 @@ class EasypaisaController extends FrontController
             $wallet = $user->wallet;
             if (isset($order->wallet_amount_used)) {
                 $wallet->depositFloat($order->wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #' . $order->order_number]);
+                $this->sendWalletNotification($user->id, $order->order_number);
             }
             if (isset($request->auth) && $request->auth != '') {
                 $returnUrl = route('payment.gateway.return.response') . '/?gateway=easypaisa' . '&status=00&order=' . $order->order_number;

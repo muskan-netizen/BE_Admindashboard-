@@ -657,6 +657,7 @@ class ReturnOrderController extends FrontController
 
 
             $currentOrderStatus = OrderVendor::with('products')->where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
+
             $orderVendorProduct = OrderProduct::with('addon', 'addon.option', 'variant')->where('order_vendor_id', $currentOrderStatus->id)->where('product_id', $product_id)->first();
             $cancelledProductPrice = $this->checkreplaceProduct($request, $orderVendorProduct) * $orderVendorProduct->quantity;
 
@@ -695,6 +696,7 @@ class ReturnOrderController extends FrontController
 
             //check if $currentOrderStatus->products more than 1
             if (count($currentOrderStatus->products) == 1) {
+
                 // get vendor return amount from order
                 $return_response =  $this->GetVendorReturnAmount($request, $orderData);
 
@@ -703,6 +705,7 @@ class ReturnOrderController extends FrontController
                     $vendor_order_status->order_id = $request->order_id;
                     $vendor_order_status->vendor_id = $request->vendor_id;
                     $vendor_order_status->order_vendor_id = $request->order_vendor_id;
+                    $vendor_order_status->order_vendor_product_id = $orderVendorProduct->id;
                     $vendor_order_status->order_status_option_id = $request->status_option_id;
                     $vendor_order_status->save();
                     if ($request->status_option_id == 2 || $request->status_option_id == 3) {
@@ -747,6 +750,7 @@ class ReturnOrderController extends FrontController
                 $return_response =  $this->GetVendorProductReturnAmount($request, $orderData, $cancelledProductPrice);
 
                 /***************save cancel reason  start   ********************/
+                \Log::info(('OrderCancelRequest'));
 
                 $orderProductCancelReason = new OrderCancelRequest();
                 $orderProductCancelReason->order_id = $request->order_id;
@@ -775,6 +779,7 @@ class ReturnOrderController extends FrontController
                 $wallet = $user->wallet;
                 $credit_amount = $return_response['vendor_return_amount']; //$currentOrderStatus->payable_amount;
                 $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $currentOrderStatus->orderDetail->order_number . ' (' . $currentOrderStatus->vendor->name . ')']);
+                $this->sendWalletNotification($user->id, $currentOrderStatus->orderDetail->order_number);
             }
             // diarise loyalty
             $orderData->loyalty_points_used    =  $orderData->loyalty_points_used - $return_response['vendor_loyalty_points'];
@@ -802,6 +807,9 @@ class ReturnOrderController extends FrontController
 
         } catch (\Exception $e) {
             DB::rollback();
+            \Log::info(('$e->getMessage()'));
+            \Log::info(($e->getMessage()));
+
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()

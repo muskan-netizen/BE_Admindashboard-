@@ -22,7 +22,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Front\CustomerAuthController;
 use App\Http\Requests\{LoginRequest, SignupRequest};
 use App\Http\Controllers\Client\VendorController;
-use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, PermissionsOld, UserPermissions, Type, Category, VendorCategory,UserAddress,UserPaymentCards};
+use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, PermissionsOld, UserPermissions, Type, Category, SubscriptionInvoicesUser, VendorCategory,UserAddress,UserPaymentCards,UserAllergicItem};
 use Log;
 use App\Http\Traits\CustomerSignupSuccessEmailTrait;
 use App\Http\Traits\InfluencerTrait;
@@ -71,7 +71,7 @@ class AuthController extends BaseController
         }
 
     }else{
-      
+
         $user  = User::with('country')->where('phone_number', $loginReq->email)->first();
         if (!$user) {
             $errors['error'] = __('Invalid phone number');
@@ -82,7 +82,7 @@ class AuthController extends BaseController
         $loginReq->merge(['type'=>'phone','dial_code'=>$loginReq->dialCode,'phone_number'=>$loginReq->email,'sendSms'=>1]);
         $this->sendToken($loginReq);
     }
-        
+
         $user = Auth::user();
         $prefer = ClientPreference::select('theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
         $verified['is_email_verified'] = $user->is_email_verified;
@@ -117,7 +117,7 @@ class AuthController extends BaseController
         if(!empty($loginReq->is_vendor_app)){
             $fromVendorAppLogin = 1;
         }
-        
+
         if (!empty($loginReq->fcm_token)) {
             $device = UserDevice::updateOrCreate(
                 ['device_token' => $loginReq->fcm_token],
@@ -337,31 +337,23 @@ class AuthController extends BaseController
             }
         }
 
-        $validator = Validator::make($signReq->all(), $rules);
-
         if( (empty($signReq->email)) && (empty($signReq->phone_number)) ){
-            $validator = Validator::make($signReq->all(), [
-                'email'  => 'required',
-                'phone_number'  => 'required'
-            ],[
-                "email.required" => __('The email or phone number field is required.'),
-                "phone_number.required" => __('The email or phone number field is required.'),
-            ]);
+            $rules['email']  = 'required';
+            $rules['phone_number']  = 'required';
         }
         else{
             if(!empty($signReq->email) && ($preferences->verify_email == 0)){
-                $validator = Validator::make($signReq->all(), [
-                    'email'  => 'email|unique:users'
-                ]);
+                $rules['email'] = 'email|unique:users';
             }
 
             if(!empty($signReq->phone_number) && ($preferences->verify_phone == 0)){
-
-                $validator = Validator::make($signReq->all(), [
-                    'phone_number' => 'string|min:7|max:15|unique:users'
-                ]);
+                $rules['phone_number'] = 'string|min:7|max:15|unique:users';
             }
         }
+        $message['email.required'] = __('The email or phone number field is required.');
+        $message['phone_number.required'] = __('The email or phone number field is required.');
+        $validator = Validator::make($signReq->all(), $rules,$message);
+
         if ($validator->fails()) {
             foreach ($validator->errors()->toArray() as $error_key => $error_value) {
                 $errors['error'] = __($error_value[0]);
@@ -400,6 +392,11 @@ class AuthController extends BaseController
         $user->phone_token_valid_till = $sendTime;
         $user->email_token_valid_till = $sendTime;
         $user->timezone = $client_timezone;
+
+        if ($signReq->hasFile('image')) {
+            $file = $signReq->file('image');
+            $user->image = Storage::disk('s3')->put($this->folderName, $file,'public');
+        }
         $user->save();
         // user upload document
         if ($user_registration_documents->count() > 0) {
@@ -451,13 +448,13 @@ class AuthController extends BaseController
         if(@$signReq->kyc){
             InfluencerTrait::saveKycData($signReq, $user_id);
         }
-        
+
         $user_registration_documents = UserRegistrationDocuments::with(['user_document' =>function($q) use($user_id){
             $q->where('user_id', $user_id);
         },'primary'])->get();
         $response['user_document'] = $user_registration_documents;
         $response['app_hash_key'] = (!empty($signReq->app_hash_key))?$signReq->app_hash_key:'';
-      
+
         //end user upload document
         $wallet = $user->wallet;
         $userRefferal = new UserRefferal();
@@ -499,10 +496,47 @@ class AuthController extends BaseController
         ])->get();
         $token1->setClaim('user_id', $user->id);
         $user->auth_token = $token;
+        $user->custom_allergic_items = $signReq->custom_allergic_items ?? null;
         $user->save();
+
+        if ($signReq->allergic_item_ids && count($signReq->allergic_item_ids)) {
+            foreach($signReq->allergic_item_ids as $key => $id){
+                $data[$key] = [
+                    'user_id' => $user->id,
+                    'allergic_item_id' => $id,
+                ];
+            }
+            UserAllergicItem::insert($data);
+        }
+
         if ($user->id > 0) {
             if ($signReq->refferal_code) {
                 $refferal_amounts = ClientPreference::first();
+
+                $dispatch_domain = $this->checkIfLastMileOn();
+                $postdata = [
+                    'refferal_code' => $signReq->refferal_code,
+                    'user_name' => $user->name ?? ''
+                ];
+                if ($dispatch_domain && $dispatch_domain != false)
+                {
+                    $client = new GCLIENT(['headers' => [
+                        'personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+                        'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                        'content-type' => 'application/json']
+                    ]);
+                    $url = $dispatch_domain->pickup_delivery_service_key_url;
+                    $res = $client->post($url.'/api/auth/get-driver-refferal',
+                        ['form_params' => ($postdata)]
+                    );
+                    $response = json_decode($res->getBody(), true);
+                    if($response && $response['message'] == 'success'){
+                        $refferal_amount = $response['refferal_amount'];
+                        $wallet->deposit($refferal_amount, ['You used referal code of <b>' . $response['refer_by_name'] . '</b>']);
+                        $wallet->balance;
+                    }
+                }
+
                 if ($refferal_amounts) {
                     if ($refferal_amounts->reffered_by_amount != null && $refferal_amounts->reffered_to_amount != null) {
                         $reffered_by = UserRefferal::where('refferal_code', $signReq->refferal_code)->first();
@@ -511,18 +545,20 @@ class AuthController extends BaseController
                         if ($user_refferd_by) {
                             //user reffered by amount
                             $wallet_user_reffered_by = $user_refferd_by->wallet;
-                            $wallet_user_reffered_by->deposit($refferal_amounts->reffered_by_amount, ['Referral code used by <b>' . $signReq->name . '</b>']);
+                            $wallet_user_reffered_by->depositFloat($refferal_amounts->reffered_by_amount, ['Referral code used by <b>' . $signReq->name . '</b>']);
                             $wallet_user_reffered_by->balance;
                             //user reffered to amount
-                            $wallet->deposit($refferal_amounts->reffered_to_amount, ['You used referal code of <b>' . $user_refferd_by->name . '</b>']);
+                            $wallet->depositFloat($refferal_amounts->reffered_to_amount, ['You used referal code of <b>' . $user_refferd_by->name . '</b>']);
                             $wallet->balance;
                         }
                     }
                 }
             }
+
             $checkSystemUser = $this->checkCookies($user->id);
             $response['status'] = 'Success';
             $response['name'] = $user->name;
+            $response['source'] = $user->image;
             $response['id'] = $user->id;
             $response['auth_token'] =  $token;
             $response['email'] = $user->email;
@@ -620,12 +656,12 @@ class AuthController extends BaseController
 
                 $user->is_admin = 1;
                 $user->save();
-            
+
                 // Create vendor with default images
                 $vendor = new Vendor();
                 $vendor->logo = 'default/default_logo.png';
                 $vendor->banner = 'default/default_image.png';
-            
+
                 $vendor->status = 1;
                 $vendor->name = $user->name;
                 $vendor->p2p = 1;
@@ -633,28 +669,23 @@ class AuthController extends BaseController
                 $vendor->phone_no = $user->phone_number ?? '';
                 $vendor->slug = Str::slug($user->name, "-");
                 $vendor->save();
-            
-                $permission_details = PermissionsOld::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
-            
+
                 UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
-            
-                foreach ($permission_details as $permission_detail) {
-                    UserPermissions::create(['user_id' => $user->id, 'permission_id' => $permission_detail->id]);
-                }
+                $user->createPermissionsUser();
 
                 $response['vendor_id'] = $vendor->id;
                 $p2p_type = Type::where('service_type', 'p2p')->first();
                 if( !empty($p2p_type) ) {
                     $category_id = Category::where('type_id', $p2p_type->id)->get();
                     $categories_ids = [];
-                    
+
                     if( !empty($category_id) ) {
                         foreach($category_id as $key => $val) {
                             $categories_ids[] = $val->id;
                         }
                     }
                     $signReq->request->add(['selectedCategories'=> $categories_ids]);
-                    
+
                 }
 
                 $this->addDataSaveVendor($signReq, $vendor->id);
@@ -669,8 +700,8 @@ class AuthController extends BaseController
                 }
                 $provider = $prefer->sms_provider;
                // $body = "Dear " . ucwords($user->name) . ", Thanks for creating an account with us!";
-                // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');              
-                // $keyData = ['{user_name}'=>ucwords($user->name)]; 
+                // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');
+                // $keyData = ['{user_name}'=>ucwords($user->name)];
                 // $body = sendSmsTemplate('user-signup-sms',$keyData);
                 // $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
             }
@@ -709,9 +740,9 @@ class AuthController extends BaseController
                     $provider = $data->sms_provider;
                     $to = '+' . $request->dial_code . $request->phone_number;
                    // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
-                    $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$otp]; 
+                    $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$otp];
                     $body = sendSmsTemplate('verify-account',$keyData);
-                    if (!empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
+                    if (!empty($provider)) {
                         if(getUserToken($data)['status']){
                             $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
                         }else{
@@ -786,10 +817,12 @@ class AuthController extends BaseController
             }
             if ($request->type == 'phone') {
                 $message = 'Mobile number verified successfully.';
-                $phone_number = str_ireplace(' ', '', $request->phone_number);
-                $user_detail_exist = User::where('phone_number', $phone_number)->whereNotIn('id', [$user->id])->first();
-                if ($user_detail_exist) {
-                    return response()->json(['error' => __('phone number in use!')], 404);
+                if ($request->has('phone_number')) {
+                    $phone_number = str_ireplace(' ', '', $request->phone_number);
+                    $user_detail_exist = User::where('phone_number', $phone_number)->whereNotIn('id', [$user->id])->first();
+                    if ($user_detail_exist) {
+                        return response()->json(['error' => __('phone number in use!')], 404);
+                    }
                 }
                 if ($user->phone_token != $request->otp) {
                     return $this->errorResponse(__('OTP is not valid'), 404);
@@ -805,9 +838,11 @@ class AuthController extends BaseController
                 return $this->successResponse(getUserDetailViaApi($user), $message);
             } elseif ($request->type == 'email') {
                 $message = 'Email verified successfully.';
-                $user_detail_exist = User::where('email', $request->email)->where('id', '!=', $user->id)->first();
-                if ($user_detail_exist) {
-                    return $this->errorResponse(__('Email already in use!'), 404);
+                if ($request->has('email')) {
+                    $user_detail_exist = User::where('email', $request->email)->whereNotIn('id', [$user->id])->first();
+                    if ($user_detail_exist) {
+                        return $this->errorResponse(__('Email already in use!'), 404);
+                    }
                 }
                 if ($user->email_token != $request->otp) {
                     return $this->errorResponse(__('OTP is not valid'), 404);
@@ -819,9 +854,9 @@ class AuthController extends BaseController
                 $user->is_email_verified = 1;
                 $user->email_token_valid_till = NULL;
                 $user->save();
+                $this->sendCustomerSignupSuccessEmail($user);
                 return $this->successResponse(getUserDetailViaApi($user), $message);
             }
-            $this->sendCustomerSignupSuccessEmail($user);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -1068,7 +1103,7 @@ class AuthController extends BaseController
             if( getClientPreferenceDetail()->p2p_check ) {
                 $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
                 $data['vendor_id'] = $vendorUser->vendor_id ?? '';
-                
+
              }
             $checkSystemUser = $this->checkCookies($user->id);
             $data['id'] = $user->id;
@@ -1147,6 +1182,7 @@ class AuthController extends BaseController
                     'app_template_id',
                     'web_template_id'
                     )->first();
+
                 $phone_number = preg_replace('/\D+/', '', $username);
                 $dialCode = $request->dialCode;
                 $fullNumber = $request->full_number;
@@ -1156,14 +1192,16 @@ class AuthController extends BaseController
                 $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
                // pr($user->toArray());
                 if (!$user) {
-                    //return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404, ['user_exists' => false]);
-
-                    $registerUser = $this->registerViaPhone($request)->getData();
+                    if(session()->get("locale") == "ar"){
+                        return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك'), 404);
+                    }
+                    return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404);
+                 /*   $registerUser = $this->registerViaPhone($request)->getData();
                     if ($registerUser->status == 'Success') {
                         $user = $registerUser->data;
                     } else {
                         return $this->errorResponse(__('Invalid data'), 404);
-                    }
+                    }*/
                 } else {
                     $user->phone_token = $phoneCode;
                     $user->phone_token_valid_till = $sendTime;
@@ -1176,13 +1214,11 @@ class AuthController extends BaseController
                     $to = '+' . $dialCode . $phone_number;
                 }
 
-                $keyData = ['{user_name}'=>auth()->user()->name??'','{otp_code}'=>$phoneCode,'{app_hash_key}'=>$request->app_hash_key??''];
-                $body = sendSmsTemplate('verify-account',$keyData);
                 $provider = $prefer->sms_provider;
                 $body = "Please enter OTP " . $phoneCode . " to verify your account.";
                 $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$phoneCode];
                 $body = sendSmsTemplate('verify-account',$keyData);
-                if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
+                if (!empty($provider)) {
                     if(getUserToken($prefer)['status']){
                         $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                     }else{
@@ -1258,7 +1294,7 @@ class AuthController extends BaseController
                 if(!empty($request->is_vendor_app)){
                     $fromVendorAppLogin = 1;
                 }
-                
+
                 if (!empty($request->fcm_token)) {
                     $device = UserDevice::updateOrCreate(
                         ['device_token' => $request->fcm_token],
@@ -1311,9 +1347,9 @@ class AuthController extends BaseController
                    $data['vendor_id'] = $vendorUser->vendor_id ?? '';
                 }
 
-                   
-                
-                    
+
+
+
                 $checkSystemUser = $this->checkCookies($user->id);
                 $data['id'] = $user->id;
                 $data['name'] = $user->name;
@@ -1331,6 +1367,7 @@ class AuthController extends BaseController
                 $data['callingCode'] = $user->country ? $user->country->phonecode : '';
                 $data['refferal_code'] = $user_refferal ? $user_refferal->refferal_code : '';
                 $data['user_document'] = $user_registration_documents;
+                $data['user_subscription'] = SubscriptionInvoicesUser::where('status_id',1)->where('end_date','>=',now()->format('Y-m-d'))->count();
                 return response()->json(['data' => $data]);
             }
             else {
@@ -1365,7 +1402,7 @@ class AuthController extends BaseController
             if ($currentTime > $user->phone_token_valid_till) {
                 return $this->errorResponse(__('OTP has been expired.'), 404);
             }
-            
+
             if($currentTime <= $user->phone_token_valid_till && $user->phone_token == $request->verifyToken){
                 if($user->status==0)
                 {
@@ -1374,14 +1411,14 @@ class AuthController extends BaseController
                 if($user->status==2)
                 {
                     return $this->errorResponse(__('User is Blocked.'), 404);
-                } 
+                }
                 if($user->status==3)
                 {
                     return $this->errorResponse(__('User is Inactive.'), 404);
                 }
             }
-            
-            
+
+
             $request->request->add(['phone_number' => $phone_number]);
             return $this->proceedToPhoneLogin($request);
         } catch (\Exception $ex) {
@@ -1456,10 +1493,10 @@ class AuthController extends BaseController
                             if ($user_refferd_by) {
                                 //user reffered by amount
                                 $wallet_user_reffered_by = $user_refferd_by->wallet;
-                                $wallet_user_reffered_by->deposit($refferal_amounts->reffered_by_amount, ['Referral code used by <b>' . $req->name . '</b>']);
+                                $wallet_user_reffered_by->depositFloat($refferal_amounts->reffered_by_amount, ['Referral code used by <b>' . $req->name . '</b>']);
                                 $wallet_user_reffered_by->balance;
                                 //user reffered to amount
-                                $wallet->deposit($refferal_amounts->reffered_to_amount, ['You used referal code of <b>' . $user_refferd_by->name . '</b>']);
+                                $wallet->depositFloat($refferal_amounts->reffered_to_amount, ['You used referal code of <b>' . $user_refferd_by->name . '</b>']);
                                 $wallet->balance;
                             }
                         }
@@ -1471,8 +1508,6 @@ class AuthController extends BaseController
                 return $this->errorResponse('Something went wrong. Please try again.', 422);
             }
         } catch (\Exception $e) {
-           // Log::info($e);
-           // Log::info($e->getMessage());
             return $this->errorResponse($e->getMessage(), 422);
         }
     }
@@ -1548,7 +1583,7 @@ class AuthController extends BaseController
                 $abc = [];
                 foreach ($files as $file) {
                     if ($file['file_name'] != null) {
-                        if ($file['file_type'] != "Text") {
+                        if ($file['file_type'] != "Text" && $file['file_type'] != "selector" && $file['file_type'] != "Date") {
                             $file_path          = $file['file_name']->getPathname();
                             $file_mime          = $file['file_name']->getMimeType('image');
                             $file_uploaded_name = $file['file_name']->getClientOriginalName();
@@ -1721,17 +1756,19 @@ class AuthController extends BaseController
                     return response()->json(['massage' => __('User not found!')], 200);
                 }
                 User::where('id', $user->id)->update([
-                    'email' => $user->email.'_'.$user->id."_D",  
-                    'phone_number' => $user->phone_number.'_'.$user->id."_D",  
-                    'auth_token' =>'',  
-                    'system_id' =>'',  
-                    'remember_token' => '',  
-                    'facebook_auth_id' => '',  
-                    'twitter_auth_id' => '',  
-                    'google_auth_id' => '',  
-                    'apple_auth_id' => '' 
+                    // 'email' => $user->email.'_'.$user->id."_D",
+                    // 'phone_number' => $user->phone_number.'_'.$user->id."_D",
+                    'auth_token' =>'',
+                    'system_id' =>'',
+                    'remember_token' => '',
+                    'facebook_auth_id' => '',
+                    'twitter_auth_id' => '',
+                    'google_auth_id' => '',
+                    'apple_auth_id' => '',
+                    'status' => 3
                     ]);
-                $user->delete();
+
+                //$user->delete();
                 DB::commit(); //Commit transaction after all the operations
                 return response()->json(['massage' => __('User Deleted Successfully')], 200);
                 //code...
@@ -1739,7 +1776,7 @@ class AuthController extends BaseController
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['massage' => __('Something went wrong!')], 400);
-            
+
         }
 
     }
@@ -1753,7 +1790,7 @@ class AuthController extends BaseController
 
         $request->merge(["return_json"=>1]);
         $VendorConfigrespons = $VendorController->updateConfig($request,'',$vendor_id)->getData();//$this->updateConfig($vendor_id);
-       
+
         if($request->has('can_add_category')){
             $vendor->add_category = $request->can_add_category == 'on' ? 1 : 0;
         }
@@ -1779,4 +1816,14 @@ class AuthController extends BaseController
         ]);
         // pr($VendorConfigrespons);
     }
+
+    public function checkIfLastMileOn()
+    {
+        $preference = ClientPreference::first();
+        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+            return $preference;
+        else
+            return false;
+    }
+
 }

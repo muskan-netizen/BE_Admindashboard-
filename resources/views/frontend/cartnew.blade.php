@@ -178,20 +178,26 @@ $client_preferences = \App\Models\ClientPreference::first();
 
 
 
-
+<script>
+    var action_type = "{{$action}}";
+</script>
 
 <script type="text/template" id="promo_code_template">
     <% _.each(promo_codes, function(promo_code, key){%>
-        <div class="col-lg-6 mt-3">
+        <div class="col-lg-12 mt-3">
             <div class="coupon-code mt-0">
                 <div class="p-2">
                     <img class="blur-up lazyload p-1" data-src="<%= promo_code.image.proxy_url %>100/70<%= promo_code.image.image_path %>" alt="">
                     <h6 class="mt-0"><%= promo_code.title %></h6>
                 </div>
                 <hr class="m-0">
-                <div class="code-outer p-2 text-uppercase d-flex align-items-center justify-content-between">
-                    <label class="m-0"><%= promo_code.name %></label>
-                    <a class="btn btn-solid apply_promo_code_btn" data-vendor_id="<%= vendor_id %>" data-cart_id="<%= cart_id %>" data-coupon_id="<%= promo_code.id %>" data-amount="<%= amount %>" style="cursor: pointer;">{{__('Apply')}}</a>
+                <div class="code-outer p-2 text-uppercase row align-items-center justify-content-between">
+                    <div class="col-9">
+                        <label class="m-0"><%= promo_code.name %></label>
+                    </div>
+                    <div class="col-3 text-left">
+                        <a class="btn btn-solid apply_promo_code_btn" data-vendor_id="<%= vendor_id %>" data-cart_id="<%= cart_id %>" data-coupon_id="<%= promo_code.id %>" data-amount="<%= amount %>" style="cursor: pointer;">{{__('Apply')}}</a>
+                    </div>
                 </div>
                 <hr class="m-0">
                 <div class="offer-text p-2">
@@ -391,10 +397,10 @@ $client_preferences = \App\Models\ClientPreference::first();
                             <input class="form-control manual_promocode_input" name="name" type="text" placeholder="{{ __('Enter a promocode')}}" >
                             <button class="btn btn-solid apply_promo_code_btn" data-vendor_id="" data-cart_id=""
                             data-coupon_id="" data-amount="" style="display:none">Apply</button>
-                            <span class="invalid-feedback manual_promocode" role="alert">
 
-                            </span>
                         </div>
+                        <span class="invalid-feedback manual_promocode" role="alert">
+                        </span>
                     </div>
                     <div class="col-3 p-0">
                         <button class="btn btn-solid validate_promo_code_btn" data-vendor_id="" data-cart_id=""
@@ -590,7 +596,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 <span class="error text-danger" id="plugnpay_card_error"></span>
                             </div>
                         <% } %>
-                      
+
                 <% if(payment_option.slug == 'azulpay') { %>
                     <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
                         <div class="tab">
@@ -640,6 +646,25 @@ $client_preferences = \App\Models\ClientPreference::first();
             </div>
             <% } %>
 
+            <% if(payment_option.slug == 'powertrans') { %>
+                <div class="col-md-12 mt-3 mb-3 powertrans_element_wrapper option-wrapper d-none">
+                    <div class="row no-gutters">
+                        <div class="col-6">
+                            <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required
+                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
+                        </div>
+                        <div class="col-3">
+                            <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required
+                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                        </div>
+                        <div class="col-3">
+                            <input type="password" maxLength="4" style=" border-left: none;"  class="form-control" id="cvv-element-powertrans" placeholder="CVV" required />
+                        </div>
+                    </div>
+
+                    <span class="error text-danger" id="card_error_powertrans"></span>
+                </div>
+            <% } %>
 
                     </div>
                 <% }); %>
@@ -683,7 +708,22 @@ $client_preferences = \App\Models\ClientPreference::first();
         </div>
     <% } %>
 </script>
+<div class="modal fade" id="LiveesModal" tabindex="-1" aria-labelledby="LiveesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title text-center" id="exampleModalLabel">Livees User Details</h3>
+          <button type="button" class="btn livees-btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-times-circle-o fa-2x" aria-hidden="true"></i></button>
+        </div>
+        <div class="livees-modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
 
+        </div>
+      </div>
+    </div>
+  </div>
 <div class="modal fade" id="proceed_to_pay_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="pay-billLabel">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -1065,6 +1105,9 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @if(in_array('khalti',$client_payment_options))
     <script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
 @endif
+@if (in_array('mastercard', $client_payment_options))
+    <script src="https://{{mastercardGateway()}}/static/checkout/checkout.min.js"></script>
+@endif
 <script src="{{ asset('assets/libs/dropzone/dropzone.min.js') }}"></script>
 <script src="{{ asset('assets/libs/dropify/dropify.min.js') }}"></script>
 <script type="text/javascript" src="{{asset('assets/js/intlTelInput.js')}}"></script>
@@ -1075,6 +1118,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var off_scheduling_at_cart = "<?= $client_preferences->off_scheduling_at_cart; ?>";
     var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
+    var payment_mpesa_safari_url = "{{route('mpesasafari.pay')}}";
 </script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
@@ -1116,6 +1160,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
     var payment_nmi_url = "{{route('nmi.pay')}}";
+    var payment_obo_url = "{{route('obo.pay')}}";
     var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
@@ -1137,10 +1182,13 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
+    var pyment_totalpay_url= "{{ route('make.payment') }}";
+    var payment_thawani_url= "{{ route('pay-by-thawanipg') }}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
     var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
+    var update_cart_product_status = "{{ url('product/updateCartProductStatus') }}";
 	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
 
     var promocode_list_url = "{{ route('verify.promocode.list') }}";
@@ -1174,12 +1222,20 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var error_Slot_is_required = "{{__('Slot is required')}}";
     var error_Schedule_date_is_required = "{{__('Schedule date time is required')}}";
     var error_Invalid_Schedule_date = "{{__('Invalid schedule date time')}}";
-    var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
+    var create_mtn_momo_token = "{{route('mtn.momo.createToken')}}";
     var error_unchanged_schedule_date = "{{__('Schedule date can not be changed, Because order being edited is scheduled order. In case of multi vendor, order can not be edited.')}}";
     var discard_order_editing_url = "{{route('user.discardeditorder')}}";
     var confirm_discard_edit_order_title = "{{__('Are you sure?')}}";
     var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
     var success_error_container = ".cart_response";
+    var data_trans_url = "{{route('payment.payByDataTrans')}}";
+    var payment_hitpay_url="{{ route('make.hitpay.payment') }}";
+    var pesapal_payment_url = "{{ route('pesapal.payment') }}";
+    var powertrans_payment_url = "{{ route('powertrans.payment') }}";
+    var livee_payment_url="{{route('livee.pay')}}";
+    var payment_orangepay_url =  "{{ route('orangepay.initiate.payment') }}";
+    var payment_cybersource_url =  "{{ route('cybersource.initiate.payment') }}";
+    var mastercard_create_session_url = "{{route('payment.mastercard.createSession')}}";
 
     @if(!empty($client_preference_detail->is_postpay_enable))
         var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";
@@ -1893,14 +1949,16 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @if(in_array('flutterwave',$client_payment_options))
 <script src="https://checkout.flutterwave.com/v3.js"></script>
 @endif
-
+@if(in_array('data_trans',$client_payment_options))
+    <script src="{{ $data_trans_script_url }}"></script>
+@endif
 @endsection
 @section('script-bottom-js')
 <script defer type="text/javascript"  src="{{ asset('js/giftCard/cartGiftCard.js') }}"></script>
 <script>
 
 function addSlashes (element) {
-	
+
     let ele = document.getElementById(element.id);
     ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
     if(ele.length < 4 && ele.length > 0){

@@ -21,7 +21,7 @@
                     <div class="alert alert-success" role="alert" id="success_msg" style="display:none;"></div>
                     <div class="row">
                         <div class="col-12">
-                            <h2>{{__('Personal Details.')}}</h2>
+                            <h2>{{__('Personal Details')}}</h2>
                         </div>
                     </div>
                     <div class="needs-validation vendor-signup">
@@ -45,7 +45,7 @@
                             <div class="col-lg-6">
                                 <div class="col-md-12 mb-3" id="nameInput">
                                     <div class="form-group" id="nameInputEdit">
-                                        <label for="name" class="control-label">NAME</label>
+                                        <label for="name" class="control-label">{{__('NAME')}}</label>
                                         <input type="text" class="form-control required" id="name" placeholder="John Doe" name="name" value="">
                                         <span class="invalid-feedback" id="name_error" role="alert">
                                             <strong></strong>
@@ -63,10 +63,10 @@
                                 </div>
                                 <div class="col-md-12 mb-3" id="typeInput">
                                     <div class="form-group" id="typeInputEdit">
-                                        <label for="type" class="control-label">TYPE</label>
+                                        <label for="type" class="control-label">{{__('TYPE')}}</label>
                                         <select class="form-control required" data-style="btn-light" name="type" id="type">
-                                            <option value="Employee">Employee</option>
-                                            <option value="Freelancer">Freelancer</option>
+                                            <option value="Employee">{{__('Employee')}}</option>
+                                            <option value="Freelancer">{{__('Freelancer')}}</option>
                                         </select>
                                         <span class="invalid-feedback" id="type_error" role="alert">
                                             <strong></strong>
@@ -109,8 +109,8 @@
                     <div class="row ">
                         <div class="col-md-6" id="make_modelInput">
                             <div class="form-group" id="make_modelInputEdit">
-                                <label for="make_model" class="control-label">TRANSPORT DETAILS</label>
-                                <input type="text" class="form-control" id="make_model" placeholder="Year, Make, Model" name="make_model" value="">
+                                <label for="make_model" class="control-label">{{__("TRANSPORT DETAILS")}}</label>
+                                <input type="text" class="form-control required" id="make_model" placeholder="Year, Make, Model" name="make_model" value="">
                                 <span class="invalid-feedback" id="make_model_error" role="alert">
                                     <strong></strong>
                                 </span>
@@ -118,8 +118,8 @@
                         </div>
                         <div class="col-md-6" id="uidInput">
                             <div class="form-group" id="uidInputEdit">
-                                <label for="make_model" class="control-label">UID</label>
-                                <input type="text" class="form-control" id="uid" placeholder="897abd" name="uid" value="">
+                                <label for="make_model" class="control-label">{{__("UID")}}</label>
+                                <input type="text" class="form-control required" id="uid" placeholder="897abd" name="uid" value="" >
                                 <span class="invalid-feedback" id="uid_error" role="alert">
                                     <strong></strong>
                                 </span>
@@ -129,8 +129,8 @@
                     <div class="row ">
                         <div class="col-md-6" id="plate_numberInput">
                             <div class="form-group" id="plate_numberInputEdit">
-                                <label for="plate_number" class="control-label">LICENCE PLATE</label>
-                                <input type="text" class="form-control" id="plate_number" name="plate_number" placeholder="508.KLV" value="">
+                                <label for="plate_number" class="control-label">{{__("LICENCE PLATE")}}</label>
+                                <input type="text" class="form-control required" id="plate_number" name="plate_number" placeholder="508.KLV" value="">
                                 <span class="invalid-feedback" id="plate_number_error" role="alert">
                                     <strong></strong>
                                 </span>
@@ -138,8 +138,8 @@
                         </div>
                         <div class="col-md-6" id="colorInput">
                             <div class="form-group" id="colorInputEdit">
-                                <label for="color" class="control-label">COLOR</label>
-                                <input type="text" class="form-control" id="color" name="color" placeholder="Color" value="">
+                                <label for="color" class="control-label">{{__("COLOR")}}</label>
+                                <input type="text" class="form-control required" id="color" name="color" placeholder="Color" value="">
                                 <span class="invalid-feedback" id="color_error" role="alert">
                                     <strong></strong>
                                 </span>
@@ -149,7 +149,7 @@
                     <div class="form-row">
                         @foreach($driver_registration_documents as $driver_registration_document)
                         <div class="col-md-6 mb-3" id="{{$driver_registration_document->slug}}Input">
-                            <label for="">{{$driver_registration_document->name ? $driver_registration_document->name : ''}}</label>
+                            <label for="">{{$driver_registration_document->name ? __($driver_registration_document->name) : ''}}</label>
                             @if(strtolower($driver_registration_document->file_type) == 'text')
                             <div class="form-group" id="{{$driver_registration_document->slug}}InputEdit" >
                                 <input type="text" class="form-control {{ (!empty($driver_registration_document->is_required))?'required':''}}" id="input_file_logo_{{@$driver_registration_document->id}}" name="{{$driver_registration_document->slug}}" placeholder="Enter Text" value="">
@@ -164,8 +164,18 @@
                                     <strong></strong>
                                 </span>
                             </div>
+                            @elseif (strtolower($driver_registration_document->file_type) == 'selector')
+                               
+                                <div class="form-group" id="{{$driver_registration_document->slug}}InputEdit" >
+                                    <select name="{{$driver_registration_document->slug}}" class="form-control {{ (!empty($driver_registration_document->is_required))?'required':''}}">
+                                        <option value="">Select</option>
+                                        @foreach($driver_registration_document->driver_option as $key)
+                                        <option value="{{$key->driver_registartion_option_name}}">{{$key->driver_registartion_option_name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             @else
-
+                           
                             <div class="file file--upload">
                                 <label for="input_file_logo_{{@$driver_registration_document->id}}">
                                     <span class="update_pic pdf-icon">
@@ -476,6 +486,9 @@
         function initialize() {
             var input = document.getElementById('address');
             var autocomplete = new google.maps.places.Autocomplete(input);
+            if(is_map_search_perticular_country){
+                autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+            }
             google.maps.event.addListener(autocomplete, 'place_changed', function() {
                 var place = autocomplete.getPlace();
                 document.getElementById('longitude').value = place.geometry.location.lng();
@@ -524,6 +537,8 @@
             $('#dialCode').val(dial_code);
         });
         $('#register_btn').click(function() {
+            $(".invalid-feedback strong").empty();
+            $(" input").removeClass("is-invalid");
             var that = $(this);
             var loop_length = $('.required').length;
             var hasErrors = false;

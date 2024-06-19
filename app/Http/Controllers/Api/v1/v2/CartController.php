@@ -10,7 +10,7 @@ use App\Models\Country;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Http\Traits\{ApiResponser,ProductTrait,CartManager, CartManagerV2};
+use App\Http\Traits\{ApiResponser,ProductTrait,CartManager, CartManagerV2,Borzoe};
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -33,13 +33,13 @@ use Log;
 
 class CartController extends BaseController
 {
-    use ApiResponser,ProductTrait, CartManager, CartManagerV2;
+    use ApiResponser,ProductTrait, CartManager, CartManagerV2,Borzoe;
 
     private $field_status = 2;
 
     public function index(Request $request)
     {
-     
+
     try {
 
             // if(($request->has('gateway')) && ($request->gateway != '')){
@@ -71,13 +71,13 @@ class CartController extends BaseController
             $cart = $cart->first();
             if($cart) {
 
-            
-                
+
+
                 $address = UserAddress::where('user_id', $cart->user_id)->where('is_primary', 1)->first();
                 $address_id = ($address) ? $address->id : 0;
                 //pr($_POST);
                 if ($user) {
-                
+
                         $obj = [
                             'cart' => $cart,
                             'currency'=> $user->currency,
@@ -89,7 +89,7 @@ class CartController extends BaseController
                             'schedule_datetime_del'=> $request->schedule_datetime_del,
                             'type'=> $request->type,
                         ];
-                    
+
                         //$cart, $address_id=0 , $code = 'D',$schedule_datetime_del=''
                         $cartData = $this->getCartsNewV2($obj,$request);
                         //pr($cartData);
@@ -110,7 +110,7 @@ class CartController extends BaseController
                                 $cartData->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
                             }
                         }
-                        
+
 
                         $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
                                         $q->where('age_restriction',1);
@@ -137,7 +137,6 @@ class CartController extends BaseController
 
             return $this->successResponse($cartData);
         } catch (Exception $e) {
-            \Log::info($e->getMessage());
             return $this->successResponse([]);
         }
     }
@@ -170,7 +169,7 @@ class CartController extends BaseController
     /**     * Add product In Cart    *           */
     public function add(Request $request)
     {
-     
+
         try {
             $preference = ClientPreference::first();
             $luxury_option = LuxuryOption::where('title', $request->type)->first();
@@ -184,8 +183,8 @@ class CartController extends BaseController
                 if (empty($user->system_user)) {
                     return $this->errorResponse(__('System id should not be empty.'), 404);
                 }
-                $unique_identifier = $user->system_user;
             }
+            $unique_identifier = $user->system_user;
 
             $product = Product::where('sku', $request->sku)->first();
 
@@ -231,7 +230,7 @@ class CartController extends BaseController
             $isLongTermService =0;
             if( $request->has('service_start_time')){
                 $isLongTermService  =1;
-               
+
                 $time = '1998-01-14 '.$request->service_start_time; /**only need time */
                 $service_start_time = Carbon::parse($time, $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 $start_date_time = $service_start_time ; /** we user start_date_time for long term order timing */
@@ -345,7 +344,7 @@ class CartController extends BaseController
                     'service_start_date'  => @$service_start_date
                 ];
 
-                
+
             //Recurring Booking
             $recurring_days = '';
             if($product->is_recurring_booking == 1){
@@ -354,7 +353,7 @@ class CartController extends BaseController
                     return $this->errorResponse(__('Recurring booking type not be empty.'), 404);
                 }
 
-               
+
                 $cartRecurringCall = new FrontCartController();
                 $recurringformPost = $cartRecurringCall->recurringCalculationFunction($request);
                 $action = '5';
@@ -376,10 +375,10 @@ class CartController extends BaseController
                 }
 
             }
-           
+
 
                 if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData)){
-                  
+
                     $dataTime = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                     $slot = $request->dispatcherAgentData['onDemandBookingdate'] ?? Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
                     $cart_product_detail['schedule_type'] = 'schedule';
@@ -1443,7 +1442,7 @@ class CartController extends BaseController
             }
 
             } //End Tax Code
-            
+
             // Add Delivery Slot Price In total amount
             if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
                 $delivery_slot_amount += decimal_format($prod->slot_price);
@@ -1570,13 +1569,13 @@ class CartController extends BaseController
         $cart->total_fixed_fee_amount = $total_fixed_fee_amount;
         $cart->gross_paybale_amount = $order_sub_total;
 
-        
+
         $cart->total_addon_price = $total_addon_price;
         $cart->total_discount_amount = $total_disc_amount * $clientCurrency->doller_compare;
         $cart->products = $cartData;
         $cart->item_count = $item_count;
         $cart->is_long_term_added = $is_long_term;
-        
+
         $cart->delivery_slot_amount = $delivery_slot_amount;
 
         $temp_total_paying = $total_paying  + $total_tax - $total_disc_amount;
@@ -1606,7 +1605,7 @@ class CartController extends BaseController
         // }
 
 
-        
+
         if($total_taxable_amount>0){
             $cart->total_payable_amount = $cart->total_payable_amount +$total_taxable_amount;
         }
@@ -1620,6 +1619,7 @@ class CartController extends BaseController
         if($cart->total_fixed_fee_amount){
             $cart->total_payable_amount = $cart->total_payable_amount +$cart->total_fixed_fee_amount;
         }
+       
 
         $wallet_amount_used = 0;
         if (isset($user)) {
@@ -1676,7 +1676,7 @@ class CartController extends BaseController
         $cart->advance_payable_amount= number_format((float)$advancePayableAmount, 2, '.', '');
         $cart->pending_amount= number_format((float)$pendingAmount, 2, '.', '');
         //till here
-
+         
         $cart->vendor_details = $vendor_details;
         $cart->cart_dinein_table_id = $cart_dinein_table_id;
         $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
@@ -1693,8 +1693,6 @@ class CartController extends BaseController
 
         }catch(\Exception $ex)
         {
-            \Log::info('get Cart in api error');
-            \Log::info($ex->getMessage());
             return [];
         }
     }
@@ -1924,7 +1922,7 @@ class CartController extends BaseController
             if($orderVendor->schedule_slot == $schedule_slot && $if_order_scheduled == 0){
                 $schedule_pickup = Carbon::parse($orderVendor->scheduled_date_time);
                 $schedule_pickup_final = convertDateTimeInTimeZone($schedule_pickup, $timezone, 'Y-m-d');
-                
+
                 if($schedule_pickup_final == $schedule_datetime){
                     // Increment orderCount and return this count to front end for validation
                     $orderCount++;
@@ -2049,7 +2047,8 @@ class CartController extends BaseController
             if (!empty($deliver_response_array[0])){
                 $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format(($deliver_response_array[0]['delivery_fee']*$totalRoute), 2, '.', ''):'0.00';
                 $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
-                $option[] = array(
+                if ($deliver_charge > 0) {
+                    $option[] = array(
                     'type'=>'D',
                     'courier_name'=>__('Dispatcher'),
                     'rate' => $deliver_charge,
@@ -2061,6 +2060,30 @@ class CartController extends BaseController
                     'code' => 'D_0'
                 );
             }
+            }
+
+
+                 //Borzoe Delivery changes code
+                 $borzoe_deliver_fee = $this->borzoeDelivery($vendorData->vendor_id);
+                 $deliverFee = json_decode($borzoe_deliver_fee);
+                 $borzoe_deliver_fee = $deliverFee->order->payment_amount;
+                 if ($borzoe_deliver_fee > 0) {
+                     $borzoe_deliver_fee = decimal_format($borzoe_deliver_fee);
+                     $optionBorzoeApi[] = array(
+                         'type' => 'B',
+                         'courier_name' => __('Borzoe'),
+                         'rate' => $borzoe_deliver_fee,
+
+                         'courier_company_id' => 0,
+                         'etd' => 0,
+                         'etd_hours' => 0,
+                         'duration' => 0,
+                         'estimated_delivery_days' => 0,
+                         'code' => 'B_0'
+                     );
+                     $option = array_merge($option, $optionBorzoeApi);
+                 }
+                 //End Borzoe Delivery changes code
 
 
         //Lalamove Delivery changes code

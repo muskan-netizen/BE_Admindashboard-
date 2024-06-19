@@ -298,7 +298,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         <div class="col-12 mb-2">
                             {!! Form::label('title', __('Meta Description'),['class' => 'control-label']) !!}
                             {!! Form::textarea('meta_description', $product->primary ? $product->primary->meta_description : '', ['class'=>'form-control', 'id' => 'meta_description', 'placeholder' => 'Meta Description', 'rows' => '3']) !!}
-                        </div>
+                            </div>
                     </div>
                 </div>
                 {{-- @php
@@ -306,7 +306,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 @if($product->category->categoryDetail->type_id != 7)
                 <div class="card-box">
                     {{-- @dd($product->vendor) --}}
-                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Pricing Information") }}</h5>
+                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2 def">{{ __("Pricing Information") }}</h5>
                     @if($product->has_variant == 0)
                     <div class="row mb-2">
                         @if(@$product->vendor->is_seller == 1 && Auth::user()->is_superadmin == 1)
@@ -406,17 +406,17 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
                     {{-- Input Filed of price based on roles (START) --}}
                     @if($product->has_variant == 0)
-                        @if (isset($getAdditionalPreference['is_price_by_role']))
-                            @if($getAdditionalPreference['is_price_by_role'] == '1')
+                        {{-- @if (isset($getAdditionalPreference['is_price_by_role'])) --}}
+                            {{-- @if($getAdditionalPreference['is_price_by_role'] == '1') --}}
                                 <div class="row mb-2">
                                     @if (isset($roles))
                                         @foreach ($roles as $key => $_role)
-                                            @if( $_role['role'] === 'Corporate_user')
+                                            {{-- @if( $_role['role'] === 'Corporate_user') --}}
                                                 <div class="col-12">
 
                                                     <div class="field_wrapper">
                                                         @foreach ($product->productVariantByRoles as $role)
-                                                            @if($role->role_id == 3)
+                                                            {{-- @if($role->role_id == 3) --}}
                                                                 <div class="row corporate-row">
                                                                     <div class="col-md-5">
                                                                         <div class="form-group">
@@ -431,7 +431,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                                                         <a href="javascript:void(0);" class="remove_button" title="Remove field"><i class="mdi mdi-minus-circle mr-1"></i></a>
                                                                     </div>
                                                                 </div>
-                                                            @endif
+                                                            {{-- @endif --}}
                                                         @endforeach
                                                         <div class="row corporate-row">
                                                             <div class="col-md-5">
@@ -451,26 +451,26 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                                         </div>
                                                     </div>
                                                 </div>
-                                            @else
+                                            {{-- @else
                                                 <div class="col-4 mb-2">
                                                     {!! Form::label('title', $_role['role'].' '. __('Price'), ['class' => 'control-label']) !!}
                                                     <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKey(event)" placeholder="0" name="role_price[{{$_role['id']}}]" value="{{ isset($product->productVariantByRoles[$key]) ? (decimal_format($product->productVariantByRoles[$key]->amount) ?? 0.00) : 0.00 }}">
                                                     <input type="hidden" class="form-control" min="0" name="role_id[{{lcfirst($_role['role'])}}]" value="{{$_role['id']}}">
                                                 </div>
-                                            @endif
+                                            @endif --}}
                                         @endforeach
                                     @endif
                                 </div>
-                            @endif
-                        @endif
+                            {{-- @endif
+                        @endif --}}
                     @endif
                     {{-- Input Filed of price based on roles (END) --}}
 
                     @if(  in_array( $product->category->categoryDetail->type_id , [10]) )
                         <div class="row col-md-12 mb-2">
-                            <div class="col-4 mb-2 row">
+                            <div class="col-12 mb-2 row">
                                 <div class="col-12">
-                                    {!! Form::label('title', __('Minimum Duration'), ['class' => 'control-label']) !!}
+                                    {!! Form::label('title', __('Minimum Duration'), ['class' => 'control-label ml-2']) !!}
                                 </div>
                                 <div class="col-6 pl-3">
                                     {!! Form::label('title', __('hrs:'), ['class' => 'control-label']) !!}
@@ -482,46 +482,46 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                     {!!Form::input('number','minimum_duration_min', $product->minimum_duration_min, ['min' => '00','max' => '59','class'=>'form-control', 'id' => 'minimum_duration_min', 'placeholder' => '00', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
                                 </div>
                             </div>
-                            <div class="col-4 mb-2 row">
+                            <div class="col-12 mb-2 row">
                                 <div class="col-12">
-                                    {!! Form::label('title', __('Additional Increment Duration'), ['class' => 'control-label']) !!}
+                                    {!! Form::label('title', __('Additional Increment Duration'), ['class' => 'control-label ml-2']) !!}
                                 </div>
                                 <div class="col-6 pl-3">
                                     {!! Form::label('title', __('hrs:'), ['class' => 'control-label']) !!}
                                     {!! Form::input('number','additional_increments', $product->additional_increments, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'additional_increments', 'placeholder' => '0', 'onkeyup' => 'return isNumberKey(event)']) !!}
                                 </div>
-                                <div class="col-6 pl-3">
+                                <div class="col-6 pr-3">
                                     {!! Form::label('title', __('min:'), ['class' => 'control-label']) !!}
                                     {!! Form::input('number','additional_increments_min', $product->additional_increments_min, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'additional_increments_min', 'placeholder' => '0', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
                                 </div>
 
                             </div>
-                            <div class="col-4 mb-2 row">
+                            <div class="col-12 mb-2 row">
                                 <div class="col-12">
-                                    {!! Form::label('title', __('Buffer time Duration'), ['class' => 'control-label']) !!}
+                                    {!! Form::label('title', __('Buffer time Duration'), ['class' => 'control-label ml-2']) !!}
                                 </div>
                                 <div class="col-6 pl-3">
                                     {!! Form::label('title', __('hrs:'), ['class' => 'control-label']) !!}
                                     {!! Form::input('number','buffer_time_duration', $product->buffer_time_duration, ['min' => '0','class'=>'form-control', 'id' => 'buffer_time_duration', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                 </div>
-                                <div class="col-6 pl-3">
+                                <div class="col-6 pr-3">
                                     {!! Form::label('title', __('min:'), ['class' => 'control-label']) !!}
                                     {!! Form::input('number','buffer_time_duration_min', $product->buffer_time_duration_min, ['min' => '0','class'=>'form-control', 'id' => 'buffer_time_duration_min', 'placeholder' => '0', 'onkeypress' => 'return isNumberKeyMax(event)']) !!}
                                 </div>
 
                             </div>
-
-                            <div class="col-4 mb-2">
+  						<div class="col-12 mb-2 row">
+                            <div class="col-6 pl-3">
                                 {!! Form::label('title', __('Security Amount'), ['class' => 'control-label']) !!}
                                 @include('backend.primary_currency')
                                 {!! Form::text('security_amount', decimal_format($product->security_amount), ['class'=>'form-control', 'id' => 'security_amount', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                             </div>
 
-                            <div class="col-sm-4">
+                            <div class="col-6 pr-3">
                                 {!! Form::label('title', __('Quantity'),['class' => 'control-label']) !!}
                                 {!! Form::number('variant_quantity[]', $product->variant[0]->quantity, ['class'=>'form-control', 'id' => 'quantity', 'placeholder' => '0', 'min' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                             </div>
-
+							</div>
                         </div>
                         {{-- <div class="row mb-2">
 
@@ -544,7 +544,181 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 </div>
                 @endif
 
-                @if($product->category->categoryDetail->type_id == 10)
+                 {{-- marg data --}}
+                 @if(!is_null($margProduct) && count($margProduct)>0)
+                 <div class="card-box">
+                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2 def">{{ __("Marg Data") }}</h5>
+                     <div class="row mb-2">
+                         @foreach ($margProduct as  $key => $feild)
+                             @if ($key == 'id' || $key == 'product_id' ||  $key == 'rid' || $key == 'created_at' || $key == 'updated_at' || $key == 'Is_Deleted')
+                                 @continue
+                             @endif
+                             @switch($key)
+                                 @case('catcode')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Item Category Code'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_catcode', $feild, ['class'=>'form-control', 'id' => 'marg_catcode', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('code')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('	Item Code'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_code', $feild, ['class'=>'form-control', 'id' => 'marg_code', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('name')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Item Name'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_name', $feild, ['class'=>'form-control', 'id' => 'marg_name', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('stock')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Current Stock'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_stock', $feild, ['class'=>'form-control', 'id' => 'marg_stock', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('remark')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __($key), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_remark', $feild, ['class'=>'form-control', 'id' => 'marg_remark', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('company')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Name of Product Company'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_company', $feild, ['class'=>'form-control', 'id' => 'marg_company', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('shopcode')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Shop Code'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_shopcode', $feild, ['class'=>'form-control', 'id' => 'marg_shopcode', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('MRP')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Maximum Retail Price'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_MRP', $feild, ['class'=>'form-control', 'id' => 'marg_MRP', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('Rate')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Billing Price'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_Rate', $feild, ['class'=>'form-control', 'id' => 'marg_Rate', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('Deal')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Deal on'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_Deal', $feild, ['class'=>'form-control', 'id' => 'marg_Deal', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('Free')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Free Qty'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_Free', $feild, ['class'=>'form-control', 'id' => 'marg_Free', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('PRate')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Purchase Price'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_PRate', $feild, ['class'=>'form-control', 'id' => 'marg_PRate', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('curbatch')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Current Running batch of the item'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_curbatch', $feild, ['class'=>'form-control', 'id' => 'marg_curbatch', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('exp')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Expiry Date of current batch'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_exp', $feild, ['class'=>'form-control', 'id' => 'marg_exp', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('gcode')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Product Company Code'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_gcode', $feild, ['class'=>'form-control', 'id' => 'marg_gcode', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('MargCode')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Marg Code'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_MargCode', $feild, ['class'=>'form-control', 'id' => 'marg_MargCode', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('Conversion')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Item conversion'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_Conversion', $feild, ['class'=>'form-control', 'id' => 'marg_Conversion', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('Salt')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Salt code'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_Salt', $feild, ['class'=>'form-control', 'id' => 'marg_Salt', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('ENCODE')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Barcode'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_ENCODE', $feild, ['class'=>'form-control', 'id' => 'marg_ENCODE', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('remarks')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Remarks information'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_remarks', $feild, ['class'=>'form-control', 'id' => 'marg_remarks', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break                                    
+                             
+                                 @case('Gcode6')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('HSN code (internal code)'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_Gcode6', $feild, ['class'=>'form-control', 'id' => 'marg_Gcode6', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('ProductCode')
+                                 <div class="col-4 mb-2">
+                                     {!! Form::label('title', __('Product Code'), ['class' => 'control-label']) !!}         
+                                     {!! Form::text('marg_ProductCode', $feild, ['class'=>'form-control', 'id' => 'marg_ProductCode', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                         
+                             @default
+                                 Default case...
+                         @endswitch
+
+                         @endforeach
+                     </div>
+                 </div>
+             @endif
+             {{-- marg data --}}
+             
+                @if(($product->category->categoryDetail->type_id == 10) || (($product->category->categoryDetail->type_id == 7) && $client_preference_detail->is_hourly_pickup_rental == 1) )
                     @include('backend.product.popup.scheduleTableRows')
                     {{-- @include('backend.product.popup.addBlockTimeTablePopup') --}}
                     @include('backend.product.variant')
@@ -699,6 +873,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     @endif
                 @endif
             </div>
+            
             <div class="col-lg-5">
                 <!-- <div class="card-box ">
                     <div class="row mb-2 bg-light">
@@ -776,7 +951,6 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Spotlight Deals'),['class' => 'control-label']) !!}
                             <input type="checkbox" bid="" id="replaceable" data-plugin="switchery" name="spotlight_deals" class="chk_box" data-color="#43bee1" @if($product->spotlight_deals == 1) checked @endif>
                         </div>
-
                         @if($configData->need_dispacher_ride == 1 && $product->category->categoryDetail->type_id == 7)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
@@ -957,12 +1131,79 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Minimum Increment'),['class' => 'control-label']) !!}
                             {!! Form::number('batch_count', $product->batch_count, ['class'=>'form-control', 'id' => 'batch_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
-                    </div>
-                    <div class="row">
+
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group" id="per_hour_price">
+                                {!! Form::label('title', __('Per Hour Price'),['class' => 'control-label']) !!}
+                                <input class="form-control" name="per_hour_price" type="text" value="{{$product->per_hour_price}}" onkeypress="return isNumberKey(event)" maxlength="6">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group" id="km_included">
+                                {!! Form::label('title', __('Kilometers Inclued with Rental'),['class' => 'control-label']) !!}
+                                <input class="form-control" name="km_included" type="text" value="{{$product->km_included}}" onkeypress="return isNumberKey(event)" maxlength="4">
+                            </div>
+                        </div>
+                        
                         <div class="col-md-6 mb-2">
                             {!! Form::label('title', __('Return/Replace Days'),['class' => 'control-label']) !!}
                             {!! Form::number('return_days', $product->return_days, ['class'=>'form-control', 'id' => 'return_days', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
+                        @if($product->category->categoryDetail->slug == 'yacht')
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('title', __('Select Destination'),['class' => 'control-label']) !!}
+                                {!! Form::select('destination_id', [], $product->destination_id ,['class'=>'form-control', 'id' => 'destination_id']) !!}
+                            </div>
+                        @endif
+                        <div class="col-md-6 mb-2">
+                            <label for="title" class="control-label">{{ __("Pickup Date") }}</label>
+                            <input class="form-control" id="pickup_time" name="pickup_time" type="datetime-local" value="{{ $product->pickup_time ?? ''}}">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="title" class="control-label">{{ __("Drop Date") }}</label>
+                            <input class="form-control" id="drop_time" name="drop_time" type="datetime-local" value="{{ $product->drop_time ?? ''}}">
+                        </div>
+                        @if($product->category->categoryDetail->slug == 'rental')
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('title', __('Select Booking Option'),['class' => 'control-label']) !!}
+                                <select class="form-control select2-multiple" name="booking_option[]" data-toggle="select2" multiple="multiple" placeholder="Select booking option...">
+                                    @foreach($bookingOption as $set)
+                                    <option value="{{$set->id}}" @if(in_array($set->id, $productBookingOption)) selected @endif>{{$set->title??null}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('title', __('Select Rental Protection'),['class' => 'control-label']) !!}
+                                <select class="form-control select2-multiple" name="rental_protection[]" data-toggle="select2" multiple="multiple" placeholder="Select Rental Protection...">
+                                    @foreach($rentalProtection as $set)
+                                    <option value="{{$set->id}}" @if(in_array($set->id, $productRentalProtection)) selected @endif>{{$set->title??null}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('title', __('Included Rental Protection'),['class' => 'control-label']) !!}
+                                <select class="form-control select2-multiple" name="included_rental_protection[]" data-toggle="select2" multiple="multiple" placeholder="Select Included Rental Protection...">
+                                    @foreach($rentalProtection as $set)
+                                    <option value="{{$set->id}}" @if(in_array($set->id, $inlcudedProductRentalProtection)) selected @endif>{{$set->title??null}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
+
+                        @if($product->category->categoryDetail->slug == 'yacht')
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('captain_name', __('Captain Name'),['class' => 'control-label']) !!}
+                                <input class="form-control" id="captain_name" name="captain_name" type="text" value="{{ $product->captain_name ?? ''}}">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('captain_description', __('Captain Description'),['class' => 'control-label']) !!}
+                                <input class="form-control" id="captain_description" name="captain_description" type="text" value="{{ $product->captain_description ?? ''}}">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('captain_profile', __('Captain Profile'),['class' => 'control-label']) !!}
+                                <input class="form-control" id="captain_profile" name="captain_profile" type="file">
+                            </div>
+                        @endif
                     </div>
                     <div class="row">
                         @if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == '1')
@@ -974,10 +1215,10 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                     @endphp
 
                                     @if( $role->role != 'Corporate_user')
-                                    <div class="col-md-6 mb-2">
-                                        {!! Form::label('title', $label_min,['class' => 'control-label']) !!}
-                                        <input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="0" name="minimum_order_count_arr[{{$role['id']}}]" value="{{ isset($product->productByRoleForAdmin[$key]) ? (decimal_format($product->productByRoleForAdmin[$key]->minimum_order_count) ?? 0.00) : 0.00 }}">
-                                    </div>
+                                        <div class="col-md-6 mb-2">
+                                            {!! Form::label('title', $label_min,['class' => 'control-label']) !!}
+                                            <input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="0" name="minimum_order_count_arr[{{$role['id']}}]" value="{{ isset($product->productByRoleForAdmin[$key]) ? (decimal_format($product->productByRoleForAdmin[$key]->minimum_order_count) ?? 0.00) : 0.00 }}">
+                                        </div>
                                     @endif
                                 @endforeach
                             @endif
@@ -985,7 +1226,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     </div>
 
                     {{-- product free delivery fees --}}
-                    @if($getAdditionalPreference['is_free_delivery_by_roles'] == '1')
+                    @if($getAdditionalPreference['is_free_delivery_by_roles'] == '1' && 0)
                         <div class="row">
                             <div class="col-md-12">
                                 <label class="control-label">Free Delivery (Select Roles)</label>
@@ -1159,6 +1400,51 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     </div>
                     @endif
                     @endif
+                    @if (isset($getAdditionalPreference['is_product_measurement_in_cm_kg']) && $getAdditionalPreference['is_product_measurement_in_cm_kg'] == 1)
+                        <div class="row mt-2 mb-2 physicalDiv" style="{{ ($product->is_physical == 1) ? '' : '' }}">
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Length (In Centimeter)',['class' => 'control-label']) !!}
+                                {!! Form::text('length', $product->length,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '10.0']) !!}
+                            </div>
+
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Width (In Centimeter)',['class' => 'control-label']) !!}
+                                {!! Form::text('breadth', $product->breadth,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '12.0']) !!}
+                            </div>
+
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Height (In Centimeter)',['class' => 'control-label']) !!}
+                                {!! Form::text('height', $product->height,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '8.0']) !!}
+                            </div>
+
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Weight (In Kg)',['class' => 'control-label']) !!}
+                                {!! Form::text('weight', $product->weight,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '15.0']) !!}
+                            </div>
+                        </div>
+                    @else
+                        <div class="row mt-2 mb-2 physicalDiv" style="{{ ($product->is_physical == 1) ? '' : '' }}">
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Length (In Inches)',['class' => 'control-label']) !!}
+                                {!! Form::text('length', $product->length,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '10.0']) !!}
+                            </div>
+
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Width (In Inches)',['class' => 'control-label']) !!}
+                                {!! Form::text('breadth', $product->breadth,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '12.0']) !!}
+                            </div>
+
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Height (In Inches)',['class' => 'control-label']) !!}
+                                {!! Form::text('height', $product->height,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '8.0']) !!}
+                            </div>
+
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Weight (In Pounds)',['class' => 'control-label']) !!}
+                                {!! Form::text('weight', $product->weight,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '15.0']) !!}
+                            </div>
+                        </div>
+                    @endif
 
                     <!-- <div class="row mb-2">
                         {!! Form::label('title', 'Physical',['class' => 'control-label col-sm-2']) !!}
@@ -1276,7 +1562,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 540x715</label>
                     <div class="imageDivHidden"></div>
                 </div>
-
+              
                 @if($client_preference_detail->business_type != 'taxi')
                 <div class="card-box" style="display:{{(($product->global_product_id!='')?'none':'block')}}">
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Relate with other products") }}</h5>
@@ -1453,6 +1739,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                  <!-- end product faqs -->
 
             </div>
+            
         </div>
     </form>
 </div>
@@ -1688,6 +1975,12 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
         var input = document.getElementById('pickup_location');
         if(input){
             var autocomplete = new google.maps.places.Autocomplete(input);
+            if(is_map_search_perticular_country){
+                autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+            }
+            if(is_map_search_perticular_country){
+                autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+            }
             google.maps.event.addListener(autocomplete, 'place_changed', function () {
                 var place = autocomplete.getPlace();
                 $('#pickup_location_latitude_home').val(place.geometry.location.lat());
@@ -2508,6 +2801,22 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 });
         });
         $('.select2-multiple').select2();
+
+        $('select[name="included_rental_protection[]"], select[name="rental_protection[]"]').change(function(){
+            if($(this).val().length){
+                array1 = $('select[name="included_rental_protection[]"]').val()
+                array2 = $('select[name="rental_protection[]"]').val()
+                var filteredArray = array1.filter(function(n) {
+                    return array2.indexOf(n) !== -1;
+                });
+                
+                if(filteredArray.length){
+                    
+                    $(this).find("option[value='"+filteredArray[0]+"']").prop("selected", false);
+                    $(this).trigger('change.select2');
+                }
+            }
+        })
     </script>
 {{-- Insert Value to Role Price Modal (End) --}}
 @include('backend.catalog.pagescript')

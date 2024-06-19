@@ -57,9 +57,9 @@
             overflow-x: hidden
         }
 
-        #alTaxiBookingWrapper .vehical-container {
+        /* #alTaxiBookingWrapper .vehical-container {
             max-height: 200px
-        }
+        } */
 
         #alTaxiBookingWrapper .location-box {
             padding: 10px 24px
@@ -191,9 +191,11 @@
             background-color: #fff;
             left: 0;
             height: 100%;
+            /* height: auto; */
             overflow-x: hidden;
             overflow-y: scroll;
             width: 100%;
+            padding-bottom:30px;
         }
 
         .slick_bid_ride .slick-items{
@@ -259,16 +261,75 @@
 .slick_bid_ride .slick-next:before {
     font-size: 18px;
 }
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+.bid-btnleft {
+    width: 100%;
+    max-width: 50%;
+    margin: 0 auto;
+}
+
+.driver_info img {
+    width: 126px;
+    margin-right: 20px;
+}
+.driver_info {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.driver_info .user-info h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #000;
+}
+
+.driver_info .user-info p {
+    font-size: 14px;
+}
+
+.driver_info .user-info p span {
+    float: right;
+}
+
+.driver_info .user-info button {
+    border: none;
+    padding: 6px 20px;
+}
+.driver_info .user-info button:hover{
+    background-color:#51089b;color:#fff !important;
+}
+
+.text-loader {
+    text-align: center;
+    padding: 40px 0px;
+    font-size: 14px;
+}
+
+.text-loader i {
+    font-size: 16px !important;
+}
     </style>
     <section id="alTaxiBookingWrapper" class="cab-booking pt-0 pb-0">
         <div class="alFullMapArea col-md-12 p-0 h-100">
             <div id="booking-map" style="width: 100%; height: 100%;"></div>
             <input id="booking-latitude" type="hidden" value="-34">
             <input id="booking-longitude" type="hidden" value="151">
+            <input id="selected_category_id" type="hidden" value="">
+            <input id="selected_vendor_id" type="hidden" value="">
+            <input id="starting_rental_price" type="hidden" value="">
 
         </div>
         <div class="alFullMapForm col-md-12 p-0 position-absolute">
-            <div class="booking-experienceNew ds bc">
+            <div class="booking-experienceNew">
                 <div class="address-form">
                     @if (isset($client_preference_detail) && $client_preference_detail->book_for_friend == 1)
                         <div class="tip_radio_controls_book_friend text-center mt-2">
@@ -282,29 +343,79 @@
                             <label class="tip_label mb-0  my-2" for="for_friend" id="label_for_friend">
                                 <h5 class="m-0" id="tip_5">{{ __('For Others') }}</h5>
                             </label>
+                            @if (isset($client_preference_detail) && $client_preference_detail->is_hourly_pickup_rental == 1)
+                            <input type="radio" class="tip_radio is_for_friend" id="hourly_rental" name="is_for_friend"
+                            value="1">
+                            <label class="tip_label mb-0  my-2" for="hourly_rental" id="label_for_hourly_rental">
+                                <h5 class="m-0" id="tip_5">{{ __('Hourly Rental') }}</h5>
+                            </label>
+                            @endif
+                        </div>
+                    @elseif (isset($client_preference_detail) && $client_preference_detail->is_hourly_pickup_rental == 1)
+                        <div class="tip_radio_controls_book_friend text-center mt-2">
+                            <input type="radio" class="tip_radio is_for_friend" id="hourly_rental" name="hourly_rental"
+                                value="1">
+                            <label class="tip_label mb-0  my-2" for="hourly_rental" id="label_for_hourly_rental">
+                                <h5 class="m-0" id="tip_5">{{ __('Hourly Rental') }}</h5>
+                            </label>
                         </div>
                     @endif
-                    
-                    @if($is_cab_pooling ==1)
-                    <div class="pool_radio_controls text-center">
-                        <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_booking" name="is_cab_pooling_radio"
-                            value="0" checked>
-                        <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
-                            <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
-                        </label>
-                        
-                        <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_pooling" name="is_cab_pooling_radio"
-                            value="1">
-                        <label class="pool_label mb-0  my-2" for="cab_pooling" id="label_cab_pooling">
-                            <h5 class="m-0" id="pool_5">{{ __('Pooling') }}</h5>
-                        </label>
-                        
-                    </div>
-                    @endif
-                    
+
+
+                    @if($is_cab_pooling == 1 || $is_bid_ride_enable == 1 || $is_recurring_booking == 1 || $is_particular_driver == 1)
+                        <div class="pool_radio_controls text-center">
+                            <div class="item">
+                                <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_booking" name="is_cab_pooling_radio"
+                                    value="0" checked>
+                                <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
+                                    <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
+                                </label>
+
+
+                            </div>
+                            <div class="item mx-1">
+                            <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_pooling" name="is_cab_pooling_radio"
+                                      value="1">
+                                <label class="pool_label mb-0  my-2" for="cab_pooling" id="label_cab_pooling">
+                                    <h5 class="m-0" id="pool_5">{{ __('Pooling') }}</h5>
+                                </label>
+
+
+                            </div>
+                            @endif
+
+                            @if($is_bid_ride_enable == 1)
+                            <div class="item mx-1">
+                                <input type="radio" id="bid_radio" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="0">
+                                <label class="pool_label mb-0  my-2" >
+                                    <h5 class="m-0" id="pool_5">Bid</h5>
+                                </label>
+                            </div>
+                            @endif
+
+                            @if($is_particular_driver == 1)
+                            <div class="item">
+
+                                <input type="radio" id="particular_driver_radio" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="2">
+                                <label class="mb-0  my-2" >
+                                    <h5 class="m-0" id="">Request to Driver</h5>
+                                </label>
+                            </div>
+                            @endif
+                            @if($is_recurring_booking == 1)
+                            <div class="item">
+
+                            <input type="radio" id="is_recurring_booking" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="4">
+                            <label class="mb-0  my-2" >
+                                <h5 class="m-0" id="">{{ __(getDynamicTypeName('Recurring')) }}</h5>
+                            </label>
+                            </div>
+                            @endif
+                        </div>
+
                     <div class="location-box check-pick-first">
                         <div class="where-to-go">
-                            <div class="title title-36">{{ __('Where can we pick you up?') }}</div>
+                            <div class="title title-36">{{ __(getDynamicTypeName('Where can we pick you up?')) }}</div>
                         </div>
                     </div>
                     <div class="location-box check-dropoff-secpond" style="display:none">
@@ -315,13 +426,13 @@
                                 </div>
                             </li>
                             <li class="d-flex dots where-to-first">
-                                <div class="title title-36 pr-3 position-relative">{{ __('Where To?') }}</div>
+                                <div class="title title-36 pr-3 position-relative">{{ __(getDynamicTypeName('Where To?')) }}</div>
                             </li>
                             <li class="d-flex dots where-to-second" style="display:none !important;">
                                 <div class="title title-24 position-relative edit-dropoff"> {{ __('To') }} - <span
                                         id="dropoff-where-to"></span><i class="fa fa-angle-down" aria-hidden="true"></i>
                                 </div>
-                                <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel=""></i>
+                                    <i class="fa fa-times ml-1 apremove delete-drop-off" aria-hidden="true" data-rel=""></i>
                             </li>
                         </ul>
                         <a class="add-more-location position-relative pl-2" style="display:none"
@@ -435,6 +546,13 @@
                                                 class="fa fa-calendar"></i></span>
                                     </div>
                                 </div>
+
+                                @if($is_recurring_booking == 1)
+                                    <div class="recurring-option">
+                                        @include('frontend.product-part.recurring-booking')
+                                    </div>
+                                @endif
+
                             </div>
 
                             <div class="scheduled-footer">
@@ -491,8 +609,11 @@
 
                     </div>
                 </div>
+                <div class="hourly-rental-container">
+                </div>
                 <script type="text/template" id="rider_template">
-            <div class="col-12 d-flex justify-content-between align-items-center">
+
+                    <div class="col-12 d-flex justify-content-between align-items-center">
                 <% if(riders.length > 0){%>
                     <p class="m-0">Riders : <%= riders.length %></p>
                 <% } %>
@@ -505,7 +626,7 @@
                         var randomColor = "#" + ((1<<24)*Math.random() | 0).toString(16);
                         %>
                         <div class="col-3 text-center alHoverRiderBox">
-                            <input class="alCheckMark" type="radio" name="rider_id" id="option-<%= key %>" <% if(key == 0){'checked'} %> >
+                            <input class="alCheckMark" type="radio" name="rider_id" id="option-<%= key %>" value="<%= rider.id %>"  <% if(key == 0){'checked'} %> >
                             <label for="option-<%= key %>" class="option option-<%= key %>">
                                 <div class="alRiderImg mb-1" style="background-color: <%=randomColor%> "> <%= (rider.first_name).charAt(0)%></div>
                                 <div class="dalRiderInfo">
@@ -565,6 +686,7 @@
                         <div class="row no-gutters">
                             <div class="col vehicle-details">
                                 <h4 class="m-0"><b><%= result.name %></b></h4>
+                               <h6 class="m-0"><%= result.description %></h6>
                             </div>
                             <div class="col ride-price pl-2 text-right">
                             <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
@@ -592,6 +714,7 @@
                     <% _.each(results, function(result, key){%>
                                 <a href="javascript:void(0)" class="vehical-view-box-bid-ride" data-totalTagPrice="<%= result.tags_price%>" data-totalMinTagPrice="<%= result.total_minimum%>" data-totalDistance="<%= result.distance%>" data-product_id="<%= result.id %>" data-productName="<%= result.name %>"><img src="<%= result.image_url %>">
                                 <h5 class="m-0 text-center"><%= result.name %></h5>
+                               <h6 class="m-0"><%= result.description %></h6>
                                 </a>
                     <% }); %>
                             </div>
@@ -657,6 +780,238 @@
                 <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel="<%= random_id %>"></i>
             </li>
         </script>
+
+        <script type="text/template" id="vehicle_bid_template">
+            <div class="cab-outer style-4">
+                <div class="bg-white p-2">
+                    <a class="close-cab-detail-box" href="javascript:void()">✕</a>
+                    <div class="cab-image-box w-100 d-flex align-items-center justify-content-center">
+                        <img src="<%= result.image_url %>">
+                    </div>
+                    <div class="cab-location-details">
+                    <div style="height:5px;"><div class="loader cab-detail-main-loader" style="display: none;"></div></div>
+
+
+                    <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
+                    <% if(result.toll_fee > 0){ %>
+                        <span class="d-flex align-items-center justify-content-between mt-2"><b>{{ __('Toll Fee') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount_less_toll">{{Session::get('currencySymbol')}}<%= result.toll_fee%></b></label></span>
+                    <% } %>
+
+                    <% if(result.service_charge_amount > 0){ %>
+                        <span class="d-flex align-items-center justify-content-between"><b>{{ __('Service Charge') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
+                    <% } %>
+
+                    <% if(result.service_charge_amount > 0 || result.toll_fee > 0){ %>
+                        <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_total_amount">{{Session::get('currencySymbol')}}<%= (result.total_tags_price)%></b></label></h4>
+                    <% } %>
+
+                    </div>
+                </div>
+                <div class="cab-amount-details px-2">
+                    <div class="row">
+                        <div class="col-6 mb-2">{{__('Distance')}}</div>
+                        <div class="col-6 mb-2 text-right" id="distance"><%= result.distance %> {{__($client_preference_detail->distance_unit_for_time)}}</div>
+                        <div class="col-6 mb-2">{{__('Duration')}}</div>
+                        <div class="col-6 mb-2 text-right" id="duration"><%= result.duration %> {{__('mins')}}</div>
+                        <% if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){ %>
+                            <div class="col-6 mb-2">{{__('Subscription Discount')}}</div>
+                            <div class="col-6 mb-2 text-right" id="subscription-percent"><%= result.subscription_percent_value+'%' %></div>
+                            <input type="hidden" id="subscription-percent-h" value="<%= result.subscription_percent_value %>">
+                            <div class="col-6 mb-2"><p class="total_amt m-0">{{__('Amount Payable')}}</p></div>
+                            <div class="col-6 mb-2 text-right" id="discount"><p class="total_amt m-0" id="subscription-amout">{{Session::get('currencySymbol')}}<%= result.subscription_discount %></p></div>
+                            <input type="hidden" id="subscription-amout-h" value="<%= result.subscription_discount %>">
+                        <% } %>
+                        <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
+                            <div class="col-6 mb-2">Loyalty</div>
+                            <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div id="create_bid_btns">
+                <div class="col-6 my-2 bid-btnleft">
+                    <div class="input-get-value">
+                        <div class="input-group">
+                            <span class="input-group-btn mr-10">
+                                <button type="button" class="btn btn-danger btn-price-up-down" data-type="minus">
+                                    <i class="fa fa-minus" aria-hidden="true"></i> 10
+                                </button>
+                            </span>
+                            <input type="number" name="cab_bid_price" value="<%= (result.total_tags_price)%>" id="cab_bid_price" class="form-control price-number-up-down text-center" min="<%= (result.min_tags_price)%>" max="">
+                            <span class="input-group-btn ml-10">
+                                <button type="button" class="btn btn-success btn-price-up-down" data-type="plus">
+                                    <i class="fa fa-plus" aria-hidden="true"></i> 10
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 create-bid-btn">
+                        <button class="btn btn-solid w-100" id="create_bid" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-task_type="bid_ride_request" data-tags="<%=(result.tags)%>">{{__('Create Bid')}}</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="payment-promo-container p-2 d-none" id="paymentMethods">
+                <input type="hidden" id="payment-method-for-bid" value="1">
+                <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal_bid" type='bid'>
+                    <span id="payment_type_bid">
+                        <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
+                    </span>
+                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                </h4>
+            </div>
+
+            <div id="driver_acceptance_list" class="d-none">
+                <div class="text-loader">
+                    <i class="fa fa-circle-o-notch fa-spin"></i>
+                    Wait for driver acceptance
+                </div>
+            </div>
+
+            <span id="show_error_of_bid" class="text-danger"></span>
+
+            {{-- <div class="payment-promo-container p-2">
+                <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal">
+                    <span id="payment_type">
+                        <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
+                    </span>
+                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                </h4>
+                <div class="row">
+                    <div class="col-12">
+                    <%
+                    var payableAmout = '';
+                    if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){
+                        payableAmout = result.subscription_discount;
+                    }
+                    %>
+                        <input type="hidden" id="stripe_token" name="stripe_token" value="">
+                        <button disabled class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Book Now')}}</button>
+                    </div>
+                </div>
+            </div> --}}
+        </script>
+
+        <script type="text/template" id="particular_driver_template">
+            <div class="cab-outer style-4">
+                <div class="bg-white p-2">
+                    <a class="close-cab-detail-box" href="javascript:void()">✕</a>
+                    <div class="cab-image-box w-100 d-flex align-items-center justify-content-center">
+                        <img src="<%= result.image_url %>">
+                    </div>
+                    <div class="cab-location-details">
+                    <div style="height:5px;"><div class="loader cab-detail-main-loader" style="display: none;"></div></div>
+
+
+                    <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
+                    <% if(result.toll_fee > 0){ %>
+                        <span class="d-flex align-items-center justify-content-between mt-2"><b>{{ __('Toll Fee') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount_less_toll">{{Session::get('currencySymbol')}}<%= result.toll_fee%></b></label></span>
+                    <% } %>
+
+                    <% if(result.service_charge_amount > 0){ %>
+                        <span class="d-flex align-items-center justify-content-between"><b>{{ __('Service Charge') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
+                    <% } %>
+
+                    <% if(result.service_charge_amount > 0 || result.toll_fee > 0){ %>
+                        <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_total_amount">{{Session::get('currencySymbol')}}<%= (result.total_tags_price)%></b></label></h4>
+                    <% } %>
+
+                    <input type="hidden" id="hddn_amount_toll_fee" value="<%= (result.toll_fee)%>"/>
+                    <input type="hidden" name="cart_product_ids[]" value="<%= result.id %>">
+                    <input type="hidden" id="hddn_real_amount" value="<%= (result.tags_price)%>"/>
+                    <input type="hidden" id="hddn_service_charge_amount" value="<%= (result.service_charge_amount)%>"/>
+                    <input type="hidden" id="hddn_currency_symbol" value="{{Session::get('currencySymbol')}}"/>
+
+                    </div>
+                </div>
+                <div class="cab-amount-details px-2">
+                    <div class="row">
+                        <div class="col-6 mb-2">{{__('Distance')}}</div>
+                        <div class="col-6 mb-2 text-right" id="distance"><%= result.distance %> {{__($client_preference_detail->distance_unit_for_time)}}</div>
+                        <div class="col-6 mb-2">{{__('Duration')}}</div>
+                        <div class="col-6 mb-2 text-right" id="duration"><%= result.duration %> {{__('mins')}}</div>
+                        <% if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){ %>
+                            <div class="col-6 mb-2">{{__('Subscription Discount')}}</div>
+                            <div class="col-6 mb-2 text-right" id="subscription-percent"><%= result.subscription_percent_value+'%' %></div>
+                            <input type="hidden" id="subscription-percent-h" value="<%= result.subscription_percent_value %>">
+                            <div class="col-6 mb-2"><p class="total_amt m-0">{{__('Amount Payable')}}</p></div>
+                            <div class="col-6 mb-2 text-right" id="discount"><p class="total_amt m-0" id="subscription-amout">{{Session::get('currencySymbol')}}<%= result.subscription_discount %></p></div>
+                            <input type="hidden" id="subscription-amout-h" value="<%= result.subscription_discount %>">
+                        <% } %>
+                        <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
+                            <div class="col-6 mb-2">Loyalty</div>
+                            <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div id="">
+                <div class="col-12 my-2">
+                    <div class="w-100 d-flex justify-content-between align-items-center input-get-value">
+                        <div class="input-group col">
+                            <input type="text" name="driver_unique_id" value="" id="driver_unique_id" class="form-control text-center" placeholder="Enter Driver Unique Id" required>
+                        </div>
+                        <div class="input-group col">
+                            <input type="datetime-local" name="schedule_date_for_driver" value="{{ date("Y-m-d H:i") }}" id="schedule_date_for_driver" class="form-control text-center" min="{{ date("Y-m-d H:i") }}" required>
+                        </div>
+
+                    </div>
+                <span id="driver_request_error" class="text-danger"> </span>
+                </div>
+
+                <div class="payment-promo-container p-2" id="paymentMethods">
+                    <input type="hidden" id="payment-method-for-bid" value="1">
+                    <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal_bid" type='bid'>
+                        <span id="payment_type_bid">
+                            <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
+                        </span>
+                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    </h4>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 create-bid-btn">
+                        <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-task_type="schedule" booking-type='driver_request' data-tags="<%=(result.tags)%>">{{__('Request For Driver')}}</button>
+                    </div>
+                </div>
+            </div>
+
+            <span id="show_errors" class="text-danger"></span>
+
+        </script>
+
+        <script type="text/template" id="driver_biding_list">
+            <div>
+                <% _.each(results, function(result, key){%>
+
+                    <div class="driver_info">
+                        <img src="<%=result.driver_image%>" alt="">
+                        <div class="user-info">
+                            <h4><%=result.driver_name%></h4>
+                            <p>Price<span>{{Session::get('currencySymbol')}} <%=parseFloat(result.bid_price).toFixed(2)%></span></p>
+                            {{-- <button class="btn-solid btn" type="button" id="accept_driver_bid" data-bid_id="<%=result.id%>">Accept</button> --}}
+                            <button class="btn btn-solid w-100" id="pickup_now_bid" data-payment_method="1" data-product_id="<%= product_id %>" data-driver_id="<%= result.driver_id %>" data-bid_id="<%=result.id%>" data-coupon_id =""  data-subscriptionPayableAmount ="" data-vendor_id="<%= vendor_id %>" data-amount="<%= result.bid_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now" booking-type="bid">{{__('Accept')}}</button>
+
+                        </div>
+                    </div>
+
+                <% }); %>
+            </div>
+        </script>
+
                 <script type="text/template" id="cab_detail_box_template">
             <div class="cab-outer style-4">
                 <div class="bg-white p-2">
@@ -701,13 +1056,28 @@
                         <span class="d-flex align-items-center justify-content-between mt-2"><b>{{ __('Toll Fee') }}</b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount_less_toll">{{Session::get('currencySymbol')}}<%= result.toll_fee%></b></label></span>
                     <% } %>
-
+                    <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
+                        <span class="d-flex align-items-center justify-content-between"><b>{{ __('Loyalty') }}</b> <label><sub class="ling-throgh" id
+                            ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">- {{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved%></b></label></span>
+                    <% } %>
                     <% if(result.service_charge_amount > 0){ %>
                         <span class="d-flex align-items-center justify-content-between"><b>{{ __('Service Charge') }}</b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
                     <% } %>
+                    <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
+                        <span class="d-flex align-items-center justify-content-between"><b>{{ __('Loyalty') }}</b> <label><sub class="ling-throgh" id
+                            ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">- {{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved%></b></label></span>
+                    <% } %>
+                    <% if((result.product_tax) && (result.product_tax) > 0 ){ %>
+                        <span class="d-flex align-items-center justify-content-between"><b><%= result.product_tax_name %></b> <label><sub class="ling-throgh" id
+                            ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.total_other_taxes %></b></label></span>
+                    <% } %>
 
-                    <% if(result.service_charge_amount > 0 || result.toll_fee > 0){ %>
+                    <% if(result.wallet_amount_used > 0){ %>
+                        <span class="d-flex align-items-center justify-content-between mt-2"><b>{{ __('Wallet amount used') }}</b> <label><sub class="ling-throgh"
+                            style="display:none;"></sub> <b>-{{Session::get('currencySymbol')}}<%= result.wallet_amount_used%></b></label></span>
+                    <% } %>
+                    <% if(result.service_charge_amount > 0 || result.toll_fee > 0 || result.wallet_amount_used > 0){ %>
                         <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_total_amount">{{Session::get('currencySymbol')}}<%= (result.total_tags_price)%></b></label></h4>
                     <% } %>
@@ -732,6 +1102,11 @@
                         <div class="col-6 mb-2 text-right" id="discount"><p class="total_amt m-0" id="subscription-amout">{{Session::get('currencySymbol')}}<%= result.subscription_discount %></p></div>
                         <input type="hidden" id="subscription-amout-h" value="<%= result.subscription_discount %>">
                         <% } %>
+
+                        <% if((result.yacht)){ %>
+                            {{-- <input type="number" class="from-control" id="seats" value="" name="seats" placeholder="Number of Seats Booking"> --}}
+                        <% } %>
+
                         <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
                             <div class="col-6 mb-2">Loyalty</div>
                             <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>
@@ -765,12 +1140,14 @@
     <span id="show_error_of_booking" class="error"></span>
 
     <div class="payment-promo-container p-2">
+    <% if(result.tags_price > 0){ %>
         <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal">
             <span id="payment_type">
                 <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
             </span>
             <i class="fa fa-angle-down" aria-hidden="true"></i>
         </h4>
+    <% } %>
         <div class="row">
             <div class="col-12">
             <%
@@ -822,7 +1199,25 @@
                         </div>
                     <% } %>
 
+                    <% if(payment_option.slug == 'powertrans') { %>
+                        <div class="col-md-12 mt-3 mb-3 powertrans_element_wrapper option-wrapper d-none">
+                            <div class="row no-gutters">
+                                <div class="col-6">
+                                    <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required
+                                    oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
+                                </div>
+                                <div class="col-3">
+                                    <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required
+                                    oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                                </div>
+                                <div class="col-3">
+                                    <input type="password" maxLength="4" style=" border-left: none;"  class="form-control" id="cvv-element-powertrans" placeholder="CVV" required />
+                                </div>
+                            </div>
 
+                            <span class="error text-danger" id="card_error_powertrans"></span>
+                        </div>
+                    <% } %>
 
                 </div>
             <% }); %>
@@ -837,7 +1232,7 @@
             <div class="modal-footer d-block text-center">
                 <div class="row">
                     <div class="col-sm-12 p-0 d-flex flex-fill">
-                        <button type="button" class="btn btn-solid ml-1 select_payment_option_done">{{__('Done')}}</button>
+                        <button type="button" class="btn btn-solid ml-1 select_payment_option_done" data-type="<%= type %>">{{__('Done')}}</button>
                     </div>
                 </div>
             </div>
@@ -965,7 +1360,7 @@
             </div>
             <div class="modal-body booking_mayment_method">
                 <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper">
-                   
+
                          <div class="tab">
     <a class="tablinks active" onclick="clickHandle(event, 'Add-Card')" href="javascript:void(0);">Add Card</a>
     <a class="tablinks" onclick="clickHandle(event, 'Card-List')" href="javascript:void(0);">Card List</a>
@@ -1019,7 +1414,6 @@
     </div>
  </div>
 
-
     <!-- Paymentoption Modal -->
     <div class="modal fade payment-modal payment-modal-width" id="payment_modal" data-backdrop="static"
         data-keyboard="false" tabindex="-1" aria-labelledby="payment_modalLabel" aria-hidden="true">
@@ -1039,6 +1433,23 @@
         </div>
     </div>
 
+    <div class="modal fade payment-modal payment-modal-width" id="payment_modal_bid" data-backdrop="static"
+    data-keyboard="false" tabindex="-1" aria-labelledby="payment_modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header pb-0">
+                <h5 class="modal-title" id="payment_modalLabel">{{ __('Select Payment Method') }}</h5>
+                <button type="button" class="close right-top" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body booking_mayment_method">
+                {{-- <h4 class="d-flex align-items-center justify-content-between mb-2 mt-3 px-3 select_cab_payment_method" data-payment_method="1"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> {{__('Cash')}}</span></h4>
+            <h4 class="d-flex align-items-center justify-content-between mb-2 mt-3 px-3 select_cab_payment_method" data-payment_method="2"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> {{__('Wallet/Card')}}</span></h4> --}}
+            </div>
+        </div>
+    </div>
+</div>
     <!-- Select Payment Option -->
     <div class="modal fade select-payment-option payment-modal-width" id="select_payment_option" data-backdrop="static"
         data-keyboard="false" tabindex="-1" aria-labelledby="select_payment_optionLabel" aria-hidden="true">
@@ -1192,6 +1603,26 @@
                     </div>
                 <% } %>
 
+                <% if(payment_option.slug == 'powertrans') { %>
+                    <div class="col-md-12 mt-3 mb-3 powertrans_element_wrapper option-wrapper d-none">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required
+                                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
+                            </div>
+                            <div class="col-3">
+                                <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required
+                                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                            </div>
+                            <div class="col-3">
+                                <input type="password" maxLength="4" style=" border-left: none;"  class="form-control" id="cvv-element-powertrans" placeholder="CVV" required />
+                            </div>
+                        </div>
+
+                        <span class="error text-danger" id="card_error_powertrans"></span>
+                    </div>
+                <% } %>
+
             <% } %>
         <% }); %>
     <% } %>
@@ -1294,6 +1725,9 @@
     @if (in_array('khalti', $client_payment_options))
         <script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
     @endif
+    @if (in_array('mastercard', $client_payment_options))
+        <script src="https://{{mastercardGateway()}}/static/checkout/checkout.min.js"></script>
+    @endif
     <!-- <script src="https://js.stripe.com/v3/"></script> -->
     <script type="text/javascript">
         var ajaxCall = 'ToCancelPrevReq';
@@ -1327,8 +1761,18 @@
         var add_rider_url = "{{ route('rider.create') }}";
         var remove_rider_url = "{{ route('rider.remove') }}";
         var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
-         var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
-         	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+        var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
+        var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+        var payment_obo_url = "{{route('obo.pay')}}";
+        var data_trans_url = "{{route('payment.payByDataTrans')}}";
+        var create_bid_url = "{{route('createBid')}}";
+        var driver_biding_list_url = "{{route('getBidsRelatedToOrderRide')}}";
+        var accept_bid_by_customer = "{{route('acceptBidByCustomer')}}";
+        var livee_payment_url="{{route('livee.pay')}}";
+        var payment_hitpay_url="{{ route('make.hitpay.payment') }}";
+        var payment_orangepay_url =  "{{ route('orangepay.initiate.payment') }}";
+        var payment_cybersource_url =  "{{ route('cybersource.initiate.payment') }}";
+        
         @if ($client_preference_detail->distance_unit_for_time == 'mile')
             var distance_unit = "IMPERIAL";
         @else
@@ -1381,6 +1825,9 @@
             var method = $(this).val();
             if (method == 'stripe') {
                 $("#wallet_payment_methods .stripe_element_wrapper").removeClass('d-none');
+            } else if(method == 'powertrans') {
+                $("#wallet_payment_methods .powertrans_element_wrapper").removeClass('d-none');
+                $("#wallet_payment_methods .stripe_element_wrapper").addClass('d-none');
             } else {
                 $("#wallet_payment_methods .stripe_element_wrapper").addClass('d-none');
             }
@@ -1391,6 +1838,8 @@
             var output = document.getElementById('output');
             output.src = URL.createObjectURL(event.target.files[0]);
         };
+        var hourly_rental_url = "{{  route('front.booking.updateRentalPrice')}}";
+        var csrf_token = "{{ csrf_token()}}";
     </script>
     @if (in_array('kongapay', $client_payment_options))
         <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
@@ -1400,19 +1849,29 @@
     @endif
     <script type="text/javascript" src="{{ asset('js/developer.js') }}"></script>
     <script src="{{ asset('js/payment.js') }}"></script>
+    @if(in_array('data_trans',$client_payment_options))
+        <script src="{{ $data_trans_script_url }}"></script>
+    @endif
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
         integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{{ asset('js/cab_booking.js') }}"></script>
+    <script src="{{ asset('js/biding.js') }}"></script>
+    <script src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
+
     <script>
         var category_id = "{{ $category->id ?? '' }}";
         var category_name = "{{ @$category->translation[0]->name ?? '' }}";
         var routeset = "{{ route('pickup-delivery-route', ':category_id') }}";
-
+        var is_hourly_rental_enabled = 1;
         var autocomplete_urls = routeset.replace(":category_id", category_id);
         var wallet_balance = {{ $wallet_balance }}
         var payment_stripe_url = "{{ route('payment.stripe') }}";
+        var get_rental_vehicle_list = "{{ route('get-list-of-rental-vehicles') }}";
+        var get_rental_view = "{{route('get-rental-view')}}";
+
+
         var get_product_detail = "{{ url('looking/product-detail') }}";
         var get_payment_options = "{{ url('looking/payment/options') }}";
         var promo_code_list_url = "{{ route('verify.promocode.list') }}";
@@ -1424,7 +1883,11 @@
         var cab_booking_promo_code_remove_url = "{{ url('looking/promo-code/remove') }}";
         var apply_cab_booking_promocode_coupon_url = "{{ route('verify.cab.booking.promo-code') }}";
         var no_result_message = "{{ __('No result found. Please try a new search') }}";
+        var create_mtn_momo_token = "{{route('mtn.momo.createToken')}}";
+        var powertrans_payment_url = "{{ route('powertrans.payment') }}";
+        var mastercard_create_session_url = "{{ route('payment.mastercard.createSession') }}";
 
+        var pesapal_payment_url = "{{ route('pesapal.payment') }}";
         /// ************* product order form **************///////
         $('body').on('click', '.clproduct_order_form', function(event) {
             event.preventDefault();
@@ -1443,6 +1906,7 @@
 
     <script type="text/javascript">
         $(document).ready(function(e) {
+            $("#get-current-location").trigger("click");
             var daterang = $('input[name="schedule_pickup_date"]').daterangepicker({
                 singleDatePicker: true,
                 startDate: moment().add('10', 'minutes'),
@@ -1453,7 +1917,7 @@
                 timePickerIncrement: 1,
                 autoUpdateInput: true,
                 locale: {
-                    format: 'MM-DD-YYYY HH:mm',
+                    format: 'YYYY-MM-DD HH:mm',
                 }
             });
             $('.calendar_icon').click(function() {
@@ -1477,7 +1941,42 @@
             // }
             $('#label_for_friend').click(function() {
                 $('#label_for_me').removeClass('active');
+                $('.address-form').removeClass('d-none');
+                $(".hourly-rental-container").addClass('d-none');
+                $('.hourly-rental-container').empty();
+                $(".hourly-rental-container").removeClass('active');
+
+                $('.location-containerNew').removeClass('d-none');
+
             });
+
+            $('#label_for_hourly_rental').click(function() {
+
+            $('.address-form').addClass('d-none');
+            $('.location-containerNew').addClass('d-none');
+            $('.check-dropoff-secpond').addClass('d-none');
+            $('.for_friend').removeClass('active');
+            $(".hourly-rental-container").removeClass('d-none');
+            $(".hourly-rental-container").removeClass('active');
+            $('#label_for_friend').removeClass('active');
+
+            $('.hourly-rental-container').empty();
+
+            // Make an AJAX request to load the view.
+            $.ajax({
+                url: "{{route('get-rental-view')}}",
+                method: 'POST',
+                success: function(response) {
+                    // Append the retrieved view to the desired element.
+                    $('.hourly-rental-container').html(response.view);
+
+                },
+                error: function(xhr, status, error) {
+                    // Handle errors if necessary.
+                }
+            });
+            });
+
             $(document).delegate('#submit_productfaq', 'click', function() {
                 var product_order_form_element = getFormData('#product-order-form-name');
                 $('#product_order_form').modal('hide');
@@ -1501,16 +2000,17 @@
             }
 
         });
-        
-    function addSlashes (element) {	
+
+    function addSlashes (element) {
         let ele = document.getElementById(element.id);
         ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
         if(ele.length < 4 && ele.length > 0){
             let finalVal = ele.match(/.{1,2}/g).join('/');
-    
+
             document.getElementById(element.id).value = finalVal;
         }
     }
 
     </script>
+
 @endsection

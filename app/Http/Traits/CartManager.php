@@ -3,7 +3,7 @@ namespace App\Http\Traits;
 
 use App\Http\Controllers\Front\{PromoCodeController,CartController, FrontController};
 use App\Models\CaregoryKycDoc;
-use App\Models\{Cart, ProcessorProduct, UserGiftCard};
+use App\Models\{Cart, Nomenclature, NomenclatureTranslation, ProcessorProduct, UserGiftCard};
 use App\Models\CartDeliveryFee;
 use App\Models\CartProduct;
 use App\Models\CartProductPrescription;
@@ -332,7 +332,7 @@ trait cartManager{
         $crossSell_products = collect();
         $couponGetAmount=0;
         $loyalty_amount_saved = 0;
-        $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency','is_price_by_role','is_service_product_price_from_dispatch']);
+        $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency','is_price_by_role','is_service_product_price_from_dispatch','is_service_price_selection']);
         $client_timezone = DB::table('clients')->first('timezone');
         $user_timezone = $client_timezone->timezone ?? 'Asia/Kolkata';
         
@@ -343,7 +343,8 @@ trait cartManager{
         $is_recurring_booking = 0;
         $action = (session()->has('vendorType')) ? session()->get('vendorType') : 'delivery';
         $is_service_product_price_from_dispatch = 0;
-        if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( $action == 'on_demand')){
+        $getOnDemandPricingRule = getOnDemandPricingRule($action, (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
+        if($getOnDemandPricingRule['is_price_from_freelancer']==1){
             $is_service_product_price_from_dispatch =1;
         }
 
@@ -495,7 +496,7 @@ trait cartManager{
                 // }else{
                 //     $vendorData->scheduled_date_time = date('Y-m-d',strtotime($vendorData->scheduled_date_time)) ;
                 // }
-                $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
+                    $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery',"60",0,'',$cart_id);
 
                 $slots = (object)$slotsRes['slots'];
                 // this variable for get slot from dispatc
@@ -615,7 +616,7 @@ trait cartManager{
                         $prod->long_term_products=$LongTermProducts;
                     }
 
-                  $slotsDate = findSlot('',$vendorData->vendor->id,'','webFormet');
+                  $slotsDate = findSlot('',$vendorData->vendor->id,'','webFormet',$cart_id);
 
                   $vendorData->delaySlot = (($slotsDate)? ( $slotsDate['datetime']?  $slotsDate['datetime'] : '' ):'');
                   $vendorStartDate =  (($slotsDate)? ( $slotsDate['date'] ?  $slotsDate['date'] : '' ):'');
@@ -702,9 +703,9 @@ trait cartManager{
 
                     
 
-                    if ((@auth()->user()->role_id == 3)) {
+                    // if ((@auth()->user()->role_id == 3)) {
                         $quantity_role_price = $this->calculatePrice($prod->productVariantByRoles, $prod->quantity);
-                    }
+                    // }
 
                     if(@$quantity_role_price['quantity_price'] != 0 ) {
                             $quantity_price = $quantity_role_price['quantity_price'];
@@ -908,12 +909,12 @@ trait cartManager{
                                     if (count($deliveries)>1) {
                                         foreach ($deliveries as $k=> $opt) {
                                             if($prod->product->individual_delivery_fee == 1) {
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)):($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)).'</option>';
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)):decimal_format($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)).'</option>';
                                             }else{
                                                 if($if_previousdeliveryfee_added == 0 && $opt['rate'] > 0){
                                                     $delivery_to_add = $opt['rate'];
                                                 }else{$delivery_to_add = 0;}
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $delivery_to_add)):($vendorTotalDeliveryFee + $delivery_to_add)).'</option>';
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $delivery_to_add)):decimal_format($vendorTotalDeliveryFee + $delivery_to_add)).'</option>';
                                             }
                                         }
                                     } else {
@@ -924,7 +925,7 @@ trait cartManager{
                                                 if($if_previousdeliveryfee_added == 0 && $opt['rate'] > 0){
                                                     $delivery_to_add = $opt['rate'];
                                                 }else{$delivery_to_add = 0;}
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $delivery_to_add)):($vendorTotalDeliveryFee + $delivery_to_add)).'</option>';
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($vendorTotalDeliveryFee + $delivery_to_add)):decimal_format($vendorTotalDeliveryFee + $delivery_to_add)).'</option>';
                                             }
                                         }
                                     }
@@ -1407,7 +1408,7 @@ trait cartManager{
                 }
                 if($preferences->scheduling_with_slots != 1 && $preferences->business_type != 'laundry'){
                     $myDate = $cartData[0]->scheduled_date_time;
-                    $slotsRes = getShowSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0);
+                    $slotsRes = getShowSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0,$cart_id);
                     $slots = (object)$slotsRes['slots'];
                     $slotsdate = $slotsRes['date'];
                     $cart->slotsdate = $slotsdate;
@@ -1425,7 +1426,7 @@ trait cartManager{
                 if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
                     // For Pickup
                     //$pickupSlots = (object)getShowSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1);
-                    $slotsRes = getShowSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1);
+                    $slotsRes = getShowSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1,'',$cart_id);
                     $pickupSlots = (object)$slotsRes['slots'];
                     $pickupslotsdate = $slotsRes['date'];
                     $cart->slotsForPickupdate= $pickupslotsdate;
@@ -1433,7 +1434,7 @@ trait cartManager{
 
                     // For Dropoff
                     $myDropoffDate = date('Y-m-d');
-                    $slotsRes = getShowSlot($myDropoffDate,$vendorId,'delivery',$duration->slot_minutes, 2);
+                    $slotsRes = getShowSlot($myDropoffDate,$vendorId,'delivery',$duration->slot_minutes, 2,'',$cart_id);
                     $dropoffSlots = (object)$slotsRes['slots'];
                     $dropoffSlotsdate = $slotsRes['date'];
                     $cart->slotsForDropoffDate = $dropoffSlotsdate;
@@ -1496,7 +1497,7 @@ trait cartManager{
             }
 
             $other_taxes=array_sum($taxCharges);
-            $other_taxes_string='tax_fixed_fee:'.$taxCharges['total_fixed_fee_tax'].',tax_service_charges:'.$taxCharges['total_service_fee'].',tax_delivery_charges:'.$taxCharges['deliver_fee_charges'].',tax_markup_fee:'.$taxCharges['total_markup_fee_tax'].',product_tax_fee:'.$total_taxable_amount;;
+            $other_taxes_string='tax_fixed_fee:'.$taxCharges['total_fixed_fee_tax'].',tax_service_charges:'.$taxCharges['total_service_fee'].',tax_delivery_charges:'.$taxCharges['deliver_fee_charges'].',tax_markup_fee:'.$taxCharges['total_markup_fee_tax'].',product_tax_fee:'.$total_taxable_amount;
 
 
 
@@ -1646,16 +1647,16 @@ trait cartManager{
         $quantity_price = 0;
         $current_price = 0;
         
-        if( ( Auth::user()->role_id == 3) && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) && !empty($productVariantByRoles))  {
+        if(getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1 && !empty($productVariantByRoles))  {
             $amount = 0;
             $quantity = 0;
             foreach($productVariantByRoles->reverse() as $inn_key => $inn_val) {
-                if($inn_val->role_id == Auth::user()->role_id ) {
+                // if($inn_val->role_id == Auth::user()->role_id ) {
                     if($quantity < $inn_val->quantity && $inn_val->quantity <= $prodQuantity) {
                         $quantity = $inn_val->quantity;
                         $amount = $inn_val->amount;
                     }
-                }
+                // }
                 // break;
             }
             $quantity_price = $amount * $prodQuantity;
@@ -1664,5 +1665,14 @@ trait cartManager{
             'quantity_price' => $quantity_price,
             'amount' => $amount
         ]; 
+    }
+
+    public function fixedFee($lang_id){
+        if(Nomenclature::where('label','Fixed Fee')->exists()){
+            $nomenclatures_translation_id=Nomenclature::where('label','Fixed Fee')->first()->id;
+            return NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->exists() ? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->first()->name : "Fixed Fee";
+        }else{
+            return "Fixed Fee";
+        }
     }
 }

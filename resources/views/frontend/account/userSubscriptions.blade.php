@@ -57,11 +57,11 @@ ul li {margin: 0 0 10px;color: #6c757d;}
             </div>
         </div>
         <div class="row my-md-3 mt-5 pt-4">
-            <div class="col-lg-3">
+            <div class="col-lg-3 col-md-3">
                 <div class="account-sidebar"><a class="popup-btn">my account</a></div>
                 @include('layouts.store/profile-sidebar')
             </div>
-            <div class="col-lg-9">
+            <div class="col-lg-9 col-md-9">
                 <div class="dashboard-right">
                     <div class="dashboard">
                         <div class="page-title">
@@ -134,39 +134,97 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                                 </div>
                             </div>
                             @endif
-
-                            @if($subscription_plans->isNotEmpty())
-                                @foreach($subscription_plans as $plan)
-                                <div class="col-md-3 col-sm-6 mb-3 mb-md-2">
-                                    <div class="pricingtable">
-                                        <div class="gold-icon position-relative">
-                                            <img src="{{ $plan->image['proxy_url'].'100/100'.$plan->image['image_path'] }}">
-                                            <div class="pricingtable-header position-absolute">
-                                                <div class="price-value"> <b>{{ Session::get('currencySymbol') . ($plan->price * $clientCurrency->doller_compare) }}</b> <span class="month">{{ $plan->frequency }}</span> </div>
+							@php
+							$subscription_plans_user = clone $subscription_plans;
+							$subscription_plans_user = $subscription_plans_user->where('type_id', 1)->orwhere('type_id', null)->get();
+							@endphp
+							<div class="col-md-12 mb-4">
+								<div class="card subscript-box">
+								<h3>User Subscriptions</h3>
+								<div class="row">
+                                    @if($subscription_plans_user->isNotEmpty())
+                                        @foreach($subscription_plans_user as $plan)
+                                        <div class="col-md-3 col-sm-6 mb-3 mb-md-2">
+                                            <div class="pricingtable">
+                                                <div class="gold-icon position-relative">
+                                                    <img src="{{ $plan->image['proxy_url'].'100/100'.$plan->image['image_path'] }}">
+                                                    <div class="pricingtable-header position-absolute">
+                                                        <div class="price-value"> <b>{{ Session::get('currencySymbol') . ($plan->price * $clientCurrency->doller_compare) }}</b> <span class="month">{{ $plan->frequency }}</span> </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="p-2">
+                                                <h3 class="heading mt-0 mb-2"><b>{{ __($plan->title) }}</b></h3>
+                                                <div class="pricing-content">
+                                                    <p>{{ __($plan->description) }}</p>
+                                                </div>
+                                                <ul class="mb-3">
+                                                    @foreach($plan->features as $feature)
+                                                        <li><i class="fa fa-check"></i>{{ __($feature->percent_value ?? '') }} {{ __($feature->feature->title) }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                            <div class="pricingtable-purchase">
+                                                @if( (isset($subscription->plan->id)) && ($plan->id == $subscription->plan->id) )
+                                                    <button class="btn btn-solid black-btn disabled w-100">{{ __('Subscribed') }}</button>
+                                                @else
+                                                    <button class="btn btn-solid w-100 subscribe_btn" data-id="{{ $plan->slug }}">{{ __('Subscribe') }}</button>
+                                                @endif
                                             </div>
                                         </div>
+                                        @endforeach
+                                    @else
+                                    	<h5>No User subscription found</h5>
+                                    @endif
                                     </div>
-                                    <div class="p-2">
-                                        <h3 class="heading mt-0 mb-2"><b>{{ __($plan->title) }}</b></h3>
-                                        <div class="pricing-content">
-                                            <p>{{ __($plan->description) }}</p>
+								</div>
+                           </div>
+
+                           	@php
+                           	$subscription_plans_meal = clone $subscription_plans;
+                           	$subscription_plans_meal = $subscription_plans_meal->where('type_id', '=' ,2)->get();
+                           	@endphp
+                           	<div class="col-md-12 mb-4">
+                           		<div class="card subscript-box">
+                           		<h3>Meal Subscriptions</h3>
+                           		<div class="row p-2">
+                                    @if($subscription_plans_meal->isNotEmpty())
+                                        @foreach($subscription_plans_meal as $plan)
+                                        <div class="col-md-3 col-sm-6 mb-3 mb-md-2">
+                                            <div class="pricingtable">
+                                                <div class="gold-icon position-relative">
+                                                    <img src="{{ $plan->image['proxy_url'].'100/100'.$plan->image['image_path'] }}">
+                                                    <div class="pricingtable-header position-absolute">
+                                                        <div class="price-value"> <b>{{ Session::get('currencySymbol') . ($plan->price * $clientCurrency->doller_compare) }}</b> <span class="month">{{ $plan->frequency }}</span> </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="p-2">
+                                                <h3 class="heading mt-0 mb-2"><b>{{ __($plan->title) }}</b></h3>
+                                                <div class="pricing-content">
+                                                    <p>{{ __($plan->description) }}</p>
+                                                </div>
+                                                <ul class="mb-3">
+                                                    @foreach($plan->subscriptionCategory as $category)
+                                                        <li><i class="fa fa-check"></i> {{ __($category->category->slug) }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                            <div class="pricingtable-purchase">
+                                                @if( (isset($subscription->plan->id)) && ($plan->id == $subscription->plan->id) )
+                                                    <button class="btn btn-solid black-btn disabled w-100">{{ __('Subscribed') }}</button>
+                                                @else
+                                                    <button data-id="{{$plan->slug}}" class="btn btn-solid w-100 meal_subscribe_btn">{{ __('Subscribe') }}</button>
+                                                @endif
+                                            </div>
                                         </div>
-                                        <ul class="mb-3">
-                                            @foreach($plan->features as $feature)
-                                                <li><i class="fa fa-check"></i> {{ __($feature) }}</li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                    <div class="pricingtable-purchase">
-                                        @if( (isset($subscription->plan->id)) && ($plan->id == $subscription->plan->id) )
-                                            <button class="btn btn-solid black-btn disabled w-100">{{ __('Subscribed') }}</button>
-                                        @else
-                                            <button class="btn btn-solid w-100 subscribe_btn" data-id="{{ $plan->slug }}">{{ __('Subscribe') }}</button>
-                                        @endif
+                                        @endforeach
+                                    @else
+                                    	<h5>No Meal subscription found</h5>
+                                    @endif
                                     </div>
                                 </div>
-                                @endforeach
-                            @endif
+                            </div>
                         </div>
                     </div>
 
@@ -392,6 +450,26 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                    </div>
                <% } %>
 
+               <% if(payment_option.slug == 'powertrans') { %>
+                <div class="col-md-12 mt-3 mb-3 powertrans_element_wrapper option-wrapper d-none">
+                    <div class="row no-gutters">
+                        <div class="col-6">
+                            <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required
+                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
+                        </div>
+                        <div class="col-3">
+                            <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required
+                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                        </div>
+                        <div class="col-3">
+                            <input type="password" maxLength="4" style=" border-left: none;"  class="form-control" id="cvv-element-powertrans" placeholder="CVV" required />
+                        </div>
+                    </div>
+
+                    <span class="error text-danger" id="card_error_powertrans"></span>
+                </div>
+            <% } %>
+
             <% } %>
         <% }); %>
     <% } %>
@@ -435,6 +513,9 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @if(in_array('khalti',$client_payment_options))
     <script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
 @endif
+@if (in_array('mastercard', $client_payment_options))
+    <script src="https://{{mastercardGateway()}}/static/checkout/checkout.min.js"></script>
+@endif
 <script type="text/javascript">
     var stripe_fpx = '';
     var fpxBank = '';
@@ -467,10 +548,18 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
     var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";
     var check_active_subscription_url = "{{route('user.subscription.plan.checkActive', ':id')}}";
-    var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
+    var create_mtn_momo_token = "{{route('mtn.momo.createToken')}}";
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
+	var payment_mpesa_safari_url = "{{route('mpesasafari.pay')}}";
 	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+    var payment_obo_url = "{{route('obo.pay')}}";
+    var powertrans_payment_url = "{{ route('powertrans.payment') }}";
+    var data_trans_url = "{{route('payment.payByDataTrans')}}";
+    var pesapal_payment_url = "{{ route('pesapal.payment') }}";
+    var livee_payment_url = "{{route('livee.pay')}}";
+    var mastercard_create_session_url = "{{route('payment.mastercard.createSession')}}";
+    var payment_hitpay_url="{{ route('make.hitpay.payment') }}";
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).val();
@@ -520,10 +609,13 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @if(in_array('flutterwave',$client_payment_options))
 <script type="text/javascript" src="https://checkout.flutterwave.com/v3.js"></script>
 @endif
+@if(in_array('data_trans',$client_payment_options))
+    <script src="{{ $data_trans_script_url }}"></script>
+@endif
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
 <script>
-function addSlashes (element) {	
+function addSlashes (element) {
     let ele = document.getElementById(element.id);
     ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
     if(ele.length < 4 && ele.length > 0){
@@ -532,6 +624,29 @@ function addSlashes (element) {
         document.getElementById(element.id).value = finalVal;
     }
 }
+
+
+$(document).delegate(".meal_subscribe_btn", "click", function (e) {
+        e.preventDefault();
+        var sub_id = $(this).attr('data-id');
+        $.ajax({
+            type: "get",
+            dataType: "json",
+            url: check_active_subscription_url.replace(":id", sub_id),
+            success: function (response) {
+                if (response.status == "Success") {
+                   route = "{{route('user.mealSubscription',':id')}}"
+                   window.location.href = route.replace(':id', sub_id)
+                }
+            },
+            error: function (error) {
+                var response = $.parseJSON(error.responseText);
+                let error_messages = response.message;
+                $("#error_response .message_body").html(error_messages);
+                $("#error_response").modal("show");
+            }
+        });
+    });
 </script>
 
 @endsection

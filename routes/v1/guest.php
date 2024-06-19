@@ -3,7 +3,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
     Route::post('dispatcher/check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromDispatcher');
 
-    Route::get('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
+    Route::any('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
 
     Route::post('check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromInventory');
 
@@ -22,12 +22,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('deleteOrderProductBySku', 'Api\v1\InventoryController@deleteOrderProductBySku');
             Route::post('needSyncWithOrder', 'Api\v1\InventoryController@needSyncWithOrder');
             Route::post('getOrderCategoryById', 'Api\v1\InventoryController@getOrderCategoryById');
+            Route::post('getSyncStoreOrderProductIds', 'Api\v1\InventoryController@getSyncStoreOrderProductIds');
         });
     });
-
-    
-
-
 
     Route::group(['middleware' => ['dbCheck', 'checkAuth']], function () { //apilogger
 
@@ -53,13 +50,17 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::get('user/registration/document', 'Api\v1\HomeController@UserRegistrationDocument');
 
+        Route::post('/cart/updateCartWalletAmount', 'Api\v1\CartController@updateCartWalletAmount');
+
+        Route::post('product/inquiry', 'Api\v1\ProductInquiryController@store');
         Route::post('cart/add', 'Api\v1\CartController@add');
         Route::post('checkProductAvailibility', 'Api\v1\RentalProductController@checkProductAvailibility');
         Route::get('cart/list', 'Api\v1\CartController@index');
+        Route::post('cart/add-booking-option', 'Api\v1\CartController@addBookingOptionToCart');
         Route::post('upload/prescriptions', 'Api\v1\CartController@uploadPrescriptions');
         Route::post('delete/prescriptions', 'Api\v1\CartController@deleteProductPrescription');
         Route::post('mfc/stk/push', 'Api\v1\CartController@stkPushRequest');
-        Route::get('vendor/slots', 'Api\v1\CartController@checkScheduleSlots');
+        Route::any('vendor/slots', 'Api\v1\CartController@checkScheduleSlots');
         Route::get('vendor/dropoffslots', 'Api\v1\CartController@checkScheduleDropoffSlots'); // Added By Ovi  // To Get Drop Off Slots
         Route::post('homepage', 'Api\v1\HomeController@homepage');
         Route::post('get/subcategory/vendor', 'Api\v1\HomeController@getSubcategoryVendor');
@@ -77,7 +78,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         // get Category kyc document
         Route::post('category_kyc_document', 'Api\v1\CategoryController@getcategoryKycDocument');
         Route::post('submit_category_kyc', 'Api\v1\CartController@updateCartCategoryKyc');
-
+        Route::post('inquiry-mode/store', 'Api\v1\ProductController@storeProductInquiry');
         Route::post('search/{type}/{id?}', 'Api\v1\HomeController@globalSearch');
         Route::post('cms/page/detail', 'Api\v1\CMSPageController@getPageDetail');
         Route::post('brand/filters/{id?}', 'Api\v1\BrandController@brandFilters');
@@ -122,12 +123,18 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('order-tracking', 'Api\v1\OrderController@OrderTracking');
 
-        Route::post('upload-cart-file', 'Api\v1\CartController@uploadOrderFile'); 
-        Route::get('remove-cart-file', 'Api\v1\CartController@RemoveOrderFile'); 
+        Route::post('upload-cart-file', 'Api\v1\CartController@uploadOrderFile');
+        Route::get('remove-cart-file', 'Api\v1\CartController@RemoveOrderFile');
         // get slot from dispatcher
         Route::post('getslotsFormDispatcher', 'Api\v1\AppointmentController@getSlotFromDispatchDemand');
         // get GerenalSlot slot from dispatcher
         Route::get('getDispatcherGerenalSlot', 'Api\v1\DispatcherController@getDispatcherGerenalSlot');
+
+        Route::get('home-restaurents', 'Api\v1\HomeController@homeRestaurents');
+        Route::get('category-restaurents/{category_id}', 'Api\v1\HomeController@categoryRestaurents');
+
+        Route::get('allergic-items', 'Api\v1\AllergicItemController@index');
+
     });
 
     Route::group(['middleware' => ['dbCheck', 'systemAuth']], function () { //apilogger
@@ -144,8 +151,14 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('cart/product-schedule/update', 'Api\v1\CartController@updateProductSchedule');
         Route::post('cart/productfaq/update', 'Api\v1\CartController@updateCartProductFaq');
         Route::post('dropoff-location', 'Api\v1\StaticDropoffController@getStaticLocation');
+
+        //Make Event for tracking
+        Route::post('track-event', 'TrackEventController@saveEvents');
+
+        Route::post('cart/updateCartCheckedStatus', 'Api\v1\CartController@updateCartCheckedStatus');
     });
     Route::group(['middleware' => ['dbCheck']], function () {
         Route::post('header', 'Api\v1\HomeController@headerContent');
+        Route::post('rental-protection', 'Api\v1\CartController@getRentalProtection');
     });
 });

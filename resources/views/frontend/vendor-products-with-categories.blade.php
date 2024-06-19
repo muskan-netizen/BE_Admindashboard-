@@ -1,3 +1,6 @@
+@php
+$checkSlot = findSlot('', $vendor->id, '');
+@endphp
 @extends('layouts.store', ['title' => $vendor->name])
 @section('css')
 <style type="text/css">
@@ -21,6 +24,9 @@ span.alPriceValue, span.alPriceValue i {
     display: inline-flex;
     align-items: baseline;
 }
+.vendor-products-wrapper .price_head h5{
+    max-width:70%;
+}
 </style>
 @endsection
 @section('css-links')
@@ -29,9 +35,10 @@ span.alPriceValue, span.alPriceValue i {
 @php
 $add_to_cart =  route('addToCart') ;
 $is_service_product_price_from_dispatch_forOnDemand = 0;
-$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
+$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch','is_service_price_selection','is_enable_allergic_items']);
+$getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
 $category_type_idForNotShowshPlusMinus = ['12'];
-if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
     $is_service_product_price_from_dispatch_forOnDemand =1;
     array_push($category_type_idForNotShowshPlusMinus,8);
 }
@@ -44,10 +51,10 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
             <div class="container p-0">
                 <div class="row">
                         <div class="col-12">
-                            @include('frontend.vendor-category-topbar-banner')   
+                            @include('frontend.vendor-category-topbar-banner')
                         </div>
                         @include('frontend.vendor-details-in-banner')
-                       
+
                 </div>
 
                 <div class="position-relative container">
@@ -87,6 +94,10 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                 <option value="high_to_low">{{ __('Cost : High to Low') }}</option>
                                                 <option value="rating">{{ __('Avg. Customer Review') }}</option>
                                                 <option value="newly_added">{{ __('Newest Arrivals') }}</option>
+                                                @if ($additionalPreference['is_enable_allergic_items'] == 1)
+                                                    <option value="cal_asc">{{ __('Calories : Low to High') }}</option>
+                                                    <option value="cal_desc">{{ __('Calories : High to Low') }}</option>
+                                                @endif
                                             </select>
                                         </div>
                                     </div>
@@ -96,7 +107,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                         <nav class="scrollspy-menu ">
                                             <ul>
                                                 @forelse($listData as $key => $data)
-                                                    <li><a data-slug="{{ $data->category->slug??'#' }}" style="cursor: pointer;">{{ $data->category->translation[0]->name??'' }}({{ $data->products_count }})</a>
+                                                    <li><a data-slug="{{ $data->category->slug??'#' }}" style="cursor: pointer;">{{ $data->category->translation[0]->name??'' }}({{$data->products->total() }})</a>
                                                     </li>
                                                 @empty
                                                 @endforelse
@@ -130,8 +141,14 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                             <section class="scrolling_section " id="{{ $data->category->slug }}">
                                                 @if (!empty($data->products))
                                                     <h2 class="category-head mt-0 mb-3">
-                                                        {{ @$data->category->translation[0]->name??'' }}
-                                                        ({{ $data->products_count }})
+                                                        {{ $data->category->translation_one->name??'' }}
+                                                        ({{ $data->products->total() }})
+                                                        @if($data->products->total() > 12)
+                                                        :
+                                                            <span class="font-12">
+                                                                <a target="_blank" href="{{route('products',[$data->category_id,isset($data->vendor)?$data->vendor->id:0])}}">view all</a>
+                                                            </span>
+                                                        @endif
                                                     </h2>
                                                     @forelse($data->products as $prod)
                                                     @php
@@ -160,7 +177,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
 
                                                                             </h5>
                                                                             <div class="product_variant_quantity_wrapper">
-                                                                               
+
                                                                                     @php
                                                                                         $data = $prod;
                                                                                         $productVariantInCart = 0;
@@ -170,7 +187,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                         $cart_id = 0;
                                                                                         $vendor_id = 0;
                                                                                         $product_id = $data->id;
-                                                                                        $variant_id = $data->variant[0] ? $data->variant[0]->id : 0;
+                                                                                        $variant_id = ((isset($data->variant[0]))?$data->variant[0]->id : 0);
                                                                                         $variant_price = 0;
                                                                                         $variant_quantity = $prod->variant_quantity;
                                                                                         $isAddonExist = 0;
@@ -219,7 +236,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                             @if( $is_service_product_price_from_dispatch_forOnDemand ==1)
                                                                                                 <a class="btn btn-solid btn btn-solid view_on_demand_price"  style="display:none;" id="add_button_href{{$cartProductId}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
                                                                                             @else
-                                                                                            
+
                                                                                                 {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
                                                                                                 <a class="add-cart-btn add_vendor_product as"
                                                                                                     style="display:none;"
@@ -237,8 +254,8 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                                     @endif
                                                                                                 </a>
                                                                                             @endif
-                                                                                                
-                                                                                            @if(isset($data->category_type_id) && (!in_array($data->category_type_id,$category_type_idForNotShowshPlusMinus))) 
+
+                                                                                            @if(isset($data->category_type_id) && (!in_array($data->category_type_id,$category_type_idForNotShowshPlusMinus)))
                                                                                                 <div class="number"
                                                                                                     id="show_plus_minus{{ $cartProductId }}">
                                                                                                     <span
@@ -284,12 +301,12 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                         @else
                                                                                             @if ( (in_array($data->category_type_id,[12,8]))  || ($prod->has_inventory == 0 || ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1)))
                                                                                                 @if(   $is_service_product_price_from_dispatch_forOnDemand ==1)
-                                                                                                    <a class="btn btn-solid btn btn-solid view_on_demand_price"  id="add_button_href{{$data->id }}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
-                                                                                                @else 
+                                                                                                    <a class="btn btn-solid btn btn-solid view_on_demand_price"  id="add_button_href{{$data->id }}" data-variant_id = {{ isset($data->variant[0])?$data->variant[0]->id:0.00 }} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
+                                                                                                @else
                                                                                                     {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
                                                                                                     <a class="add-cart-btn add_vendor_product"
                                                                                                         id="aadd_button_href{{ $data->id }}"
-                                                                                                        data-variant_id="{{ $data->variant[0]->id }}"
+                                                                                                        data-variant_id="{{ isset($data->variant[0])?$data->variant[0]->id:0.00 }}"
                                                                                                         data-add_to_cart_url="{{ route('addToCart') }}"
                                                                                                         data-vendor_id="{{ $data->vendor_id }}"
                                                                                                         data-product_id="{{ $data->id }}"
@@ -371,17 +388,16 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                     @endif
 
                                                                     <p class="mb-1 product_price ">
-                                                                        @if($is_service_product_price_from_dispatch_forOnDemand !=1) 
+                                                                        @if($is_service_product_price_from_dispatch_forOnDemand !=1)
                                                                         {{-- price  not showing in vencor type in on demand and get price from dispatche--}}
                                                                             {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,',') }}
-                                                                            @if ($prod->variant[0]->compare_at_price > 0)
+                                                                            @if (@$prod->variant[0]->compare_at_price > 0)
                                                                                 <span
                                                                                     class="org_price ml-1  font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
                                                                             @endif
                                                                         @endif
                                                                     </p>
                                                                     <div class="member_no d-block mb-0">
-
                                                                         <span>{!! $prod->translation_description !!}</span>
                                                                     </div>
                                                                     <div id="product_variant_options_wrapper">
@@ -490,13 +506,13 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
 
                         <span class="ellips"><%= vendor_product.quantity %>x <%=
                         vendor_product.product.translation_one ? translationOneTitle :  vendor_product.product.sku %></span>
-                        
+
                             <% if(cart_details.is_token_enable == 1) { %>
                                 <span class="alPriceValue"><i class='fa fa-money mr-1' aria-hidden='true'></i><%=  Helper.formatPrice(vendor_product.quantity_price * cart_details.tokenAmount) %></span>
                                 <% }else{ %>
                                 <span>{{ Session::get('currencySymbol') }}<%=  Helper.formatPrice(vendor_product.quantity_price) %></span>
                             <% } %>
-                        
+
                         <a class="action-icon remove_product_via_cart text-danger" style="cursor: pointer;" data-product="<%= vendor_product.id %>" data-product_id="<%= vendor_product.product_id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
                                 <i class="fa fa-trash-o" aria-hidden="true"></i>
                             </a>
@@ -560,7 +576,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
             <% }); %>
 
             <h5 class="d-flex align-items-center justify-content-between pb-2">{{ __('PRICE DETAILS') }} </h5>
-            
+
             <% if(cart_details.total_service_fee > 0){ %>
             <li class="p-0 alSixCart">
                 <div class='media-body'>
@@ -650,9 +666,9 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
         <div class="cart-sub-total d-flex align-items-center justify-content-between">
             <span>{{ __('Total') }}</span>
             <% if(cart_details.is_token_enable == 1) { %>
-                <span class="alPriceValue"><i class='fa fa-money' aria-hidden='true'></i> <%= (cart_details.total_payable_amount * cart_details.tokenAmount) %></span>
+                <span class="alPriceValue"><i class='fa fa-money' aria-hidden='true'></i> <%= Helper.formatPrice((cart_details.total_payable_amount * cart_details.tokenAmount)) %></span>
                 <% }else{ %>
-                <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_payable_amount %></span>
+                <span>{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.total_payable_amount) %></span>
                 <% } %>
         </div>
         <a class="checkout-btn text-center d-block" href="{{ route('showCart') }}">{{ __('Checkout') }}</a>
@@ -681,7 +697,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                     <% }else{ %>
                         <span class="org_price ml-1 font-14">{{ Session::get('currencySymbol') }}<%= variant.compare_at_price %></span>
                     <% } %>
-                
+
             <% } %>
         <% } %>
     </script>
@@ -941,6 +957,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
     @endif
 @endsection
 @if($is_service_product_price_from_dispatch_forOnDemand ==1)
+
     @section('custom-js')
     <script src="{{ asset('js/onDemand/GetDispatcherPrice.js') }}"></script>
     @endsection
@@ -1091,9 +1108,6 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                     options.push($(this).val());
                 }
             });
-            // console.log(variants);
-            // console.log(options);
-            // return 0;
             ajaxCall = $.ajax({
                 type: "post",
                 dataType: "json",
@@ -1111,7 +1125,6 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                 success: function(response) {
                     if (response.status == 'Success') {
                         response = response.data;
-                        // console.log(response);
                         $(that).parents('.product_row').find(".variant_response span").html('');
                         if (response.variant != '') {
 
@@ -1176,7 +1189,9 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
             }, 1000);
         }
 
-        function vendorProductsSearchResults() {
+        function vendorProductsSearchResults(id = '') {
+
+
             let keyword = $("#vendor_search_box").val();
             let order_type = $("#order_type").val();
             var checkboxesChecked = [];
@@ -1199,7 +1214,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                     keyword: keyword,
                     order_type: order_type,
                     vendor: "{{ $vendor->id }}",
-                    vendor_category: "{{ $vendor_category ?? '' }}"
+                    vendor_category: id ?? "{{ $vendor_category ?? '' }}"
                 },
                 beforeSend: function() {
                     if (ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {

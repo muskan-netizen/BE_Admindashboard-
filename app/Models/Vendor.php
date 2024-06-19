@@ -7,6 +7,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 //use Laravel\Scout\Searchable;
 use DB;
 use \App\Http\Traits\{VendorTrait};
+use Illuminate\Support\Facades\Auth;
 
 class Vendor extends Model implements Auditable{
 
@@ -14,25 +15,26 @@ class Vendor extends Model implements Auditable{
   use VendorTrait;
 
   //use Searchable;
-    protected $fillable = ['name','slug','desc','short_desc','logo','banner','address','email','website','phone_no','latitude','longitude','order_min_amount','order_pre_time','auto_reject_time','commission_percent','commission_fixed_per_order','commission_monthly','dine_in','takeaway','delivery','status','add_category','setting','show_slot','vendor_templete_id','auto_accept_order', 'service_fee_percent','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','slot_minutes','closed_store_order_scheduled','pincode','return_request','ahoy_location','city','state','country','fixed_fee','fixed_fee_amount','price_bifurcation','instagram_url','service_charges_tax','delivery_charges_tax','container_charges_tax','fixed_fee_tax','service_charges_tax_id','delivery_charges_tax_id','container_charges_tax_id','fixed_fee_tax_id', 'cron_for_service_area','markup_price_tax_id','razorpay_bank_json','razorpay_contact_json', 'is_seller', 'fixed_service_charge', 'service_charge_amount', 'is_vendor_instant_booking'];
+    protected $fillable = ['name','slug','desc','short_desc','logo','banner','address','email','website','phone_no','latitude','longitude','order_min_amount','order_pre_time','auto_reject_time','commission_percent','commission_fixed_per_order','commission_monthly','dine_in','takeaway','delivery','status','add_category','setting','show_slot','vendor_templete_id','auto_accept_order', 'service_fee_percent','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','slot_minutes','closed_store_order_scheduled','pincode','return_request','ahoy_location','city','state','country','fixed_fee','fixed_fee_amount','price_bifurcation','instagram_url','service_charges_tax','delivery_charges_tax','container_charges_tax','fixed_fee_tax','service_charges_tax_id','delivery_charges_tax_id','container_charges_tax_id','fixed_fee_tax_id', 'cron_for_service_area','markup_price_tax_id','razorpay_bank_json','razorpay_contact_json', 'is_seller', 'fixed_service_charge', 'service_charge_amount', 'is_vendor_instant_booking', 'is_online'];
 
+    protected $appends = ['is_wishlist'];
     public function serviceArea(){
        return $this->hasMany('App\Models\ServiceArea')->select('vendor_id', 'geo_array', 'name');
     }
 
     public function products(){
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->where('is_long_term_service',0);
-      return $this->hasMany('App\Models\Product', 'vendor_id', 'id');
+      // return $this->hasMany('App\Models\Product', 'vendor_id', 'id');
     }
 
     public function long_term_products(){
         return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->where('is_long_term_service',1);
     }
-    public function productsLive(){ 
+    public function productsLive(){
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->where('is_live','1');
     }
 
-    public function vendor_promo(){ 
+    public function vendor_promo(){
       return $this->belongsToMany('App\Models\Promocode', 'promocode_details', 'refrence_id', 'promocode_id')->where('expiry_date','>=',Carbon::now()->format('Y-m-d'))->where('promo_type_id',1)->select('amount','title');
     }
 
@@ -154,7 +156,7 @@ class Vendor extends Model implements Auditable{
   public function getCustomCategory(){
     return $this->hasMany('App\Models\Category','vendor_id','id');
   }
- 
+
 
 
   public function getById($id){
@@ -205,7 +207,7 @@ class Vendor extends Model implements Auditable{
     {
       return $this->hasMany(Bid::class, 'vendor_id');
     }
-  
+
     public function scopeByVendorSubscriptionRule($query,$preferences)
     {
       if($preferences->subscription_mode ==1){
@@ -215,5 +217,54 @@ class Vendor extends Model implements Auditable{
       }
       return $query;
     }
+
+    public function scopeVendorOnline($query)
+    {
+        if(@getAdditionalPreference(['vendor_online_status'])['vendor_online_status'] == 1){
+          return $query->where('is_online', 1);
+        }
+    }
+
+    public function orderProducts()
+    {
+      return $this->belongsToMany(Product::class,'order_vendor_products','vendor_id','product_id');
+    }
+
+    public function vendorCategories()
+    {
+      return $this->belongsToMany(Category::class,'vendor_categories','category_id','vendor_id');
+    }
+
+    public function wishlistByUsers()
+    {
+      return $this->belongsToMany(User::class,'user_vendor_wishlists','vendor_id','user_id');
+    }
+
+    public function getIsWishlistAttribute()
+    {
+      return $this->wishlistByUsers()->where('user_id', Auth::id())->first() ? 1 : 0;
+    }
+
+    public function minimumPromo()
+    {
+      return $this->vendor_promo->min('amount');
+    }
+    public function userVendor()
+    {
+        return $this->hasOne(UserVendor::class, 'vendor_id', 'id');
+    }
+    public function categories()
+    {
+      return $this->belongsToMany(Category::class, 'vendor_categories');
+    }
+
+    public function scopeDistanceInMeters($query, $latitude = 0, $longitude = 0)
+    {
+        if ($latitude && $longitude) {
+            return $query->selectRaw("vendors.*, (6371000 * acos(cos(radians($latitude)) * cos(radians(latitude)) * cos(radians(longitude) - radians($longitude)) + sin(radians($latitude)) * sin(radians(latitude)))) AS distance_in_meter");
+        }
+        return $query->selectRaw("0 as distance_in_meter");
+    }
+
 
 }

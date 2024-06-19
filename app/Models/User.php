@@ -29,7 +29,9 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'description', 'phone_number','dial_code', 'image', 'is_email_verified','email_verified_at', 'is_phone_verified', 'type', 'status', 'device_type', 'device_token', 'country_id', 'role_id', 'auth_token', 'remember_token', 'timezone','import_user_id','last_login_at', 'is_admin'
+
+        'name', 'email', 'password', 'description', 'phone_number','dial_code', 'image', 'is_email_verified','email_verified_at', 'is_phone_verified', 'type', 'status', 'device_type', 'device_token', 'country_id', 'role_id', 'auth_token', 'remember_token', 'timezone','import_user_id','last_login_at', 'is_admin','geo_ids','is_presignup', 'custom_allergic_items'
+
     ];
     protected $appends = ['loyalty_name'];
     /**
@@ -107,9 +109,9 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     public function rules($id = ''){
         $rules = array(
             'name'          => 'required|string|min:3|max:50',
-            'email'         => 'required|email|max:50||unique:users',
+            'email'         => 'required|email|max:50|unique:users,email,NULL,id,deleted_at,NULL',
             'password'      => 'required|string|min:6|max:50',
-            'phone_number'  => 'required|string|min:7|max:15|unique:users',
+            'phone_number'  => 'required|string|min:7|max:15|unique:users,phone_number,NULL,id,deleted_at,NULL',
         );
         $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
         foreach ($user_registration_documents as $user_registration_document) {
@@ -173,6 +175,12 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
         return $this->hasMany('Yadahan\AuthenticationLog\AuthenticationLog', 'authenticatable_id');
     }
 
+    public function createPermissionsUser(){
+        $id = $this->id;
+        $permission_details = PermissionsOld::select('id as permission_id',\DB::raw("$id as user_id"))->whereIn('id', [1,2,3,12,17,18,19,20,21])->get()->toArray();
+        UserPermissions::insert($permission_details);
+    }
+
     public function bidRequests()
     {
         return $this->hasMany(BidRequest::class, 'user_id');
@@ -182,4 +190,15 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     {
         return $this->hasOne(Role::class, 'id');
     }
+
+    public function userVendor()
+    {
+        return $this->hasOne(UserVendor::class, 'user_id', 'id');
+    }
+
+    public function allergicItems()
+    {
+        return $this->belongsToMany(AllergicItem::class, 'user_allergic_items','user_id','allergic_item_id');
+    }
+
 }

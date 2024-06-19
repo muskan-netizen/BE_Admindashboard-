@@ -1,17 +1,21 @@
  <!--- Left Sidebar filters -->
- <aside class="side_fillter mt-2">
-
+ <aside class="side_fillter">
+                        <h5 class="title-border text-right">
+                            <span class="filter-back d-lg-none d-inline-block">
+                                <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
+                            </span>
+                        </h5>
 @if(@$category->type_id != 13)
-    <div class="col-12 custom_filtter mt-3 mb-3">
+    <div class="col-12 custom_filtter mt-2 mb-2">
         <select name="order_type" id='order_type' class="form-control sortingFilter p-1 mb-0">
             <option value="">{{__('Sort By')}}</option>
-            <option value="featured">{{_('Featured')}}</option>
-            <option value="a_to_z">{{_('A to Z')}}</option>
-            <option value="z_to_a">{{_('Z to A')}}</option>
-            <option value="low_to_high">{{_('Cost : Low to High')}}</option>
-            <option value="high_to_low">{{_('Cost : High to Low')}}</option>
-            <option value="rating">{{_('Avg. Customer Review')}}</option>
-            <option value="newly_added">{{_('Newest Arrivals')}}</option>
+            <option value="featured">{{__('Featured')}}</option>
+            <option value="a_to_z">{{__('A to Z')}}</option>
+            <option value="z_to_a">{{__('Z to A')}}</option>
+            <option value="low_to_high">{{__('Cost : Low to High')}}</option>
+            <option value="high_to_low">{{__('Cost : High to Low')}}</option>
+            <option value="rating">{{__('Avg. Customer Review')}}</option>
+            <option value="newly_added">{{__('Newest Arrivals')}}</option>
         </select>
     </div>
 @endif   
@@ -73,7 +77,7 @@
         <div class="collection-collapse-block-content">
             <div class="wrapper mt-3">
                 <div class="range-slider">
-                    <input type="text" class="js-range-slider rangeSliderPrice" value="" />
+                    <input type="text" class="js-range-slider rangeSliderPrice" value="" debounce="500"  />
                 </div>
             </div>
         </div>
@@ -192,12 +196,13 @@
                                             @if(isset($opt) && isset($var) && !empty($var->title) )
 
                                                 @if( !empty($var->type) && $var->type == 3 )
-                                                    <div class="form-check-inline">
-                                                        <div class="attr_radio_{{$var->id}}">
-                                                        <input type="radio" name="attribute[{{$var->id}}][option][{{$counter}}][value]" class="attr_radio"  
-                                                        value="{{$opt->id}}" data-key="{{$var->title}}">
+                                                    <div class="form-check-inline radio_Btn">
+                                                        <div class="attr_radio_{{$var->id}}">                                                            
+                                                            <input type="radio" name="attribute[{{$var->id}}][option][{{$counter}}][value]" class="attr_radio"  
+                                                            value="{{$opt->id}}" data-key="{{$var->title}}">
+                                                            <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
                                                         </div>
-                                                        <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
+                                                        
                                                     </div>
 
 

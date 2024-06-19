@@ -1,13 +1,12 @@
-
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Configurations'])
 @section('css')
 @endsection
 @section('content')
 
-
     @php
         $sms_crendential = json_decode($preference->sms_credentials);
     @endphp
+
 
     <div class="container-fluid custom-toggle al">
         @if ($client_preference_detail->business_type != 'taxi')
@@ -37,7 +36,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row map-configration_dashboard">
             @if ($client_preference_detail->business_type != 'taxi')
                 <div class="col-lg-4 col-md-6 mb-3">
                     <div class="row h-100">
@@ -259,20 +258,20 @@
             </div>
         </div>
 
-            @if ($client_preference_detail->enable_inventory_service == 1)
-                <div class="col-lg-3 col-md-6 mb-3">
-                    <!-- Order Panel section start -->
-                    <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
-                        @csrf
-                        <div class="card-box h-100">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <h4 class="header-title mb-0">{{ __('Inventory Service') }}</h4>
-                                <button class="btn btn-info d-block" type="submit" name="need_inventory_service_submit_btn"
-                                    value="1"> {{ __('Save') }} </button>
-                            </div>
-                            <p class="sub-header">{{ __('Offer Inventory Services with Order.') }}</p>
-                            <div class="row">
-                                <div class="col-12">
+        @if ($client_preference_detail->enable_inventory_service == 1)
+            <div class="col-lg-3 col-md-6 mb-3">
+                <!-- Order Panel section start -->
+                <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
+                    @csrf
+                    <div class="card-box h-100">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h4 class="header-title mb-0">{{ __('Inventory Service') }}</h4>
+                            <button class="btn btn-info d-block" type="submit" name="need_inventory_service_submit_btn"
+                                value="1"> {{ __('Save') }} </button>
+                        </div>
+                        <p class="sub-header">{{ __('Offer Inventory Services with Order.') }}</p>
+                        <div class="row">
+                            <div class="col-12">
                                 <div class="form-group mb-0">
                                     <div class="form-group mb-0 switchery-demo">
                                         <label for="need_inventory_service" class="mr-3">{{ __('Enable') }}</label>
@@ -327,9 +326,9 @@
                             </div>
 
                         </div><!-- On Demand Services section end -->
-                    </form>
-                </div>
-            @endif
+                </form>
+            </div>
+        @endif
 
 
     </div>
@@ -342,7 +341,7 @@
             </div><!-- Social Logins title end -->
         </div>
     </div>
-    
+
     <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
         <input type="hidden" name="social_login" id="social_login" value="1">
         @csrf
@@ -355,7 +354,8 @@
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="fb_login" class="d-flex align-items-center justify-content-between">
                                     <h5 class="social_head"><i class="fab fa-facebook-f"></i>
-                                        <span>{{ __('Facebook') }}</span></h5>
+                                        <span>{{ __('Facebook') }}</span>
+                                    </h5>
                                     <button class="btn btn-info btn-block save_btn" type="submit">
                                         {{ __('Save') }} </button>
                                 </label>
@@ -418,13 +418,14 @@
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="twitter_login" class="d-flex align-items-center justify-content-between">
                                     <h5 class="social_head"><i class="fab fa-twitter"></i>
-                                        <span>{{ __('Twitter') }}</span></h5>
+                                        <span>{{ __('Twitter') }}</span>
+                                    </h5>
                                     <button class="btn btn-info btn-block save_btn" type="submit">
                                         {{ __('Save') }} </button>
                                 </label>
                                 <label for="" class="mr-3">{{ __('Enable') }}</label>
-                                <input type="checkbox" data-plugin="switchery" name="twitter_login"
-                                    id="twitter_login" class="form-control" data-color="#43bee1"
+                                <input type="checkbox" data-plugin="switchery" name="twitter_login" id="twitter_login"
+                                    class="form-control" data-color="#43bee1"
                                     @if (isset($preference) && $preference->twitter_login == '1') checked='checked' @endif>
                             </div>
                         </div>
@@ -461,8 +462,8 @@
                         <div class="col-12">
                             <div class="form-group mb-0">
                                 <label for="twitter_client_url">{{ __('Twitter Redirect URL') }}</label>
-                                <input type="text" name="twitter_client_url" id="twitter_client_url"
-                                    placeholder="" class="form-control"
+                                <input type="text" name="twitter_client_url" id="twitter_client_url" placeholder=""
+                                    class="form-control"
                                     value="{{ old('twitter_client_url', $preference->twitter_client_url ?? '') }}">
                                 @if ($errors->has('twitter_client_url'))
                                     <span class="text-danger" role="alert">
@@ -482,7 +483,8 @@
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="google_login" class="d-flex align-items-center justify-content-between">
                                     <h5 class="social_head"><i class="fab fa-google"></i>
-                                        <span>{{ __('Google') }}</span></h5>
+                                        <span>{{ __('Google') }}</span>
+                                    </h5>
                                     <button class="btn btn-info btn-block save_btn" type="submit">
                                         {{ __('Save') }} </button>
                                 </label>
@@ -546,7 +548,8 @@
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="apple_login" class="d-flex align-items-center justify-content-between">
                                     <h5 class="social_head"><i class="fab fa-apple"></i>
-                                        <span>{{ __('Apple') }}</span></h5>
+                                        <span>{{ __('Apple') }}</span>
+                                    </h5>
                                     <button class="btn btn-info btn-block save_btn" type="submit">
                                         {{ __('Save') }} </button>
                                 </label>
@@ -613,7 +616,7 @@
             </div><!-- Map Sms Emails title end -->
         </div>
     </div>
-    <div class="row">
+    <div class="row map-configration_dashboard">
         <div class="col-lg-3 mb-3">
             <!-- Map Configuration start -->
             <form class="h-100" method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
@@ -659,7 +662,7 @@
 
                         <div class="col-12">
                             <div class="form-group mb-2">
-                                <label for="map_key_for_app">{{ __('API KEY FOR APP') }}</label>
+                                <label for="map_key_for_app">{{ __('API KEY FOR ANDROID APP') }}</label>
                                 <input type="password" name="map_key_for_app" id="map_key_for_app" placeholder=""
                                     class="form-control"
                                     value="{{ old('map_key_for_app', $preference->map_key_for_app ?? '') }}">
@@ -670,7 +673,19 @@
                                 @endif
                             </div>
                         </div>
-
+                        <div class="col-12">
+                            <div class="form-group mb-2">
+                                <label for="map_key_for_ios_app">{{ __('API KEY FOR IOS APP') }}</label>
+                                <input type="password" name="map_key_for_ios_app" id="map_key_for_ios_app" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('map_key_for_ios_app', $preference->map_key_for_ios_app ?? '') }}">
+                                @if ($errors->has('map_key_for_ios_app'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('map_key_for_ios_app') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form><!-- Map Configuration end -->
@@ -685,6 +700,15 @@
                         <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
                     </div>
                     <p class="sub-header">{{ __("View and update your SMS Gateway and it's API keys.") }}</p>
+                    <div class="d-flex align-items-center justify-content-between mt-3 mb-2">
+                        <h5 class="font-weight-normal m-0">{{ __('Send Static Otp ') }}</h5>
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="cancelOrderCustomSwitch_static_otp"
+                                name="static_otp"
+                                {{ isset($sms_crendential->static_otp) && $sms_crendential->static_otp == 1 ? 'checked' : '' }}>
+                            <label class="custom-control-label" for="cancelOrderCustomSwitch_static_otp"></label>
+                        </div>
+                    </div>
                     <div class="row mb-0">
                         <div class="col-12">
                             <div class="form-group mb-2">
@@ -894,6 +918,143 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- For Ethiopia -->
+                        <div class="sms_fields row mx-0" id="ethiopia_fields"
+                            style="display : {{ $preference->sms_provider == 9 ? 'flex' : 'none' }};">
+                            <div class="col-12">
+                                <span
+                                    class="text-danger">{{ __('Only Available For +251, +09 And +9 Country Code') }}</span>
+                                <div class="form-group mb-2">
+                                    <label for="sms_username">{{ __('Username') }}</label>
+                                    <input type="text" name="sms_username" id="sms_username" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('sms_username', $sms_crendential->sms_username ?? '') }}">
+                                    @if ($errors->has('sms_username'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('sms_username') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="sms_secret">{{ __('Password') }}</label>
+                                    <input type="password" name="sms_password" id="sms_password" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('sms_password', $sms_crendential->sms_password ?? '') }}">
+                                    @if ($errors->has('sms_password'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('sms_password') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- For afrTalk -->
+                        <div class="row sms_fields mx-0" id="afrTalk_fields"
+                            style="display : {{ $preference->sms_provider == 6 ? 'flex' : 'none' }};">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="afrTalk_api_key">{{ __('API Key') }}</label>
+                                    <input type="text" name="afrTalk_api_key" id="afrTalk_api_key" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('afrTalk_api_key', $sms_crendential->api_key ?? '') }}">
+                                    @if ($errors->has('afrTalk_api_key'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('afrTalk_api_key') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="afrTalk_sender_id">{{ __('Sender ID') }}</label>
+                                    <input type="text" name="afrTalk_sender_id" id="afrTalk_sender_id" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('afrTalk_sender_id', $sms_crendential->sender_id ?? '') }}">
+                                    @if ($errors->has('afrTalk_sender_id'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('afrTalk_sender_id') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row sms_fields mx-0" id="vonage_fields"
+                            style="display : {{ $preference->sms_provider ==7 ? 'flex' : 'none' }};">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="vonage_api_key">{{ __('API Key') }}</label>
+                                    <input type="text" name="vonage_api_key" id="vonage_api_key" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('vonage_api_key', $sms_crendential->api_key ?? '') }}">
+                                    @if ($errors->has('vonage_api_key'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('vonage_api_key') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mtalkz_sender_id">{{ __('Secret Key') }}</label>
+                                    <input type="password" name="vonage_secret_key" id="vonage_secret_key" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('vonage_secret_key', $sms_crendential->secret_key ?? '') }}">
+                                    @if ($errors->has('vonage_secret_key'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('vonage_secret_key') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                  <div class="row sms_fields mx-0" id="sms_country_fields"style="display : {{ $preference->sms_provider == 10 ? 'flex' : 'none' }};">
+                    <div class="col-12">
+                        <div class="form-group mb-2">
+                            <label for="sms_sender_id">{{ __('Sender Id') }}</label>
+                            <input type="text" name="sms_sender_id" id="sms_sender_id" placeholder=""
+                                class="form-control"
+                                value="{{ old('sms_sender_id', $sms_crendential->sms_sender_id ?? '') }}">
+                            @if ($errors->has('sms_sender_id'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('sms_sender_id') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mb-2">
+                            <label for="sms_auth_key">{{ __('Auth Key') }}</label>
+                            <input type="text" name="sms_auth_key" id="sms_auth_key" placeholder=""
+                                class="form-control"
+                                value="{{ old('sms_auth_key', $sms_crendential->sms_auth_key ?? '') }}">
+                            @if ($errors->has('sms_auth_key'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('sms_auth_key') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mb-2">
+                            <label for="sms_auth_token">{{ __('Auth Token') }}</label>
+                            <input type="text" name="sms_auth_token" id="sms_auth_token" placeholder=""
+                                class="form-control"
+                                value="{{ old('sms_auth_token', $sms_crendential->sms_auth_token ?? '') }}">
+                            @if ($errors->has('sms_auth_token'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('sms_auth_token') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
                     </div>
                 </div>
             </form><!-- SMS Configuration end -->
@@ -1025,6 +1186,12 @@
                     </div>
                     <p class="sub-header">{{ __('View and update your Firebase Keys') }}</p>
                     <div class="row">
+                        <div class="col-md-6">
+                             <select class="form-control col-6"  name="fire_base_type" >
+                            <option  value="FB" {{((getAdditionalPreference(['fire_base_type'])['fire_base_type'] == "FB" )? 'selected' : '')}}>Fire Base</option>
+                            <option  value="AF" {{((getAdditionalPreference(['fire_base_type'])['fire_base_type'] == "AF" )? 'selected' : '')}}>App Flyer</option>
+                            </select>
+                        </div>
                         <div class="col-md-6">
                             <div class="form-group mb-2">
                                 <label for="fcm_server_key">{{ __('Server Key') }}</label>
@@ -1242,8 +1409,8 @@
                         <div class="col-12">
                             <div class="form-group mb-2 mt-2">
                                 <label for="sos_police_contact"></label>{{ __('Police Number') }}</label>
-                                <input type="text" name="sos_police_contact" id="sos_police_contact" placeholder=""
-                                    class="form-control"
+                                <input type="text" name="sos_police_contact" id="sos_police_contact"
+                                    placeholder="" class="form-control"
                                     value="{{ old('twitter_client_id', $preference->sos_police_contact ?? '') }}">
                                 @if ($errors->has('sos_police_contact'))
                                     <span class="text-danger" role="alert">
@@ -1264,7 +1431,7 @@
                                     </span>
                                 @endif
                             </div>
-                        </div>
+                        </div>FB
                     </div>
                 </form>
             </div><!-- Twitter card end -->
@@ -1274,8 +1441,8 @@
 
     </div>
 
-   
-    <div class="row">
+
+    <div class="row map-configration_dashboard">
         {{-- hubspot form --}}
         <div class="col-xl-4 col-lg-4 mb-3">
             <!-- Social Logins title start -->
@@ -1297,7 +1464,8 @@
                                         <span>{{ __('Hubspot') }}</span>
                                     </h5>
 
-                                    <button class="btn btn-info btn-block save_btn" name="hubspot_submit" type="submit">
+                                    <button class="btn btn-info btn-block save_btn" name="hubspot_submit"
+                                        type="submit">
                                         {{ __('Save') }} </button>
                                 </label>
                                 <label for="" class="mr-3">{{ __('Enable') }}</label>
@@ -1374,62 +1542,60 @@
                     </div>
 
                     <hr>
-                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                            <label for="add_to_cart_btn_switch"
-                                class="mr-2 mb-0">{{ __('Add to Cart') }}<small
-                                    class="d-block pr-5">{{ __('Enable to allow customers to add to cart.') }}</small></label>
-                            <span> <input type="checkbox" data-plugin="switchery"
-                                    name="add_to_cart_btn_switch" id="add_to_cart_btn_switch"
-                                    class="form-control checkbox_change" data-className="add_to_cart_btn"
-                                    data-color="#43bee1"
-                                    @if ($getAdditionalPreference['add_to_cart_btn'] == 1) checked='checked' @endif>
-                            </span>
-                            <input type="hidden"
-                                @if ($getAdditionalPreference['add_to_cart_btn'] == 1) value="1" @else value="0" @endif
-                                name="add_to_cart_btn" id="add_to_cart_btn" />
-                        </div>
-                        
-                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                            <label for="chat_button_switch" class="mr-2 mb-0">{{ __('Chat Button') }}<small
-                                    class="d-block pr-5">{{ __('Enable to allow customers to chat button.') }}</small></label>
-                            <span> <input type="checkbox" data-plugin="switchery" name="chat_button_switch"
-                                    id="chat_button_switch" class="form-control checkbox_change"
-                                    data-className="chat_button" data-color="#43bee1"
-                                    @if ($getAdditionalPreference['chat_button'] == 1) checked='checked' @endif>
-                            </span>
-                            <input type="hidden"
-                                @if ($getAdditionalPreference['chat_button'] == 1) value="1" @else value="0" @endif
-                                name="chat_button" id="chat_button" />
-                        </div>
-                        
-                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                            <label for="call_button_switch" class="mr-2 mb-0">{{ __('Call Button') }}<small
-                                    class="d-block pr-5">{{ __('Enable to allow customers to chat button.') }}</small></label>
-                            <span> <input type="checkbox" data-plugin="switchery" name="call_button_switch"
-                                    id="call_button_switch" class="form-control checkbox_change"
-                                    data-className="call_button" data-color="#43bee1"
-                                    @if ($getAdditionalPreference['call_button'] == 1) checked='checked' @endif>
-                            </span>
-                            <input type="hidden"
-                                @if ($getAdditionalPreference['call_button'] == 1) value="1" @else value="0" @endif
-                                name="call_button" id="call_button" />
-                        </div>
+                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                        <label for="add_to_cart_btn_switch" class="mr-2 mb-0">{{ __('Add to Cart') }}<small
+                                class="d-block pr-5">{{ __('Enable to allow customers to add to cart.') }}</small></label>
+                        <span> <input type="checkbox" data-plugin="switchery" name="add_to_cart_btn_switch"
+                                id="add_to_cart_btn_switch" class="form-control checkbox_change"
+                                data-className="add_to_cart_btn" data-color="#43bee1"
+                                @if ($getAdditionalPreference['add_to_cart_btn'] == 1) checked='checked' @endif>
+                        </span>
+                        <input type="hidden" @if ($getAdditionalPreference['add_to_cart_btn'] == 1) value="1" @else value="0" @endif
+                            name="add_to_cart_btn" id="add_to_cart_btn" />
+                    </div>
 
-                        <hr />
+                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                        <label for="chat_button_switch" class="mr-2 mb-0">{{ __('Chat Button') }}<small
+                                class="d-block pr-5">{{ __('Enable to allow customers to chat button.') }}</small></label>
+                        <span> <input type="checkbox" data-plugin="switchery" name="chat_button_switch"
+                                id="chat_button_switch" class="form-control checkbox_change"
+                                data-className="chat_button" data-color="#43bee1"
+                                @if ($getAdditionalPreference['chat_button'] == 1) checked='checked' @endif>
+                        </span>
+                        <input type="hidden" @if ($getAdditionalPreference['chat_button'] == 1) value="1" @else value="0" @endif
+                            name="chat_button" id="chat_button" />
+                    </div>
+
+                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                        <label for="call_button_switch" class="mr-2 mb-0">{{ __('Call Button') }}<small
+                                class="d-block pr-5">{{ __('Enable to allow customers to call button.') }}</small></label>
+                        <span> <input type="checkbox" data-plugin="switchery" name="call_button_switch"
+                                id="call_button_switch" class="form-control checkbox_change"
+                                data-className="call_button" data-color="#43bee1"
+                                @if ($getAdditionalPreference['call_button'] == 1) checked='checked' @endif>
+                        </span>
+                        <input type="hidden" @if ($getAdditionalPreference['call_button'] == 1) value="1" @else value="0" @endif
+                            name="call_button" id="call_button" />
+                    </div>
+
+                    <hr />
                     <div class="row hub_row alCustomToggleColor"
                         style="{{ isset($getAdditionalPreference['is_free_delivery_by_roles']) && $getAdditionalPreference['is_free_delivery_by_roles'] == 1 ? '' : 'display:none;' }}">
                         <div class="col-12">
-                            <label class="mr-2 mb-0">{{__('Apply free delivery to these roles on all products')}}</label>
-                            <select name="apply_free_del[]" class="form-control select2-multiple" id="apply_free_delivery" multiple="multiple">
-                                @foreach($allRoles as $allRole)
-                                {{-- $getAdditionalPreference['is_free_delivery_by_roles'] --}}
-                                    <option value="{{$allRole->id}}" @if (in_array($allRole->id, $productDeliveryFeeByRole)) selected @endif >{{$allRole->name}}</option>
+                            <label
+                                class="mr-2 mb-0">{{ __('Apply free delivery to these roles on all products') }}</label>
+                            <select name="apply_free_del[]" class="form-control select2-multiple"
+                                id="apply_free_delivery" multiple="multiple">
+                                @foreach ($allRoles as $allRole)
+                                    {{-- $getAdditionalPreference['is_free_delivery_by_roles'] --}}
+                                    <option value="{{ $allRole->id }}"
+                                        @if (in_array($allRole->id, $productDeliveryFeeByRole)) selected @endif>{{ $allRole->name }}</option>
                                 @endforeach
                             </select>
 
                         </div>
                     </div>
-                       
+
 
 
                 </div><!-- HubSpot card end -->
@@ -1440,7 +1606,9 @@
         <div class="col-xl-4 col-lg-4 mb-3">
             <!-- Social Logins title start -->
             <div class="page-title-box">
-                <h4 class="page-title text-uppercase">{{ __('Edit Order, Instant Booking and Bid & Ride') }} <!-- {{ __('Post Pay & Edit Order') }} --></h4>
+                <h4 class="page-title text-uppercase">{{ __('Edit Order, Instant Booking and Bid & Ride') }}
+                    <!-- {{ __('Post Pay & Edit Order') }} -->
+                </h4>
             </div><!-- Social Logins title end -->
 
             <form method="POST" action="{{ route('additional.update') }}">
@@ -1453,7 +1621,8 @@
                         <div class="col-12">
                             <div class="form-group mb-0 switchery-demo">
                                 <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <h4 class="header-title text-uppercase mb-0">{{ __('Edit Order') }}<!-- {{ __('Post Pay & Edit Order') }} -->
+                                    <h4 class="header-title text-uppercase mb-0">{{ __('Edit Order') }}
+                                        <!-- {{ __('Post Pay & Edit Order') }} -->
                                     </h4>
                                     <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
                                     </button>
@@ -1463,14 +1632,14 @@
                                     <!-- {{ __('Post Pay allows customers to pay after placing order. Edit order facility allows customer to edit till timelimit does not exceeded and payment not done.') }} -->
                                 </p>
                                 <!-- <label for="" class="mr-3">{{ __('Post Pay Enable') }}</label>
-                                <input type="checkbox" data-plugin="switchery" name="is_postpay_enable_switch"
-                                    id="is_postpay_enable_switch" class="form-control checkbox_change"
-                                    data-className="is_postpay_enable" data-color="#43bee1"
-                                    @if ($getAdditionalPreference['is_postpay_enable'] == 1) checked='checked' @endif>
-                                <input type="hidden"
-                                    @if (@$getAdditionalPreference['is_postpay_enable'] == 1) value="1" @else value="0" @endif
-                                    name="is_postpay_enable" id="is_postpay_enable" /> -->
-                            </div>  
+                                    <input type="checkbox" data-plugin="switchery" name="is_postpay_enable_switch"
+                                        id="is_postpay_enable_switch" class="form-control checkbox_change"
+                                        data-className="is_postpay_enable" data-color="#43bee1"
+                                        @if ($getAdditionalPreference['is_postpay_enable'] == 1) checked='checked' @endif>
+                                    <input type="hidden"
+                                        @if (@$getAdditionalPreference['is_postpay_enable'] == 1) value="1" @else value="0" @endif
+                                        name="is_postpay_enable" id="is_postpay_enable" /> -->
+                            </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group mb-0 d-flex switchery-demo">
@@ -1479,27 +1648,30 @@
                                     id="is_order_edit_enable_switch" class="form-control checkbox_change"
                                     data-className="is_order_edit_enable" data-color="#43bee1"
                                     @if (@$getAdditionalPreference['is_order_edit_enable'] == 1) checked='checked' @endif>
-                                <input type="hidden"
-                                    @if (@$getAdditionalPreference['is_order_edit_enable'] == 1) value="1" @else value="0" @endif
+                                <input type="hidden" @if (@$getAdditionalPreference['is_order_edit_enable'] == 1) value="1" @else value="0" @endif
                                     name="is_order_edit_enable" id="is_order_edit_enable" />
-                            </div>  
-                        
-                            <div class="row mt-2" id="edit_order_time_limit_div" style="display:@if (@$getAdditionalPreference['is_order_edit_enable'] == 1) @else none @endif;">
+                            </div>
+
+                            <div class="row mt-2" id="edit_order_time_limit_div"
+                                style="display:@if (@$getAdditionalPreference['is_order_edit_enable'] == 1) @else none @endif;">
                                 <div class="col-8">
-                                    <label for="" class="mr-3">{{ __('Disable Order Edit before (Hours)') }}</label>
+                                    <label for=""
+                                        class="mr-3">{{ __('Disable Order Edit before (Hours)') }}</label>
                                 </div>
                                 <div class="col-4">
                                     <input type="number" name="order_edit_before_hours" id="order_edit_before_hours"
                                         placeholder="" class="form-control"
                                         value="{{ old('order_edit_before_hours', @$getAdditionalPreference['order_edit_before_hours'] ?? '') }}">
                                 </div>
-                                <hr/>
+                                <hr />
                             </div>
                         </div>
 
+
                         <div class="col-12 mt-2">
                             <div class="form-group mt-2 d-flex switchery-demo">
-                                <label for="" class="mr-3">{{ __('One Push Button For Booking (Pick & Drop) Enable') }}</label>
+                                <label for=""
+                                    class="mr-3">{{ __('One Push Button For Booking (Pick & Drop) Enable') }}</label>
                                 <input type="checkbox" data-plugin="switchery" name="is_one_push_book_enable_switch"
                                     id="is_one_push_book_enable_switch" class="form-control checkbox_change"
                                     data-className="is_one_push_book_enable" data-color="#43bee1"
@@ -1533,14 +1705,14 @@
                         </div>
                     </div>
                 </div>
-            
+
             </form>
         </div><!-- Post Pay Card end -->
     </div>
 
 
 
-    <div class="row">
+    <div class="row map-configration_dashboard">
         {{-- Third party Accounting --}}
         <div class="col-xl-4 col-lg-4 mb-3">
             <div class="page-title-box">
@@ -1549,7 +1721,8 @@
 
             <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
                 @csrf
-                <input type="hidden" name="third_party_accounting_config" id="third_party_accounting_config" value="1">
+                <input type="hidden" name="third_party_accounting_config" id="third_party_accounting_config"
+                    value="1">
                 <!-- HubSpot card start -->
                 <div class="card-box h-100">
                     <div class="row">
@@ -1568,7 +1741,8 @@
                                     {{ __('Enable to use third party Accounting.') }}
                                 </p>
                                 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                    <label for="third_party_accounting" class="mr-2 mb-0">{{ __('Third party Accounting') }}</label>
+                                    <label for="third_party_accounting"
+                                        class="mr-2 mb-0">{{ __('Third party Accounting') }}</label>
                                     <span> <input type="checkbox" data-plugin="switchery"
                                             name="third_party_accounting" id="third_party_accounting"
                                             class="form-control" data-color="#43bee1"
@@ -1577,35 +1751,45 @@
                                 </div>
                             </div>
 
-                            <div class="form-group mb-0" id="xero_config_div" style="@if (isset($preference) && $preference->third_party_accounting == 1) '' @else display:none; @endif">
-                                <hr/>
+                            <div class="form-group mb-0" id="xero_config_div"
+                                style="@if (isset($preference) && $preference->third_party_accounting == 1) '' @else display:none; @endif">
+                                <hr />
                                 @php
-                                    $accounting_status = (isset($accounting) && !empty($accounting)) ? $accounting->status : 0;
-                                    $creds = (isset($accounting) && !empty($accounting)) ? json_decode($accounting->credentials, true) : [];
+                                    $accounting_status = isset($accounting) && !empty($accounting) ? $accounting->status : 0;
+                                    $creds = isset($accounting) && !empty($accounting) ? json_decode($accounting->credentials, true) : [];
                                 @endphp
-                                
+
                                 <div class="row">
                                     <div class="col-12">
-                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                        <label for="xero_enable_switch" class="mr-3">{{ __("Xero Configuration") }} <br/><small>{{__('View and update your Xero Keys')}}</small></label>
-                                        <input type="checkbox" data-plugin="switchery" name="xero_status" id="xero_enable_switch" class="form-control" data-color="#43bee1" @if(($accounting_status == '1')) checked='checked' @endif>
-                                    </div>
-                                        
-                                        <div class="mt-2 xeroFields" @if( $accounting_status != 1) style="display:none" @endif>
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <div class="form-group mb-2">
-                                                    <label for="xero_client_id">{{ __("Client ID") }}</label>
-                                                    <input type="text" name="xero_client_id" id="xero_client_id" placeholder="" class="form-control" value="{{ old('xero_client_id', $creds->client_id ?? '')}}">
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="form-group mb-2">
-                                                    <label for="xero_secret_id">{{ __("Secret ID") }}</label>
-                                                    <input type="text" name="xero_secret_id" id="xero_secret_id" placeholder="" class="form-control" value="{{ old('xero_secret_id', $creds->secret_id ?? '')}}">
-                                                </div>
-                                            </div>
+                                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                            <label for="xero_enable_switch"
+                                                class="mr-3">{{ __('Xero Configuration') }}
+                                                <br /><small>{{ __('View and update your Xero Keys') }}</small></label>
+                                            <input type="checkbox" data-plugin="switchery" name="xero_status"
+                                                id="xero_enable_switch" class="form-control" data-color="#43bee1"
+                                                @if ($accounting_status == '1') checked='checked' @endif>
                                         </div>
+
+                                        <div class="mt-2 xeroFields"
+                                            @if ($accounting_status != 1) style="display:none" @endif>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group mb-2">
+                                                        <label for="xero_client_id">{{ __('Client ID') }}</label>
+                                                        <input type="text" name="xero_client_id"
+                                                            id="xero_client_id" placeholder="" class="form-control"
+                                                            value="{{ old('xero_client_id', $creds->client_id ?? '') }}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-group mb-2">
+                                                        <label for="xero_secret_id">{{ __('Secret ID') }}</label>
+                                                        <input type="text" name="xero_secret_id"
+                                                            id="xero_secret_id" placeholder="" class="form-control"
+                                                            value="{{ old('xero_secret_id', $creds->secret_id ?? '') }}">
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1647,43 +1831,77 @@
                             <div class="form-group mb-0">
                                 <div class="row">
                                     <div class="col-12">
-                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                        <label for="square_enable_status_switch" class="mr-3">{{ __("Enable") }} <br/></label>
-                                        <input type="checkbox" data-plugin="switchery" name="square_enable_status_switch" id="square_enable_status_switch" class="form-control checkbox_change" data-className="square_enable_status" data-color="#43bee1" @if($getAdditionalPreference['square_enable_status'] == 1) checked @endif>
-                                        <input type="hidden" @if($getAdditionalPreference['square_enable_status'] == 1) value="1" @else value="0" @endif name="square_enable_status" id="square_enable_status" />
-                                    </div>
-                                    @php
-                                        $square_credentials = json_decode($getAdditionalPreference['square_credentials'], true);
-                                        $square_sandbox_enable_status = isset($square_credentials['sandbox_enable_status']) ? $square_credentials['sandbox_enable_status'] : '';
-                                        $square_application_id = isset($square_credentials['application_id']) ? $square_credentials['application_id'] : '';
-                                        $square_access_token = isset($square_credentials['access_token']) ? $square_credentials['access_token'] : '';
-                                        $square_location_id = isset($square_credentials['location_id']) ? $square_credentials['location_id'] : '';
-                                    @endphp
-                                        <div class="mt-2 squareFields" @if($getAdditionalPreference['square_enable_status'] != 1) style="display:none;" @endif>
+                                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                            <label for="square_enable_status_switch"
+                                                class="mr-3">{{ __('Enable') }} <br /></label>
+                                            <input type="checkbox" data-plugin="switchery"
+                                                name="square_enable_status_switch" id="square_enable_status_switch"
+                                                class="form-control checkbox_change"
+                                                data-className="square_enable_status" data-color="#43bee1"
+                                                @if ($getAdditionalPreference['square_enable_status'] == 1) checked @endif>
+                                            <input type="hidden"
+                                                @if ($getAdditionalPreference['square_enable_status'] == 1) value="1" @else value="0" @endif
+                                                name="square_enable_status" id="square_enable_status" />
+                                        </div>
+                                        @php
+                                            $square_credentials = json_decode($getAdditionalPreference['square_credentials'], true);
+                                            $square_sandbox_enable_status = isset($square_credentials['sandbox_enable_status']) ? $square_credentials['sandbox_enable_status'] : '';
+                                            $square_application_id = isset($square_credentials['application_id']) ? $square_credentials['application_id'] : '';
+                                            $square_access_token = isset($square_credentials['access_token']) ? $square_credentials['access_token'] : '';
+                                            $square_location_id = isset($square_credentials['location_id']) ? $square_credentials['location_id'] : '';
+                                        @endphp
+                                        <div class="mt-2 squareFields"
+                                            @if ($getAdditionalPreference['square_enable_status'] != 1) style="display:none;" @endif>
                                             <div class="row">
                                                 <div class="col-12">
-                                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                                        <label for="square_sandbox_enable_status_switch" class="mr-3">{{ __("Sandbox") }} <br/><small>{{__('Update Sandbox Application ID and Access Token')}}</small></label>
-                                                        <input type="checkbox" data-plugin="switchery" name="square_sandbox_enable_status_switch" id="square_sandbox_enable_status_switch" class="form-control checkbox_change" data-className="square_sandbox_enable_status" data-color="#43bee1" @if($square_sandbox_enable_status == 1) checked @endif>
-                                                        <input type="hidden" @if($square_sandbox_enable_status == 1) value="1" @else value="0" @endif name="square_sandbox_enable_status" id="square_sandbox_enable_status" />
+                                                    <div
+                                                        class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                                        <label for="square_sandbox_enable_status_switch"
+                                                            class="mr-3">{{ __('Sandbox') }}
+                                                            <br /><small>{{ __('Update Sandbox Application ID and Access Token') }}</small></label>
+                                                        <input type="checkbox" data-plugin="switchery"
+                                                            name="square_sandbox_enable_status_switch"
+                                                            id="square_sandbox_enable_status_switch"
+                                                            class="form-control checkbox_change"
+                                                            data-className="square_sandbox_enable_status"
+                                                            data-color="#43bee1"
+                                                            @if ($square_sandbox_enable_status == 1) checked @endif>
+                                                        <input type="hidden"
+                                                            @if ($square_sandbox_enable_status == 1) value="1" @else value="0" @endif
+                                                            name="square_sandbox_enable_status"
+                                                            id="square_sandbox_enable_status" />
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="form-group mb-2">
-                                                        <label for="square_location_id">{{ __("Location ID") }}</label>
-                                                        <input type="text" name="square_location_id" id="square_location_id" placeholder="" class="form-control" value="{{ old('square_location_id', $square_location_id)}}" autocomplete="off">
+                                                        <label for="square_location_id">{{ __('Location ID') }}</label>
+                                                        <input type="text" name="square_location_id"
+                                                            id="square_location_id" placeholder=""
+                                                            class="form-control"
+                                                            value="{{ old('square_location_id', $square_location_id) }}"
+                                                            autocomplete="off">
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="form-group mb-2">
-                                                        <label for="square_application_id">{{ __("Application ID") }}</label>
-                                                        <input type="text" name="square_application_id" id="square_application_id" placeholder="" class="form-control" value="{{ old('square_application_id', $square_application_id)}}" autocomplete="off">
+                                                        <label
+                                                            for="square_application_id">{{ __('Application ID') }}</label>
+                                                        <input type="text" name="square_application_id"
+                                                            id="square_application_id" placeholder=""
+                                                            class="form-control"
+                                                            value="{{ old('square_application_id', $square_application_id) }}"
+                                                            autocomplete="off">
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="form-group mb-2">
-                                                        <label for="square_access_token">{{ __("Access Token") }}</label>
-                                                        <input type="password" name="square_access_token" id="square_access_token" placeholder="" class="form-control" value="{{ old('square_access_token', $square_access_token)}}" autocomplete="off">
+                                                        <label
+                                                            for="square_access_token">{{ __('Access Token') }}</label>
+                                                        <input type="password" name="square_access_token"
+                                                            id="square_access_token" placeholder=""
+                                                            class="form-control"
+                                                            value="{{ old('square_access_token', $square_access_token) }}"
+                                                            autocomplete="off">
                                                     </div>
                                                 </div>
                                             </div>
@@ -1697,15 +1915,122 @@
                 </div>
             </form>
         </div>
-        @if (isset($preference) && $preference->subscription_mode == '1') 
+
+        {{-- starts gofrugal POS integration --}}
+        <div class="col-xl-4 col-lg-4 h-100">
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">{{ __('GoFrugal POS integration') }}</h4>
+            </div>
+
+            <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
+                @csrf
+                <input type="hidden" name="gofrugal_pos_integration" id="gofrugal_pos_integration" value="1">
+                <!-- HubSpot card start -->
+                <div class="card-box h-100">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label class="d-flex align-items-center justify-content-between">
+                                    <h5 class="social_head text-uppercase">
+                                        <span>{{ __('GoFrugal Inventory Configuration') }}</span>
+                                    </h5>
+
+                                    <button class="btn btn-info btn-block save_btn" type="submit">
+                                        {{ __('Save') }} </button>
+                                </label>
+                                <p class="sub-header">
+                                    {{ __('View and update API Key.') }}
+                                </p>
+                            </div>
+                            <div class="form-group mb-0">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                            <label for="gofrugal_enable_status_switch"
+                                                class="mr-3">{{ __('Enable') }} <br /></label>
+                                            <input type="checkbox" data-plugin="switchery"
+                                                name="gofrugal_enable_status_switch" id="gofrugal_enable_status_switch"
+                                                class="form-control checkbox_change"
+                                                data-className="gofrugal_enable_status" data-color="#43bee1"
+                                                @if ($getAdditionalPreference['gofrugal_enable_status'] == 1) checked @endif>
+                                            <input type="hidden"
+                                                @if ($getAdditionalPreference['gofrugal_enable_status'] == 1) value="1" @else value="0" @endif
+                                                name="gofrugal_enable_status" id="gofrugal_enable_status" />
+                                        </div>
+                                        @php
+                                            $gofrugal_credentials = json_decode($getAdditionalPreference['gofrugal_credentials'], true);
+                                            $gofrugal_sandbox_enable_status = isset($gofrugal_credentials['sandbox_enable_status']) ? $gofrugal_credentials['sandbox_enable_status'] : '';
+                                            $gofrugal_api_key = isset($gofrugal_credentials['api_key']) ? $gofrugal_credentials['api_key'] : '';
+                                            $gofrugal_domain_url = isset($gofrugal_credentials['domain_url']) ? $gofrugal_credentials['domain_url'] : '';
+                                        @endphp
+                                        <div class="mt-2 gofrugalFields"
+                                            @if ($getAdditionalPreference['gofrugal_enable_status'] != 1) style="display:none;" @endif>
+                                            <div class="row">
+                                                <div class="col-12 d-none">
+                                                    <div
+                                                        class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                                        <label for="gofrugal_sandbox_enable_status_switch"
+                                                            class="mr-3">{{ __('Sandbox') }}
+                                                            <br /><small>{{ __('Update Sandbox Application ID and Access Token') }}</small></label>
+                                                        <input type="checkbox" data-plugin="switchery"
+                                                            name="gofrugal_sandbox_enable_status_switch"
+                                                            id="gofrugal_sandbox_enable_status_switch"
+                                                            class="form-control checkbox_change"
+                                                            data-className="gofrugal_sandbox_enable_status"
+                                                            data-color="#43bee1"
+                                                            @if ($gofrugal_sandbox_enable_status == 1) checked @endif>
+                                                        <input type="hidden"
+                                                            @if ($gofrugal_sandbox_enable_status == 1) value="1" @else value="0" @endif
+                                                            name="gofrugal_sandbox_enable_status"
+                                                            id="gofrugal_sandbox_enable_status" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-group mb-2">
+                                                        <label
+                                                            for="gofrugal_api_key">{{ __('API KEY') }}</label>
+                                                        <input type="text" name="gofrugal_api_key"
+                                                            id="gofrugal_api_key" placeholder=""
+                                                            class="form-control"
+                                                            value="{{ old('gofrugal_api_key', $gofrugal_api_key) }}"
+                                                            autocomplete="off">
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-group mb-2">
+                                                        <label
+                                                            for="gofrugal_domain_url">{{ __('DOMAIN URL') }}</label>
+                                                        <input type="text" name="gofrugal_domain_url"
+                                                            id="gofrugal_domain_url" placeholder=""
+                                                            class="form-control"
+                                                            value="{{ old('gofrugal_domain_url', $gofrugal_domain_url) }}"
+                                                            autocomplete="off">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+
+        @if (isset($preference) && $preference->subscription_mode == '1')
             <div class="col-xl-4 col-lg-4 h-100">
                 <div class="page-title-box">
-                    <h4 class="page-title text-uppercase">{{  getNomenclatureName('Vendors', true). __(' Subscription rule') }}</h4>
+                    <h4 class="page-title text-uppercase">
+                        {{ getNomenclatureName('Vendors', true) . __(' Subscription rule') }}</h4>
                 </div>
 
                 <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
                     @csrf
-                    <input type="hidden" name="vendor_subcription_rule" id="vendor_subcription_rule" value="1">
+                    <input type="hidden" name="vendor_subcription_rule" id="vendor_subcription_rule"
+                        value="1">
                     <!-- HubSpot card start -->
                     <div class="card-box h-100">
                         <div class="row">
@@ -1726,10 +2051,20 @@
                                 <div class="form-group mb-0">
                                     <div class="row">
                                         <div class="col-12">
-                                            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                                <label for="is_show_vendor_on_subcription_switch" class="mr-3">{{ __("Enable") }} <br/></label>
-                                                <input type="checkbox" data-plugin="switchery" name="is_show_vendor_on_subcription_switch" id="is_show_vendor_on_subcription_switch" class="form-control checkbox_change" data-className="is_show_vendor_on_subcription" data-color="#43bee1" @if($getAdditionalPreference['is_show_vendor_on_subcription'] == 1) checked @endif>
-                                                <input type="hidden" @if($getAdditionalPreference['is_show_vendor_on_subcription'] == 1) value="1" @else value="0" @endif name="is_show_vendor_on_subcription" id="is_show_vendor_on_subcription" />
+                                            <div
+                                                class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                                <label for="is_show_vendor_on_subcription_switch"
+                                                    class="mr-3">{{ __('Enable') }} <br /></label>
+                                                <input type="checkbox" data-plugin="switchery"
+                                                    name="is_show_vendor_on_subcription_switch"
+                                                    id="is_show_vendor_on_subcription_switch"
+                                                    class="form-control checkbox_change"
+                                                    data-className="is_show_vendor_on_subcription" data-color="#43bee1"
+                                                    @if ($getAdditionalPreference['is_show_vendor_on_subcription'] == 1) checked @endif>
+                                                <input type="hidden"
+                                                    @if ($getAdditionalPreference['is_show_vendor_on_subcription'] == 1) value="1" @else value="0" @endif
+                                                    name="is_show_vendor_on_subcription"
+                                                    id="is_show_vendor_on_subcription" />
                                             </div>
                                         </div>
                                     </div>
@@ -1762,30 +2097,35 @@
                                         {{ __('Save') }} </button>
                                 </label>
                             </div>
-                            
+
                             @if ($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry')
+                                <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                    <label for="is_influencer_refer_and_earn_switch"
+                                        class="mr-2 mb-0">{{ __('Influencer Module') }}<small
+                                            class="d-block pr-5">{{ __('Enable to allow influencer module.') }}</small></label>
+                                    <span> <input type="checkbox" data-plugin="switchery"
+                                            name="is_influencer_refer_and_earn_switch"
+                                            id="is_influencer_refer_and_earn_switch"
+                                            class="form-control checkbox_change"
+                                            data-className="is_influencer_refer_and_earn" data-color="#43bee1"
+                                            @if ($getAdditionalPreference['is_influencer_refer_and_earn'] == 1) checked='checked' @endif>
+                                    </span>
+                                    <input type="hidden"
+                                        @if ($getAdditionalPreference['is_influencer_refer_and_earn'] == 1) value="1" @else value="0" @endif
+                                        name="is_influencer_refer_and_earn" id="is_influencer_refer_and_earn" />
+                                </div>
 
-                            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                <label for="is_influencer_refer_and_earn_switch" class="mr-2 mb-0">{{__('Influencer Module')}}<small class="d-block pr-5">{{__("Enable to allow influencer module.")}}</small></label>
-                            <span> <input type="checkbox" data-plugin="switchery" name="is_influencer_refer_and_earn_switch" id="is_influencer_refer_and_earn_switch" class="form-control checkbox_change" data-className="is_influencer_refer_and_earn" data-color="#43bee1" @if($getAdditionalPreference['is_influencer_refer_and_earn'] == 1) checked='checked'  @endif>
-                                </span>
-                                <input type="hidden"  @if($getAdditionalPreference['is_influencer_refer_and_earn'] == 1) value="1" @else value="0" @endif  name="is_influencer_refer_and_earn"  id="is_influencer_refer_and_earn"/>
-                            </div>
 
-                                
-                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                        <label for="celebrity_check" class="mr-2 mb-0"> {{ __('Refer and Earn by Influencer') }}
-                                            <small
-                                                class="d-block pr-5">{{ __('Leverage the Influencer era by adding Influencers and associate product with them to create curated lists of products') }}.</small></label>
-                                        <span> <input type="checkbox" data-plugin="switchery"
-                                                name="celebrity_check" id="celebrity_check" class="form-control"
-                                                data-color="#43bee1"
-                                                @if (isset($preference) && $preference->celebrity_check == '1') checked='checked' @endif></span>
-                                                
-                                    </div>
+                                <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                    <label for="celebrity_check" class="mr-2 mb-0">
+                                        {{ __('Refer and Earn by Influencer') }}
+                                        <small
+                                            class="d-block pr-5">{{ __('Leverage the Influencer era by adding Influencers and associate product with them to create curated lists of products') }}.</small></label>
+                                    <span> <input type="checkbox" data-plugin="switchery" name="celebrity_check"
+                                            id="celebrity_check" class="form-control" data-color="#43bee1"
+                                            @if (isset($preference) && $preference->celebrity_check == '1') checked='checked' @endif></span>
 
-                                    
-                                
+                                </div>
                             @endif
 
                         </div>
@@ -1796,12 +2136,539 @@
             </form>
         </div>
 
+        <div class="col-xl-4 col-lg-4 mb-3">
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">{{ __('Notification for Pickup Delivery') }}</h4>
+            </div>
+
+            <form method="POST" action="{{ route('additional.update') }}">
+                <input type="hidden" name="crm" id="crm" value="1">
+                <input type="hidden" name="send_to" id="send_to" value="configure">
+                @csrf
+                <!-- HubSpot card start -->
+                <div class="card-box h-100">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-0 switchery-demo">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <h4 class="header-title text-uppercase mb-0">{{ __('Custom Notification') }}
+                                    </h4>
+                                    <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
+                                    </button>
+                                </div>
+                                <p class="sub-header">
+                                    {{ __('Change Notification time for scheduled pickup delivery order.') }}
+                                </p>
+
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+
+                            <div class="form-group mb-0 d-flex switchery-demo">
+                                <label for="" class="mr-3">{{ __('Cron Notification Enable') }}</label>
+                                <input type="checkbox" data-plugin="switchery" name="pickup_notification_switch"
+                                    id="pickup_notification_switch" class="form-control checkbox_change"
+                                    data-className="pickup_notification_before" data-color="#43bee1"
+                                    @if (@$getAdditionalPreference['pickup_notification_before'] == 1) checked='checked' @endif>
+                                <input type="hidden"
+                                    @if (@$getAdditionalPreference['pickup_notification_before'] == 1) value="1" @else value="0" @endif
+                                    name="pickup_notification_before" id="pickup_notification_before" />
+                            </div>
+
+                            <div class="row mt-2" id="pickup_notification_div"
+                                style="display:@if (@$getAdditionalPreference['pickup_notification_before'] == 1) @else none @endif;">
+                                <div class="col-8">
+                                    <label for=""
+                                        class="mr-3">{{ __('Accept Reject Notification (Minutes)') }}</label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="number" name="pickup_notification_before_hours"
+                                        id="pickup_notification_before_hours" placeholder="" class="form-control"
+                                        value="{{ old('pickup_notification_before_hours', @$getAdditionalPreference['pickup_notification_before_hours'] ?? '') }}">
+                                </div>
+                                <hr />
+
+                                <div class="col-8">
+                                    <label for=""
+                                        class="mr-3">{{ __('Reminder Notification (Minutes)') }}</label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="number" name="pickup_notification_before2_hours"
+                                        id="pickup_notification_before2_hours" placeholder="" class="form-control"
+                                        value="{{ old('pickup_notification_before2_hours', @$getAdditionalPreference['pickup_notification_before2_hours'] ?? '') }}">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+
+        {{-- marg form --}}
+        {{-- <div class="col-xl-4 col-lg-4 mb-3">
+            <!-- Social Logins title start -->
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">Marg</h4>
+            </div><!-- Social Logins title end -->
+                <div class="card-box">
+
+            <form method="POST" action="{{ route('additional.update') }}">
+                @csrf
+                <!-- marg card start -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="fb_login" class="d-flex align-items-center justify-content-between">
+                                    <h5 class="social_head"><i style="font-size: 24px;" class="mdi mdi-marg"></i>
+                                        <span>{{ __('Marg') }}</span>
+                                    </h5>
+
+                                    <button class="btn btn-info btn-block save_btn" name="marg_submit"
+                                        type="submit">{{ __('Save') }} </button>
+                                </label>
+                                <label for="" class="mr-3">{{ __('Enable') }}</label>
+                                <input type="checkbox" data-plugin="switchery" id="is_marg_enable"
+                                    class="form-control checkbox_change" data-className="is_marg_enable_hidden"
+                                    data-color="#43bee1"
+                                    @if (@$getAdditionalPreference['is_marg_enable'] == '1') checked='checked' value="1" @endif>
+                                <input type="hidden"
+                                    @if (isset($getAdditionalPreference['is_marg_enable']) == 1) value="1" @else value="0" @endif
+                                    name="is_marg_enable" id="is_marg_enable_hidden" />
+
+                                @if (isset($getAdditionalPreference['is_marg_enable']) == 1 && $getAdditionalPreference['marg_date_time'])
+                                    <label for="" id="sycn_time" class="ml-3">{{ __('Last Sync Date & Time :') }}
+                                    {{ convertDateTimeInClientTimeZone($getAdditionalPreference['marg_date_time'], 'd-m-Y h:i:s') }}</label >
+                                @endif
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row marg_row"
+                        style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
+                        <div class="col-12">
+                            <div class="form-group mb-2 mt-2">
+                                <label for="marg_company_url">{{ __('Marg Company Url') }}</label>
+                                <input type="text" name="marg_company_url" id="marg_company_url"
+                                    placeholder="" class="form-control"
+                                    value="{{ old('marg_company_url', $getAdditionalPreference['marg_company_url'] ?? '') }}">
+                                @if ($errors->has('marg_company_url'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('marg_company_url') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row marg_row"
+                        style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
+                        <div class="col-12">
+                            <div class="form-group mb-2 mt-2">
+                                <label for="marg_company_code">{{ __('Company Code') }}</label>
+                                <input type="text" name="marg_company_code" id="marg_company_code"
+                                    placeholder="" class="form-control"
+                                    value="{{ old('marg_company_code', $getAdditionalPreference['marg_company_code'] ?? '') }}">
+                                @if ($errors->has('marg_company_code'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('marg_company_code') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row marg_row"
+                        style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
+                        <div class="col-12">
+                            <div class="form-group mb-2 mt-2">
+                                <label for="marg_access_token">{{ __('Marg ID') }}</label>
+                                <input type="text" name="marg_access_token" id="marg_access_token"
+                                    placeholder="" class="form-control"
+                                    value="{{ old('marg_access_token', $getAdditionalPreference['marg_access_token'] ?? '') }}">
+                                @if ($errors->has('marg_access_token'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('marg_access_token') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row marg_row"
+                        style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
+                        <div class="col-12">
+                            <div class="form-group mb-2 mt-2">
+                                <label for="marg_decrypt_key">{{ __('Decrypt Key') }}</label>
+                                <input type="text" name="marg_decrypt_key" id="marg_decrypt_key" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('marg_decrypt_key', $getAdditionalPreference['marg_decrypt_key'] ?? '') }}">
+                                @if ($errors->has('marg_decrypt_key'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('marg_decrypt_key') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+            </form>
+
+            <div class="row marg_row"
+                style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
+                <div class="col-12">
+       @php
+        {
+                $marg_order =  App\Models\Order::where('marg_status', '=',null)->
+                  where('marg_max_attempt', '>',2)->first();
+                 $class= "";
+                 if($marg_order){
+                    $class= "disabled";
+                 }
+        }
+        @endphp
+                <button class="btn btn-info btn-block" id="sync_marg_btn" {{$class }}>{{ __('Sync Data') }} </button>
+
+                </div>
+            </div>
+        </div><!-- marg card end --> --}}
+    {{-- </div> --}}
+
+    <div class="col-xl-4 col-lg-4 mb-3">
+        <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __('Marg Cron Schedular') }}</h4>
+        </div>
+        <div class="card-box">
+        <form method="POST" action="{{ route('additional.update') }}">
+            <input type="hidden" name="crm" id="crm" value="1">
+            <input type="hidden" name="send_to" id="send_to" value="configure">
+            @csrf
+
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h4 class="header-title text-uppercase mb-0">{{ __('Marg Cron Schedular') }}
+                </h4>
+                <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
+                </button>
+            </div>
+
+            <div class="col-12">
+
+                <div class="form-group mb-0 d-flex switchery-demo">
+                    <label for="" class="mr-3">{{ __('Select Marg Cron Configuration') }}</label>
+                </div>
+                @if (@$getAdditionalPreference['marg_cron_schedular_time'] != 0 && @$getAdditionalPreference['marg_cron_schedular_time'] != '')
+                    @php
+                        $marg_cron_schedular_time = '';
+                    @endphp
+                @else
+                    @php
+                        $marg_cron_schedular_time = $getAdditionalPreference['marg_cron_schedular_time'];
+                    @endphp
+                @endif
+                <select name="marg_cron_schedular_time" id="" class="form-control">
+                    <option value="">{{ __("Select Marg Cron") }}</option>
+                    <option @if($marg_cron_schedular_time === "everyMinute") selected @endif value="everyMinute">{{ __("everyMinute")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyFiveMinutes") selected @endif value="everyFiveMinutes">{{ __("everyFiveMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyTenMinutes") selected @endif value="everyTenMinutes">{{ __("everyTenMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyFifteenMinutes") selected @endif value="everyFifteenMinutes">{{ __("everyFifteenMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyThirtyMinutes") selected @endif value="everyThirtyMinutes">{{ __("everyThirtyMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time === "hourly") selected @endif value="hourly">{{ __("hourly")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyTwoHours") selected @endif value="everyTwoHours">{{ __("everyTwoHours")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyThreeHours") selected @endif value="everyThreeHours">{{ __("everyThreeHours")}}</option>
+                    <option @if($marg_cron_schedular_time === "everySixHours") selected @endif value="everySixHours">{{ __("everySixHours")}}</option>
+                    <option @if($marg_cron_schedular_time === "daily") selected @endif value="daily">{{ __("daily")}}</option>
+                    <option @if($marg_cron_schedular_time === "twiceDaily") selected @endif value="twiceDaily">{{ __("twiceDaily")}}</option>
+                    <option @if($marg_cron_schedular_time === "weekly") selected @endif value="weekly">{{ __("weekly")}}</option>
+                    <option @if($marg_cron_schedular_time === "monthly") selected @endif value="monthly">{{ __("monthly")}}</option>
+                </select>
+
+            </div>
+        </form>
+        </div>
     </div>
 
 
+    <div class="col-xl-4 col-lg-4 mb-3">
+        <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __('Vendor Notification Product Stock') }}</h4>
+        </div>
+        <div class="card-box">
+        <form method="POST" action="{{ route('additional.update') }}">
+            <input type="hidden" name="crm" id="crm" value="1">
+            <input type="hidden" name="send_to" id="send_to" value="configure">
+            @csrf
 
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h4 class="header-title text-uppercase mb-0">{{ __('Custom Notification') }}
+                </h4>
+                <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
+                </button>
+            </div>
+            <p class="sub-header">
+                {{ __('Send Vendor Notification when Product Stock Out.') }}
+            </p>
+
+                <div class="form-group mb-0 d-flex switchery-demo">
+                    <label for="" class="mr-3">{{ __('Notification Enable') }}</label>
+                    <input type="checkbox" data-plugin="switchery" name="stock_notification_switch"
+                        id="stock_notification_switch" class="form-control checkbox_change"
+                        data-className="stock_notification_before" data-color="#43bee1"
+                        @if (@$getAdditionalPreference['stock_notification_before'] == 1) checked='checked' @endif>
+                    <input type="hidden" @if (@$getAdditionalPreference['stock_notification_before'] == 1) value="1" @else value="0" @endif
+                        name="stock_notification_before" id="stock_notification_before" />
+                </div>
+
+                <div class="row mt-2" id="stock_notification_div"
+                    style="display:@if (@$getAdditionalPreference['stock_notification_before'] == 1) @else none @endif;">
+                    <div class="col-8">
+                        <label for="" class="mr-3">{{ __('Reminder For Minimum Product Quantity') }}</label>
+                    </div>
+                    <div class="col-4">
+                        <input type="number" name="stock_notification_qunatity" id="stock_notification_qunatity"
+                            placeholder="" class="form-control"
+                            value="{{ old('stock_notification_qunatity', @$getAdditionalPreference['stock_notification_qunatity'] ?? '') }}">
+                    </div>
+                    <hr />
+                </div>
+            </div>
+        </form>
+        </div>
+        <div class="col-xl-4 col-lg-4 mb-3">
+            <form method="POST" class="h-100" action="{{ route('additional.update')}}">
+            @csrf
+                <input type="hidden" name="is_lumen" value="1">
+                <div class="card-box h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h4 class="header-title text-uppercase mb-0">{{__("Lumen")}}</h4>
+                        <button class="btn btn-outline-info d-block" type="submit"> {{__('Save')}} </button>
+                    </div>
+                    <div class="row align-items-start">
+                        <div class="col-md-12">
+                            <div class="form-group d-flex justify-content-between mb-3">
+                                <label for="lumen" class="mr-2 mb-0">{{__("Enable")}} </label>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input " id="is_lumen_enabled" name="is_lumen_enabled" {{ ($getAdditionalPreference['is_lumen_enabled'] && ($getAdditionalPreference['is_lumen_enabled'] == 'on'))  ? 'checked':'' }}>
+                                        <label class="custom-control-label" for="is_lumen_enabled"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="row lumen-field" style="display:{{ ($getAdditionalPreference['is_lumen_enabled'] && ($getAdditionalPreference['is_lumen_enabled'] == 'on'))  ? 'block':'none' }}">
+                <div class="col-12 ">
+                    <div class="form-group mb-3">
+                        <div class="domain-outer border-0 d-flex align-items-center justify-content-between">
+                            <label for="lumen_domain_url">{{ __('LUMEN DOMAIN URL') }}</label>
+
+                        </div>
+                        <input type="text" name="lumen_domain_url" id="lumen_domain_url"
+                            placeholder="" class="form-control"
+                            value="{{ old('lumen_domain_url', $getAdditionalPreference['lumen_domain_url'] ?? '') }}">
+                        @if ($errors->has('lumen_domain_url'))
+                            <span class="text-danger" role="alert">
+                                <strong>{{ $errors->first('lumen_domain_url') }}</strong>
+                            </span>
+                        @endif
+                    </div>
+                </div>
+                        </div>
+                        <div class="row lumen-field" style="display: {{ ($getAdditionalPreference['is_lumen_enabled'] && ($getAdditionalPreference['is_lumen_enabled'] == 'on'))  ? 'block':'none' }}">
+
+                <div class="col-12">
+                    <div class="form-group mb-3">
+                        <div class="domain-outer border-0 d-flex align-items-center justify-content-between">
+                            <label for="lumen_access_token">{{ __('LUMEN ACCESS TOKEN') }}</label>
+                            <span class="text-right col-6 col-md-6"><a
+                                    href="javascript: generateLumenToken();">{{ __('Generate Key') }}</a></span>
+
+                        </div>
+                        <input type="text" name="lumen_access_token" id="lumen_access_token"
+                            placeholder="kjadsasd66asdas" class="form-control"
+                            value="{{ old('lumen_access_token',  $getAdditionalPreference['lumen_access_token'] ?? '') }}">
+                        @if ($errors->has('lumen_access_token'))
+                            <span class="text-danger" role="alert">
+                                <strong>{{ $errors->first('lumen_access_token') }}</strong>
+                            </span>
+                        @endif
+                    </div>
+                </div>
+                </div>
+
+                </div>
+            </form>
+
+    </div>
+</div>
+
+    <div class="col-xl-4 col-lg-4 mb-3">
+        <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __("Tax-Jar")}}</h4>
+        </div>
+
+        <form method="POST" action="{{ route('additional.update') }}">
+            @csrf
+            <div class="card-box h-100">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group mb-0 switchery-demo">
+                            <label for="fb_login" class="d-flex align-items-center justify-content-between">
+                                <h5 class="social_head"><i style="font-size: 24px;" class="mdi mdi-marg"></i>
+                                    <span>{{ __('Tax-Jar Api') }}</span>
+                                </h5>
+
+                                <button class="btn btn-info btn-block save_btn" name="taxjar_submit" type="submit">{{ __('Save') }} </button>
+                            </label>
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <label for="is_taxjar_enable" class="mr-3">{{ __('Enable') }}</label>
+                                    <input type="checkbox" data-plugin="switchery" id="is_taxjar_enable" class="form-control checkbox_change" data-className="is_taxjar_enable_hidden" data-color="#43bee1"
+                                        @if (@$getAdditionalPreference['is_taxjar_enable'] == '1') checked='checked' value="1" @endif>
+                                        <input type="hidden" @if (isset($getAdditionalPreference['is_taxjar_enable']) == 1) value="1" @else value="0" @endif
+                                        name="is_taxjar_enable" id="is_taxjar_enable_hidden" />
+                                </div>
+
+                                <div>
+                                    <label for="taxjar_testmode" class="mr-3">{{ __('Sandbox') }}</label>
+                                    <input type="checkbox" data-plugin="switchery" id="taxjar_testmode" class="form-control checkbox_change" data-className="taxjar_testmode_hidden" data-color="#43bee1"
+                                        @if (@$getAdditionalPreference['taxjar_testmode'] == '1') checked='checked' value="1" @endif>
+                                        <input type="hidden" @if (isset($getAdditionalPreference['taxjar_testmode']) == 1) value="1" @else value="0" @endif
+                                        name="taxjar_testmode" id="taxjar_testmode_hidden" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row taxjar_row"
+                    style="{{ isset($getAdditionalPreference['is_taxjar_enable']) && $getAdditionalPreference['is_taxjar_enable'] == 1 ? '' : 'display:none;' }}">
+                    <div class="col-12">
+                        <div class="form-group mb-2 mt-2">
+                            <label for="taxjar_api_token">{{ __('Api Token') }}</label>
+                            <input type="text" name="taxjar_api_token" id="taxjar_api_token"
+                                placeholder="" class="form-control"
+                                value="{{ old('taxjar_api_token', $getAdditionalPreference['taxjar_api_token'] ?? '') }}">
+                            @if ($errors->has('taxjar_api_token'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('taxjar_api_token') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+        </form>
+
+
+
+    </div>
+
+    {{-- ends here marg form --}}
+    </div>
+    <div class="col-xl-4 col-lg-4 mb-3">
+        <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __('Blockchain Route Formation') }}</h4>
+        </div>
+        <div class="card-box">
+        <form method="POST" action="{{ route('additional.update') }}">
+        <input type="hidden" name="is_blockchain_route" id="is_blockchain_route" value="1">
+          @csrf
+
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h4 class="header-title text-uppercase mb-0">{{ __('Blockchain Route Formation') }}
+                </h4>
+                <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
+                </button>
+            </div>
+
+
+            <div class="col-12">
+
+                <div class="form-group mb-0 d-flex switchery-demo">
+                    <label for="" class="mr-3">{{ __('Enable') }}</label>
+                    <input type="checkbox" data-plugin="switchery" name="blockchain_route_formation_switch"
+                        id="blockchain_route_formation_switch" class="form-control checkbox_change"
+                        data-className="blockchain_route_formation" data-color="#43bee1"
+                        @if (@$getAdditionalPreference['blockchain_route_formation'] == 1) checked @endif>
+                    <input type="hidden" @if (@$getAdditionalPreference['blockchain_route_formation'] == 1) value="1" @else value="0" @endif
+                        name="blockchain_route_formation" id="blockchain_route_formation" />
+                </div>
+
+                <div class="row mt-2  @if (@$getAdditionalPreference['blockchain_route_formation'] != 1) d-none @endif;" id="blockchain_configuration_div">
+
+                    <div class="col-6">
+                    <label for="" class="mr-3">{{ __('Blockchain Api Domain') }}</label>
+                        <input type="text" name="blockchain_api_domain" id="blockchain_api_domain"
+                            placeholder="" class="form-control"
+                            value="{{ old('blockchain_api_domain', @$getAdditionalPreference['blockchain_api_domain'] ?? '') }}">
+                    </div>
+                    <div class="col-6">
+                    <label for="" class="mr-3">{{ __('Blockchain Address Id') }}</label>
+                        <input type="text" name="blockchain_address_id" id="blockchain_address_id"
+                            placeholder="" class="form-control"
+                            value="{{ old('blockchain_address_id', @$getAdditionalPreference['blockchain_address_id'] ?? '') }}">
+                    </div>
+                    <hr />
+                </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+      @if( Request::get('google_tag'))
+        <div class="col-xl-4 col-lg-4 mb-3">
+            <!-- Social Logins title start -->
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">{{ __('Google Analytics') }}</h4>
+            </div><!-- Social Logins title end -->
+                            <div class="card-box">
+
+
+            <form method="POST" action="{{ route('additional.update') }}">
+                <input type="hidden" name="crm" id="crm" value="1">
+                <input type="hidden" name="send_to" id="send_to" value="configure">
+                @csrf
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h4 class="header-title text-uppercase mb-0">{{ __('Google Analytics') }}
+                    </h4>
+                    <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
+                    </button>
+                </div>
+                            <div class="col-12">
+
+                <!-- HubSpot card start -->
+                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                        <label for="is_enable_google_analytics_switch" class="mr-2 mb-0">{{ __('Enable Google Analytics') }}</label>
+                        <span> <input type="checkbox" data-plugin="switchery" name="is_enable_google_analytics"
+                                id="is_enable_google_analytics_switch" class="form-control checkbox_change"
+                                data-className="is_enable_google_analytics" data-color="#43bee1"
+                                 @if (@$getAdditionalPreference['is_enable_google_analytics'] == 1) checked='checked' @endif>
+                        </span>
+                        <input type="hidden" @if ($getAdditionalPreference['is_enable_google_analytics'] == 1) value="1" @else value="0" @endif
+                            name="is_enable_google_analytics" id="is_enable_google_analytics" />
+                    </div>
+
+                   <div class="form-group mt-3 mb-0">
+                        <label for="header_script">{{ __('Header Script') }}</label>
+                        <textarea class="form-control m-0" id="header_script" rows="5" name="header_script" cols="10">{{ old('header_script', @$getAdditionalPreference['header_script'] ?? '') }}</textarea>
+
+                    </div>
+                    <div class="form-group mt-3 mb-0">
+                        <label for="footer_script">{{ __('Footer Script') }}</label>
+                        <textarea class="form-control m-0" id="footer_script" rows="5" name="footer_script" cols="10">{{ old('footer_script', @$getAdditionalPreference['footer_script'] ?? '') }}</textarea>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+        </div>
+	@endif
+</div>
     <div class="row">
-            
+
         <div class="col-md-12">
             <!-- Custom Mods start -->
             <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
@@ -1813,19 +2680,17 @@
                     </div>
                     <input type="hidden" name="custom_mods_config" id="custom_mods_config" value="1">
 
-                        <div class="row align-items-start">
-                          @include('backend.setting.customMode')
-                        </div>
-                       
-
+                    <div class="row align-items-start">
+                        @include('backend.setting.customMode')
                     </div>
+
+
                 </div>
-            </form>
-            <!-- Custom Mods end -->
+                        </form>
+
         </div>
+        <!-- Custom Mods end -->
     </div>
-
-
 
     <div style="display:none;">
         <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
@@ -1906,7 +2771,7 @@
                                                 <p class="mb-2"><span
                                                         class="font-weight-semibold mr-2">{{ __('From') }}:</span>
                                                     johndoe<span>
-                                                        </span>contact@royodispatcher.com<span> ></span>
+                                                    </span>contact@royodispatcher.com<span> ></span>
                                                 </p>
                                                 <p class="mb-2"><span
                                                         class="font-weight-semibold mr-2">{{ __('Reply To') }}:</span>
@@ -2121,6 +2986,20 @@
             let vendor_registration_document_id = $('input[name="vendor_registration_document_id"]').val();
             editVendorRegistrationForm(vendor_registration_document_id);
         });
+
+        var is_marg_enable = $('#is_marg_enable');
+
+        if (is_marg_enable.length > 0) {
+            is_marg_enable[0].onchange = function() {
+
+                if ($('#is_marg_enable:checked').length != 1) {
+                    $('.marg_row').hide();
+                } else {
+                    $('.marg_row').show();
+                }
+            }
+        }
+
         $(document).on('click', '.addOptionRow-Add', function(e) {
             var d = new Date();
             var n = d.getTime();
@@ -2140,6 +3019,27 @@
             $('#add_slot_modal').modal('show');
             $('#add_slot__modal #standard-modalLabel').html('Add Slot');
         });
+
+
+        $(document).on("click", "#sync_marg_btn", function(e) {
+            e.preventDefault();
+            $.ajax({
+                type: "GET",
+                dataType: 'json',
+                url: "{{ route('sync.marg') }}",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                },
+                success: function(response) {
+                    $('#sycn_time').html(response.time);
+                    sweetAlert.success('Data Sycn Successfully!');
+                },
+                error: function(response) {
+                    sweetAlert.error('Error!');
+                }
+            });
+        });
+
 
         // Start Slot ////
 
@@ -2165,6 +3065,25 @@
                     }
                 });
             }
+        });
+
+        // Mark ////
+
+        $(document).on("click", "#sync_marg_btn", function() {
+                $.ajax({
+                    type: "GET",
+                    dataType: 'json',
+                    url: "{{ route('sync.marg') }}",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                    },
+                    success: function(response) {
+                        dd(response);
+                        if (response.status == "Success") {
+
+                        }
+                    }
+                });
         });
 
         $(document).on('click', '.show-custom-mods-btn', function(e) {
@@ -2457,6 +3376,11 @@
                 autocomplete[name] = new google.maps.places.Autocomplete(document.getElementById(name), {
                     types: ['geocode']
                 });
+                if (is_map_search_perticular_country) {
+                    autocomplete[name].setComponentRestrictions({
+                        'country': [is_map_search_perticular_country]
+                    });
+                }
                 google.maps.event.addListener(autocomplete[name], 'place_changed', function() {
                     var place = autocomplete[name].getPlace();
                     geocoder.geocode({
@@ -2478,7 +3402,7 @@
             $('#add-customer-modal').removeClass('fadeIn');
 
         });
-
+    //*************configurations hyperlocal map location selected by map*********************//
         $(document).on('click', '.showMap', function() {
             var no = $(this).attr('num');
             var lats = document.getElementById('Default_latitude').value;
@@ -2486,48 +3410,60 @@
 
             document.getElementById('map_for').value = no;
 
-            if (lats == null || lats == '0') {
-                lats = 30.53899440;
-            }
-            if (lngs == null || lngs == '0') {
-                lngs = 75.95503290;
-            }
+                    if (lats == null || lats == '0') {
+                    lats = 30.53899440;
+                    }
+                    if (lngs == null || lngs == '0') {
+                    lngs = 75.95503290;
+                    }
 
             var myLatlng = new google.maps.LatLng(lats, lngs);
-            var mapProp = {
+                var mapProp = {
                 center: myLatlng,
                 zoom: 13,
                 mapTypeId: google.maps.MapTypeId.ROADMAP
 
-            };
+                };
             var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
-            var marker = new google.maps.Marker({
+                var marker = new google.maps.Marker({
                 position: myLatlng,
                 map: map,
                 title: 'Hello World!',
                 draggable: true
-            });
-            document.getElementById('lat_map').value = lats;
-            document.getElementById('lng_map').value = lngs;
-            google.maps.event.addListener(marker, 'drag', function(event) {
+                });
+                document.getElementById('lat_map').value = lats;
+                document.getElementById('lng_map').value = lngs;
+                google.maps.event.addListener(marker, 'drag', function(event) {
+
                 document.getElementById('lat_map').value = event.latLng.lat();
                 document.getElementById('lng_map').value = event.latLng.lng();
             });
 
             google.maps.event.addListener(marker, 'dragend', function(event) {
-                var zx = JSON.stringify(event);
-                console.log(zx);
 
-
-                document.getElementById('lat_map').value = event.latLng.lat();
-                document.getElementById('lng_map').value = event.latLng.lng();
-            });
+            var newLat = event.latLng.lat();
+            var newLng = event.latLng.lng();
+            var geocoder = new google.maps.Geocoder();
+            var latlng = new google.maps.LatLng(newLat, newLng);
+                geocoder.geocode({
+                'latLng': latlng
+                }, function(results, status) {
+                if (status === google.maps.GeocoderStatus.OK) {
+                    if (results[0]) {
+                    var locationName = results[0].formatted_address;
+                    document.getElementById('Default_location_name').value = locationName;
+                }
+                }
+                });
+                    document.getElementById('lat_map').value = newLat;
+                    document.getElementById('lng_map').value = newLng;
+                });
             $('#add-customer-modal').addClass('fadeIn');
             $('#show-map-modal').modal({
-                keyboard: false
+            keyboard: false
             });
 
-        });
+            });
 
         $(document).on('click', '.selectMapLocation', function() {
 
@@ -2561,6 +3497,7 @@
         var laundry_service = $('#need_laundry_service');
 
         var is_hubspot_enable = $('#is_hubspot_enable');
+        var is_marg_enable = $('#is_marg_enable');
 
         if (laundry_service.length > 0) {
             laundry_service[0].onchange = function() {
@@ -2579,6 +3516,16 @@
                     $('.hub_row').hide();
                 } else {
                     $('.hub_row').show();
+                }
+            }
+        }
+        if (is_marg_enable.length > 0) {
+            is_marg_enable[0].onchange = function() {
+
+                if ($('#is_marg_enable:checked').length != 1) {
+                    $('.marg_row').hide();
+                } else {
+                    $('.marg_row').show();
                 }
             }
         }
@@ -2607,8 +3554,7 @@
 
         if (need_inventory_service.length > 0) {
             need_inventory_service[0].onchange = function() {
-                if ($('#need_inventory_service:checked').length != 1) 
-                {
+                if ($('#need_inventory_service:checked').length != 1) {
                     $('.inventoryFields').hide();
                     var is_order_edit_enable = $('#is_order_edit_enable_switch');
 
@@ -2635,11 +3581,12 @@
         }
 
         var is_one_push_book_enable = $('#is_one_push_book_enable_switch');
-        var is_bid_ride_enable      = $('#is_bid_ride_enable_switch');
+        var is_bid_ride_enable = $('#is_bid_ride_enable_switch');
 
 
         is_one_push_book_enable[0].onchange = function() {
-            if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked').length != 1) {
+            if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked')
+                .length != 1) {
                 $('#bid_expire_time_limit_div').hide();
                 $('#bid_expire_time_limit_seconds').val(0);
             } else {
@@ -2648,7 +3595,8 @@
         }
 
         is_bid_ride_enable[0].onchange = function() {
-            if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked').length != 1) {
+            if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked')
+                .length != 1) {
                 $('#bid_expire_time_limit_div').hide();
                 $('#bid_expire_time_limit_seconds').val(0);
             } else {
@@ -2714,6 +3662,53 @@
             }
         }
 
+        var is_taxjar_enable = $('#is_taxjar_enable');
+        if (is_taxjar_enable.length > 0) {
+            is_taxjar_enable[0].onchange = function() {
+
+                if ($('#is_taxjar_enable:checked').length != 1) {
+                    $('.taxjar_row').hide();
+                } else {
+                    $('.taxjar_row').show();
+                }
+            }
+        }
+
+        $('#pickup_notification_switch')[0].onchange = function() {
+            if ($('#pickup_notification_switch:checked').length != 1) {
+                $('#pickup_notification_div').hide();
+                // $('#pickup_notification_before_hours').val(0);
+            } else {
+                $('#pickup_notification_div').show();
+            }
+        }
+
+        $('#stock_notification_switch')[0].onchange = function() {
+            if ($('#stock_notification_switch:checked').length != 1) {
+                $('#stock_notification_div').hide();
+                // $('#pickup_notification_before_hours').val(0);
+            } else {
+                $('#stock_notification_div').show();
+            }
+        }
+        $('#blockchain_route_formation_switch').on('change', function() {
+
+            if ($('#blockchain_route_formation_switch:checked').length != 1) {
+                $('#blockchain_configuration_div').hide();
+            } else {
+                $('#blockchain_configuration_div').show();
+            }
+
+         });
+
+
+        $('#pickup_notification_switch2')[0].onchange = function() {
+            if ($('#pickup_notification_switch2:checked').length != 1) {
+                $('#pickup_notification_div2').hide();
+            } else {
+                $('#pickup_notification_div2').show();
+            }
+        }
         var dinein_option = $('#dinein_check');
         if (dinein_option.length > 0) {
             dinein_option[0].onchange = function() {
@@ -2740,7 +3735,7 @@
         third_party_accounting[0].onchange = function() {
             if ($('#third_party_accounting:checked').length != 1) {
                 $('#xero_config_div').hide();
-                if($('#xero_enable_switch').is(':checked')==1){
+                if ($('#xero_enable_switch').is(':checked') == 1) {
                     $('#xero_enable_switch').trigger("click");
                 }
             } else {
@@ -2748,13 +3743,14 @@
             }
         }
 
+
         var xero_enable_switch = $('#xero_enable_switch');
-        if(xero_enable_switch.length > 0){
+        if (xero_enable_switch.length > 0) {
             xero_enable_switch[0].onchange = function() {
 
-                if ($('#xero_enable_switch:checked').length != 1) 
-                {
-                    $("#xero_client_id").val('');$("#xero_secret_id").val('');
+                if ($('#xero_enable_switch:checked').length != 1) {
+                    $("#xero_client_id").val('');
+                    $("#xero_secret_id").val('');
                     $('.xeroFields').hide();
                 } else {
                     $('.xeroFields').show();
@@ -2764,12 +3760,12 @@
 
 
         var square_enable_status_switch = $('#square_enable_status_switch');
-        if(square_enable_status_switch.length > 0){
+        if (square_enable_status_switch.length > 0) {
             square_enable_status_switch[0].onchange = function() {
 
-                if ($('#square_enable_status_switch:checked').length != 1) 
-                {
-                    $("#xero_client_id").val('');$("#xero_secret_id").val('');
+                if ($('#square_enable_status_switch:checked').length != 1) {
+                    $("#xero_client_id").val('');
+                    $("#xero_secret_id").val('');
                     $('.squareFields').hide();
                 } else {
                     $('.squareFields').show();
@@ -2803,7 +3799,33 @@
             var id = $("#sms_provider").find(':selected').attr('data-id');
             $('.sms_fields').css('display', 'none');
             $('#' + id).css('display', 'flex');
-            console.log(id);
         }
+
+        var square_enable_status_switch = $('#gofrugal_enable_status_switch');
+        if (square_enable_status_switch.length > 0) {
+            square_enable_status_switch[0].onchange = function() {
+
+                if ($('#gofrugal_enable_status_switch:checked').length != 1) {
+                    $("#gofrugal_api_key").val('');
+                    $('.gofrugalFields').hide();
+                } else {
+                    $('.gofrugalFields').show();
+                }
+            }
+        }
+        function generateLumenToken() {
+            var token = generateRandomString(30);
+
+            $('#lumen_access_token').val(token);
+        }
+
+        $('#is_lumen_enabled').on('change',function(){
+
+        if ($(this).is(":checked")) {
+            $('.lumen-field').show();
+        }else{
+            $('.lumen-field').hide();
+        }
+        });
     </script>
 @endsection

@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Storage;
 use Session;
 use GuzzleHttp\Client as GCLIENT;
 
-
 class BaseController extends Controller
 {
     private $htmlData = '';
@@ -609,6 +608,40 @@ class BaseController extends Controller
                     }
 
     }
+    
+    public function sendWalletNotification($user_id,$order_number)
+    {
+        $firebaseToken = UserDevice::select('device_token')->whereNotNull('device_token')->where('user_id',$user_id)->orderBy('id','desc')->limit(1)->pluck('device_token')->toArray();
+        if(!empty($firebaseToken)){
+            $preference = ClientPreference::select('fcm_server_key')->first();
+            $fcm_server_key = !empty($preference->fcm_server_key)? $preference->fcm_server_key : 'null';
+            
+            $data = [
+                "registration_ids" => $firebaseToken,
+                "notification" => [
+                    "title" => "Refund Added in Wallet",
+                    "body" => 'Wallet has been <b>refunded</b> for cancellation or failed payment of order #' .$order_number
+                ]
+            ];
+            $dataString = json_encode($data);
+            $headers = [
+                'Authorization: key=' . $fcm_server_key,
+                'Content-Type: application/json',
+            ];
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+            $response = curl_exec($ch);
+            curl_close($ch);
+        }
+        return true;
+    }
 
 
     }
+
+

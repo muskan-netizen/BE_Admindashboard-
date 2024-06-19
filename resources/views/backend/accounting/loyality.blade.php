@@ -61,7 +61,12 @@
                                         <i class="mdi mdi-eye-outline text-primary mdi-24px"></i>
                                         <span data-plugin="counterup">0</span> k
                                     </h3>
-                                    <p class="text-muted font-15 mb-0">{{ __('Unique Orders') }}</p>
+                                    @php
+                                        $ordermenu = getNomenclatureName('Orders', true);
+                                        $ordermenulabel = ($ordermenu=="Orders")?__('Orders'):__($ordermenu);
+
+                                    @endphp
+                                    <p class="text-muted font-15 mb-0">{{ __('Unique '. $ordermenulabel) }}</p>
                                 </div>
                             </div>
                         </div>
@@ -183,7 +188,22 @@
                             action: function ( e, dt, node, config ) {
                                 window.location.href = "{{ route('account.loyalty.export') }}";
                             }
-                        }],
+                        },
+                            {
+                                extend: 'pdf',
+                                text: 'Export to PDF',
+                                className:'btn btn-success waves-effect Export_btn waves-light ml-2',
+                                id:'exp-btn',
+                                text: '<span class="btn-label"><i class="mdi mdi-file-pdf-box"></i></span>Export PDF',
+                                orientation: 'landscape',
+                                exportOptions: {
+                                    columns: ':visible'
+                                },
+                                customize: function (doc) {
+                                doc.pageOrientation = 'landscape';
+                                doc.pageSize = 'A3'; // Set the custom page size
+                            }
+                            }],
                         ajax: {
                           url: "{{route('account.loyalty.filter')}}",
                           data: function (d) {
@@ -212,4 +232,6 @@
 @endsection
 @section('script')
 <script src="{{asset('assets/libs/datatables/datatables.min.js')}}"></script>
+@include('backend.export_pdf')
+
 @endsection

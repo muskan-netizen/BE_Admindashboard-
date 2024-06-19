@@ -19,19 +19,21 @@
             </select>
             {{-- <button class="btn btn-sm add_attr_options" data-attribute_id="{{ $var->id }}" ><i class="fas fa-plus"></i></button> --}}
         @elseif( !empty($var->type) && $var->type == 4 )
-            <div class="form-check-inline w-100">
-                <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
-                <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
-                <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
-                <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}">
-                <input class="form-control" type="text" name="attribute[{{$var->id}}][option][{{$counter}}][value]"  
-                
-                @if(in_array($opt->id, $attribute_value))  
-                value="{{$attribute_key_value[$opt->id]}}"
-                @else
-                value=""
-                @endif>
-            </div>
+            @foreach($var->option as $key => $opt)
+                <div class="form-check-inline w-100">
+                    <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
+                    <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
+                    <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
+                    <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}">
+                    <input class="form-control" type="text" name="attribute[{{$var->id}}][option][{{$counter}}][value]"  
+                    
+                    @if(in_array($opt->id, $attribute_value))  
+                    value="{{$attribute_key_value[$opt->id]}}"
+                    @else
+                    value=""
+                    @endif>
+                </div>
+            @endforeach
             {{-- <button class="btn btn-sm add_attr_options" data-attribute_id="{{ $var->id }}" ><i class="fas fa-plus"></i></button> --}}
         @elseif( !empty($var->type) && $var->type == 3 )
         
@@ -40,7 +42,7 @@
                     <div class="form-check-inline ">
                         <input type="hidden" name="attribute[{{$var->id}}][id]" value="{{$var->id}}">
                         <input type="hidden" name="attribute[{{$var->id}}][attribute_title]" value="{{$var->title}}">
-                        <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_id]" value="{{$opt->id}}">
+                        <input type="hidden" name="attribute[{{$var->id}}][option][option_id]" value="{{$opt->id}}">
                         <input type="hidden" name="attribute[{{$var->id}}][option][{{$counter}}][option_title]" value="{{$opt->title}}">
                         <div class="attr_radio_{{$var->id}}">
                         <input type="radio" name="attribute[{{$var->id}}][option][{{$counter}}][value]" class="form-control attr_radio mr-1"  
@@ -160,7 +162,9 @@ var autocomplete = {};
             autocomplete[name] = new google.maps.places.Autocomplete(document.getElementById('add-address'), {
                 types: ['geocode']
             });
-
+            if(is_map_search_perticular_country){
+                autocomplete[name].setComponentRestrictions({'country': [is_map_search_perticular_country]});
+            }
             google.maps.event.addListener(autocomplete[name], 'place_changed', function() {
                 var place = autocomplete[name].getPlace();
                 if (!place.geometry) {

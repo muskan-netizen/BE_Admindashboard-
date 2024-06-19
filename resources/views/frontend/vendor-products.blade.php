@@ -12,12 +12,11 @@
 @endsection
 @section('content')
 @php
-$additionalPreference = getAdditionalPreference(['is_token_currency_enable','is_service_product_price_from_dispatch']);
+$additionalPreference = getAdditionalPreference(['is_token_currency_enable','is_service_product_price_from_dispatch','is_service_price_selection']);
 $is_service_product_price_from_dispatch_forOnDemand = 0;
 
-if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
-    $is_service_product_price_from_dispatch_forOnDemand =1;
-}
+$getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
+$is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is_price_from_freelancer'] ?? 0;
 
 @endphp
 <!-- get current page -->
@@ -73,7 +72,7 @@ $currentPage = $_GET['page']??1;
                             }
                             @endphp
                             @if($slug)
-                        <div class="collection-collapse-block border-0 mb-2 open pt-2 pb-0 border-0">
+                        <div class="collection-collapse-block border-0 mb-2 open pt-2 border-0">
                            
                             <h3 class="collapse-block-title"> {{$slug . $sets->title}}</h3>
                             <div class="collection-collapse-block-content">

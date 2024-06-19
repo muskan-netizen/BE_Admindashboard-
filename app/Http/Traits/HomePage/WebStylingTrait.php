@@ -55,21 +55,22 @@ trait WebStylingTrait
     }
     public function updateSelectedProductstoDb($id, $request,$type='')
     {
-        $delete = HomeProduct::where('layout_id', $id);
+        // $delete = HomeProduct::where('layout_id', $id);
         
-        if(!empty($type))
-        $delete = $delete->where('type',$type);
+        // if(!empty($type))
+        // $delete = $delete->where('type',$type);
 
-        $delete = $delete->delete();
-        foreach($request->selected_products as $products){
-            $relatedArray[] = [
+        // $delete = $delete->delete();
+        // foreach($request->selected_products as $products){
+            $relatedArray = [
                 'slug' => 'selected_products',
-                'product_id' => $products,
+                // 'product_id' => $products,
+                'products' => json_encode($request->selected_products),
                 'layout_id'=> $id,
                 'type'      => $type??0
             ];
-        }
-        HomeProduct::insert($relatedArray);
+        // }
+        HomeProduct::updateOrCreate(['layout_id' => $id], $relatedArray);
         return true;
     }
 
@@ -100,8 +101,8 @@ trait WebStylingTrait
     public function getHomePageSelectedProducts($type=0)
     {
         //0 for web and 1 for App type
-        $selected_ids= HomeProduct::where('type',$type)->pluck('product_id')->toArray();
-        return $selected_ids;
+        $selectedIds = HomeProduct::where(['type' => $type, 'slug' => 'selected_products'])->latest()->value('products');
+        return json_decode($selectedIds);
     }
 
     public function getProducts($request = [],$all='')

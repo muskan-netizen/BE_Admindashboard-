@@ -1,12 +1,15 @@
-@extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Payment Options'])
-
-@section('css')
-<link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
-<link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
-<style>#payment_48{display:none;}</style>
-@endsection
-
-@section('content')
+@extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Payment
+Options']) @section('css')
+<link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}"
+	rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/dropify/dropify.min.css')}}"
+	rel="stylesheet" type="text/css" />
+<style>
+#payment_48 {
+	display: block;
+}
+</style>
+@endsection @section('content')
 
 <!-- Start Content-->
 <div class="container-fluid alpaymentOptionPage">
@@ -18,25 +21,23 @@
                 <h4 class="page-title">Payment Options</h4>
             </div>
         </div> -->
-        <div class="col-12">
-            <div class="text-sm-left">
-                @if (\Session::has('success'))
-                <div class="alert mt-2 mb-0 alert-success">
-                    <span>{!! \Session::get('success') !!}</span>
-                </div>
-                @endif
-                @if ( ($errors) && (count($errors) > 0) )
-                <div class="alert mt-2 mb-0 alert-danger">
-                    <ul class="m-0">
-                        @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
-            </div>
-        </div>
-    </div>
+		<div class="col-12">
+			<div class="text-sm-left">
+				@if (\Session::has('success'))
+				<div class="alert mt-2 mb-0 alert-success">
+					<span>{!! \Session::get('success') !!}</span>
+				</div>
+				@endif @if ( ($errors) && (count($errors) > 0) )
+				<div class="alert mt-2 mb-0 alert-danger">
+					<ul class="m-0">
+						@foreach ($errors->all() as $error)
+						<li>{{ $error }}</li> @endforeach
+					</ul>
+				</div>
+				@endif
+			</div>
+		</div>
+	</div>
 
     <form method="POST" id="payment_option_form" action="{{route('payoption.updateAll')}}"  enctype="multipart/form-data">
         @csrf
@@ -50,12 +51,12 @@
             </div>
         </div>
         <div class="row">
-
             @foreach($payOption as $key => $opt)
             <div class="col-6 col-md-3 col-xl-2 mb-3" id="payment_{{$opt->id}}">
 
-                <input type="hidden" name="method_id[]" id="{{$opt->id}}" value="{{$opt->id}}">
-                <input type="hidden" name="method_name[]" id="{{$opt->code}}" value="{{$opt->code}}">
+				<input type="hidden" name="method_id[]" id="{{$opt->id}}"
+					value="{{$opt->id}}"> <input type="hidden" name="method_name[]"
+					id="{{$opt->code}}" value="{{$opt->code}}">
 
                 <?php
                 $creds = json_decode($opt->credentials);
@@ -73,6 +74,7 @@
                 $api_access_token = (isset($creds->api_access_token)) ? $creds->api_access_token : '';
                 $api_secret_key = (isset($creds->api_secret_key)) ? $creds->api_secret_key : '';
                 $publishable_key = (isset($creds->publishable_key)) ? $creds->publishable_key : '';
+				$webhook_signature = (isset($creds->webhook_signature)) ? $creds->webhook_signature : '';
                 $secret_key = (isset($creds->secret_key)) ? $creds->secret_key : '';
                 $public_key = (isset($creds->public_key)) ? $creds->public_key : '';
                 $private_key = (isset($creds->private_key)) ? $creds->private_key : '';
@@ -94,7 +96,7 @@
                 $mobile_server_key = (isset($creds->mobile_server_key)) ? $creds->mobile_server_key : '';
                 $access_code = (isset($creds->access_code)) ? $creds->access_code : '';
                 $enc_key = (isset($creds->enc_key)) ? $creds->enc_key : '';
-				$custom_url= (isset($creds->custom_url)) ? $creds->custom_url : '';
+                $custom_url = (isset($creds->custom_url)) ? $creds->custom_url : '';
                 $easypaisa_store_id = (isset($creds->easypaisa_store_id)) ? $creds->easypaisa_store_id : '';
                 $toyyibpay_api_key = (isset($creds->toyyibpay_api_key)) ? $creds->toyyibpay_api_key : '';
                 $toyyibpay_redirect_uri = (isset($creds->toyyibpay_redirect_uri)) ? $creds->toyyibpay_redirect_uri : '';
@@ -111,7 +113,7 @@
                 $openpay_private_key = (isset($creds->openpay_private_key)) ? $creds->openpay_private_key : '';
                 $openpay_public_key = (isset($creds->openpay_public_key)) ? $creds->openpay_public_key : '';
                 $openpay_verification_key = (isset($creds->openpay_verification_key)) ? $creds->openpay_verification_key : '';
-                
+
                 // azulpay
                 $azul_main_url = (isset($creds->azul_main_url)) ? $creds->azul_main_url : '';
                 $azul_alternate_url = (isset($creds->azul_alternate_url)) ? $creds->azul_alternate_url : '';
@@ -122,7 +124,7 @@
                 $azul_auth_header_two = (isset($creds->azul_auth_header_two)) ? $creds->azul_auth_header_two : '';
                 $azul_ssl_certificate = (isset($creds->azul_ssl_certificate)) ? $creds->azul_ssl_certificate : '';
                 $azul_ssl_key = (isset($creds->azul_ssl_key)) ? $creds->azul_ssl_key : '';
-                
+
                 // payway
                 $payway_main_url = (isset($creds->payway_main_url)) ? $creds->payway_main_url : '';
                 $payway_test_url = (isset($creds->payway_test_url)) ? $creds->payway_test_url : '';
@@ -138,7 +140,7 @@
                 $mtn_api_key = (isset($creds->api_key)) ? $creds->api_key : '';
                 $plugnpay_publisher_name = (isset($creds->plugnpay_publisher_name)) ? $creds->plugnpay_publisher_name : '';
 
-				//skip cash 
+				//skip cash
 				$skip_cash_client_id = (isset($creds->skip_cash_client_id)) ? $creds->skip_cash_client_id : '';
 				$skip_cash_api_secret = (isset($creds->skip_cash_api_secret)) ? $creds->skip_cash_api_secret : '';
 				$skip_cash_key_id = (isset($creds->skip_cash_key_id)) ? $creds->skip_cash_key_id : '';
@@ -149,7 +151,70 @@
 				$nmi_client_id = (isset($creds->nmi_client_id)) ? $creds->nmi_client_id : '';
 				$nmi_key_id = (isset($creds->nmi_key_id)) ? $creds->nmi_key_id : '';
 
+                // OBO Pay
+                $obo_business_name     = (isset($creds->obo_business_name)) ? $creds->obo_business_name : '';
+                $obo_client_id         = (isset($creds->obo_client_id)) ? $creds->obo_client_id : '';
+                $obo_key_id            = (isset($creds->obo_key_id)) ? $creds->obo_key_id : ''  ;
+                $obo_market_place_id   = (isset($creds->obo_market_place_id)) ? $creds->obo_market_place_id : '';
+                $obo_company_reference = (isset($creds->obo_company_reference)) ? $creds->obo_company_reference : '';
 
+                // Powertrans
+				$powertrans_id = (isset($creds->powertrans_id)) ? $creds->powertrans_id : '';
+				$powertrans_password = (isset($creds->powertrans_password)) ? $creds->powertrans_password : '';
+
+                // Pesapal
+				$pesapal_consumer_key = (isset($creds->pesapal_consumer_key)) ? $creds->pesapal_consumer_key : '';
+				$pesapal_consumer_secret = (isset($creds->pesapal_consumer_secret)) ? $creds->pesapal_consumer_secret : '';
+
+				// mpesa-safari
+				$mpesasafari_consumer_key = (isset($creds->mpesasafari_consumer_key)) ? $creds->mpesasafari_consumer_key : '';
+				$mpesasafari_consumer_secret = (isset($creds->mpesasafari_consumer_secret)) ? $creds->mpesasafari_consumer_secret : '';
+				$mpesasafari_shortcode = (isset($creds->mpesasafari_shortcode)) ? $creds->mpesasafari_shortcode : '';
+				$mpesasafari_webhook = (isset($creds->mpesasafari_webhook)) ? $creds->mpesasafari_webhook : '';
+
+                $livee_merchant_key=(isset($creds->livee_merchant_key))?$creds->livee_merchant_key: '';
+                  $livee_resource_key=(isset($creds->livee_resource_key))?$creds->livee_resource_key: '';
+                //Totalpay
+                $totalpay_MerchantId = (isset($creds->totalpay_MerchantId)) ? $creds->totalpay_MerchantId:'';
+				$totalpay_password = (isset($creds->totalpay_password)) ? $creds->totalpay_password:'';
+				//thawani payment Gateway
+				$thawani_Apikey=(isset($creds->thawani_Apikey))?$creds->thawani_Apikey: '';
+				$thawani_publishKey=(isset($creds->thawani_publishKey))?$creds->thawani_publishKey: '';
+
+
+				//icici payment Gateway
+				$icici_merchant_id = (isset($creds->icici_merchant_id)) ? $creds->icici_merchant_id : '';
+				$icici_sub_merchant_id = (isset($creds->icici_sub_merchant_id)) ? $creds->icici_sub_merchant_id : '';
+                $icici_merchant_name = (isset($creds->icici_merchant_name)) ? $creds->icici_merchant_name : '';
+				$icici_sub_merchant_name = (isset($creds->icici_sub_merchant_name)) ? $creds->icici_sub_merchant_name : '';
+				$icici_merchant_encryption_file = (isset($creds->icici_merchant_encryption_file)) ? $creds->icici_merchant_encryption_file : '';
+				$icici_merchant_key_file = (isset($creds->icici_merchant_key_file)) ? $creds->icici_merchant_key_file : '';
+
+                //mastercard payment gateway
+                $mastercard_merchant_id = (isset($creds->mastercard_merchant_id)) ? $creds->mastercard_merchant_id : '';
+                $mastercard_merchant_key = (isset($creds->mastercard_merchant_key)) ? $creds->mastercard_merchant_key : '';
+                $mastercard_operator_id = (isset($creds->mastercard_operator_id)) ? $creds->mastercard_operator_id : '';
+                $mastercard_gateway = (isset($creds->mastercard_gateway)) ? $creds->mastercard_gateway : '';
+                //hitpay payment Gateway
+                $hitpay_business_key =(isset($creds->hitpay_business_key))?$creds->hitpay_business_key:'';
+                $hitpay_salt_key=(isset($creds->hitpay_salt_key))?$creds->hitpay_salt_key:'';
+                //Orange pay payment Gateway
+				$orangepay_MerchantKey= (isset($creds->orangepay_MerchantKey)) ? $creds->orangepay_MerchantKey:'';
+				$orangepay_MerchantToken= (isset($creds->orangepay_MerchantToken)) ? $creds->orangepay_MerchantToken:'';
+                //Cyber source payment Gateway
+				$cyber_source_merchant_id= (isset($creds->cyber_source_merchant_id)) ? $creds->cyber_source_merchant_id:'';
+				$cyber_source_profile_id= (isset($creds->cyber_source_profile_id)) ? $creds->cyber_source_profile_id:'';
+				$cyber_source_access_key= (isset($creds->cyber_source_access_key)) ? $creds->cyber_source_access_key:'';
+				$cyber_source_secret_key= (isset($creds->cyber_source_secret_key)) ? $creds->cyber_source_secret_key:'';
+				$bill_to_address_line1= (isset($creds->bill_to_address_line1)) ? $creds->bill_to_address_line1:'';
+				$bill_to_address_city= (isset($creds->bill_to_address_city)) ? $creds->bill_to_address_city:'';
+				$bill_to_address_country= (isset($creds->bill_to_address_country)) ? $creds->bill_to_address_country:'';
+				$bill_to_address_state= (isset($creds->bill_to_address_state)) ? $creds->bill_to_address_state:'';
+				$bill_to_address_postal_code= (isset($creds->bill_to_address_postal_code)) ? $creds->bill_to_address_postal_code:'';
+
+				if(strtolower($opt->code) == 'obo') {
+					$opt->title = "O'Pay";
+				}
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -172,7 +237,7 @@
 									data-color="#43bee1" @if($opt->status == 1) checked @endif>
 							</div>
 						</div>
-						@if ( (strtolower($opt->code) != 'dpo') && (strtolower($opt->code)
+                        @if ( (strtolower($opt->code) != 'dpo') && (strtolower($opt->code)
 						!= 'cod') && (strtolower($opt->code) != 'razorpay') &&
 						(strtolower($opt->code) != 'simplify') &&
 						(strtolower($opt->code)!= 'kongapay') && (strtolower($opt->code)!=
@@ -184,15 +249,54 @@
 								<label for="" class="mr-0 d-block">{{ __('Sandbox') }}</label> <input
 									type="checkbox" data-id="{{$opt->id}}"
 									data-title="{{$opt->code}}" data-plugin="switchery"
-									name="sandbox[{{$opt->id}}]" class="chk_box"
+									name="sandbox[{{$opt->id}}]" class="chk_box sandbox-btn-{{$opt->code}}"
 									data-color="#43bee1" @if($opt->test_mode == 1) checked @endif>
 							</div>
 						</div>
 						@endif
 					</div>
 
+                    @if ((strtolower($opt->code) == 'mastercard'))
+                    <div class="mt-2" id="mastercard_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+						<div class="row">
+							<div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mastercard_merchant_id" class="mr-3">
+                                        {{ __('Merchant ID') }}
+                                    </label>
+                                    <input type="text" name="mastercard_merchant_id" id="mastercard_merchant_id" class="form-control"
+                                        value="{{ $mastercard_merchant_id }}" <?php if ($opt->status == 1) echo 'required' ?>>
+                                </div>
 
-					@if ( (strtolower($opt->code) == 'cod') )
+                                <div class="form-group mb-2">
+                                    <label for="mastercard_merchant_key" class="mr-3">
+                                        {{ __('Merchant Key') }}
+                                    </label>
+                                    <input type="password" name="mastercard_merchant_key" id="mastercard_merchant_key" class="form-control"
+                                        value="{{ $mastercard_merchant_key }}" <?php if ($opt->status == 1) echo 'required' ?>>
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label for="mastercard_operator_id" class="mr-3">
+                                        {{ __('Operator ID') }}
+                                    </label>
+
+                                    <input type="text" name="mastercard_operator_id" id="mastercard_operator_id" class="form-control"
+                                        value="{{ $mastercard_operator_id }}" <?php if ($opt->status == 1 && $opt->test_mode == 1) echo 'required' ?>>
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label for="mastercard_gateway" class="mr-3">
+                                        {{ __('Mastercard Gateway') }}
+                                    </label>
+
+                                    <input type="text" name="mastercard_gateway" id="mastercard_gateway" class="form-control"
+                                        value="{{ $mastercard_gateway }}" <?php if ($opt->status == 1) echo 'required' ?>>
+                                </div>
+							</div>
+						</div>
+                    </div>
+                    @endif @if ( (strtolower($opt->code) == 'cod') )
 					<div class="mt-2" id="cod_fields_wrapper" @if($opt->
 						status != 1) style="display:none" @endif>
 						<div class="row">
@@ -303,11 +407,11 @@
 								</div>
 							</div>
 							<div class="col-12">
-								<label>{{__('Custom Url')}}</label>
-								<select class="form-control" name="custom_url" id="url">
+								<label>{{__('Custom Url')}}</label> <select class="form-control"
+									name="custom_url" id="url">
 									<option value="com">.com</option>
 
-									<option value="ae" @if($custom_url=="ae")selected @endif >.ae</option>
+									<option value="ae" @if($custom_url== "ae")selected @endif>.ae</option>
 								</select>
 							</div>
 						</div>
@@ -353,6 +457,15 @@
 										__("Publishable Key") }}</label> <input type="password"
 										name="stripe_publishable_key" id="stripe_publishable_key"
 										class="form-control" value="{{$publishable_key}}" @if($opt->status
+									== 1) required @endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="stripe_webhook_signature" class="mr-3">{{
+										__("Webhook_signature") }}</label> <input type="password"
+										name="stripe_webhook_signature" id="stripe_webhook_signature"
+										class="form-control" value="{{$webhook_signature}}" @if($opt->status
 									== 1) required @endif>
 								</div>
 							</div>
@@ -1449,7 +1562,7 @@
 							</div>
 
 							<div
-								class="col-12 @if(empty($mtn_api_key)) d-none @else d-block @endif"
+								class="col-12 @if(empty($mtn_api_key) && $opt->test_mode == 1) d-none @else d-block @endif"
 								id="api_key_frm">
 								<div class="form-group mb-2">
 									<label for="reference_id" class="mr-3">{{ __("Api Key") }}</label>
@@ -1460,7 +1573,8 @@
 								</div>
 							</div>
 
-							<div class="form-group mb-2 mx-auto">
+							<div
+								class="form-group mb-2 mx-auto @if($opt->test_mode == 1) d-block @else d-none @endif">
 								<a class="btn btn-primary" id="generate_mtn_momo_api_key"
 									href="javascript:void(0)">Generate Api Key</a>
 							</div>
@@ -1555,8 +1669,8 @@
 									<label for="azul_ssl_certificate" class="mr-3">{{ __("SSL
 										Certificate") }}</label> <input type="file"
 										name="azul_ssl_certificate" id="azul_ssl_certificate"
-										class="form-control" @if($azul_ssl_certificate==
-										'' && ($opt->status == 1)) required @endif>
+										class="form-control" @if($azul_ssl_certificate== '' && ($opt->status
+									== 1)) required @endif>
 									<p class="font-weight-bold">{{@$azul_ssl_certificate}}</p>
 								</div>
 							</div>
@@ -1565,15 +1679,16 @@
 								<div class="form-group mb-2">
 									<label for="azul_ssl_key" class="mr-3">{{ __("SSL Key") }}</label>
 									<input type="file" name="azul_ssl_key" id="azul_ssl_key"
-										class="form-control" @if($azul_ssl_key== '' && ($opt->status == 1)) required @endif>
+										class="form-control" @if($azul_ssl_key== '' && ($opt->status
+									== 1)) required @endif>
 									<p class="font-weight-bold">{{@$azul_ssl_key}}</p>
 								</div>
 							</div>
 
 						</div>
 					</div>
-					
-					@endif @if ( (strtolower($opt->code) == 'payway') )
+					@endif
+					@if ( (strtolower($opt->code) == 'payway') )
 					<div class="mt-2" id="payway_fields_wrapper" @if($opt->
 						status != 1) style="display:none" @endif>
 						<div class="row">
@@ -1597,30 +1712,26 @@
 
 							<div class="col-12">
 								<div class="form-group mb-2">
-									<label for="payway_merchant_id" class="mr-3">{{ __("Merchant ID")
-										}}</label> <input type="text" name="payway_merchant_id"
+									<label for="payway_merchant_id" class="mr-3">{{ __("Merchant
+										ID") }}</label> <input type="text" name="payway_merchant_id"
 										id="payway_merchant_id" class="form-control"
-										value="{{$payway_merchant_id}}" @if($opt->status == 1) required
-									@endif>
+										value="{{$payway_merchant_id}}" @if($opt->status == 1)
+									required @endif>
 								</div>
 							</div>
 
 							<div class="col-12">
 								<div class="form-group mb-2">
-									<label for="payway_api_key" class="mr-3">{{ __("Api Key")
-										}}</label> <input type="text" name="payway_api_key"
-										id="payway_api_key" class="form-control"
-										value="{{$payway_api_key}}" @if($opt->status == 1) required
-									@endif>
+									<label for="payway_api_key" class="mr-3">{{ __("Api Key") }}</label>
+									<input type="text" name="payway_api_key" id="payway_api_key"
+										class="form-control" value="{{$payway_api_key}}" @if($opt->status
+									== 1) required @endif>
 								</div>
 							</div>
 
 						</div>
 					</div>
-					
 					@endif
-
-
 					 @if ( (strtolower($opt->code) == 'skip_cash') )
                     <div class="mt-2" id="skip_cash_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">
@@ -1657,6 +1768,24 @@
                         </div>
                     </div>
                     @endif
+					@if ( (strtolower($opt->code) == 'data_trans') )
+                    <div class="mt-2" id="data_trans_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="data_trans_merchant_id" class="mr-3">{{ __("Merchant ID") }}</label>
+                                    <input type="text" name="data_trans_merchant_id" id="data_trans_merchant_id" class="form-control" value="{{$merchant_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="data_trans_password" class="mr-3">{{ __("Password") }}</label>
+                                    <input type="password" name="data_trans_password" id="data_trans_password" class="form-control" value="{{$password}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
 
 					@if ( (strtolower($opt->code) == 'nmi') )
                     <div class="mt-2" id="nmi_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
@@ -1673,11 +1802,380 @@
                                     <input type="password" name="nmi_key_id" id="nmi_key_id" class="form-control" value="{{$nmi_key_id}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
-                            
-							 
                         </div>
                     </div>
                     @endif
+
+{{-- Name changes --}}
+					@if ( (strtolower($opt->code) == 'obo') )
+						@php
+							$gateway="O'Pay";
+						@endphp
+					@endif
+                    @if ( (strtolower($opt->code) == 'obo') )
+					@php
+						$gateway="O'Pay";
+					@endphp
+                    <div class="mt-2" id="obo_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="obo_business_name" class="mr-3">{{$gateway}}{{ __(" BUSINESS NAME") }}</label>
+                                    <input type="text" name="obo_business_name" id="obo_business_name" class="form-control" value="{{$obo_business_name}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="obo_client_id" class="mr-3">{{$gateway}}{{ __(" CLIENT ID") }}</label>
+                                    <input type="number" name="obo_client_id" id="obo_client_id" class="form-control" value="{{$obo_client_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+							 <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="obo_key_id" class="mr-3">{{$gateway}}{{ __(" CLIENT KEY") }}</label>
+                                    <input type="text" name="obo_key_id" id="obo_key_id" class="form-control" value="{{$obo_key_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="obo_market_place_id." class="mr-3">{{$gateway}}{{ __(" MARKET PLACE ID") }}</label>
+                                    <input type="text" name="obo_market_place_id" id="obo_market_place_id" class="form-control" value="{{$obo_market_place_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="obo_company_reference" class="mr-3">{{ $gateway }}{{ __(" COMPANY REFERENCE ID") }}</label>
+                                    <input type="text" name="obo_company_reference" id="obo_company_reference" class="form-control" value="{{ $obo_company_reference }}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+			    @if ( (strtolower($opt->code) == 'mpesasafari') )
+					<div class="mt-2" id="mpesasafari_fields_wrapper" @if($opt->
+						status != 1) style="display:none" @endif>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="mpesasafari_consumer_key" class="mr-3">{{ __("Consumer Key") }}</label>
+									<input type="text" name="mpesasafari_consumer_key" id="mpesasafari_consumer_key"
+										class="form-control" value="{{$mpesasafari_consumer_key}}" @if($opt->status
+									== 1) required @endif>
+								</div>
+							</div>
+
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="mpesasafari_consumer_secret" class="mr-3">{{ __("Consumer Secret") }}</label>
+									<input type="text" name="mpesasafari_consumer_secret" id="mpesasafari_consumer_secret"
+										class="form-control" value="{{$mpesasafari_consumer_secret}}" @if($opt->status
+									== 1) required @endif>
+								</div>
+							</div>
+
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="mpesasafari_shortcode" class="mr-3">{{ __("Shortcode") }}</label> <input type="text" name="mpesasafari_shortcode"
+										id="mpesasafari_shortcode" class="form-control"
+										value="{{$mpesasafari_shortcode}}" @if($opt->status == 1)
+									required @endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="mpesasafari_webhook" class="mr-3">{{ __("Webhook Url") }}</label> <input type="text" name="mpesasafari_webhook"
+										id="mpesasafari_webhook" class="form-control"
+										value="{{$mpesasafari_webhook}}" @if($opt->status == 1)
+									required @endif>
+								</div>
+							</div>
+
+						</div>
+					</div>
+					@endif
+
+					@if ( (strtolower($opt->code) == 'powertrans') )
+                    <div class="mt-2" id="powertrans_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="powertrans_id" class="mr-3">{{ __("POWERTRANS ID") }}</label>
+                                    <input type="password" name="powertrans_id" id="powertrans_id" class="form-control" value="{{$powertrans_id}}" @if($opt->status == 1) required @endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="powertrans_password" class="mr-3">{{ __("POWERTRANS PASSWORD") }}</label>
+									<input type="password" name="powertrans_password" id="powertrans_password" class="form-control" value="{{$powertrans_password}}" @if($opt->status == 1) required @endif>
+								</div>
+							</div>
+						</div>
+					</div>
+					@endif
+
+					@if ( (strtolower($opt->code) == 'pesapal') )
+                    <div class="mt-2" id="pesapal_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="pesapal_consumer_key" class="mr-3">{{ __("PESAPAL CONSUMER KEY") }}</label>
+                                    <input type="password" name="pesapal_consumer_key" id="pesapal_consumer_key" class="form-control" value="{{$pesapal_consumer_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+							 <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="pesapal_consumer_secret" class="mr-3">{{ __("PESAPAL CONSUMER SECRET") }}</label>
+                                    <input type="password" name="pesapal_consumer_secret" id="pesapal_consumer_secret" class="form-control" value="{{$pesapal_consumer_secret}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+
+					@if ( (strtolower($opt->code) == 'livee') )
+                    <div class="mt-2" id="livee_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="livee_consumer_key" class="mr-3">{{ __("LIVEES MERCHANT KEY") }}</label>
+                                    <input type="password" name="livee_merchant_key" id="livee_merchant_key" class="form-control" value="{{$livee_merchant_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+							 <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="livee_consumer_secret" class="mr-3">{{ __("LIVEES RESOURCE KEY") }}</label>
+                                    <input type="password" name="livee_resource_key" id="livee_resource_key" class="form-control" value="{{$livee_resource_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    @if ( (strtolower($opt->code) == 'hitpay') )
+                    <div class="mt-2" id="hitpay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="hitpay_business_key" class="mr-3">{{ __("HITPAY BUSINESS KEY") }}</label>
+                                    <input type="password" name="hitpay_business_key" id="hitpay_business_key" class="form-control" value="{{$hitpay_business_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+							 <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="hitpay_salt_key" class="mr-3">{{ __("HITPAY SALT KEY") }}</label>
+                                    <input type="password" name="hitpay_salt_key" id="hitpay_salt_key" class="form-control" value="{{$hitpay_salt_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+					@if((strtolower($opt->code) == 'orange_pay'))
+						<div class="mt-2" id="orange_pay_fields_wrapper" @if($opt->
+							status != 1) style="display:none" @endif>
+							<div class="row">
+							<div class="col-12">
+									<div class="form-group mb-2">
+										<label for="orange_pay_MerchantKey" class="mr-3">{{ __("Merchant Key") }}</label>
+										<input type="text" name="orangepay_MerchantKey" id="orange_pay_MerchantKey"
+											class="form-control" value="{{$orangepay_MerchantKey}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+									<div class="form-group mb-2">
+										<label for="orange_pay_MerchantToken" class="mr-3">{{ __("Bearer Token") }}</label>
+										<input type="text" name="orangepay_MerchantToken" id="orange_pay_MerchantToken"
+											class="form-control" value="{{$orangepay_MerchantToken}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+								</div>
+							</div>
+						</div>
+					@endif
+
+					@if((strtolower($opt->code) == 'cyber_source'))
+						<div class="mt-2" id="cyber_source_fields_wrapper" @if($opt->
+							status != 1) style="display:none" @endif>
+							<div class="row">
+							<div class="col-12">
+									<div class="form-group mb-2">
+										<label for="cyber_source_merchant_id" class="mr-3">{{ __("Merchant Id") }}</label>
+										<input type="text" name="cyber_source_merchant_id" id="cyber_source_merchant_id"
+											class="form-control" value="{{$cyber_source_merchant_id}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+									<div class="form-group mb-2">
+										<label for="cyber_source_profile_id" class="mr-3">{{ __("Profile Id") }}</label>
+										<input type="text" name="cyber_source_profile_id" id="cyber_source_profile_id"
+											class="form-control" value="{{$cyber_source_profile_id}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+									<div class="form-group mb-2">
+										<label for="cyber_source_access_key" class="mr-3">{{ __("Access Key") }}</label>
+										<input type="text" name="cyber_source_access_key" id="cyber_source_access_key"
+											class="form-control" value="{{$cyber_source_access_key}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+									<div class="form-group mb-2">
+										<label for="cyber_source_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+										<input type="password" name="cyber_source_secret_key" id="cyber_source_secret_key"
+											class="form-control" value="{{$cyber_source_secret_key}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+									<div class="form-group mb-2">
+										<label for="bill_to_address_line1" class="mr-3">{{ __("Bill address") }}</label>
+										<input type="text" name="bill_to_address_line1" id="bill_to_address_line1"
+											class="form-control" value="{{$bill_to_address_line1}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+									<div class="form-group mb-2">
+										<label for="bill_to_address_city" class="mr-3">{{ __("Bill city") }}</label>
+										<input type="text" name="bill_to_address_city" id="bill_to_address_city"
+											class="form-control" value="{{$bill_to_address_city}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+									<div class="form-group mb-2">
+										<label for="bill_to_address_country" class="mr-3">{{ __("Bill country") }}</label>
+										<input type="text" name="bill_to_address_country" id="bill_to_address_country"
+											class="form-control" value="{{$bill_to_address_country}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+									<div class="form-group mb-2">
+										<label for="bill_to_address_state" class="mr-3">{{ __("Bill state") }}</label>
+										<input type="text" name="bill_to_address_state" id="bill_to_address_state"
+											class="form-control" value="{{$bill_to_address_state}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+									<div class="form-group mb-2">
+										<label for="bill_to_address_postal_code" class="mr-3">{{ __("Bill zip code") }}</label>
+										<input type="text" name="bill_to_address_postal_code" id="bill_to_address_postal_code"
+											class="form-control" value="{{$bill_to_address_postal_code}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+								</div>
+							</div>
+						</div>
+					@endif
+
+                    @if ( (strtolower($opt->code) == 'totalpay') )
+						<div class="mt-2" id="totalpay_fields_wrapper" @if($opt->
+							status != 1) style="display:none" @endif>
+							<div class="row">
+							<div class="col-12">
+									<div class="form-group mb-2">
+										<label for="totalpay_MerchantId" class="mr-3">{{ __("Merchant ID") }}</label>
+										<input type="text" name="totalpay_MerchantId" id="totalpay_MerchantId"
+											class="form-control" value="{{$totalpay_MerchantId}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+								</div>
+
+								<div class="col-12">
+									<div class="form-group mb-2">
+										<label for="totalpay_password" class="mr-3">{{ __("Password") }}</label>
+										<input type="text" name="totalpay_password" id="totalpay_password"
+											class="form-control" value="{{$totalpay_password}}" @if($opt->status
+										== 1) required @endif>
+									</div>
+								</div>
+							</div>
+						</div>
+                    @endif
+					@if ((strtolower($opt->code) == 'thawani') )
+							<div class="mt-2" id="thawani_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+								<div class="row">
+									<div class="col-12">
+										<div class="form-group mb-2">
+											<label for="thawani_Apikey" class="mr-3">{{ __("Secret Key") }}</label>
+												<input type="password" name="thawani_Apikey" id="thawani_Apikey" class="form-control" value="{{$thawani_Apikey}}" @if($opt->status == 1) required @endif>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-12">
+										<div class="form-group mb-2">
+											<label for="thawani_publishKey" class="mr-3">{{ __("Publishable Key") }}</label>
+												<input type="password" name="thawani_publishKey" id="thawani_publishKey" class="form-control" value="{{$thawani_publishKey}}" @if($opt->status == 1) required @endif>
+										</div>
+									</div>
+								</div>
+
+							</div>
+					@endif
+
+					@if ((strtolower($opt->code) == 'icici') )
+					<div class="mt-2" id="icici_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="icici_merchant_id" class="mr-3">{{ __("Merchant Id")
+										}}</label> <input type="text" name="icici_merchant_id"
+										id="icici_merchant_id" class="form-control"
+										value="{{$icici_merchant_id}}" @if($opt->status == 1) required @endif>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="icici_sub_merchant_id" class="mr-3">{{ __("Sub Merchant Id")
+										}}</label> <input type="text" name="icici_sub_merchant_id"
+										id="icici_sub_merchant_id" class="form-control"
+										value="{{$icici_sub_merchant_id}}" @if($opt->status == 1) required
+									@endif>
+								</div>
+							</div>
+						</div>
+                        <div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="icici_merchant_name" class="mr-3">{{ __("Merchant Name")
+										}}</label> <input type="text" name="icici_merchant_name"
+										id="icici_merchant_name" class="form-control"
+										value="{{$icici_merchant_name}}" @if($opt->status == 1) required @endif>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="icici_sub_merchant_name" class="mr-3">{{ __("Sub Merchant Name")
+										}}</label> <input type="text" name="icici_sub_merchant_name"
+										id="icici_sub_merchant_name" class="form-control"
+										value="{{$icici_sub_merchant_name}}" @if($opt->status == 1) required
+									@endif>
+								</div>
+							</div>
+						</div>
+
+                        <div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="icici_merchant_encryption_file" class="mr-3">{{ __("Merchant Encryption File")
+										}}</label> <input type="text" name="icici_merchant_encryption_file"
+										id="icici_merchant_encryption_file" class="form-control"
+										value="{{$icici_merchant_encryption_file}}" @if($opt->status == 1) required
+									@endif>
+								</div>
+							</div>
+						</div>
+
+                        <div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="icici_merchant_key_file" class="mr-3">{{ __("Sub Merchant Key File")
+										}}</label> <input type="text" name="icici_merchant_key_file"
+										id="icici_merchant_key_file" class="form-control"
+										value="{{$icici_merchant_key_file}}" @if($opt->status == 1) required
+									@endif>
+								</div>
+							</div>
+						</div>
+					</div>
+					@endif
+
+
+
 
 				</div>
 			</div>
@@ -1700,6 +2198,7 @@
 		</div>
 		<div class="row">
 			@foreach($payoutOption as $key => $opt)
+
 			<div class="col-6 col-md-3 col-xl-2 mb-3">
 
 				<input type="hidden" name="method_id[]" id="{{$opt->id}}"
@@ -1713,119 +2212,160 @@
                 $multiplier = (isset($creds->multiplier)) ? $creds->multiplier : '';
                 $publishable_key = (isset($creds->publishable_key)) ? $creds->publishable_key : '';
                 $client_id = (isset($creds->client_id)) ? $creds->client_id : '';
+				if(strtolower($opt->code) == 'obo') {
+					$opt->title = "O'Pay";
+				}
                 ?>
 
                 <div class="card-box h-100">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h4 class="header-title mb-0"> <span class="alPaymentImage" style="height:24px;width:24px;display:inline-block;"> <img style="width:100%;" src="{{asset('paymentsLogo/'.$opt->code.'.png')}}" alt=""></span>  {{$opt->title}}</h4>
-                    </div>
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="form-group mb-0 switchery-demo">
-                                <label for="" class="mr-0 d-block">{{ __("Enable") }}</label>
-                                <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box payout_all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
-                            </div>
-                        </div>
-                        @if ( (strtolower($opt->code) != 'cash') )
-                        <div class="col-6">
-                            <div class="form-group mb-0 switchery-demo">
-                                <label for="" class="mr-0 d-block">{{ __('Sandbox') }}</label>
-                                <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="sandbox[{{$opt->id}}]" class="chk_box" data-color="#43bee1" @if($opt->test_mode == 1) checked @endif>
-                            </div>
-                        </div>
-                        @endif
-                    </div>
+					<div class="d-flex align-items-center justify-content-between mb-2">
+						<h4 class="header-title mb-0">
+							<span class="alPaymentImage"
+								style="height: 24px; width: 24px; display: inline-block;"> <img
+								style="width: 100%;"
+								src="{{asset('paymentsLogo/'.$opt->code.'.png')}}" alt=""></span>
+							{{$opt->title}}
+						</h4>
+					</div>
+					<div class="row">
+						<div class="col-6">
+							<div class="form-group mb-0 switchery-demo">
+								<label for="" class="mr-0 d-block">{{ __("Enable") }}</label> <input
+									type="checkbox" data-id="{{$opt->id}}"
+									data-title="{{$opt->code}}" data-plugin="switchery"
+									name="active[{{$opt->id}}]" class="chk_box payout_all_select"
+									data-color="#43bee1" @if($opt->status == 1) checked @endif>
+							</div>
+						</div>
+						@if ( (strtolower($opt->code) != 'cash') )
+						<div class="col-6">
+							<div class="form-group mb-0 switchery-demo">
+								<label for="" class="mr-0 d-block">{{ __('Sandbox') }}</label> <input
+									type="checkbox" data-id="{{$opt->id}}"
+									data-title="{{$opt->code}}" data-plugin="switchery"
+									name="sandbox[{{$opt->id}}]" class="chk_box"
+									data-color="#43bee1" @if($opt->test_mode == 1) checked @endif>
+							</div>
+						</div>
+						@endif
+					</div>
 
-                    @if ( (strtolower($opt->code) == 'stripe') )
-                    <div class="mt-2" id="stripe_payout_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="stripe_payout_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
-                                    <input type="password" name="stripe_payout_secret_key" id="stripe_payout_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="stripe_payout_publishable_key" class="mr-3">{{ __("Publishable Key") }}</label>
-                                    <input type="password" name="stripe_payout_publishable_key" id="stripe_payout_publishable_key" class="form-control" value="{{$publishable_key}}" @if($opt->status == 1) required @endif>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="stripe_payout_client_id" class="mr-3">{{ __("Client ID") }}</label>
-                                    <input type="password" name="stripe_payout_client_id" id="stripe_payout_client_id" class="form-control" value="{{$client_id}}" @if($opt->status == 1) required @endif>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
+					@if ( (strtolower($opt->code) == 'stripe') )
+					<div class="mt-2" id="stripe_payout_fields_wrapper" @if($opt->
+						status != 1) style="display:none" @endif>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="stripe_payout_secret_key" class="mr-3">{{
+										__("Secret Key") }}</label> <input type="password"
+										name="stripe_payout_secret_key" id="stripe_payout_secret_key"
+										class="form-control" value="{{$secret_key}}" @if($opt->status
+									== 1) required @endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="stripe_payout_publishable_key" class="mr-3">{{
+										__("Publishable Key") }}</label> <input type="password"
+										name="stripe_payout_publishable_key"
+										id="stripe_payout_publishable_key" class="form-control"
+										value="{{$publishable_key}}" @if($opt->status == 1) required
+									@endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="stripe_payout_client_id" class="mr-3">{{ __("Client
+										ID") }}</label> <input type="password"
+										name="stripe_payout_client_id" id="stripe_payout_client_id"
+										class="form-control" value="{{$client_id}}" @if($opt->status
+									== 1) required @endif>
+								</div>
+							</div>
+						</div>
+					</div>
+					@endif @if ( (strtolower($opt->code) == 'pagarme') )
+					<div class="mt-2" id="pagarme_payout_fields_wrapper" @if($opt->
+						status != 1) style="display:none" @endif>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="pagarme_payout_api_key" class="mr-3">{{ __("API
+										Key") }}</label> <input type="text"
+										name="pagarme_payout_api_key" id="pagarme_payout_api_key"
+										class="form-control" value="{{$api_key}}" @if($opt->status ==
+									1) required @endif>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="pagarme_payout_secret_key" class="mr-3">{{
+										__("Secret Key") }}</label> <input type="password"
+										name="pagarme_payout_secret_key"
+										id="pagarme_payout_secret_key" class="form-control"
+										value="{{$secret_key}}" @if($opt->status == 1) required
+									@endif>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="pagarme_payout_multiplier" class="mr-3">{{
+										__("Multiplier") }}</label> <input type="number"
+										name="pagarme_payout_multiplier"
+										id="pagarme_payout_multiplier" class="form-control"
+										value="{{$multiplier}}" step="0.01" @if($opt->status == 1)
+									required @endif>
+								</div>
+							</div>
+						</div>
+					</div>
+					@endif @if ( (strtolower($opt->code) == 'razorpay') )
 
-                    @if ( (strtolower($opt->code) == 'pagarme') )
-                    <div class="mt-2" id="pagarme_payout_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="pagarme_payout_api_key" class="mr-3">{{ __("API Key") }}</label>
-                                    <input type="text" name="pagarme_payout_api_key" id="pagarme_payout_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="pagarme_payout_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
-                                    <input type="password" name="pagarme_payout_secret_key" id="pagarme_payout_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="pagarme_payout_multiplier" class="mr-3">{{ __("Multiplier") }}</label>
-                                    <input type="number" name="pagarme_payout_multiplier" id="pagarme_payout_multiplier" class="form-control" value="{{$multiplier}}" step="0.01" @if($opt->status == 1) required @endif>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
+					<div class="2" id="razorpay_payout_fields_wrapper" @if($opt->
+						status != 1) style="display:none" @endif>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="razorpay_payout_api_key" class="mr-3">{{ __("API
+										Key") }}</label> <input type="text"
+										name="razorpay_payout_api_key" id="razorpay_payout_api_key"
+										class="form-control" value="{{$api_key}}" @if($opt->status ==
+									1) required @endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="razorpay_payout_secret_key" class="mr-3">{{ __("API
+										Secret Key") }}</label> <input type="text"
+										name="razorpay_payout_secret_key"
+										id="razorpay_payout_secret_key" class="form-control"
+										value="{{$secret_key}}" @if($opt->status == 1) required
+									@endif>
+								</div>
+							</div>
 
-
-                    @if ( (strtolower($opt->code) == 'razorpay') )
-					
-                    <div class="2" id="razorpay_payout_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="razorpay_payout_api_key" class="mr-3">{{ __("API Key") }}</label>
-                                    <input type="text" name="razorpay_payout_api_key" id="razorpay_payout_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group mb-2">
-                                    <label for="razorpay_payout_secret_key" class="mr-3">{{ __("API Secret Key") }}</label>
-                                    <input type="text" name="razorpay_payout_secret_key" id="razorpay_payout_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
-                                </div>
-                            </div>
-
-                            <h6 class="mt-3">
-                                <span>{{ __('Webhook Url') }} : </span>
-                                <a href="javascript:;" class="webhook_url"><span id="pwd_spn" class="password-span">{{route('payment.razorpay.payout.notify')}}</span></a>
-                            </h6>
-                        </div>
-                    </div>
-                    @endif
+							<h6 class="mt-3">
+								<span>{{ __('Webhook Url') }} : </span> <a href="javascript:;"
+									class="webhook_url"><span id="pwd_spn" class="password-span">{{route('payment.razorpay.payout.notify')}}</span></a>
+							</h6>
+						</div>
+					</div>
+					@endif
 
 
 
 
 
-                </div>
-            </div>
-            @endforeach
-        </div>
-    </form>
-@endif
+				</div>
+			</div>
+			@endforeach
+		</div>
+	</form>
+	@endif
 
 </div>
 
@@ -1914,6 +2454,13 @@
 
 
     $( "#mtn_momo_fields_wrapper" ).delegate( "#generate_mtn_momo_api_key", "click", function() {
+    	if($("#api_key").val() != ''){
+    		if(!confirm('Are you sure, you want to generate new API key? If yes, you might need to generate reference ID first. It is recommended to do this is in sandbox environment only.')){
+    			return false;
+    		}
+    	}
+
+    	let sandboxCheckbox = $(this).parents('#mtn_momo_fields_wrapper').siblings('.row').children().eq(1).find('input[type="checkbox"]').is(":checked");
         var subscription_key    = $("#subscription_key").val();
         var reference_id        = $("#reference_id").val();
         if(subscription_key == ''){
@@ -1932,7 +2479,7 @@
             $.ajax({
                type:'POST',
                url:"{{ route('payoption.mtn_momo_api_key') }}",
-               data: {'_token': "{{ csrf_token() }}",'subscription_key':subscription_key,'reference_id':reference_id},
+               data: {'_token': "{{ csrf_token() }}",'subscription_key':subscription_key,'reference_id':reference_id,'sandboxCheckbox':sandboxCheckbox},
                success:function(respones) {
                   var obj = jQuery.parseJSON(respones);
                   //console.log(obj.status);
@@ -1966,6 +2513,21 @@
                }
             });
         }
+    });
+
+    //For MTN Momo
+    $(document).on('change', '.sandbox-btn-mtn_momo', function(e){
+    	let subscriptionKey = $("#subscription_key").val();
+    	let referenceId = $("#reference_id").val();
+    	let apiKey = $("#api_key").val();
+		$('#payment_48').find('input[type="text"]').val('')
+		if(!$(this).is(":checked")){
+			$('#payment_48 #api_key').attr('readonly',false)
+			$("#generate_mtn_momo_api_key").parent().removeClass('d-block').addClass('d-none');
+    	}else{
+			$('#payment_48 #api_key').attr('readonly',true)
+    		$("#generate_mtn_momo_api_key").parent().removeClass('d-none').addClass('d-block');
+    	}
     });
 
 </script>

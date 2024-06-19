@@ -180,6 +180,8 @@ class WebStylingController extends BaseController{
             $client_preferences->show_qr_on_footer = $request->show_qr_on_footer == 'on' ? 1 : 0;
             $client_preferences->age_restriction_title = $request->age_restriction_title;
             $client_preferences->site_top_header_color = $request->site_top_header_color;
+            $client_preferences->dashboard_theme_color = $request->dashboard_theme_color;
+
             $client_preferences->save();
         }
 
@@ -419,19 +421,21 @@ class WebStylingController extends BaseController{
      * @return \Illuminate\Http\Response
      */
     public function updateWebStylesNew(Request $request){
-        // dd($request->all());
-        foreach ($request->home_labels as $key => $value) {
-            $home_translation = CabBookingLayoutTranslation::where('language_id', $request->languages[$key])->where('cab_booking_layout_id', $request->home_labels[$key])->first();
-            if (!$home_translation) {
-                $home_translation = new CabBookingLayoutTranslation();
+        if($request->has('home_labels')){
+            foreach (@$request->home_labels as $key => $value) {
+                $home_translation = CabBookingLayoutTranslation::where('language_id', $request->languages[$key])->where('cab_booking_layout_id', $request->home_labels[$key])->first();
+                if (!$home_translation) {
+                    $home_translation = new CabBookingLayoutTranslation();
+                }
+                $home_translation->title = $request->names[$key];
+                $home_translation->cab_booking_layout_id  = $request->home_labels[$key];
+                $home_translation->language_id = $request->languages[$key];
+                $home_translation->save();
+
+
             }
-            $home_translation->title = $request->names[$key];
-            $home_translation->cab_booking_layout_id  = $request->home_labels[$key];
-            $home_translation->language_id = $request->languages[$key];
-            $home_translation->save();
-
-
         }
+
         if(@$request->product_category){
             $this->updateSingleCategoryProductsToDb($request);
         }
@@ -440,8 +444,7 @@ class WebStylingController extends BaseController{
         {
             //For webside type = 0
             $this->updateSelectedProductstoDb($home_translation->cab_booking_layout_id,$request,'0');
-        }  
-        
+        }
 
         foreach ($request->pickup_labels as $key => $value) {
 
@@ -505,6 +508,16 @@ class WebStylingController extends BaseController{
                 $cate->banner_image_url  = $url;
                 $cate->type  = 1;
                 $cate->save();
+            }
+
+            if(isset($request->banner_url[$value]) && !empty($request->banner_url[$value])){
+                CabBookingLayoutBanner::updateOrCreate(
+                    ['cab_booking_layout_id' => $value],
+                    [
+                        'banner_url' => $request->banner_url[$value],
+                        'type' => 1
+                    ]
+                );
             }
         }
 

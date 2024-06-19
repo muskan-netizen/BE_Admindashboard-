@@ -871,9 +871,6 @@ class TempCartController extends FrontController
                     "priority" => "high"
                 ];
                $res  = sendFcmCurlRequest($data,$client_preferences->fcm_server_key);
-             //  pr( $res);
-               \Log::info('sendEditedOrderPushNotification sendFcmCurlRequest ');
-               \Log::info($res);
             }
         }
     }
@@ -1676,7 +1673,7 @@ class TempCartController extends FrontController
 
                 $cart_dinein_table_id = $vendorData->vendor_dinein_table_id;
 
-                if (($action != 'delivery') &&( $is_service_product_price_from_dispatch!=1))  {
+                if (($action != 'delivery') && (@$is_service_product_price_from_dispatch!=1))  {
                     $vendor_details['vendor_address'] = $vendorData->vendor->select('id', 'latitude', 'longitude', 'address')->where('id', $vendorData->vendor_id)->first();
                     if ($action == 'dine_in') {
                         $vendor_tables = VendorDineinTable::where('vendor_id', $vendorData->vendor_id)->with('category')->get();

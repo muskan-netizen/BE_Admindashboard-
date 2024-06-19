@@ -134,7 +134,7 @@ $pages = \App\Models\Page::with([
                                     @if (Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                                         <li>
                                             <a href="{{ route('client.dashboard') }}"
-                                                data-lng="en">{{ __('Control Panel') }}</a>
+                                                data-lng="en">{{getNomenclatureName('Control Panel', true)}}</a>
                                         </li>
                                     @endif
                                     <li>
@@ -179,7 +179,7 @@ $pages = \App\Models\Page::with([
                                                             @if(Auth::user())
                                                                 @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                                                                 <li>
-                                                                    <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                                                                    <a href="{{route('client.dashboard')}}" data-lng="en">{{getNomenclatureName('Control Panel', true)}}</a>
                                                                 </li>
                                                                 @endif
                                                                 <li>
@@ -285,6 +285,14 @@ $pages = \App\Models\Page::with([
 
                                     <div class="col-2 d-flex justify-content-end align-items-center">
                                         <div class="onhover-div pl-0 ml-xl-3 ml-lg-1 shake-effect d-block d-md-none">
+                                            <div class="d-flex">
+                                                @if( Session::get('vendorType') == 'p2p' )
+                                                <li class="add_post pr-2"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn">
+                                                    <span>
+                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                        {{ __('') }}</span>
+                                                    </a></li>
+                                            @endif
                                             @if($client_preference_detail) @if($client_preference_detail->cart_enable==1)
                                             <a class="addToCardBtn d-flex align-items-center " href="{{route('showCart')}}">
                                                 <i class="fa fa-shopping-cart mr-1 " aria-hidden="true"></i>
@@ -292,6 +300,7 @@ $pages = \App\Models\Page::with([
                                             </a> @endif @endif
                                             <script type="text/template" id="header_cart_template"> <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{__('Subtotal')}}: <span id='totalCart'>{{Session::get('currencySymbol')}}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{__('View Cart')}}</a> </script>
                                             <ul class="show-div shopping-cart " id="header_cart_main_ul"></ul>
+                                        </div>
                                         </div>
                                     </div>
                                 </div>
@@ -332,6 +341,18 @@ $pages = \App\Models\Page::with([
                                     <ul class="header-dropdown ml-auto d-lg-block d-none">
                                     @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
                                         <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
+                                    @endif
+                                    @if( $is_ondemand_multi_pricing ==1 )
+                                        @include('layouts.store.onDemandTopBarli')
+                                    @endif
+                                    @if (auth()->user())
+                                        @if ($client_preference_detail->show_wishlist == 1)
+                                            <li class="icon-nav mx-2 "> 
+                                                <a class="fav-button" href="{{ route('user.wishlists') }}">
+                                                    <i class="fa fa-heart" aria-hidden="true"></i> 
+                                                </a> 
+                                            </li>
+                                        @endif
                                     @endif
                                         @if($client_preference_detail->header_quick_link == 1)
 
@@ -432,7 +453,7 @@ $pages = \App\Models\Page::with([
                                                 @if(Auth::user())
                                                     @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                                                         <li>
-                                                            <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                                                            <a href="{{route('client.dashboard')}}" data-lng="en">{{getNomenclatureName('Control Panel', true)}}</a>
                                                         </li>
                                                     @endif
                                                     <li>
@@ -571,17 +592,4 @@ $pages = \App\Models\Page::with([
         </div>
     @endif
 @endif
-<div class="modal fade remove-cart-modal" id="remove_cart_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="remove_cartLabel" style="background-color: rgba(0,0,0,0.8);">
-   <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-         <div class="modal-header pb-0">
-            <h5 class="modal-title" id="remove_cartLabel">{{__('Remove Cart')}}</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">×</span> </button>
-         </div>
-         <div class="modal-body text-center">
-            <h6 class="m-0 px-3">{{__('This change will remove all your cart products. Do you really want to continue ?')}}</h6>
-         </div>
-         <div class="modal-footer flex-nowrap justify-content-center align-items-center"> <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button> <button type="button" class="btn btn-solid" id="remove_cart_button" data-cart_id="">{{__('Remove')}}</button> </div>
-      </div>
-   </div>
-</div>
+@include('layouts.store.remove_cart_model')

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Facades\Storage;
 class AttributeController extends BaseController
 {
     private $blockdata = 2;
@@ -28,7 +28,7 @@ class AttributeController extends BaseController
             ->where('status', 1)
             ->orderBy('parent_id', 'asc')
             ->orderBy('position', 'asc')
-            ->whereIn('type_id', ['1', '3', '6','10', '13']) //see type ids in TypeSeeder seeder
+            ->whereIn('type_id', ['1', '3', '6','10', '13', '7','14']) //see type ids in TypeSeeder seeder
             ->where('id', '>', 1)
             ->whereNull('vendor_id')
             ->get();
@@ -54,6 +54,8 @@ class AttributeController extends BaseController
      */
     public function store(Request $request)
     {
+
+   
         if($request->cate_id ==''){
             return redirect()->back()->with('error_delete',__('Please select Category!'));
         }
@@ -70,15 +72,30 @@ class AttributeController extends BaseController
             $variant->user_id = Auth::id();
             $variant->type = $request->type;
             $variant->position = 1;
+            if ($request->hasFile('icon')) {
+                $filePath = 'attributes/' . \Str::random(40);
+                $file = $request->file('icon');
+                $orignal_name = $request->file('icon')->getClientOriginalName();
+                $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                $url = Storage::disk('s3')->url($file_name);
+                $variant->icon = $url;
+            }
             if($v_pos){
                 $variant->position = $v_pos->position + 1;
             }
             $variant->save();
             $data = $data_cate = array();
             if($variant->id > 0){
-                $data_cate['attribute_id'] = $variant->id;
-                $data_cate['category_id'] = $request->cate_id;
-                AttributeCategory::insert($data_cate);
+
+                foreach($request->cate_id as $category_id)
+                {
+                    $data_cate['attribute_id'] = $variant->id;
+                
+                    $data_cate['category_id'] = $category_id;
+                    AttributeCategory::insert($data_cate);
+
+                }
+               
                 foreach ($request->title as $key => $value) {
                     $varTrans = new AttributeTranslation();
                     $varTrans->title = $request->title[$key];
@@ -136,7 +153,7 @@ class AttributeController extends BaseController
                 ->where('status', 1)
                 ->orderBy('parent_id', 'asc')
                 ->orderBy('position', 'asc')
-                ->whereIn('type_id', ['1', '3', '6', '13', '10'])
+                ->whereIn('type_id', ['1', '3', '6', '13', '10', '7','14'])
                 ->where('id', '>', 1)
                 ->whereNull('vendor_id')
                 ->get();
@@ -184,13 +201,43 @@ class AttributeController extends BaseController
             $variant->title = $request->title[0];
             $variant->type = $request->type;
             $variant->user_id = Auth::id();
+            if ($request->hasFile('icon')) {
+                $filePath = 'attributes/' . \Str::random(40);
+                $file = $request->file('icon');
+                $orignal_name = $request->file('icon')->getClientOriginalName();
+                $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                $url = Storage::disk('s3')->url($file_name);
+                $variant->icon = $url;
+            }
             $variant->save();
 
-            $VariantCategory = AttributeCategory::where('attribute_id', $variant->id)->first();
+            $VariantCategory = AttributeCategory::where('attribute_id', $variant->id)->get();
             if(!empty($VariantCategory)):
-                $affected = AttributeCategory::where('attribute_id', $variant->id)->update(['category_id' => $request->cate_id]);
+                foreach($request->cate_id as $category_id)
+                {
+
+                    AttributeCategory::updateOrInsert(
+                        ['attribute_id' => $variant->id, 'category_id' => $category_id],
+                        [
+                        'attribute_id' =>  $variant->id,
+                        'category_id' => $category_id
+                        ]
+                    );
+
+                }
             else:
-                $affected = AttributeCategory::insert(['attribute_id' => $variant->id, 'category_id' => $request->cate_id]);
+                foreach($request->cate_id as $category_id)
+                {
+
+                    AttributeCategory::updateOrInsert(
+                        ['attribute_id' => $variant->id, 'category_id' => $category_id],
+                        [
+                        'attribute_id' =>  $variant->id,
+                        'category_id' => $category_id
+                        ]
+                    );
+
+                }
             endif;
 
             foreach ($request->language_id as $key => $value) {
@@ -518,10 +565,6 @@ class AttributeController extends BaseController
             }
         }
         catch(\Exception $e) {
-            //\Log::info('######### Attribute Update Error #########');
-            //\Log::info($e->getLine());
-            \Log::info($e->getMessage());
-            //\Log::info('######### Attribute Update Error End #########');
             return response()->json(array('success' => false));
         }
     }

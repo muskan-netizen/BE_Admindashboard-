@@ -13,12 +13,14 @@ if(session()->has('applocale')){
 $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 @endphp
 <div class="top-header site-topbar al_custom_head">
+
     <nav class="navbar navbar-expand-lg p-0 ">
         <div class="container ">
             <div class="row d-flex align-items-center justify-content-between w-100">
                 <div class="col-lg-6 p-0 d-md-flex align-items-center justify-content-start" >
                     <a class="navbar-brand mr-3"  href="{{ route('userHome') }}">
                     <img class="logo-image" style="height:50px;" alt="" src="{{$urlImg}}"></a>
+                    
                     <div class="al_custom_head_map_box px-2 py-1 d-md-inline-flex  d-flex align-items-center justify-content-start">
                         @if(isset($preference))
                         @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
@@ -46,10 +48,14 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 
                 <div class="col-lg-6 text-right ml-auto al_z_index p-0"  >
                     <ul class="header-dropdown ml-auto">
-                        @if($client_preference_detail->header_quick_link == 1)
+                       
                         @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
                             <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
                         @endif
+                        @if( $is_ondemand_multi_pricing ==1 )
+                            @include('layouts.store.onDemandTopBarli')
+                        @endif
+                        @if($client_preference_detail->header_quick_link == 1)
                         <li class="onhover-dropdown quick-links quick-links">
                             <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
                             <ul class="onhover-show-div">
@@ -59,9 +65,9 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                                 <li>
                                     <a href="{{route('extrapage',['slug' => $page->slug])}}">
                                         @if(isset($page->translations) && $page->translations->first()->title != null)
-                                        {{ $page->translations->first()->title ?? ''}}
+                                        {{ __($page->translations->first()->title) ?? ''}}
                                         @else
-                                        {{ $page->primary->title ?? ''}}
+                                        {{ __($page->primary->title) ?? ''}}
                                         @endif
                                     </a>
                                 </li>
@@ -70,9 +76,9 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                                 <li>
                                     <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_blank">
                                         @if(isset($page->translations) && $page->translations->first()->title != null)
-                                        {{ $page->translations->first()->title ?? ''}}
+                                        {{ __($page->translations->first()->title) ?? ''}}
                                         @else
-                                        {{ $page->primary->title ?? ''}}
+                                        {{ __($page->primary->title) ?? ''}}
                                         @endif
                                     </a>
                                 </li>
@@ -124,7 +130,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                                 @if(Auth::user())
                                 @if(@auth()->user()->can('dashboard-view') || Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                                     <li>
-                                        <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                                        <a href="{{route('client.dashboard')}}" data-lng="en">{{getNomenclatureName('Control Panel', true)}}</a>
                                     </li>
                                     @endif
                                     <li>
@@ -190,7 +196,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                 @if($client_preference_detail->show_wishlist == 1)
                 <li class="mobile-wishlist d-inline d-sm-none">
                     <a href="{{route('user.wishlists')}}">
-                        <i class="fa fa-heart" aria-hidden="true"></i>
+                        <i class="fa fa-heart-o wishListCount" aria-hidden="true"></i>
                     </a>
                 </li>
                 @endif
@@ -227,6 +233,14 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 
 <div class="al_mobile_menu al_new_mobile_header">
                 <div class="al_new_cart">
+                    <div class="d-flex">
+                    @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                    <li class="add_post"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn">
+                        <span>
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                            {{ __('Add Post') }}</span>
+                        </a></li>
+                    @endif
                     @if($client_preference_detail->cart_enable == 1)
                     <div class="onhover-dropdown_al onhover-div mobile-cart">
                         <a href="{{route('showCart')}}" style="position: relative">
@@ -236,6 +250,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                         <ul class="show-div shopping-cart"></ul>
                     </div>
                     @endif
+                </div>
                 </div>
                 <a class="al_toggle-menu" href="#">
                     <i></i>
@@ -249,7 +264,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                                 @if(Auth::user())
                                     @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                                     <li>
-                                        <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                                        <a href="{{route('client.dashboard')}}" data-lng="en">{{getNomenclatureName('Control Panel', true)}}</a>
                                     </li>
                                     @endif
                                     <li>

@@ -13,6 +13,7 @@ class Order extends Model implements Auditable
     use \OwenIt\Auditing\Auditable;
     
     protected $casts = ['total_amount' => 'float'];
+	protected $fillable = ['total_delivery_fee','total_waiting_price','total_waiting_time','recurring_booking_type','recurring_week_day','recurring_week_type','recurring_day_data','recurring_booking_time','scheduled_date_time','marg_max_attempt','marg_status','rental_hours','total_amount'];
 
     public function products()
     {
@@ -37,7 +38,7 @@ class Order extends Model implements Auditable
     }
     public function address()
     {
-        return $this->hasOne('App\Models\UserAddress', 'id', 'address_id');
+        return $this->hasOne('App\Models\UserAddress', 'id', 'address_id')->withTrashed();
     }
     public function orderLocation()
     {
@@ -154,5 +155,10 @@ class Order extends Model implements Auditable
     public function scopeOnlyEnabledLuxuryOptions($query,$EnabledLuxuryOptions=[])
     {
         return $query->whereIn('luxury_option_id',$EnabledLuxuryOptions);
+    }
+    
+    public function getOrderScheduleDateAttribute(){
+        $timezone = \Auth::user()->timezone;
+        return dateTimeInUserTimeZone($this->scheduled_date_time,$timezone,true,false,false);
     }
 }

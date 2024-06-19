@@ -35,6 +35,8 @@ class ClientController extends Controller{
         foreach ($clients as $client) {
             $client->sub_domain_url = 'https://'.$client->sub_domain.env('SUBMAINDOMAIN');
         }
+
+
         return view('godpanel/client')->with(['clients' => $clients]);
     }
 
@@ -62,11 +64,15 @@ class ClientController extends Controller{
     {
         $client = Client::find($id);
        // dd($client);
+
+    
         $languages = Language::where('id', '>', '0')->get();
         $business_types = BusinessType::get();
         $client_types = BillingPlanManager::gettClientTypeList();
-        $ChatSocketUrl = GlobalFunction::socketDropDown();
-        return view('godpanel/client-form-update')->with(['client' => $client, 'languages' => $languages, 'business_types' => $business_types, 'client_types' => $client_types,'ChatSocketUrl'=>$ChatSocketUrl]);
+        // $ChatSocketUrl = GlobalFunction::socketDropDown();
+
+         
+        return view('godpanel/client-form-update')->with(['client' => $client, 'languages' => $languages, 'business_types' => $business_types, 'client_types' => $client_types,'ChatSocketUrl'=>$ChatSocketUrl ?? null]);
     }
     
     /**

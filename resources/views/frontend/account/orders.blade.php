@@ -4,22 +4,22 @@
  $hidereturn = 1;  ?>
 @break
 @default
-<?php $ordertitle = 'Orders'; 
+<?php $ordertitle = 'Orders';
  $hidereturn = 0;
 ?>
 
 @endswitch
 @php
 $orderTitles = [
-    'Active' => "Active",
-    'Past' => "Past",
-    'Rejected/Cancel' => "Rejected/Cancel"
+    'Active' => "Active ",
+    'Past' => "Past ",
+    'Rejected/Cancel' => "Rejected/Cancel "
 ];
 
 $clientData = \App\Models\Client::select('socket_url')->first();
 
-if($additionalPreference['is_service_product_price_from_dispatch'] == 1){
-    $hidereturn = 1; 
+if($is_service_product_price_from_dispatch_forOnDemand == 1){
+    $hidereturn = 1;
     $orderTitles = [
         'Active' => "Confirmed ",
         'Past'   =>  "Done ",
@@ -201,6 +201,11 @@ $timezone = Auth::user()->timezone;
         font-size: 18px !important;
         font-weight: 400;
     }
+    .status_box li a {
+	color: #6180cc !important;
+    font-size:14px !important;
+}
+
 </style>
 <section class="section-b-space order-page">
     <div class="container">
@@ -257,7 +262,7 @@ $timezone = Auth::user()->timezone;
                                 <div class="row" id="orders_wrapper">
                                     <div class="col-sm-12 col-lg-12 tab-product al_custom_ordertabs mt-md-3 p-0">
                                         <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
-                                            @if($additionalPreference['is_service_product_price_from_dispatch'] == 1)
+                                            @if($is_service_product_price_from_dispatch_forOnDemand == 1)
                                             <li class="nav-item">
                                                 <a class="nav-link {{ Request::query('pageType') == 'pendingOrders' ? 'active show' : '' }} " id="pending-orders-tab" data-toggle="tab" href="#pending-orders" role="tab"
                                                     aria-selected="true"><i
@@ -302,12 +307,12 @@ $timezone = Auth::user()->timezone;
                                                         aria-selected="false"><i
                                                             class="icofont icofont-man-in-glasses"></i>{{ __('Long Term Serivces') }}</a>
                                                     <div class="material-border"></div>
-                                                </li>
+                                            </li>
                                             @endif
                                         </ul>
                                         <div class="tab-content nav-material al" id="top-tabContent">
-                                            @if($additionalPreference['is_service_product_price_from_dispatch'] == 1)
-                                             {{-- @include('frontend.account.orders.pending_orders') --}}
+                                            @if($is_service_product_price_from_dispatch_forOnDemand == 1)
+                                                @include('frontend.account.orders.pending_orders')
                                             @endif
                                             @include('frontend.account.orders.active_orders')
                                             @include('frontend.account.orders.past_orders')
@@ -320,7 +325,7 @@ $timezone = Auth::user()->timezone;
 
                                         </div>
                                     </div>
-                                   
+
                                 </div>
                             </div>
                         </div>
@@ -581,7 +586,7 @@ $timezone = Auth::user()->timezone;
                 </button>
             </div>
             <div class="modal-body text-center">
-                <h6 class="m-0 px-3">{{__('Are u sure u want to repeat same order')}}</h6>
+                <h6 class="m-0 px-3">{{__('Are you sure you want to repeat same order')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
@@ -591,6 +596,7 @@ $timezone = Auth::user()->timezone;
     </div>
 </div>
 <!-- end repat order modal -->
+@include('frontend.modals.modal_recurring')
 
 @endsection
 @section('script')
@@ -646,6 +652,9 @@ $timezone = Auth::user()->timezone;
 @if(in_array('khalti',$client_payment_options))
 <script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
 @endif
+@if (in_array('mastercard', $client_payment_options))
+    <script src="https://{{mastercardGateway()}}/static/checkout/checkout.min.js"></script>
+@endif
 <script type="text/javascript" src="{{ asset('js/payment.js') }}"></script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 
@@ -677,11 +686,16 @@ $timezone = Auth::user()->timezone;
         $("#order_number").val(order_number);
     });
     var ajaxCall = 'ToCancelPrevReq';
+    var payment_obo_url = "{{route('obo.pay')}}";
+    var livee_payment_url="{{route('livee.pay')}}"
     var credit_tip_url = "{{ route('user.tip_after_order') }}";
-    var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";    
+    var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
+    var payment_mpesa_safari_url = "{{route('mpesasafari.pay')}}";
     var payment_stripe_url = "{{ route('payment.stripe') }}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var create_payphone_url = "{{route('payphone.createHash')}}";
+    var update_qty_url = "{{ url('product/updateCartQuantity') }}";
+
     var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
     var create_dpo_tocken = "{{route('dpo.createTocken')}}";
     var create_windcave_hash_url = "{{route('windcave.createHash')}}";
@@ -721,12 +735,19 @@ $timezone = Auth::user()->timezone;
     var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
     var success_error_container = ".order_response";
     var payment_option_list_url = "{{route('payment.option.list')}}";
-    var user_cards_url = "{{ route('payment.azulpay.getCards') }}";        
+    var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+    var powertrans_payment_url = "{{ route('powertrans.payment') }}";
+    var data_trans_url = "{{route('payment.payByDataTrans')}}";
+    var create_mtn_momo_token = "{{route('mtn.momo.createToken')}}";
+    var mastercard_create_session_url = "{{ route('payment.mastercard.createSession') }}";
+    var payment_hitpay_url="{{ route('make.hitpay.payment') }}";
+
      @if(!empty($client_preference_detail->is_postpay_enable))
         var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";
     @else
         var post_pay_edit_order = 0;
     @endif
+    var pesapal_payment_url = "{{ route('pesapal.payment') }}";
 
 </script>
 <script type="text/javascript">
@@ -1084,7 +1105,7 @@ $(document).delegate(".order_placed_btn_pending", "click", function() {
 
 
 
-    
+
     $(document).on('click', '#extend-btn', function(){
         $.ajax({
             data: {},
@@ -1100,7 +1121,7 @@ $(document).delegate(".order_placed_btn_pending", "click", function() {
                     let payment_method_template = _.template($('#payment_method_template').html());
                     $("#v_pills_tab").append(payment_method_template({ payment_options: response.data }));
                     let payment_method_tab_pane_template = _.template($('#payment_method_tab_pane_template').html());
-                    
+
                     $("#v_pills_tabContent").append(payment_method_tab_pane_template({ payment_options: response.data }));
                     $('#extend_order_rental').modal('hide');
                     $('#proceed_to_pay_modal').modal('show');
@@ -1135,9 +1156,9 @@ $(document).delegate(".order_placed_btn_pending", "click", function() {
         });
         // $('#proceed_to_pay_modal').modal();
     });
-    
+
     function addSlashes (element) {
-	
+
     let ele = document.getElementById(element.id);
     ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
     if(ele.length < 4 && ele.length > 0){
@@ -1146,13 +1167,29 @@ $(document).delegate(".order_placed_btn_pending", "click", function() {
         document.getElementById(element.id).value = finalVal;
     }
 }
-    
+
+        $('.recurringBtn').click(function()
+        {
+            var date = $(this).attr('data-recurring_day_data');
+            var slot = $(this).attr('data-recurring_slot');
+
+            const dateDate = date.split(",");
+            var days = dateDate.length;
+
+            $(".recurring-modal").modal();
+            $('#days-recurring').html(days);
+            $('#slot-recurring').html(slot);
+            $('#date-recurring').html(date);
+        });
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>
 <script src="{{asset('front-assets/js/reschedule_order.js')}}"></script>
 <script src="{{asset('front-assets/js/user_edit_order.js')}}"></script>
-
+@if(in_array('data_trans',$client_payment_options))
+    <script src="{{ $data_trans_script_url }}"></script>
+@endif
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
 @endsection

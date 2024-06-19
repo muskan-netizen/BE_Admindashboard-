@@ -1,7 +1,4 @@
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => getNomenclatureName('vendors', true)])
-{{-- @php
-pr($products->toArray());
-@endphp --}}
 @section('css')
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
     <link href="{{ asset('assets/libs/fullcalendar-list/fullcalendar-list.min.css') }}" rel="stylesheet" type="text/css" />
@@ -87,6 +84,8 @@ pr($products->toArray());
 @endsection
 @php
     $getAdditionalPreference = getAdditionalPreference(['is_recurring_booking', 'is_long_term_service', 'square_enable_status']);
+    $productsNom = getNomenclatureName('Products', true);
+    $productsNom = ($productsNom=="Products")?__('Products'):__($productsNom);
 @endphp
 @section('content')
     <div class="container-fluid">
@@ -131,7 +130,7 @@ pr($products->toArray());
             <div class="col-lg-8 col-xl-9">
                 <div class="">
                 @include('backend.vendor.topbar-tabs')
-                    
+
                     <div class="row mt-4">
                         <div class="col-12">
                             <div class="card widget-inline">
@@ -144,7 +143,7 @@ pr($products->toArray());
                                                     <span data-plugin="counterup"
                                                         id="total_earnings_by_vendors">{{ $product_count }}</span>
                                                 </h3>
-                                                <p class="text-muted font-15 mb-0">{{ __('Total Products') }}</p>
+                                                <p class="text-muted font-15 mb-0">{{ __('Total ') }} {{ __($productsNom)}}</p>
                                             </div>
                                         </div>
                                         <div class="col-sm-6 col-md-3 col-lg mb-3 mb-md-0">
@@ -154,7 +153,7 @@ pr($products->toArray());
                                                     <span data-plugin="counterup"
                                                         id="total_order_count">{{ $published_products }}</span>
                                                 </h3>
-                                                <p class="text-muted font-15 mb-0">{{ __('Published Products') }}</p>
+                                                <p class="text-muted font-15 mb-0">{{ __('Published ') }} {{ __($productsNom)}}</p>
                                             </div>
                                         </div>
                                         @if ($client_preference_detail->business_type != 'taxi')
@@ -176,7 +175,7 @@ pr($products->toArray());
                                                         <span data-plugin="counterup"
                                                             id="total_delivery_fees">{{ $new_products }}</span>
                                                     </h3>
-                                                    <p class="text-muted font-15 mb-0">{{ __('New Products') }}</p>
+                                                    <p class="text-muted font-15 mb-0">{{ __('New ') }} {{ __($productsNom)}}</p>
                                                 </div>
                                             </div>
                                             <div class="col-sm-6 col-md-3 col-lg mb-3 mb-md-0">
@@ -186,7 +185,7 @@ pr($products->toArray());
                                                         <span data-plugin="counterup"
                                                             id="total_delivery_fees">{{ $featured_products }}</span>
                                                     </h3>
-                                                    <p class="text-muted font-15 mb-0">{{ __('Featured Products') }}</p>
+                                                    <p class="text-muted font-15 mb-0">{{ __('Featured ') }} {{ __($productsNom)}}</p>
                                                 </div>
                                             </div>
                                         @endif
@@ -210,6 +209,13 @@ pr($products->toArray());
                                             <div class="vendor-search mb-sm-0 mb-2">
                                                 <input class="form-control" id="vendor_search" type="search" placeholder="Product Search" aria-controls="vendor_product_table">
                                             </div>
+                                            <div class="vendor-search mb-sm-0 mb-2">
+                                                <select class="form-control" name="product_is_live" id="product_is_live">
+                                                    <option value="">{{__("Select")}} </option>
+                                                    <option value="0">{{ __("Draft") }}</option>
+                                                    <option value="1">{{ __("Published") }}</option>
+                                                </select>
+                                            </div>
                                             @if(isset($vendor['need_sync_with_order']) && $vendor['need_sync_with_order'] != 1)
                                             <a class="btn btn-info  waves-effect waves-light text-sm-right action_product_button" dataid="0"
                                                 id="action_product_button" href="javascript:void(0);"
@@ -222,6 +228,11 @@ pr($products->toArray());
                                                 dataid="0" href="javascript:void(0);"
                                                 {{ $vendor->status == 1 ? '' : 'disabled' }}><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
+                                            </a>
+                                            <a class="btn btn-info waves-effect waves-light ml-1 text-sm-right @if($vendor->status == 1)  exportProductPdf @endif  {{ $vendor->status == 1 ? '' : 'disabled' }}"
+                                                dataid="0" href="javascript:void(0);"
+                                                {{ $vendor->status == 1 ? '' : 'disabled' }}><i
+                                                    class="mdi mdi-plus-circle mr-1"></i> {{ __('Export as PDF') }}
                                             </a>
 
                                         @if(isset($vendor['need_sync_with_order']) && $vendor['need_sync_with_order'] != 1)
@@ -242,7 +253,7 @@ pr($products->toArray());
                                                         <th><input type="checkbox" class="all-product_check"
                                                                 name="all_product_id" id="all-product_check"></th>
                                                         <th>#</th>
-                                                        <th>{{ __('Name 11') }}</th>
+                                                        <th>{{ __('Name') }}</th>
                                                         <th>{{ __('Category') }}</th>
                                                         @if ($client_preference_detail->business_type != 'taxi')
                                                             <th>{{ __('Brand') }}</th>
@@ -314,7 +325,7 @@ pr($products->toArray());
     <div class="row address" id="def" style="display: none;">
         <input type="text" id="def-address" name="test" class="autocomplete form-control def_address">
     </div>
-    @if(@getAdditionalPreference['is_long_term_service'] ==1)
+    @if(@$getAdditionalPreference['is_long_term_service'] ==1)
     <div id="add-service" class="modal fade add_service" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
         aria-hidden="true" style="display: none;">
         <div class="modal-dialog modal-dialog-centered">
@@ -664,7 +675,7 @@ pr($products->toArray());
                                         <tr>
                                             <th>#</th>
                                             <th>{{ __('File Name') }}</th>
-                                            <th colspan="2">{{ __('Status') }}</th>
+                                            <th>{{ __('Status') }}</th>
                                             <th>{{ __('Link') }}</th>
                                         </tr>
                                     </thead>
@@ -676,25 +687,29 @@ pr($products->toArray());
                                                 <td> {{ $csv->name }}</td>
                                                 @if ($csv->status == 1)
                                                     <td>{{ __('Pending') }}</td>
-                                                    <td></td>
                                                 @elseif($csv->status == 2)
                                                     <td>{{ __('Success') }}</td>
-                                                    <td></td>
                                                 @else
                                                     <td>{{ __('Errors') }}</td>
-                                                    <td class="position-relative text-center alTooltipHover">
+                                                    {{-- <td class="position-relative text-center alTooltipHover">
                                                         <i class="mdi mdi-exclamation-thick"></i>
-                                                        <ul class="tooltip_error">
-                                                            <?php $error_csv = json_decode($csv->error); ?>
+                                                        <ul class="tooltip_error d-none">
+
                                                             @foreach ($error_csv as $err)
                                                                 <li>
                                                                     {{ $err }}
                                                                 </li>
                                                             @endforeach
                                                         </ul>
-                                                    </td>
+                                                    </td> --}}
                                                 @endif
-                                                <td> <a href="{{ $csv->storage_url }}">{{ __('Download') }}</a> </td>
+                                                @if(isset($csv->error))
+                                                    <td>
+                                                       <a href="{{ route('productImport.error',['id' => $csv->id]) }}">{{ __('Download Logs') }}</a>
+                                                    </td>
+                                                @else
+                                                    <td>{{ "--" }}</td>
+                                                @endif
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -742,11 +757,11 @@ pr($products->toArray());
                                   <option value="for_markup">{{__('Markup Price')}}</option>
                                 @endif
 
-                                @if(@getAdditionalPreference['is_recurring_booking'] == 1)
+                                @if(@$getAdditionalPreference['is_recurring_booking'] == 1)
                                     <option value="is_recurring_booking">{{__('Recurring Booking')}}</option>
                                 @endif
                                   <option value="for_sell_when_out_of_stock">{{__('Sell when out of stock')}}</option>
-                                @if(@getAdditionalPreference['square_enable_status'] == 1)
+                                @if(@$getAdditionalPreference['square_enable_status'] == 1)
                                   <option value="sync_for_square_post">{{__('Sync For Square POS')}}</option>
                                 @endif
                                   <option value="delete">{{__('Delete')}}</option>
@@ -951,7 +966,7 @@ pr($products->toArray());
     </div>
 
     <!--- End popup qrcode -->
-    @if(@getAdditionalPreference['is_long_term_service'] == 1)
+    @if(@$getAdditionalPreference['is_long_term_service'] == 1)
       <script src="{{asset('js/adminVendor.js')}}"></script>
     @endif
     <script type="text/javascript">
@@ -1187,10 +1202,10 @@ pr($products->toArray());
             }
             // var charCode = String.fromCharCode(event.which || event.keyCode);
             // if (!regexp.test(charCode)) {
-           
+
             //     return false;
             // }
-           
+
             // var n1 = $('#sku').val();
             // $('#url_slug').val(n1+charCode)
 
@@ -1321,6 +1336,8 @@ pr($products->toArray());
 @section('script')
 
     @include('backend.vendor.pagescript')
+    @include('backend.export_pdf')
+
     <script>
         var vendor_id = `{{ $vendor->id }}`;
         $(document).on('click', '.copy_link', function() {
@@ -1354,11 +1371,18 @@ pr($products->toArray());
            let search = $('#vendor_search').val();
            datatable_intent(search);
         });
+
+        $(document).on('change','#product_is_live',function() {
+            let is_live = $(this).val();
+            search = $('#vendor_search').val();
+            datatable_intent(search);
+        });
+
         function datatable_intent(search =''){
             $('#vendor_product_table').DataTable({
                 "responsive": true,
                 "bAutoWidth": false,
-                "scrollX": true,
+                // "scrollX": true,
                 "destroy": true,
                 // "processing": true,
                 "serverSide": true,
@@ -1366,6 +1390,7 @@ pr($products->toArray());
                 "lengthChange" : false,
                 "searching": false,
                 "ordering": true,
+                "dom": '<"toolbar">Bftrip',
 
                 language: {
                             search: "",
@@ -1375,6 +1400,23 @@ pr($products->toArray());
                             // 'loadingRecords': '&nbsp;',
                             // 'processing': '<div class="spinner"></div>'
                 },
+                buttons:[
+                            {
+                             extend: 'pdf',
+                                text: 'Export to PDF',
+                                className:'btn btn-success waves-effect Export_btn waves-light ml-2 d-none',
+                                id:'exp-btn',
+                                text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>Export PDF',
+                                orientation: 'landscape',
+                                exportOptions: {
+                                    columns: ':visible'
+                                },
+                                customize: function (doc) {
+                                doc.pageOrientation = 'landscape';
+                                doc.pageSize = 'A3'; // Set the custom page size
+                            }
+                            }
+                ],
                 drawCallback: function () {
                     $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
                 },
@@ -1382,7 +1424,8 @@ pr($products->toArray());
                 ajax: {
                     url: "{{url('client/vendor/product/list').'/'.$vendor->id}}",
                     data: function (d) {
-                        d.search = $('input[type="search"]').val();
+                        d.search = $('#vendor_search').val();
+                        d.is_live = $('#product_is_live').val();
                     }
                 },
                 columns: dataTableColumn(),
@@ -1401,9 +1444,10 @@ pr($products->toArray());
                     {data: 'product_image', name: 'product_image', orderable: false, searchable: false},
                     {data: 'product_name', name: 'product_name', orderable: true, searchable: false},
                     {data: 'product_category', name: 'phone_number', orderable: false, searchable: false},
+                    {data: 'bar_code', name: 'bar_code', orderable: false, searchable: false},
                     {data: 'product_is_live', name: 'product_is_live', orderable: false, searchable: false},
-                    {data: 'action', name: 'action', orderable: false, searchable: false},
-                    {data: 'rental_product_count', name: 'rental_product_count', orderable: false, searchable: false}
+                    {data: 'expiry_date', name: 'expiry_date', orderable: false, searchable: false},
+                    {data: 'action', name: 'action', orderable: false, searchable: false}
                 ];
             }else{
                 return [
@@ -1418,7 +1462,7 @@ pr($products->toArray());
                     {data: 'bar_code', name: 'bar_code', orderable: false, searchable: false},
                     {data: 'product_is_live', name: 'product_is_live', orderable: false, searchable: false},
                     {data: 'expiry_date', name: 'expiry_date', orderable: false, searchable: false},
-                    @if(@getAdditionalPreference['is_recurring_booking'] == 1)
+                    @if(@$getAdditionalPreference['is_recurring_booking'] == 1)
                       {data: 'is_recurring_booking', name: 'is_recurring_booking', orderable: false, searchable: false},
                     @endif
                     {data: 'product_is_new', name: 'product_is_new', orderable: false, searchable: false},
@@ -1564,6 +1608,9 @@ pr($products->toArray());
             }
         });
     }
+    $('.exportProductPdf').click(function(){
 
+            $('.buttons-pdf').click();
+});
     </script>
 @endsection

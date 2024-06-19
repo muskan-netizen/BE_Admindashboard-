@@ -7,16 +7,17 @@
 @section('content')
 @php
 $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
+$signUpImage = $preferences->signup_image ?? null;
 @endphp
 <section class="wrapper-main py-lg-5 py-3 d-flex align-items-center main-login-page">
     <div class="container">
         <div class="row align-items-center h-100" id="login-section">
             <div class="col-md-6 p-0">
                 <div class="login_img">
-                    <img src="{{asset('images/template-8/login-img.png')}}" class="img-fluid">
+                    <img src="{{ $signUpImage ? $signUpImage['proxy_url'].'400/400'.$signUpImage['image_path'] : asset('images/template-8/login-img.png') }}" class="img-fluid">
                 </div>
             </div>
-            <div class="col-lg-6 pl-3 mb-lg-0 mb-3 text-center pb-sm-0 {{(@$getAdditionalPreference['is_phone_signup'] == 1) ? 'offset-lg-3' : 'border-right' }}">
+            <div class="col-lg-6 pl-3 mb-lg-0 mb-3 text-center pb-sm-0 border-right">
                 <h3 class="mb-2">{{ __('Login To Your Account') }}</h3>
 
                 <div class="row mt-3 arabic-language">
@@ -106,14 +107,19 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                         </div>
                         </form>
                     </div>
-                    <div class="col-md-12">
+                    {{-- <div class="col-md-12">
                         <div class="divider_line mt-3">
                             <span>OR</span>
                         </div>
-                    </div>
+                    </div> --}}
                         <div class="col-md-12">
                             @if(session('preferences'))
                             @if(@session('preferences')->fb_login == 1 || @session('preferences')->twitter_login == 1 || @session('preferences')->google_login == 1 || @session('preferences')->apple_login == 1)
+
+                            <div class="divider_line mt-3">
+                                <span>OR</span>
+                            </div>
+
                             <ul class="social-media-links d-flex align-items-center justify-content-center mb-4 mt-3">
                                 @if(@session('preferences')->google_login == 1)
                                 <li>
@@ -134,7 +140,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                                 @endif
                                 @if(@session('preferences')->apple_login == 1)
                                 <li>
-                                    <a href="javascript::void(0);">
+                                    <a href="{{url('auth/apple')}}">
                                         <img src="{{asset('front-assets/images/apple.svg')}}">
                                     </a>
                                 </li>
@@ -377,27 +383,31 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                         }
                     }
                 }, error: function (error) {
-                    var response = $.parseJSON(error.responseText);
-                    // let error_messages = response.message;
-
-                    if((response.data != null) && (response.data.user_exists != undefined) && (response.data.user_exists == false)){
-                        Swal.fire({
-                            title: "{{__('User Not Found')}}",
-                            text: response.message,
-                            icon: 'info',
-                            iconColor: '{{getClientPreferenceDetail()->web_color}}',
-                            showCancelButton: true,
-                            confirmButtonText: 'Signup',
-                            confirmButtonColor: '{{getClientPreferenceDetail()->web_color}}'
-                        }).then((result) => {
-                            if(result.value)
-                            {
-                                window.location.href = "{{ route('customer.register') }}";
-                            }
-                        });
-                    }
-                    else{
-                        $("#error-msg").html(response.message);
+                    if (error.hasOwnProperty('responseJSON') && error.status === 404) {
+                        var response = error.responseJSON;
+                        // let error_messages = response.message;
+                        if((response.data != null) && (response.data.user_exists != undefined) && (response.data.user_exists == false)){
+                            Swal.fire({
+                                title: "{{__('User Not Found')}}",
+                                text: response.message,
+                                icon: 'info',
+                                iconColor: '{{getClientPreferenceDetail()->web_color}}',
+                                showCancelButton: true,
+                                confirmButtonText: 'Signup',
+                                confirmButtonColor: '{{getClientPreferenceDetail()->web_color}}'
+                            }).then((result) => {
+                                if(result.value)
+                                {
+                                    window.location.href = "{{ route('customer.register') }}";
+                                }
+                            });
+                        }
+                        else{
+                            $("#error-msg").html(response.message);
+                            $("#error-msg").show();
+                        }
+                    } else {
+                        $("#error-msg").html('Something went wrong');
                         $("#error-msg").show();
                     }
                 }

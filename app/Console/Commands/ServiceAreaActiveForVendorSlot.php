@@ -45,7 +45,6 @@ class ServiceAreaActiveForVendorSlot extends Command
         $clients = Client::select('database_name', 'sub_domain')->get();
         foreach ($clients as $client) {
             $database_name = 'royo_' . $client->database_name;
-            //// Log::info("checking cart start: {$database_name}!");
             $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME =  ?";
             $db = DB::select($query, [$database_name]);
             if ($db) {
@@ -97,8 +96,8 @@ class ServiceAreaActiveForVendorSlot extends Command
                                     }
                                 }
                                 $active_service_areas = array_unique($active_service_areas);
-                                ServiceArea::whereIn('id', $active_service_areas)->where('vendor_id', $vendor->id)->update(['is_active_for_vendor_slot' => 1]);
-                                ServiceArea::whereNotIn('id', $active_service_areas)->where('vendor_id', $vendor->id)->update(['is_active_for_vendor_slot' => 0]);
+                                ServiceArea::whereIn('id', $active_service_areas)->where('vendor_id', $vendor->id)->where('area_type', 1)->update(['is_active_for_vendor_slot' => 1]);
+                                ServiceArea::whereNotIn('id', $active_service_areas)->where('vendor_id', $vendor->id)->where('area_type', 1)->update(['is_active_for_vendor_slot' => 0]);
                             }
                         }
                     }
@@ -106,10 +105,8 @@ class ServiceAreaActiveForVendorSlot extends Command
                 
                  
                 DB::disconnect($database_name);
-                //// Log::info("checking cart end: {$database_name}!");
             } else {
                 DB::disconnect($database_name);
-                //// Log::info("checking cart  end: {$database_name}!");
             }
         }
     }

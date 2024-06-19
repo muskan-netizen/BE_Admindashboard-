@@ -23,5 +23,20 @@ class NomenclatureTableSeeder extends Seeder
         if(!NomenClature::where(['label'=>'P2P'])->exists()){
             NomenClature::Create(['label'=>'P2P']);
         }
+        if(!NomenClature::where(['label'=>'Car-Rental'])->exists()){
+            NomenClature::Create(['label'=>'Car-Rental']);
+        }
+        if(!NomenClature::where(['label'=>'Online'])->exists()){
+            NomenClature::Create(['label'=>'Online']);
+        }
+        if(!NomenClature::where(['label'=>'Products'])->exists()){
+            NomenClature::Create(['label'=>'Products']);
+        }
+        if(!NomenClature::where(['label'=>'Include Gift'])->exists()){
+            NomenClature::Create(['label'=>'Include Gift']);
+        }
+        if(!NomenClature::where(['label'=>'Control Panel'])->exists()){
+            NomenClature::Create(['label'=>'Control Panel']);
+        }
     }
 }

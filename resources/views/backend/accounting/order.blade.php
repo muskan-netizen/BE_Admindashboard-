@@ -8,6 +8,7 @@
 div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
 .dt-buttons.btn-group.flex-wrap {right: 310px;top: -50px;}
 </style>
+
 @endsection
 @section('content')
 <div class="content">
@@ -15,7 +16,11 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">{{ __('Orders') }}</h4>
+                    @php
+                        $ordermenu = getNomenclatureName('Orders', true);
+                        $ordermenulabel = ($ordermenu=="Orders")?__('Orders'):__($ordermenu);
+                    @endphp
+                    <h4 class="page-title">{{ __($ordermenulabel) }}</h4>
                 </div>
             </div>
         </div>
@@ -39,7 +44,12 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                         <i class="mdi mdi-cart-arrow-up text-primary mdi-24px"></i>
                                         <span data-plugin="counterup" id="total_order_count">{{$total_order_count}}</span>
                                     </h3>
-                                    <p class="text-muted font-15 mb-0">{{ __('Total Orders') }}</p>
+                                    @php
+                                        $ordermenu = getNomenclatureName('Orders', true);
+                                        $ordermenulabel = ($ordermenu=="Orders")?__('Orders'):__($ordermenu);
+
+                                    @endphp
+                                    <p class="text-muted font-15 mb-0">{{ __('Total '. $ordermenulabel) }}</p>
                                 </div>
                             </div>
                             <div class="col-6 col-md-3 mb-3 mb-md-0">
@@ -99,6 +109,15 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                         </select>
                                     </div>
                                     <div class="col-sm-3 mb-1">
+                                        <select class="form-control al_box_height" id="company_option_select_box" name="company_id" >
+                                            <option value="">{{ __('Select Company') }}</option>
+                                            @forelse($companies as $company)
+                                                <option value="{{$company->id}}">{{$company->name}}</option>
+                                            @empty
+                                            @endforelse
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-3 mb-1">
                                         <button type="button" class="btn btn-danger al_box_height waves-effect waves-light" id="clear_filter_btn_icon">
                                             <i class="mdi mdi-close"></i>
                                         </button>
@@ -112,7 +131,8 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                         <table class="table table-centered table-nowrap table-striped" id="accounting_vendor_datatable" width="100%">
                             <thead>
                                 <tr>
-                                    <th>{{ __('Order ID') }}</th>
+                                    <!-- <th>{{ __('Order ID') }}</th> -->
+                                    <th>{{ __('Order Number') }}</th>
                                     <th>{{ __('Date & Time') }}</th>
                                     <th>{{ __('Customer Name') }}</th>
                                     <th>{{ __('Vendor') }}</th>
@@ -203,6 +223,10 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                     initDataTable();
                     getOrderCalculations();
                 });
+                $("#vendor_select_box, #company_option_select_box").change(function() {
+                    initDataTable();
+                    getOrderCalculations();
+                });
                 function initDataTable() {
                     $('#accounting_vendor_datatable').DataTable({
                         "dom": '<"toolbar">Bfrtip',
@@ -227,8 +251,24 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                 action: function ( e, dt, node, config ) {
                                     //window.location.href = "{{ route('account.order.export') }}";
                                     $('#export-form').trigger('submit');
-                                }
-                        }],
+                                },
+                                
+                            },
+                            {
+                                extend: 'pdf',
+                                text: 'Export to PDF',
+                                className:'btn btn-success waves-effect Export_btn waves-light ml-2',
+                                id:'exp-btn',
+                                text: '<span class="btn-label"><i class="mdi mdi-file-pdf-box"></i></span>Export PDF',
+                                orientation: 'landscape',
+                                exportOptions: {
+                                    columns: ':visible'
+                                },
+                                customize: function (doc) {
+                                doc.pageOrientation = 'landscape';
+                                doc.pageSize = 'A3'; // Set the custom page size
+                            }
+                            }],
                         ajax: {
                           url: "{{route('account.order.filter')}}",
                           data: function (d) {
@@ -236,12 +276,11 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                             d.date_filter = $('#range-datepicker').val();
                             d.vendor_id = $('#vendor_select_box option:selected').val();
                             d.status_filter = $('#order_status_option_select_box option:selected').val();
+                            d.company_filter = $('#company_option_select_box option:selected').val();
                           }
                         },
                         columns: [
-                            {data: 'order_detail.order_number', name: 'order_number', orderable: false, searchable: false,"mRender": function ( data, type, full ) {
-                              return "<a href='" + full.view_url + "' target='_blank'>"+full.order_detail.order_number+"</a>";
-                            }},
+                            {data: 'order_number', name: 'order_number',orderable: false, searchable: false},
                             {data: 'created_date', name: 'name',orderable: false, searchable: false},
                             {data: 'user_name', name: 'Customer Name',orderable: false, searchable: false},
                             {data: 'vendor_name', name: 'vendor_name', orderable: false, searchable: false},
@@ -359,4 +398,5 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
 @endsection
 @section('script')
 <script src="{{asset('assets/libs/datatables/datatables.min.js')}}"></script>
+@include('backend.export_pdf')
 @endsection

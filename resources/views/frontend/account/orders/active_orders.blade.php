@@ -6,8 +6,10 @@
                                                         @php
 
                                                             $total_other_taxes=0.00;
-                                                            foreach(explode(":",$order->total_other_taxes) as $row){
-                                                                $total_other_taxes+=(float)$row;
+                                                         	if(!empty($order->total_other_taxes)){
+                                                                $total_other_taxes  =   (float) array_sum(explode(":", $order->total_other_taxes));
+                                                            }else{
+                                                                $total_other_taxes = $order->taxable_amount;
                                                             }
 
                                                         @endphp
@@ -121,7 +123,7 @@
                                                                                                             Dropoff: N/A
                                                                                                         @endif
                                                                                                     @else
-                                                                                                        {{ (($order->scheduled_slot)?dateTimeInUserTimeZone($order->scheduled_date_time, $timezone).'. Slot: '.$order->scheduled_slot:dateTimeInUserTimeZone($order->scheduled_date_time, $timezone) ) }}
+                                                                                                        {{ (($order->scheduled_slot)?dateTimeInUserTimeZone($order->scheduled_date_time, $timezone,true,false,false).'. Slot: '.$order->scheduled_slot:dateTimeInUserTimeZone($order->scheduled_date_time, $timezone) ) }}
                                                                                                     @endif
                                                                                                 </span>
                                                                                         @elseif(!empty($vendor->ETA))
@@ -145,11 +147,16 @@
                                                                                             <a class="start_chat_driver chat-icon btn btn-solid" data-driver_details_api="{{$vendor->dispatch_traking_url}}" data-vendor_order_id="{{$vendor->id}}" data-vendor_id="{{$vendor->vendor_id}}" data-orderid="" data-order_id="{{$order->id}}">{{__('Driver Chat')}}</a>
                                                                                             @endif
                                                                                         @endif
+
+                                                                                        @if(@$order->recurring_day_data)
+                                                                                            <a class="btn btn-solid recurringBtn" data-recurring_slot="{{$order->recurring_booking_time}}"  data-recurring_day_data="{{$order->recurring_day_data}}">{{getNomenclatureName('Recurring', true)}}</a>
+                                                                                        @endif
+
                                                                                     </div>
                                                                                 @endif
                                                                                 <span class="left_arrow pulse"></span>
                                                                                 <div class="row">
-                                                                                    <div class="col-6 col-sm-4">
+                                                                                    <div class="col-6 col-sm-3">
                                                                                         <h5 class="m-0">
                                                                                             {{ __('Order Status') }}</h5>
                                                                                         <ul class="status_box mt-1 pl-0">
@@ -178,18 +185,34 @@
                                                                                                     @if(@$order->reqCancelOrder->status == 'Pending')
                                                                                                         {{__('Cancel Order Pending')}}
                                                                                                     @else
-                                                                                                        {{__( ucfirst( $vendor->order_status)) }}</label>
+                                                                                                        @if (@$luxury_option_name == 'Dine-In' && $vendor->order_status == 'out for delivery')
+                                                                                                        {{__( ucfirst('Ready for Delivery')) }}
+                                                                                                        @else
+                                                                                                        {{__( ucfirst( $vendor->order_status)) }}
+                                                                                                        @endif
+                                                                                                        </label>
                                                                                                     @endif
                                                                                                 </li>
                                                                                             @endif
 
                                                                                             @if (!empty($vendor->dispatch_traking_url))
-                                                                                                <li>
-                                                                                                    <img src="{{ asset('assets/images/order-icon.svg') }}"
-                                                                                                        alt="">
-                                                                                                    <a class="alOrderDetailsLink"  href="{{ route('front.booking.details', $order->order_number) }}"
-                                                                                                    target="_blank">{{ __('Details') }}</a>
-                                                                                                </li>
+                                                                                                @if ($vendor->shipping_delivery_type == 'B')
+                                                                                                    <h5 class="m-0">{{ __('Track Order') }}</h5>
+                                                                                                    <li>
+                                                                                                        @php
+                                                                                                            $track = explode('/', $vendor->dispatch_traking_url);
+                                                                                                            $track_code = end($track);
+                                                                                                        @endphp
+                                                                                                        <a href="{{ $vendor->dispatch_traking_url }}" target="_blank" class="track_url">#{{ $track_code }}</a>
+                                                                                                    </li>
+                                                                                                @else
+                                                                                                    <li>
+                                                                                                        <img src="{{ asset('assets/images/order-icon.svg') }}"
+                                                                                                            alt="">
+                                                                                                        <a class="alOrderDetailsLink"  href="{{ route('front.booking.details', $order->order_number) }}"
+                                                                                                        target="_blank">{{ __('Details') }}</a>
+                                                                                                    </li>
+                                                                                                @endif
                                                                                             @endif
 
                                                                                             @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))
@@ -233,9 +256,10 @@
 
                                                                                         </ul>
                                                                                     </div>
-                                                                                    <div class="col-6 col-sm-3">
+                                                                                    <div class="col-6 col-sm-4">
+                                                                                       <div class="product_list_item">
                                                                                         <ul
-                                                                                            class="product_list p-0 m-0 text-center">
+                                                                                            class="product_list_order_page product_list p-0 m-0 text-center">
                                                                                             @foreach ($vendor->products as $product)
                                                                                                 @if ($vendor->vendor_id == $product->vendor_id)
                                                                                                     <li class="text-center mb-0 alOrderImg">
@@ -243,7 +267,10 @@
                                                                                                         <span class="item_no position-absolute">x{{ $product->quantity }}</span>
                                                                                                     </li>
                                                                                                     <li>
-                                                                                                        <label class="items_price">{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($product->price * $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
+                                                                                                        <label class="items_price">
+                                                                                                        {{$product->product_title}}
+                                                                                                        ({{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($product->price * $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($product->price * $clientCurrency->doller_compare) }})
+                                                                                                        </label>
                                                                                                     </li>
                                                                                                     @php
                                                                                                         $product_total_price = $product->price * $clientCurrency->doller_compare;
@@ -254,7 +281,7 @@
                                                                                                 @endif
                                                                                             @endforeach
                                                                                         </ul>
-
+                                                                                        </div>
                                                                                     </div>
                                                                                     <div class="col-md-5 mt-md-0 mt-sm-2">
                                                                                         <ul class="price_box_bottom m-0 p-0">
@@ -280,6 +307,17 @@
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
+                                                                                            @if ($vendor->taxable_amount  > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Tax') }}</label>
+                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format(($vendor->taxable_amount) * $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format(($vendor->taxable_amount)
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
+
                                                                                             @if ($order->fixed_fee_amount > 0)
                                                                                                 <li
                                                                                                     class="d-flex align-items-center justify-content-between">
@@ -292,6 +330,7 @@
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
+
                                                                                             @if ($vendor->delivery_fee > 0)
                                                                                                 <li
                                                                                                     class="d-flex align-items-center justify-content-between">
@@ -303,6 +342,7 @@
                                                                                                         *
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
+
                                                                                             @endif
 
                                                                                             @if ($vendor->toll_amount > 0)
@@ -335,7 +375,7 @@
                                                                                                  $vendor->taxable_amount + $vendor->service_fee_percentage_amount + $vendor->fixed_fee +
                                                                                                  $vendor->delivery_fee + $vendor->additional_price + $vendor->toll_amount-$order->wallet_amount_used;
                                                                                                     $subtotal_order_price += $product_subtotal_amount;
-                                                                                                    
+
                                                                                                 @endphp
                                                                                                 <span>{{$additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($product_subtotal_amount
                                                                                                     *
@@ -343,7 +383,6 @@
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
-
                                                                                         </ul>
                                                                                     </div>
                                                                                     <?php
@@ -490,12 +529,12 @@
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-                                                                                @if ($order->taxable_amount + $total_other_taxes > 0)
+                                                                                @if ($total_other_taxes > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Tax') }}</label>
-                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format(($order->taxable_amount+$total_other_taxes) * $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format(($order->taxable_amount+$total_other_taxes)
+                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format(($total_other_taxes) * $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format(($total_other_taxes)
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
@@ -648,3 +687,5 @@
                                                 </div>
                                                 {{ $activeOrders->appends(['pageType' => 'activeOrders'])->links() }}
                                             </div>
+                                            <!-- Modal -->
+

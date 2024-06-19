@@ -44,7 +44,9 @@
         display: block;
     }
     .outer-box{
-        min-height: 280px;
+        min-height: 240px;
+        display: flex;
+        justify-content: space-between;
     }
     #address-map-container #pick-address-map {
         width: 100%;
@@ -56,6 +58,10 @@
     .address-input-group .pac-container{
         top:35px!important;
         left:0!important;
+    }
+    .errors {
+        color: #F00;
+        background-color: #FFF;
     }
 </style>
 <section class="section-b-space">
@@ -125,7 +131,7 @@
                                                    <span class="badge badge-warning ml-2">Incomplete</span>
                                                 @endif
                                             </div>
-                                            <div class="address-btn d-flex align-items-center justify-content-end w-100 mt-sm-4 px-2">
+                                            <div class="address-btn d-flex align-items-center justify-content-start w-100 mt-sm-2 mb-2 px-2">
                                                 @if($add->is_primary == 1)
                                                     <a class="btn btn-solid disabled" href="#">{{ __('Primary') }}</a>
                                                 @else
@@ -175,7 +181,7 @@
         <% }else{ %>
             <h5 class="modal-title" id="addedit-addressLabel">{{ __('Add') }} {{ __('Address') }}</h5>
         <% } %>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close_cta close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
     </div>
@@ -219,6 +225,9 @@
                             </div>
                         </div>
                         </div>
+                        <% if(title == 'Edit') { %>
+                        <input type="hidden" name="address_id" id="address_id" value="<%= address.id %>">
+                        <% } %>
                         <input type="hidden" name="latitude" id="latitude" value="<%= (typeof address != 'undefined') ? address.latitude : '' %>">
                         <input type="hidden" name="longitude" id="longitude" value="<%= (typeof address != 'undefined') ? address.longitude : '' %>">
                         <div class="form-row">
@@ -344,7 +353,7 @@
     var update_address_url = "{{ route('address.update', ':id') }}";
     var delete_address_url = "{{ route('deleteAddress', ':id') }}";
     var verify_information_url = "{{ route('verifyInformation', Auth::user()->id) }}";
-   
+
 
     var ajaxCall = 'ToCancelPrevReq';
     $('.verifyEmail').click(function(){
@@ -393,8 +402,8 @@
 
     });
 
-    $(document).on("click", "#updateAddress,#saveAddress", function () {
-    
+    $(document).on("click", "#saveAddress", function () {
+
         var latitude = $('#add_edit_address_form #latitude').val();
         var longitude = $('#add_edit_address_form #longitude').val();
         if(latitude!='' && longitude!='')
@@ -431,17 +440,19 @@
         });
     }
 
-    /*$(document).on("click","#update_address",function() {
-        let city = $('#add_new_address_form #city').val();
-        let state = $('#add_new_address_form #state').val();
-        let street = $('#add_new_address_form #street').val();
-        let address = $('#add_new_address_form #address').val();
-        let country = $('#add_new_address_form #country').val();
-        let pincode = $('#add_new_address_form #pincode').val();
-        let type = $("input[name='address_type']:checked").val();
-        let latitude = $('#add_new_address_form #latitude').val();
-        let longitude = $('#add_new_address_form #longitude').val();
-        let address_id = $('#add_new_address_form #address_id').val();
+    $(document).on("click","#updateAddress",function() {
+        let city = $('#add_edit_address_form #city').val();
+        let state = $('#add_edit_address_form #state').val();
+        let street = $('#add_edit_address_form #street').val();
+        let address = $('#add_edit_address_form #address').val();
+        let country = $('#add_edit_address_form #country').val();
+        let pincode = $('#add_edit_address_form #pincode').val();
+        let type = $('input[name="type"]:checked').val();
+        let latitude = $('#add_edit_address_form #latitude').val();
+        let longitude = $('#add_edit_address_form #longitude').val();
+        let address_id = $('#add_edit_address_form #address_id').val();
+        let extra_info = $('#add_edit_address_form #extra_instruction').val();
+        let house_number = $('#add_edit_address_form #house_number').val();
         $.ajax({
             type: "post",
             url: update_address_url.replace(':id', address_id),
@@ -454,6 +465,8 @@
                 "country": country,
                 "pincode": pincode,
                 "latitude": latitude,
+                "extra_instruction":extra_info,
+                "house_number":house_number,
                 "longitude": longitude,
             },
             success: function(response) {
@@ -476,7 +489,7 @@
                 }
             }
         });
-    });*/
+    });
 
     $(document).on('click', '.showMapHeader', function(){
         var lats = document.getElementById('latitude').value;
@@ -493,7 +506,7 @@
         if(lngs==0){
             lngs=userLongitude;
         }
-      
+
         var myLatlng = new google.maps.LatLng(lats, lngs);
 
         var infowindow = new google.maps.InfoWindow();
@@ -556,6 +569,9 @@
         // var addressMap=new google.maps.Map(document.getElementById("pick-address-map"), mapProp);
         var input = document.getElementById('address');
         var autocomplete = new google.maps.places.Autocomplete(input);
+        if(is_map_search_perticular_country){
+                autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+            }
         autocomplete.bindTo('bounds', bindMap);
 
         google.maps.event.addListener(autocomplete, 'place_changed', function () {

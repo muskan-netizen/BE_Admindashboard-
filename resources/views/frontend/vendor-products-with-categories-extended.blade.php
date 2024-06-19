@@ -17,7 +17,7 @@ $checkSlot = findSlot('', $vendor->id, '');
 
         <!-- section hero start -->
         <section class="heroArea" id="heroMembershipPage">
-            <div class="container-fluid">
+            <div class="container-fluid ">
                 <div class="row">
                     <div class="slider regular">
                         @if (!empty($vendor->banner))

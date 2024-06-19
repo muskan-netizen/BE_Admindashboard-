@@ -11,7 +11,12 @@
 @endphp
 <div class="row mb-sm-2 mb-1">
     <div class="col-lg-12 d-flex justify-content-between align-items-center" id="add_new_address_btn">
+     
+        @if(session()->get('customerLanguage')==40)
+        <h4 class="page-title m-0">Bezorgadres</h4>
+        @else
         <h4 class="page-title m-0">{{ __($label)  }} {{ __('Address') }}</h4>
+       @endif
         @if(!in_array($action , ['dine_in','takeaway','appointment']))
             <a class="add-address ml-auto" href="#add_new_address_form">
                 <i class="fa fa-plus mr-1" aria-hidden="true"></i>
@@ -20,7 +25,7 @@
         @endif
     </div>
 </div>
-@if($action != 'delivery' && $action != 'on_demand' && $action != 'rental' )
+@if($action != 'delivery' && $action != 'on_demand' && $action != 'rental' && $action != 'laundry' )
     @if (!empty($processorProduct) && $processorProduct->is_processor_enable == 1)
         <div>
             <input type="hidden" id="latitude" value="{{ $processorProduct->latitude }}">
@@ -100,20 +105,11 @@
         <div class="view_all_address d-none" id="view_all_address_div">
         @endif
 
-
         @if((($k+1)%2)==0)
             <div class="row w-100">
         @endif
 
-
-
-
-
-
-
-
         {{-- @if($k ==2)
-
 
         <div class="view_all_address d-none" id="view_all_address_div" >
         @endif
@@ -251,6 +247,7 @@
                                     <div class="col-md-6 mb-3">
                                         <label for="state">{{__('State')}}</label>
                                         <input type="text" class="form-control" id="state" placeholder="{{__('State')}}" value="">
+                                        <input type="hidden" class="form-control" id="state_code" placeholder="" value="">
                                         <span class="text-danger" id="state_error"></span>
                                     </div>
                                     <div class="col-md-6 mb-3">

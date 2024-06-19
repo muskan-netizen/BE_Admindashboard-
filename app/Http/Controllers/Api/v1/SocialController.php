@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, Product, Cart, ClientCurrency, Brand, CartAddon, UserDevice, ClientPreference, CartProduct};
+use App\Models\{User, Product, Cart, ClientCurrency, Brand, CartAddon, UserDevice, ClientPreference, CartProduct, UserVendor};
 use Log;
 
 class SocialController extends BaseController{
@@ -96,9 +96,7 @@ class SocialController extends BaseController{
         if($request->has('phone_number')){
             $customer->phone_number = $request->phone_number;
         }
-       // Log::info('$customer->phone_number');
-       // Log::info($customerOldPhoneNumber);
-       // Log::info('$customer->phone_number');
+       
         $customer->phone_number = $customerOldPhoneNumber;
         $customer->status = 1;
         $customer->is_email_verified = 1;
@@ -176,6 +174,10 @@ class SocialController extends BaseController{
                     ]
                 );
             }
+            if( getClientPreferenceDetail()->p2p_check ) {
+                $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $customer->id)->first();
+                $response['vendor_id'] = $vendorUser->vendor_id ?? '';
+             }
             
             $response['status'] = 'Success';
             $response['auth_token'] =  $token;

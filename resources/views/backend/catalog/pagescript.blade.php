@@ -128,13 +128,14 @@
     $(document).on('click', '.addOptionRow-Add', function(e) {
         var d = new Date();
         var n = d.getTime();
-        var $tr = $('.optionTableAdd tbody>tr:first').next('tr');
-        console.log('asasd');
+        var $tr = $('.optionTableAddVarient tr:eq(1)'); 
         var $clone = $tr.clone();
         $clone.find(':text').val('');
+        $clone.find(':hidden').val('');
         $clone.find('.hexa-colorpicker').attr("id", "hexa-colorpicker-" + n);
         $clone.find('.lasttd').html('<a href="javascript:void(0);" class="action-icon deleteCurRow"> <i class="mdi mdi-delete"></i></a>');
-        $('.optionTableAdd').append($clone);
+        $('.optionTableAddVarient').append($clone);
+        $('.hexa-colorpicker').colorpicker();
         var picker = new jscolor("#hexa-colorpicker-" + n, options);
     });
 
@@ -462,7 +463,6 @@
 
     // Attribute script
     $(".addAttributbtn").click(function(e) {
-        console.log('click function called');
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
@@ -559,7 +559,6 @@
     $("#editAttributemodal").on('click', '.deleteCurRow', function() {
         var delete_attr_id = $(this).data('delete_attr_id');
         var closet_tr = $(this).closest('tr');
-
         if( delete_attr_id != 'undefined' && delete_attr_id != undefined ) {
             $.ajax({
                 type: "POST",
@@ -586,6 +585,8 @@
                     $(".editAttributeSubmit").attr("disabled", false);
                 }
             });
+        }else{
+            closet_tr.remove();
         }
     });
 
@@ -613,7 +614,7 @@
         if (did == 1) {
             $('#' + dataFor + 'Attributemodal .hexacodeClass-' + dataFor).hide();
         } else if(did == 2){
-            $('#' + dataFor + 'Attributemodal .hexacodeClass-' + dataFor).show();
+                $('#' + dataFor + 'Attributemodal .hexacodeClass-' + dataFor).show();
         }else if(did == 3) {
             $('#' + dataFor + 'Attributemodal .hexacodeClass-' + dataFor).hide();
             $('.radio-div').removeClass('d-none');

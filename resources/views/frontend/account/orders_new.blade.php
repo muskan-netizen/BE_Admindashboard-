@@ -323,7 +323,7 @@ $timezone = Auth::user()->timezone;
                                                 <div class="row mt-2">
                                                     <div class="col-md-9 mb-3">
                                                         @php
-                                                        
+
                                                         $subtotal_order_price = $total_order_price = $total_tax_order_price = 0;
                                                         @endphp
                                                         @foreach ($order->vendors as $key => $vendor)
@@ -514,7 +514,7 @@ $timezone = Auth::user()->timezone;
                                                                         </li>
                                                                         @elseif($product->reqCancelOrder->status == 'Pending')
                                                                         <li class="bg-txt" style="margin-top: 10px;"><span class="badge badge-warning mr-2" style="font-size:12px">{{ __('Cancel Request Pending') }}</span><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="" aria-hidden="true" data-original-title="{{$product->reqCancelOrder->vendor_reject_reason??''}}"></i></li>
-                                                                       
+
                                                                         @elseif($product->reqCancelOrder->status == 'Rejected')
                                                                         <li class="bg-txt" style="margin-top: 10px;"><span class="badge badge-danger mr-2" style="font-size:12px">{{ __('Cancel Request Rejected') }}</span><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="" aria-hidden="true" data-original-title="{{$product->reqCancelOrder->vendor_reject_reason??''}}"></i></li>
                                                                         @endif
@@ -841,9 +841,9 @@ $timezone = Auth::user()->timezone;
                                                                     <label class="m-0">{{ __('Total Payable') }}</label>
                                                                     <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->payable_amount+$order->fixed_fee_amount)) : Session::get('currencySymbol') .decimal_format($order->payable_amount+$order->fixed_fee_amount)}}
 
-                                                                        
+
                                                                         $order->is_postpay = 0;
-                                                                       
+
 
                                                                         @if ($order->payment_option_id != 1 && $order->is_postpay == 1 && $order->payment_status == 0)
                                                                         <br /><span style="color:var(--theme-deafult);">Unpaid</span>
@@ -916,7 +916,7 @@ $timezone = Auth::user()->timezone;
                                                         <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
                                                     </div>
                                                     @if ($client_preference_detail->business_type != 'taxi')
-                                                    <div class="col-md-3">
+                                                    <div class="col-md-3 alOrderStatus">
                                                         <h4>{{ __('Address') }}</h4>
                                                         @if($order->luxury_option_id == 3)
 
@@ -1012,10 +1012,6 @@ $timezone = Auth::user()->timezone;
                                                                                 {{ __(ucfirst($vendor->order_status)) }}</label>
                                                                         </li>
                                                                         @endif
-
-
-
-
                                                                         @if (!empty($vendor->dispatch_traking_url))
                                                                         <li>
                                                                             <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
@@ -2117,7 +2113,7 @@ $timezone = Auth::user()->timezone;
                 </button>
             </div>
             <div class="modal-body text-center">
-                <h6 class="m-0 px-3">{{__('Are u sure u want to repeat same order')}}</h6>
+                <h6 class="m-0 px-3">{{__('Are you sure you want to repeat same order')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
@@ -2206,6 +2202,8 @@ $timezone = Auth::user()->timezone;
 
     });
     var ajaxCall = 'ToCancelPrevReq';
+    var payment_obo_url = "{{route('obo.pay')}}";
+    var livee_payment_url="{{route('livee.pay')}}"
     var credit_tip_url = "{{ route('user.tip_after_order') }}";
     var payment_stripe_url = "{{ route('payment.stripe') }}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";

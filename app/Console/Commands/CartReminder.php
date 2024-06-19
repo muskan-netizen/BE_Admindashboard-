@@ -49,7 +49,6 @@ class CartReminder extends Command
         $clients = Client::select('database_name', 'sub_domain')->get();
         foreach ($clients as $client) {
             $database_name = 'royo_' . $client->database_name;
-            //// Log::info("checking cart start: {$database_name}!");
             $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME =  ?";
             $db = DB::select($query, [$database_name]);
             if ($db) {
@@ -90,12 +89,13 @@ class CartReminder extends Command
                                     'body'  => $notification_content->content,
                                     'sound' => "default",
                                     "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                                    'click_action' => $redirect_URL,
+                                    // 'click_action' => $redirect_URL,
                                     "android_channel_id" => "default-channel-id"
                                 ],
                                 "data" => [
                                     'title' => $notification_content->subject,
                                     'body'  => $notification_content->content,
+                                    'click_action' => $redirect_URL,
                                     'type' => "reminder_notification"
                                 ],
                                 "priority" => "high"
@@ -105,10 +105,8 @@ class CartReminder extends Command
                     }
                 }
                 DB::disconnect($database_name);
-                //// Log::info("checking cart end: {$database_name}!");
             } else {
                 DB::disconnect($database_name);
-                //// Log::info("checking cart  end: {$database_name}!");
             }
         }
     }

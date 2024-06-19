@@ -25,7 +25,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\WalletController;
 use App\Http\Controllers\Front\UserSubscriptionController;
-use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Client, ClientPreference, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser};
+use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Client, ClientPreference, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SavedCards, SubscriptionPlansUser};
 
 class PaymentResourceController extends BaseController
 {
@@ -75,43 +75,75 @@ class PaymentResourceController extends BaseController
 
         $user = Auth::user();
         \Stripe\Stripe::setApiKey($api_key);
-
+        $customer_id = $user->stripe_customer_id;
         $payment_form = $request->action;
-        // $saved_payment_method = UserSavedPaymentMethods::where('user_id', $user->id)->where('payment_option_id', $request->payment_option_id)->first();
-        // if (!$saved_payment_method) {
+        if(empty($customer_id)){ //if customer is not created and no saved card is being used to pay
             $customerResponse = \Stripe\Customer::create(array(  
                 'description' => 'Creating Customer',
                 'name' => $user->name,
-                'email' => $user->email,
+                'email' => $user->email, 
                 'metadata' => [
                     'user_id' => $user->id,
                     'phone_number' => $user->phone_number
                 ]
             ));  
             $customer_id = $customerResponse['id'];
-            if ($customer_id) {
-                $payment_method = new UserSavedPaymentMethods;
-                $payment_method->user_id = Auth::user()->id;
-                $payment_method->payment_option_id = $request->payment_option_id;
-                $payment_method->customerReference = $customer_id;
-                $payment_method->save();
+            $user->stripe_customer_id = $customer_id;
+            User::find($user->id)->update(['stripe_customer_id' => $customer_id]);
+        }
+            #  Create the Customer if not exists
+            if(isset($request->card_id)){
+                $savedPaymentMethod = SavedCards::where('user_id', $user->id)->where('card_id',$request->card_id)->orderBy('id', 'DESC')->first();
             }
-        // }else {
-        //     $customer_id = $saved_payment_method->customerReference;
-        // }
+            $customer_id = $savedPaymentMethod->customer_id ?? $customer_id;
+            $postdata = array(
+                'payment_method'       => $savedPaymentMethod->card_id ?? $request->payment_method_id,
+                'amount'               => $request->amount * 100,
+                'currency'             => $this->currency,
+                'confirmation_method'  => 'automatic',
+                'confirm'              => true,
+                'customer'             => $customer_id,
+                'metadata' => [
+                    'user_id' => $user->id,
+                    'payment_form' => $payment_form
+                ]
+            );
+        // $saved_payment_method = UserSavedPaymentMethods::where('user_id', $user->id)->where('payment_option_id', $request->payment_option_id)->first();
+        // if (!$saved_payment_method) {
+            // $customerResponse = \Stripe\Customer::create(array(  
+            //     'description' => 'Creating Customer',
+            //     'name' => $user->name,
+            //     'email' => $user->email,
+            //     'metadata' => [
+            //         'user_id' => $user->id,
+            //         'phone_number' => $user->phone_number
+            //     ]
+            // ));  
+        //     $customer_id = $customerResponse['id'];
+        //     User::find($user->id)->update(['stripe_customer_id' => $customer_id]);
+        //     if ($customer_id) {
+        //         $payment_method = new UserSavedPaymentMethods;
+        //         $payment_method->user_id = Auth::user()->id;
+        //         $payment_method->payment_option_id = $request->payment_option_id;
+        //         $payment_method->customerReference = $customer_id;
+        //         $payment_method->save();
+        //     }
+        // // }else {
+        // //     $customer_id = $saved_payment_method->customerReference;
+        // // }
 
-        $postdata = array(
-            'payment_method'       => $request->payment_method_id,
-            'amount'               => $request->amount * 100,
-            'currency'             => $this->currency,
-            'confirmation_method'  => 'automatic',
-            'confirm'              => true,
-            'customer'             => $customer_id,
-            'metadata' => [
-                'user_id' => $user->id,
-                'payment_form' => $payment_form
-            ]
-        );
+        // $postdata = array(
+        //     'payment_method'       => $request->payment_method_id,
+        //     'amount'               => $request->amount * 100,
+        //     'currency'             => $this->currency,
+        //     'confirmation_method'  => 'automatic',
+        //     'confirm'              => true,
+        //     'customer'             => $customer_id,
+        //     'metadata' => [
+        //         'user_id' => $user->id,
+        //         'payment_form' => $payment_form
+        //     ]
+        // );
 
         if($payment_form == 'cart'){
             $address_id = $request->address_id;
@@ -151,7 +183,6 @@ class PaymentResourceController extends BaseController
     // Confirm Payment Intent For Stripe
     public function confirmPaymentIntent(Request $request)
     {
-       
         $stripe_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'stripe')->where('status', 1)->first();
         $creds_arr = json_decode($stripe_creds->credentials);
         $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
@@ -196,6 +227,7 @@ class PaymentResourceController extends BaseController
     {
         try {
             $user    = Auth::user();
+
             $address = UserAddress::where('user_id', $user->id);
             $amount = $parameters['total_amount'];
             $payment_form = $parameters['payment_form'];
@@ -207,59 +239,63 @@ class PaymentResourceController extends BaseController
             $returnUrl = '';
 
             if($payment_form == 'cart'){
+
                 // $orderController = new OrderController();
                 // $result = $orderController->postPlaceOrder($request);
                 // $returnUrl = $result;
-                // $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
-                // $cart_id = $cart ? $cart->id : 0 ;
+                $cart = Cart::select('id','user_id')->where('status', '0')->where('user_id', $user->id)->first();
+                $cart_id = $cart ? $cart->id : 0 ;
                 $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                 if ($order) {
-                    // $order->payment_status = 1;
-                    // $order->save();
-                    // $payment_exists = Payment::where('transaction_id', $transactionId)->first();
-                    // if (!$payment_exists) {
-                    //     $payment = new Payment();
-                    //     $payment->date = date('Y-m-d');
-                    //     $payment->order_id = $order->id;
-                    //     $payment->transaction_id = $transactionId;
-                    //     $payment->balance_transaction = $amount;
-                    //     $payment->type = 'cart';
-                    //     $payment->save();
+                    if ($user->balanceFloat > 0 && $order->wallet_amount_used > 0) {
+                            $user->wallet->withdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
+                    }
+                    $order->payment_status = 1;
+                    $order->save();
+                    $payment_exists = Payment::where('transaction_id', $transactionId)->first();
+                    if (!$payment_exists) {
 
-                    //     // Auto accept order
-                    //     $orderController = new OrderController();
-                    //     $orderController->autoAcceptOrderIfOn($order->id);
+                        $payment = new Payment();
+                        $payment->date = date('Y-m-d');
+                        $payment->order_id = $order->id;
+                        $payment->user_id = $user->id;
+                        $payment->transaction_id = $transactionId;
+                        $payment->balance_transaction = $amount;
+                        $payment->type = 'cart';
+                        $payment->save();
 
-                    //     // Remove cart
-                    //     Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
-                    //     CartAddon::where('cart_id', $cart_id)->delete();
-                    //     CartCoupon::where('cart_id', $cart_id)->delete();
-                    //     CartProduct::where('cart_id', $cart_id)->delete();
-                    //     CartProductPrescription::where('cart_id', $cart_id)->delete();
-                    //     CartDeliveryFee::where('cart_id', $cart_id)->delete();
+                        // Auto accept order
+                        $orderController = new OrderController();
+                        $orderController->autoAcceptOrderIfOn($order->id);
+                        // Remove cart
+                        Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+                        CartAddon::where('cart_id', $cart_id)->delete();
+                        CartCoupon::where('cart_id', $cart_id)->delete();
+                        CartProduct::where('cart_id', $cart_id)->delete();
+                        CartProductPrescription::where('cart_id', $cart_id)->delete();
+                        CartDeliveryFee::where('cart_id', $cart_id)->delete();
 
-                    //     // Send Notification
-                    //     if (!empty($order->vendors)) {
-                    //         foreach ($order->vendors as $vendor_value) {
-                    //             $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
-                    //             $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
-                    //             $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
-                    //         }
-                    //     }
-                    //     $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
-                    //     $super_admin = User::where('is_superadmin', 1)->pluck('id');
-                    //     $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                        // Send Notification
+                        if (!empty($order->vendors)) {
+                            foreach ($order->vendors as $vendor_value) {
+                                $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                                $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
+                                $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+                            }
+                        }
+                        
+                        $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+                        $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                        $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
 
-                    //     $request->request->add(['user_id'=>$order->user_id,'address_id'=>$order->address_id]);
-                    //     //Send Email to customer
-                    //     $orderController->sendSuccessEmail($request, $order);
-                    //     //Send Email to Vendor
-                    //     foreach ($order->vendors->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
-                    //         $orderController->sendSuccessEmail($request, $order, $vendor_id);
-                    //     }
-                    // }
-                    // Send Email
-                    //   $this->successMail();
+                        $request->request->add(['user_id'=>$order->user_id,'address_id'=>$order->address_id]);
+                        //Send Email to customer
+                        $orderController->sendSuccessEmail($request, $order);
+                        //Send Email to Vendor
+                        foreach ($order->vendors->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+                            $orderController->sendSuccessEmail($request, $order, $vendor_id);
+                        }
+                    }
                 }
                 return $this->successResponse($order, __('Order placed successfully.'), 200);
                 

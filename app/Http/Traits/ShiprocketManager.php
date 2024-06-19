@@ -47,10 +47,8 @@ trait ShiprocketManager{
     }
 
     public function createOrder($token,$data){
-        //\Log::info('create shiproket order');
         $endpoint="/orders/create/adhoc";
         $response=$this->postCurl($endpoint,$data,trim($token));
-        //\Log::info(json_encode($response));
 
         return $response;
     }

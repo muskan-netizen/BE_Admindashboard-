@@ -4,11 +4,11 @@
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
 @php
-$additionalPreference = getAdditionalPreference(['is_token_currency_enable','is_service_product_price_from_dispatch']);
+$additionalPreference = getAdditionalPreference(['is_token_currency_enable','is_service_product_price_from_dispatch','is_service_price_selection']);
 $is_service_product_price_from_dispatch_forOnDemand = 0;
-if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
-    $is_service_product_price_from_dispatch_forOnDemand =1;
-}
+
+$getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
+$is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is_price_from_freelancer'] ?? 0;
 @endphp
 @section('content')
 <style type="text/css">
@@ -28,7 +28,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                     </div>
                 </div>
             </div>
-            <div class="row mb-5 homepageSix">
+            <div class="row mb-4 homepageSix">
                 <div class="collection-filter col-lg-3 main-fillter filter_brand">
                         <div class="collection-filter-block bg-transparent p-0">
                             <div class="collection-mobile-back">
@@ -169,7 +169,9 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
     $('.productFilter').click(function(){
         filterProducts();
     });
-
+    $(document).on('change','.sortingFilter',function(){
+        filterProducts();
+    });
     function filterProducts(){
         var brands = [];
         var variants = [];
@@ -187,7 +189,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
             }
         });
         var range = $('.rangeSliderPrice').val();
-
+        var order_type = $('.sortingFilter').val();
         ajaxCall = $.ajax({
             type: "post",
             dataType: "json",
@@ -197,7 +199,8 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                 "brands": brands,
                 "variants": variants,
                 "options": options,
-                "range": range
+                "range": range,
+                "order_type" : order_type,
             },
             beforeSend : function() {
                 if(ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {

@@ -181,7 +181,7 @@
 @endif
 <section class="alSixMainMenu p-0">
    @if(count($navCategories))
-   <div class="menu-navigation_al">
+   <div class="menu-navigation_al test">
    <div class="container-fulid">
       <div class="row">
          <div class="col-12">
@@ -594,7 +594,7 @@
          </div>
       </section>
       @elseif($homePageLabel->slug == 'vendors')
-      <section class="suppliers-section container ">
+      <section class="suppliers-section container  mt-4">
          <div class=" top-heading d-flex justify-content-between align-self-center">
             <h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
             <a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a>
@@ -643,7 +643,7 @@
                         $video_extensions = ['mp4', 'avi', 'mov', 'wmv']; // list of video extensions
                      @endphp
                      @if(in_array($extension, $image_extensions))
-                        <img alt="" title="" class="blur-up lazyload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" height="300">	
+                        <img alt="" title="" class="blur-up lazyload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" >	
                      @elseif (in_array($extension, $video_extensions))
                         <video id="video1" width="100%" controls autoplay muted>
                            <source src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" type="video/mp4">

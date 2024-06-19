@@ -138,12 +138,19 @@ trait ApiResponser
 
 	protected function errorResponse($message = null, $code, $data = null)
 	{
+		$validCodes = range(100, 599);
+
+		if (!is_int($code) || !in_array($code, $validCodes)) {
+			$code = 500;
+		}
 		return response()->json([
 			'status' => 'Error',
 			'message' => $message,
-			'data' => $data
+			'data' => $data,
+			'code' => $code
 		], $code);
 	}
+
 
 	protected function updateaverageRating($product_id, $message = null, $code = 200)
 	{
@@ -459,12 +466,18 @@ trait ApiResponser
             } elseif ($order_status_id == 4) {
                 $notification_content = NotificationTemplate::where('id', 7)->first();
             } elseif ($order_status_id == 5) {
-                $notification_content = NotificationTemplate::where('id', 8)->first();
+                //Check for order is takeaway
+                if(@$orderData->luxury_option_id == 3)
+                {
+                    $notification_content = NotificationTemplate::where('slug', 'order-out-for-takeaway-delivery')->first();
+                }else{
+                    $notification_content = NotificationTemplate::where('id', 8)->first();
+                }
             } elseif ($order_status_id == 6) {
                 $notification_content = NotificationTemplate::where('id', 9)->first();
             }
             if ($notification_content) {
-                
+
                 $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
                 $data = [
                     "registration_ids" => $devices,
@@ -473,7 +486,7 @@ trait ApiResponser
                         'body'  => $body_content,
                         'sound' => "default",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                        'click_action' => route('user.orders'),
+                        'click_action' => url('user/orders'),
                         "android_channel_id" => "default-channel-id"
                     ],
                     "data" => [
@@ -491,8 +504,8 @@ trait ApiResponser
 
 	protected function sendSmsNew($provider, $sms_key, $sms_secret, $sms_from, $to, $body){
         try{
-            $body = $body['body']??'';
             $template_id = $body['template_id']??''; //sms Template_id
+            $body = $body['body']??'';
             $client_preference =  getClientPreferenceDetail();
             if($client_preference->sms_provider == 1)
             {
@@ -524,19 +537,35 @@ trait ApiResponser
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->africasTalking_sms($to,$body,$crendentials);
             }
+			elseif($client_preference->sms_provider == 7) //for Vonage
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->vonage_sms($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 9) //for Ethiopia
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->ethiopia($to,$body,$crendentials);
+            }
+			elseif($client_preference->sms_provider == 10) //sms country
+    		{
+    		$crendentials = json_decode($client_preference->sms_credentials);
+    		$send = $this->sms_country($to,$body,$crendentials);
+    		}
 			else{
                 $client = new TwilioClient($sms_key, $sms_secret);
                 $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
             }
         }
         catch(\Exception $e){
+            \Log::info(['err' => $e->getMessage()]);
             return '2';
         }
         return '1';
 	}
 
-	
-	
+
+
 
 
 }

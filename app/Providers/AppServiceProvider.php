@@ -13,6 +13,7 @@ use App\Models\SocialMedia;
 use Illuminate\Http\Request;
 use App\Models\{ClientPreference, PaymentOption,WebStylingOption};
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\ServiceProvider;
 
@@ -49,12 +50,17 @@ class AppServiceProvider extends ServiceProvider
         }
         $client_head = Client::where(['id' => 1])->first();
 
-        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree','payphone','stripe_oxxo','stripe_ideal','khalti'];
+        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree','payphone','stripe_oxxo','stripe_ideal','khalti','data_trans'];
         $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = $cashfree_test_mode = $stripe_oxxo_publishable_key = $stripe_ideal_publishable_key = $khalti_api_key = '';
-        $payment_options = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
-        if($payment_options){
+        if(checkColumnExists('payment_options', 'test_mode')){
+            $payment_options = PaymentOption::select('code','credentials','test_mode')->whereIn('code', $payment_codes)->where('status', 1)->get();
+        }else{
+            $payment_options = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
+        }
+
+        if(@$payment_options){
             foreach($payment_options as $option){
-          
+
                 $creds = json_decode($option->credentials);
                 if($option->code == 'stripe'){
                     $stripe_publishable_key = (isset($creds->publishable_key) && (!empty($creds->publishable_key))) ? $creds->publishable_key : '';
@@ -84,6 +90,9 @@ class AppServiceProvider extends ServiceProvider
                 if($option->code == 'khalti'){
                     $khalti_api_key = (isset($creds->api_key) && (!empty($creds->api_key))) ? $creds->api_key : '';
                 }
+                if($option->code == 'data_trans'){
+                    $data_trans_script_url = $option->test_mode ? 'https://pay.sandbox.datatrans.com/upp/payment/js/datatrans-2.0.0.js' : 'https://pay.datatrans.com/upp/payment/js/datatrans-2.0.0.js';
+                }
             }
         }
         $count = 0;
@@ -103,7 +112,7 @@ class AppServiceProvider extends ServiceProvider
 
         $client_payment_options = PaymentOption::where('status', 1)->pluck('code')->toArray();
        // $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-     
+
         view()->share('last_mile_common_set', $last_mile_common_set);
 
         view()->share('favicon', $favicon_url);
@@ -122,7 +131,8 @@ class AppServiceProvider extends ServiceProvider
         view()->share('cashfree_test_mode', $cashfree_test_mode);
         view()->share('payphone_id', $payphone_id??'');
         view()->share('payPhoneToken', $payphone_token??'');
-       
+        view()->share('data_trans_script_url', $data_trans_script_url??'');
+
     }
 
     public function connectDynamicDb($request)
@@ -204,25 +214,24 @@ class AppServiceProvider extends ServiceProvider
         // return false;
 
         $preference = ClientPreference::first();
-        if( isset($preference) && Schema::hasColumn('client_preferences', 'business_type') && $preference->business_type == 'taxi'){
-            if ( Schema::hasColumn('client_preferences', 'need_dispacher_ride') && Schema::hasColumn('client_preferences', 'pickup_delivery_service_key')  && Schema::hasColumn('client_preferences', 'pickup_delivery_service_key_code')  ) {
+        if( isset($preference)  && $preference->business_type == 'taxi'){
+
                 if($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
                 return $preference;
                 else
                 return false;
-            }
-            return false;
-        }elseif(  isset($preference)  && Schema::hasColumn('client_preferences', 'business_type') &&  $preference->business_type == 'laundry'){
-            if ( Schema::hasColumn('client_preferences', 'need_laundry_service') && Schema::hasColumn('client_preferences', 'laundry_service_key')  && Schema::hasColumn('client_preferences', 'laundry_service_key_code')  ) {
+
+
+        }elseif(  isset($preference)  &&  $preference->business_type == 'laundry'){
+
                 if($preference->need_laundry_service == 1 && !empty($preference->laundry_service_key) && !empty($preference->laundry_service_key_code) && !empty($preference->laundry_service_key_url))
                 return $preference;
                 else
                 return false;
-            }
-            return false;
+
 
         } else{
-            if (isset($preference) && Schema::hasColumn('client_preferences', 'need_delivery_service') && Schema::hasColumn('client_preferences', 'delivery_service_key_url')  && Schema::hasColumn('client_preferences', 'delivery_service_key_code')  ) {
+            if (isset($preference)  ) {
                 if($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
                 return $preference;
                 else

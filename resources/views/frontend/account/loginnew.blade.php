@@ -35,7 +35,8 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                     @endif
                     @if(@session('preferences')->apple_login == 1)
                     <li>
-                        <a href="javascript::void(0);">
+                        {{-- <a href="javascript::void(0);"> --}}
+                            <a href="{{url('auth/apple')}}">
                             <img src="{{asset('front-assets/images/apple.svg')}}">
                         </a>
                     </li>
@@ -302,18 +303,39 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                 if(email_filter.test(uname)){
                     $("#username").removeClass("is-invalid");
                     $("#error-msg").hide();
-                    if($("#password-wrapper").is(":visible")){
-                        if($("#password-wrapper input").val() == ''){
-                            error = 1;
-                            $("#error-msg").show();
-                            $("#error-msg").html('Password field is required');
-                        }
-                    }else{
-                        error = 1;
+
+
+
+                    var form_inputs = $("#login-form-new").serializeArray();
+            
+            $.each(form_inputs, function(i, input) {
+                if(input.name == 'full_number'){
+                    input.value = phone;
+                }
+            });
+            $.ajax({
+                data: form_inputs,
+                type: "POST",
+                dataType: 'json',
+                url: "{{route('check-valid-email')}}",
+                success: function (response) {
+                    if (response.status == "Success") {
+                        
+                       
                         $("#password-wrapper").show();
                         $("#password-wrapper input").attr("required", true);
                         $("#password-wrapper input").trigger("focus");
+                        
                     }
+                    else{
+                           
+                           $("#error-msg").show();
+                           $("#error-msg").html(response.message);
+
+                     }
+                }
+            });
+
                 }else{
                     error = 1;
                     $("#username").addClass("is-invalid");
@@ -381,8 +403,16 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                         });
                     }
                     else{
-                        $("#error-msg").html(response.message);
-                        $("#error-msg").show();
+
+                        if((response.message == 'Incorrect Password') && ($('#password-field').val() == ''))
+                        {
+                            $("#error-msg").html('');
+                            $("#error-msg").hide();
+                        }else{
+                            $("#error-msg").html(response.message);
+                             $("#error-msg").show();
+                        }
+                       
                     }
                 }
             });

@@ -21,7 +21,7 @@
     <div class="row align-items-center">
         <div class="col-sm-12">
             <div class="page-title-box alCancelOrderRequestsPageDashboard align-items-center d-md-flex justify-content-between my-2">
-                <h4 class="page-title">{{ __('Cancel Order Requests') }}</h4>
+                <h4 class="page-title"><button onclick="window.location='{{ route('order.index') }}'" class="back-button" style="border: none"><i class="fa fa-arrow-left" aria-hidden="true"></i></button> {{ __('Cancel Order Requests') }}</h4>
                 <div class="float-right">
                     <div class="row align-items-center ">
                         <div class="col-sm-4 mb-1">

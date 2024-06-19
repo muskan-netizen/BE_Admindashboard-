@@ -18,11 +18,11 @@ $(function () {
 
     var slotValidater = 2;
 
+
     var footer_height = jQuery('.footer-light').height();
     var header_height = jQuery('.site-header').height();
     var window_height = jQuery(window).height();
     var header_content_width = jQuery('#content-wrap').height();
-
     // console.log('header_height',header_height,'footer_height',footer_height);
     jQuery(".al_offset-top-home, .inner-pages-offset").css('margin-top', header_height+'px');
     jQuery("#content-wrap").css('padding-bottom', footer_height);
@@ -179,7 +179,8 @@ window.easyZoomInitialize = function easyZoomInitialize() {
 
 window.loadMainMenuSlider = function loadMainMenuSlider() {
     $('.menu-slider').css("display", "flex");
-    $(".menu-slider").slick({arrows:!0,dots:!1,infinite:!1,variableWidth:!0,autoplay:!1,speed:300,slidesToShow:13,slidesToScroll:3,responsive:[{breakpoint:1800,settings:{slidesToShow:12,slidesToScroll:2}},{breakpoint:1400,settings:{slidesToShow:10,slidesToScroll:2}},{breakpoint:1367,settings:{slidesToShow:8,slidesToScroll:2}},{breakpoint:991,settings:{slidesToShow:6,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:4,slidesToScroll:2}},{breakpoint:576,settings:{slidesToShow:4,slidesToScroll:2}}]});
+    $(".menu-slider").slick({arrows:true,dots:!1,infinite:!1,variableWidth:!0,autoplay:!1,speed:300,slidesToShow:9,slidesToScroll:1});
+    // $(".menu-slider").slick({arrows:true,dots:!1,infinite:!1,variableWidth:!0,autoplay:!1,speed:300,slidesToShow:9,slidesToScroll:4,responsive:[{breakpoint:1800,settings:{slidesToShow:12,slidesToScroll:2}},{breakpoint:1400,settings:{slidesToShow:10,slidesToScroll:2}},{breakpoint:1367,settings:{slidesToShow:8,slidesToScroll:2}},{breakpoint:991,settings:{slidesToShow:6,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:4,slidesToScroll:2}},{breakpoint:576,settings:{slidesToShow:4,slidesToScroll:2}}]});
 }
 
 loadMainMenuSlider();
@@ -299,7 +300,6 @@ $(document).ready(function () {
         if (urlParams.has('ordernumber')) {
             order_number = urlParams.get('ordernumber');
         }
-
         paymentSuccessViaPaypal(urlParams.get('amount'), urlParams.get('token'), urlParams.get('PayerID'), path, tipAmount, order_number);
     }
 
@@ -451,13 +451,21 @@ $(document).ready(function () {
                 "variant_id": $('#prod_variant_id').val()
             },
             success: function (res) {
+                $('.wishListCount').removeClass('fa-heart');
+                $('.wishListCount').removeClass('fa-heart-o');
                 if (res.status == "success") {
                     if (_this.hasClass('btn-solid')) {
                         if (res.message.indexOf('added') !== -1) {
                             _this.text(remveFrmWishlist);
                         } else {
                             _this.text(addWishlist);
+
                         }
+                    }
+                    if(res.wishListCount > 0){
+                        $('.wishListCount').addClass('fa-heart');
+                    }else{
+                        $('.wishListCount').addClass('fa-heart-o');
                     }
                 } else {
                     location.reload();
@@ -571,6 +579,7 @@ $(document).ready(function () {
                                 $("#subscription_payment #features_list").html(response.sub_plan.features);
                                 $("#subscription_payment #subscription_id").val(sub_id);
                                 $("#subscription_payment #subscription_amount").val(response.sub_plan.price);
+                                $("#subscription_payment #type_id").val(response.sub_plan.type_id);
                                 $("#subscription_payment #subscription_payment_methods").html('');
                                 let payment_method_template = _.template($('#payment_method_template').html());
                                 $("#subscription_payment #subscription_payment_methods").append(payment_method_template({ payment_options: response.payment_options }));
@@ -578,6 +587,21 @@ $(document).ready(function () {
                                     $("#subscription_payment .subscription_confirm_btn").hide();
                                 }
                                 $("#subscription_payment").modal("show");
+                                if(response.sub_plan.type_id == 2){
+									var form = document.getElementById('meal-subscription-form');
+						          	  var formData = new FormData(form); // Create a new FormData object
+
+						            var serializedData = JSON.stringify(Object.fromEntries(formData)); // Serialize the form data to JSON
+
+						            var serializedField = document.createElement("input"); // Create a new input element
+						            serializedField.type = "hidden";
+						            serializedField.name = "serializedForm";
+						            serializedField.value = serializedData;
+
+						            document.getElementById('subscription_payment_form').appendChild(serializedField); // Append the serialized field to the form
+
+						            // Display the serialized form data in the console
+								}
                                 if(stripe_publishable_key != ''){
                                     stripeInitialize();
                                 }
@@ -612,6 +636,26 @@ $(document).ready(function () {
         var selected_option = $("input[name='subscription_payment_method']:checked");
         // var subscription_id = $('#subscription_payment_form #subscription_id').val();
         var payment_option_id = selected_option.data("payment_option_id");
+
+        if(payment_option_id == 58){
+            var expData = $('#date-element-powertrans').val();
+            var [expMonth, expYear] = [expData.slice(2), expData.slice(0, 2)]
+            var newDate = expMonth+'/'+expYear;
+            cardJson = {
+                'cno': $('#card-element-powertrans').val(),
+                'dt': newDate,
+                'cv': $('#cvv-element-powertrans').val(),
+                'name':'powertrans',
+            }
+            if(cardValidation(cardJson)){
+                console.log('Credit card information is valid.');
+            }
+            else {
+                success_error_alert('error', 'Invalid credit card information', "#powertrans_card_error");
+                return false;
+            }
+        }
+
         if ((selected_option.length > 0) && (payment_option_id > 0)) {
             subscriptionPaymentOPtions(payment_option_id);
 
@@ -622,6 +666,7 @@ $(document).ready(function () {
     });
 
     function productRemove(product_id, cartproduct_id, vendor_id) {
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -658,6 +703,7 @@ $(document).ready(function () {
                     if($(`#add_button_href${cartproduct_id}`).length > 0){
                         $(`#add_button_href${cartproduct_id}`).show();
                         $(`#added_button_href${cartproduct_id}`).hide();
+                        $(`#add_button_href${cartproduct_id}`).text('Add');
                     }
                     if($(`#add_button_href${product_id}`).length > 0){
                         $(`#add_button_href${product_id}`).show();
@@ -700,7 +746,7 @@ $(document).ready(function () {
             if ($("#cart_table").length > 0) {
                 $(".spinner-box").show();
                 $("#cart_table").hide();
-            }   
+            }
             if(is_service_product_price_from_dispatch_forOnDemand==1){
                 id="cart_address_id_{{$address->id}}"
                 $("input:radio[name=address_id]:checked")[0].checked = false;
@@ -835,7 +881,6 @@ $(document).ready(function () {
                let cart_vendor_id = $(this).attr("data-vendor_id");
                var href = get_product_faq+"/"+cart_product_id;
                 $.get(href, function(response) {
-                    //console.log(response);
                     $('#cart_product_order_form').modal('show');
                     $('#cart_product-order-form-modal').html(response);
                  });
@@ -871,7 +916,6 @@ $(document).ready(function () {
 
         $(this).attr("disabled", true);
         var form = document.getElementById('category_kyc_form_in_cart');
-        var formData = new FormData(form);
         var data_uri = post_category_kyc_document;
 
         $.ajaxSetup({
@@ -950,6 +994,24 @@ $(document).ready(function () {
     }
     $(document).on("click", "#order_placed_btn", async function () {
 
+        $('.adone_item .item').each(function(index, element){
+            let min = $(this).data('min');
+            let max = $(this).data('max');
+            let checkedBox = $(this).find('input[type="checkbox"]:checked').length
+            if(checkedBox < min || checkedBox > max){
+
+                $(this).css('transition','border 0.2s ease-in-out');
+                $(this).css('border','1px solid red');
+
+                setTimeout(() => {
+                    $(this).css('border','none');
+                    $(this).css('transition','none');
+                }, 3000);
+            }
+        });
+
+        // return true;
+
         if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val()!=$("#schedule_datetime").val())){
             success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
             $("#schedule_datetime").val($("#edit_order_schedule_datetime").val());
@@ -962,6 +1024,7 @@ $(document).ready(function () {
                 $(this).addClass('has_error');
             }
         });
+
         if($(".prescription_btn").hasClass('has_error')){
             Swal.fire({
                 icon: 'error',
@@ -970,6 +1033,36 @@ $(document).ready(function () {
                 //footer: '<a href="">Why do I have this issue?</a>'
             })
             return false;
+        }
+
+
+
+            // var checkboxes = $('.checked-cart-product');
+            // var checkedCheckboxes = checkboxes.filter(':checked');
+            // if (checkedCheckboxes.length === 0) {
+
+            //     Swal.fire({
+            //         icon: 'error',
+            //         title: 'Oops...',
+            //         text: 'Please select at least one product.',
+            //         //footer: '<a href="">Why do I have this issue?</a>'
+            //     });
+            //     return false;
+            // }
+
+
+
+        if ($("#agree_term_check").length > 0) {
+            var checkbox = document.getElementById("agree_term_check");
+            if (!checkbox.checked) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please accept terms and conditions.',
+                    //footer: '<a href="">Why do I have this issue?</a>'
+                });
+                return false;
+            }
         }
 
         var delivery_type = 'D';
@@ -989,6 +1082,7 @@ $(document).ready(function () {
 
 
         //$("input[name='category_kyc_ids']").length > 0 ||
+
         if( ($("input[name='without_category_kyc']").val() !=1 ) ){
             success_error_alert('error', 'User Place Order is required! kindly fill the details.', ".cart_response");
             return false;
@@ -1005,7 +1099,6 @@ $(document).ready(function () {
             })
             return false;
         }
-
 
         var vendorScheduleDatetime = $('.vendor_schedule_datetime').length
         if(vendorScheduleDatetime > 0){
@@ -1024,6 +1117,7 @@ $(document).ready(function () {
             $("#login_modal").modal("show");
             return false;
         }
+
         var address = $("input[name='address_id']").val();
         if ((vendor_type == 'delivery' || vendor_type == 'on_demand' || vendor_type == 'rental') && ((address == '') || (address < 1) || ($("input[name='address_id']").length < 1))) {
             success_error_alert('error', 'Please add a valid address to continue', ".cart_response");
@@ -1105,6 +1199,13 @@ $(document).ready(function () {
         let comment_for_dropoff_driver = $("input[name='comment_for_dropoff_driver']").val(); //commnet for dropoff
         let comment_for_vendor = $("input[name='comment_for_vendor']").val(); //commnet for vendor
 
+    var bookingOptionId ='';
+    var rentalProtectionId = '';
+    // var addonsId = '';
+    // var addonsOptionId = '';
+    var rentalProtectionId = '';
+    var bookingOptionId = '';
+
         if(business_type == 'laundry' && scheduling_with_slots == 1){
             var schedule_pickup = schedule_dt;
             var schedule_dropoff = schedule_dt_dropoff;
@@ -1128,6 +1229,7 @@ $(document).ready(function () {
                 return false;
             }
         }
+
         if (cartAmount == 0) {
             var params = [specific_instructions, task_type, schedule_dropoff, schedule_pickup, schedule_dt, comment_for_pickup_driver, comment_for_dropoff_driver, comment_for_vendor, delivery_type, slot, address];
             // Save Cart Page Detail Forcely If user is paying from his cart.
@@ -1141,10 +1243,9 @@ $(document).ready(function () {
                 type: "POST",
                 dataType: 'json',
                 url: update_cart_schedule,
-                data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address,payable_amount : cartAmount },
+                data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address,payable_amount : cartAmount},
                 success: function (response) {
-
-
+                    $(".error_prescription").attr("style", "display:none");
                     if(response.status == "passbase_submitted"){
                         Swal.fire({
                             text: response.message,
@@ -1163,6 +1264,12 @@ $(document).ready(function () {
                                 }
                             });
                         return false;
+                    }else if (response.status == "error_prescription") {
+                        $.each(response.presciptionProducts, function (key, product_id) {
+                            $("#error_prescription_"+product_id).attr("style", "display:block");
+                        });
+
+                        return false;
                     }else if (response.status == "Pending") {
                         window.location.replace(verifyaccounturl);
                     }else if (response.status == "Success") {
@@ -1173,7 +1280,6 @@ $(document).ready(function () {
                             url: payment_option_list_url,
                             success: function (response) {
                                 if (response.status == "Success") {
-                                    // console.log(response.data);
                                     // $('#v_pills_tab').html('');
                                     $('#v_pills_tabContent').html('');
                                     // let payment_method_template = _.template($('#payment_method_template').html());
@@ -1204,6 +1310,7 @@ $(document).ready(function () {
                             },
                             error: function (error) {
                                 var response = $.parseJSON(error.responseText);
+
                                 let error_messages = response.message;
                                 $.each(error_messages, function (key, error_message) {
                                     $('#min_order_validation_error_' + error_message.vendor_id).html(error_message.message).show();
@@ -1332,9 +1439,16 @@ $(document).ready(function () {
         let pending_amount = $("input[name='amount_pending']");
         let tipElement = $("#cart_tip_amount");
         let payment_form = '';
+        let type = $("input[name='type_id']").val();
+        let mealSubscriptionForm = '';
+        if(type == '2'){
+			mealSubscriptionForm = $("input[name='serializedForm']").val()
+			paymentAjaxData.days = $('#sub-days').html();
+		}
         // let payment_option_id = paymentAjaxData.payment_option_id;
 
         paymentAjaxData.payment_method_id = result.paymentMethod.id;
+        paymentAjaxData.type_id = type;
         // paymentAjaxData.payment_option_id = payment_option_id;
         if (path.indexOf("cart") !== -1) {
             payment_form = 'cart';
@@ -1342,7 +1456,7 @@ $(document).ready(function () {
         } else if ((path.indexOf("wallet") !== -1) || ((typeof cabbookingwallet !== 'undefined') && (cabbookingwallet == 1))) {
             payment_form = 'wallet';
             total_amount = walletElement.val();
-        } else if (path.indexOf("subscription") !== -1) {
+        } else if (path.indexOf("subscription") !== -1 || path.indexOf("mealSubscription") !== -1) {
             payment_form = 'subscription';
             total_amount = subscriptionElement.val();
             // paymentAjaxData = $("#subscription_payment_form").serializeArray();
@@ -1361,9 +1475,9 @@ $(document).ready(function () {
             paymentAjaxData.send_card_to_email  = $("input[name='send_card_to_email']").val();
             paymentAjaxData.send_card_to_address    = $("input[name='send_card_to_address']").val();
             paymentAjaxData.send_card_is_delivery   = $("#send_card_is_delivery").val();
-           
-        } 
-      
+
+        }
+
         if((typeof pending_amount_for_past_order !== 'undefined') && (pending_amount_for_past_order == 1)){
             total_amount = pending_amount.val();
             payment_form = 'pending_amount_form';
@@ -1371,6 +1485,9 @@ $(document).ready(function () {
         }
         paymentAjaxData.payment_form = payment_form;
         paymentAjaxData.total_amount = total_amount;
+        if(mealSubscriptionForm !== 'undefined' && mealSubscriptionForm !== ''){
+			paymentAjaxData.mealSubscriptionForm = mealSubscriptionForm;
+		}
         if (result.error) {
             swal.fire({
                 icon: 'error',
@@ -1394,7 +1511,6 @@ $(document).ready(function () {
                 // Handle server response (see Step 4)
                 result.json().then(function(json) {
                     handleServerResponse(json);
-                    console.log(paymentAjaxData);
                 })
             });
         }
@@ -1412,12 +1528,23 @@ $(document).ready(function () {
             // Show error from server on payment form
         } else if (response.requires_action) {
             // Use Stripe.js to handle required card action
-            stripe.handleCardAction(
-                response.payment_intent_client_secret
-            ).then(handleStripeJsResult);
+            if(response.hasOwnProperty('type') && response.type == 'subscription'){
+                stripe.confirmCardPayment(response.payment_intent_client_secret, {
+                    payment_method: {
+                        card: card
+                    },
+                })
+                .then(function(){
+                    setTimeout(() => {
+                        window.location.href = response.result;
+                    }, 1500);
+                });
+            }else{
+                stripe.handleCardAction(
+                    response.payment_intent_client_secret
+                ).then(handleStripeJsResult);
+            }
         } else {
-            // console.log(response);
-            // Show success message
             setTimeout(() => {
                 window.location.href = response.result;
             }, 1500);
@@ -1602,6 +1729,7 @@ $(document).ready(function () {
         } else if (walletElement.length > 0) {
             total_amount = walletElement.val();
         }
+
         ajaxData.amount = total_amount;
         ajaxData.returnUrl = path;
         ajaxData.cancelUrl = path;
@@ -1613,6 +1741,7 @@ $(document).ready(function () {
                 order_number = order_number;
             }
         }
+
 
         $.ajax({
             type: "POST",
@@ -1644,6 +1773,58 @@ $(document).ready(function () {
             }
         });
     }
+
+function paymentViaMastercard(paymentMehod, order) {
+    const walletElement = $('input[name="wallet_amount"]');
+    const cartElement = $("input[name='cart_total_payable_amount']");
+    const subscriptionElement = $('input[name="subscription_amount"]');
+    const subscriptionIdElement = $('#subscription_payment_form #subscription_id');
+
+    let ajaxData = [{ name: 'payment_from', value: paymentMehod }];
+    let total_amount;
+
+    switch (paymentMehod) {
+        case 'wallet':
+            total_amount = walletElement.val();
+            if (typeof tip_for_past_order !== 'undefined' && tip_for_past_order == 1) {
+                ajaxData[0].value = 'tip';
+                ajaxData.push({ name: 'order_number', value: $("#order_number").val() });
+            }
+            break;
+
+        case 'cart':
+            ajaxData.push({ name: 'order_number', value: order['order_number'] });
+            total_amount = cartElement.val();
+            break;
+        case 'subscription':
+            ajaxData.push({ name: 'subscription_id', value: subscriptionIdElement.val() });
+            total_amount = subscriptionElement.val();
+            break;
+
+        case 'pickup_delivery':
+            total_amount = order.total_amount;
+            ajaxData.push({ name: 'order_number', value: order.order_number });
+            break;
+        default: throw new Error('unknown payment method');
+    }
+
+    ajaxData.push({ name: 'amount', value: total_amount });
+
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        data: ajaxData,
+        url: mastercard_create_session_url,
+        success({ session }) {
+            const { id } = session;
+            console.log(id);
+            Checkout.configure({
+                session: { id }
+            })
+            Checkout.showPaymentPage();
+        },
+    });
+}
 
     function paymentViaRazorpay_wallet(address_id, payment_option_id) {
         let walletElement = $("input[name='wallet_amount']");
@@ -1687,9 +1868,180 @@ $(document).ready(function () {
             }
         });
     }
+            //totalpay
+            function paymentViaTotalpay(address_id,payment_option_id,order) {
+                    let walletElement = $("input[name='wallet_amount']");
+                    let subscriptionElement = $("input[name='subscription_amount']");
+                    let total_amount = 0;
+                    let ajaxData = [];
 
+                if (path.indexOf("wallet") !== -1) {
+                    total_amount = walletElement.val();
+                    ajaxData.push({ name: 'payment_from', value: 'wallet' });
+                } else if (path.indexOf("cart") !== -1) {
+                    ajaxData.push({ name: 'payment_from', value: 'cart' },
+                    { name: 'order_number', value: order['order_number']}
+                    );
+                }  else if (path.indexOf("subscription") !== -1) {
+                    total_amount = subscriptionElement.val();
+                    ajaxData = $("#subscription_payment_form").serializeArray();
+                    ajaxData.push({ name: 'payment_from', value: 'subscription' });
+                } else if (typeof tip_for_past_order !== 'undefined' && tip_for_past_order == 1) {
+                    total_amount = walletElement.val();
+                    ajaxData.push(
+                        { name: 'payment_from', value: 'tip' },
+                        { name: 'order_number', value: $("#order_number").val() }
+                );
+                }
+
+            ajaxData.push
+            (
+                { name: 'amount', value: total_amount },
+                { name: 'returnUrl', value: path },
+                { name: 'payment_option_id', value: payment_option_id }
+            );
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                url: pyment_totalpay_url,
+                data: ajaxData,
+                success: function (response)
+                {
+                    if (response.status == "Success")
+                    {
+                        let paymentUrl = response.payment_url;
+                        window.location.href = paymentUrl;
+                    }
+                }
+            });
+            }
+            //totalpay Ends
+
+//hitpay Pg starts
+function paymentViaHitpay(address_id, payment_option_id, order) {
+    let walletElement = $("input[name='wallet_amount']");
+    let subscriptionElement = $("input[name='subscription_amount']");
+    let total_amount = 0;
+    let tip = 0;
+    let tipElement = $("#cart_tip_amount");
+    let cartElement = $("input[name='cart_total_payable_amount']");
+    let ajaxData = [];
+    if (path.indexOf("cart") !== -1) {
+        payment_form = 'cart';
+        total_amount = cartElement.val();
+        tip = tipElement.val();
+        ajaxData.push(
+            { name: 'tip', value: tip },
+            { name: 'order_number', value: order.order_number },
+            { name: 'payment_from', value: payment_form }
+        );
+
+    }
+    else if (path.indexOf("wallet") !== -1) {
+        total_amount = walletElement.val();
+        ajaxData.push({ name: 'payment_from', value: 'wallet' });
+    } else if (path.indexOf("cart") !== -1) {
+        ajaxData.push({ name: 'payment_from', value: 'cart' },
+            { name: 'order_number', value: order['order_number'] }
+        );
+    } else if (path.indexOf("subscription") !== -1) {
+        payment_form = 'subscription';
+        total_amount = subscriptionElement.val();
+        ajaxData = $("#subscription_payment_form").serializeArray();
+
+        ajaxData.push({ name: 'payment_from', value: payment_form });
+        console.log(ajaxData);
+    } else if (typeof tip_for_past_order !== 'undefined' && tip_for_past_order == 1) {
+        total_amount = walletElement.val();
+        ajaxData.push(
+            { name: 'payment_from', value: 'tip' },
+            { name: 'order_number', value: $("#order_number").val() }
+        );
+    }
+
+    ajaxData.push
+        (
+            { name: 'amount', value: total_amount },
+            { name: 'returnUrl', value: path },
+            { name: 'payment_option_id', value: payment_option_id }
+        );
+
+    console.log(payment_hitpay_url);
+    $.ajax({
+        type: "POST",
+        dataType: 'json',
+        url: payment_hitpay_url,
+        data: ajaxData,
+        success: function (response) {
+            if (response.status == "Success") {
+                console.log(response);
+                let paymentUrl = response.payment_url;
+                window.location.href = paymentUrl;
+            }
+        },
+        error: function (xrh, error, h) {
+
+            console.log(xrh, error, h);
+        }
+
+    });
+}
+
+
+//The Thawani Pg  starts
+        function paymentViaThawanipg(address_id,payment_option_id,order)
+        {
+            let walletElement = $("input[name='wallet_amount']");
+            let subscriptionElement = $("input[name='subscription_amount']");
+            let total_amount = 0;
+            let ajaxData = [];
+
+            if (path.indexOf("wallet") !== -1) {
+                total_amount = walletElement.val();
+                ajaxData.push({ name: 'payment_from', value: 'wallet' });
+            }else if (path.indexOf("cart") !== -1) {
+                total_amount = order['total_amount'];
+                ajaxData.push({ name: 'payment_from', value: 'cart' },
+                { name: 'order_number', value: order['order_number']},
+                );
+            } else if (path.indexOf("subscription") !== -1) {
+                total_amount = subscriptionElement.val();
+                ajaxData = $("#subscription_payment_form").serializeArray();
+                ajaxData.push({ name: 'payment_from', value: 'subscription' });
+            } else if (typeof tip_for_past_order !== 'undefined' && tip_for_past_order == 1) {
+                total_amount = walletElement.val();
+                ajaxData.push(
+                { name: 'payment_from', value: 'tip' },
+                { name: 'order_number', value: $("#order_number").val() }
+                );
+            }
+
+            ajaxData.push
+            (
+                { name: 'amount', value: total_amount },
+                { name: 'returnUrl', value: path },
+                { name: 'payment_option_id', value: payment_option_id }
+            );
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                url: payment_thawani_url,
+                data: ajaxData,
+                success: function (response)
+                {
+                    if (response.status == "Success")
+                    {
+                    let paymentUrl = response.payment_url;
+                    window.location.href = paymentUrl;
+                    }
+                }
+            });
+        }
+         //Thawani Pg Ends Here Ends
     function paymentSuccessViaPaypal(amount, token, payer_id, path, tip = 0, order_number = 0) {
         let address_id = 0;
+        var currentUrl = window.location.origin;
+        var paypalCompletePurchaseUrl = currentUrl + "/payment/paypal/CompletePurchase";
         if (path.indexOf("cart") !== -1) {
             // $('#order_placed_btn').trigger('click');
             // $('#v-pills-paypal-tab').trigger('click');
@@ -1707,11 +2059,13 @@ $(document).ready(function () {
         $.ajax({
             type: "GET",
             dataType: 'json',
-            url: payment_success_paypal_url,
+            url: paypalCompletePurchaseUrl,
             data: { 'amount': amount, 'token': token, 'PayerID': payer_id },
             success: function (response) {
                 if (response.status == "Success") {
-                    if (path.indexOf("cart") !== -1) {
+                    if(path.indexOf("details") !== -1){
+                        paypalDebitTransaction(amount, 3, response.data);
+                    }else if(path.indexOf("cart") !== -1) {
                         placeOrder(address_id, 3, response.data, tip);
                     } else if (path.indexOf("wallet") !== -1) {
                         creditWallet(amount, 3, response.data);
@@ -1811,6 +2165,12 @@ $(document).ready(function () {
                     success_error_alert('error', response.message, ".cart_response");
                     $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
                 }
+                if (response.code == 404) {
+                setTimeout(function () {
+                    window.location.reload();
+                }, 2000)
+            }
+
             },
             complete: function (data) {
                 $('.spinner-overlay').hide();
@@ -1822,6 +2182,7 @@ $(document).ready(function () {
         var task_type = $("input[name='task_type']").val();
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
+        var other_taxes_string = $("#other_taxes_string").val();
         var is_gift = $('#is_gift:checked').val() ?? 0;
         // place_order_url=domain+/user/
         if ((task_type == 'schedule') && (schedule_dt == '')) {
@@ -1837,7 +2198,7 @@ $(document).ready(function () {
             dataType: 'json',
             async: false,
             url: place_order_url,
-            data: { address_id: address_id, payment_option_id: payment_option_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, slot: slot },
+            data: { address_id: address_id, payment_option_id: payment_option_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, slot: slot,other_taxes_string:other_taxes_string },
             success: function (response) {
                 if (response.status == "Success") {
                     orderResponse = response.data;
@@ -1883,12 +2244,12 @@ $(document).ready(function () {
                 return false;
             }
         }
-        
+
         if(payment_option_id == 50){
             cno = $('#azul-card-element').val();
             dt = $('#azul-date-element').val();
             cv = $('#azul-cvv-element').val();
-            
+
             $("#azul_card_error").html();
             if(!creditCardValidation()){
 	            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
@@ -1897,6 +2258,25 @@ $(document).ready(function () {
 	                return false;
 	            }
 	        }
+        }
+
+        if(payment_option_id == 58){
+            var expData = $('#date-element-powertrans').val();
+            var [expMonth, expYear] = [expData.slice(2), expData.slice(0, 2)]
+            var newDate = expMonth+'/'+expYear;
+            cardJson = {
+                'cno': $('#card-element-powertrans').val(),
+                'dt': newDate,
+                'cv': $('#cvv-element-powertrans').val(),
+                'name':'powertrans',
+            }
+            if(cardValidation(cardJson)){
+                console.log('Credit card information is valid.');
+            }
+            else {
+                success_error_alert('error', 'Invalid credit card information', "#powertrans_card_error");
+                return false;
+            }
         }
 
         $('#proceed_to_pay_loader').show();
@@ -1930,6 +2310,7 @@ $(document).ready(function () {
 
 
     window.creditWallet = function creditWallet(amount, payment_option_id, transaction_id) {
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -1945,6 +2326,38 @@ $(document).ready(function () {
                     success_error_alert('success', response.message, "#wallet_response");
                     // let wallet_transactions_template = _.template($('#wallet_transactions_template').html());
                     // $(".table.wallet-transactions table-body").append(wallet_transactions_template({wallet_transactions:response.data.transactions}));
+                } else {
+                    $("#wallet_response .message").removeClass('d-none');
+                    success_error_alert('error', response.message, "#wallet_response .message");
+                    $("#topup_wallet_btn, .topup_wallet_confirm").attr("disabled", false);
+                }
+            },
+            error: function (error) {
+                var response = $.parseJSON(error.responseText);
+                $("#wallet_response .message").removeClass('d-none');
+                success_error_alert('error', response.message, "#wallet_response .message");
+                $("#topup_wallet_btn, .topup_wallet_confirm").removeAttr("disabled");
+            },
+            complete: function (data) {
+                $('.spinner-overlay').hide();
+            }
+        });
+    }
+
+    // Paypal payment transaction
+    window.paypalDebitTransaction = function paypalDebitTransaction(amount, payment_option_id, transaction_id) {
+        var currentUrl = window.location.origin;
+        var paymentPaypalTransaction = currentUrl + "/payment/paypal-transaction/store";
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: paymentPaypalTransaction,
+            data: { amount: amount, payment_option_id: payment_option_id, transaction_id: transaction_id },
+            success: function (response) {
+                location.href = path;
+                if (response.status == "Success") {
+                    $(".wallet_balance").text(response.data.wallet_balance);
+                    success_error_alert('success', response.message, "#wallet_response");
                 } else {
                     $("#wallet_response .message").removeClass('d-none');
                     success_error_alert('error', response.message, "#wallet_response .message");
@@ -2050,6 +2463,26 @@ $(document).ready(function () {
                 success_error_alert('error', 'Please Fill Details', ".payment_response");
                 return false;
             }
+        }
+
+        if(payment_option_id == 58){
+            var expData = $('#date-element-powertrans').val();
+            var [expMonth, expYear] = [expData.slice(2), expData.slice(0, 2)]
+            var newDate = expMonth+'/'+expYear;
+            cardJson = {
+                'cno': $('#card-element-powertrans').val(),
+                'dt': newDate,
+                'cv': $('#cvv-element-powertrans').val(),
+                'name':'powertrans',
+            }
+            if(cardValidation(cardJson)){
+                console.log('Credit card information is valid.');
+            }
+            else {
+                success_error_alert('error', 'Invalid credit card information', "#powertrans_card_error");
+                return false;
+            }
+
         }
 
         if ((payment_option_id == undefined || payment_option_id <= 0) && (payment_method_required_error_msg != undefined)) {
@@ -2169,6 +2602,9 @@ $(document).ready(function () {
         var input = document.getElementById('address');
         if (input) {
             var autocomplete = new google.maps.places.Autocomplete(input);
+            if(is_map_search_perticular_country){
+                autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+            }
             autocomplete.bindTo('bounds', bindMap);
             google.maps.event.addListener(autocomplete, 'place_changed', function () {
                 var place = autocomplete.getPlace();
@@ -2193,6 +2629,7 @@ $(document).ready(function () {
                         }
                         if (mapAddress.types[0] == "administrative_area_level_1") {
                             document.getElementById('state').value = mapAddress.long_name;
+                            document.getElementById('state_code').value = mapAddress.short_name;
                         }
                         if (mapAddress.types[0] == "postal_code") {
                             document.getElementById('pincode').value = mapAddress.long_name;
@@ -2283,7 +2720,6 @@ $(document).ready(function () {
         OrderStorage.setStorageSingle('RecurringBookingAdded','');
         OrderStorage.setStorageSingle('cartFirstProductId','');
         OrderStorage.setStorageSingle('cartAddressId','');
-        OrderSessionStorage.setStorageSingle('dispatcher_agent_id','')
         $.ajax({
             data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
@@ -2291,23 +2727,50 @@ $(document).ready(function () {
             url: cart_product_url,
             success: function (response) {
                 if (response.status == "success") {
+                    if(response.wishListCount > 0){
+                        $('.wishListCount').removeClass('fa-heart-o');
+                        $('.wishListCount').addClass('fa-heart');
+                    }else{
+                        $('.wishListCount').removeClass('fa-heart');
+                        $('.wishListCount').addClass('fa-heart-o');
+                    }
                     $("#cart_table").html('');
                     $(".spinner-box").hide();
                     $("#mycart").html(response.mycart);
 
+
+                    // if(response.loggedIn ==  "true") {
+                    //     $('.onhover-show-div').html(`<li>
+                    //         <a href="/client/dashboard" data-lng="en">Control Panel</a>
+                    //     </li>
+                    //     <li>
+                    //         <a href="/user/profile" data-lng="en">Profile</a>
+                    //     </li>
+                    //     <li>
+                    //         <a href="/user/logout" data-lng="es">Logout</a>
+                    //     </li>`);
+                    // } else{
+                    //     $('.onhover-show-div').html( `<li>
+                    //         <a href="/user/login" data-lng="en">Login</a>
+                    //     </li>
+                    //     <li>
+                    //         <a href="/user/register" data-lng="es">Register</a>
+                    //     </li>`);
+                    // }
                     //return true;
                     var cart_details = response.cart_details;
                     var client_preference_detail = response.client_preference_detail;
                     var is_token_enable = response.is_token_enable;
                     var token_val = response.token_val;
-                    // console.log(cart_details);
                     if (cart_details!= undefined) {
                         // if((response.is_token_enable == 1) && (response.token_val > 0) ){
                         //     response.token_val;
                         // }
                         OrderStorage.setStorageSingle('cartData',JSON.stringify(cart_details));
                         if (cart_details.products.length > 0) {
-                            $(`input:radio[name=address_id][value=${cart_details.address_id}]`).prop('checked', true)
+							if(cart_details.address_id != ''){
+                            	$(`input:radio[name=address_id][value=${cart_details.address_id}]`).prop('checked', true);
+                        	}
                             OrderStorage.setStorageSingle('cartAddressId',cart_details.address_id);
                             OrderStorage.setStorageSingle('cartProductCount',cart_details.products.length);
                             OrderStorage.setStorageSingle('cartFirstProductId',cart_details.products[0].product_id);
@@ -2331,10 +2794,10 @@ $(document).ready(function () {
                                        displayMapLocation(latitude, longitude, 'vendor-address-map');
                                     }
                                 }
-                                initialize();
+                                //initialize();
                                 if (cart_details.deliver_status == 0) {
-                                    $("#order_placed_btn").attr("disabled", true);
-                                    $("#order_placed_btn").addClass("d-none");
+                                    // $("#order_placed_btn").attr("disabled", true);
+                                    // $("#order_placed_btn").addClass("d-none");
                                 } else {
 
                                     $("#order_placed_btn").removeAttr("disabled");
@@ -2343,15 +2806,15 @@ $(document).ready(function () {
                                 //if(response.schedule_datetime!=null){
                                     var schedule_datetime = '';
                                     if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && typeof $('#edit_order_schedule_slot').val()!='undefined' && $('#edit_order_schedule_slot').val()!=''){
-                                    
+
                                         var edit_order_schedule_datetime = $("#edit_order_schedule_datetime").val();
                                         schedule_datetime  = edit_order_schedule_datetime.split(" ")[0];
                                     }else{
                                         schedule_datetime = $("#edit_order_schedule_datetime").val();
                                     }
-                                  
+
                                     if(schedule_datetime!=''&& schedule_datetime!=undefined && typeof $("#schedule_datetime").val()!='undefined'){
-                                      
+
                                         $("#schedule_datetime").val(schedule_datetime);
                                         $("#schedule_datetime").attr("value", $("#schedule_datetime").val());
                                         $("#schedule_datetime").attr("max", $("#schedule_datetime").val());
@@ -2372,7 +2835,6 @@ $(document).ready(function () {
 
                             }
                             cartTotalProductCount();
-
                             if ($("#header_cart_template_ondemand").length != 0) {
                                 $("#header_cart_main_ul_ondemand").html('');
                                 let header_cart_template_ondemand = _.template($('#header_cart_template_ondemand').html());
@@ -2440,6 +2902,7 @@ $(document).ready(function () {
                         }
 
                     }
+
                     $.each($('.vendor_schedule_slot'), function() {
                         if($(this).val()!=''){
                             $responst = checkSlotAvailability(this);
@@ -2524,6 +2987,7 @@ $(document).ready(function () {
 
                             if ($("#header_cart_template_ondemand").length != 0) {
                                 $("#header_cart_main_ul_ondemand").html('');
+
                                 let header_cart_template_ondemand = _.template($('#header_cart_template_ondemand').html());
                                 var CartTemplateOndemandData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url });
 
@@ -2594,6 +3058,7 @@ $(document).ready(function () {
             let elemClasses = $(iconElem).attr("class");
             $(iconElem).removeAttr("class").addClass("fa fa-spinner fa-pulse");
         }
+
         ajaxCall = $.ajax({
             type: "post",
             dataType: "json",
@@ -2630,6 +3095,30 @@ $(document).ready(function () {
             }
         });
     }
+
+    function updateCartProductStatus(cartproduct_id, is_cart_checked) {
+        ajaxCall = $.ajax({
+            type: "post",
+            dataType: "json",
+            url: update_cart_product_status,
+            data: { "cartproduct_id": cartproduct_id, "is_cart_checked": is_cart_checked },
+            success: function (response) {
+                if(response.status == "error")
+                {
+                    Swal.fire({
+                        title: "Warning!",
+                        text: response.message,
+                        icon: "warning",
+                        button: "OK",
+                    });
+                }else{
+                    cartHeader();
+                }
+            },
+            error: function (err) { }
+        });
+    }
+
     $(document).on('click', '.tip_radio_controls .tip_radio', function () {
         var tip = $(this).val();
         var amount_payable = parseFloat($("#cart_payable_amount_original").val());
@@ -2671,12 +3160,12 @@ $(document).ready(function () {
             $(".custom_tip").addClass("d-none");
             $("#custom_tip_amount").val('');
             if(parseFloat(amount_payable)+ wallet_amount_used_fixed>=parseFloat($('#mov').text())){
-                $("#order_placed_btn").removeAttr("disabled");
-                $("#order_placed_btn").removeClass("d-none");
+               // $("#order_placed_btn").removeAttr("disabled");
+              //  $("#order_placed_btn").removeClass("d-none");
                 $("#MOV_Notification").addClass("d-none");
             }else{
-                $("#order_placed_btn").attr("disabled", true);
-                $("#order_placed_btn").addClass("d-none");
+               // $("#order_placed_btn").attr("disabled", true);
+              //  $("#order_placed_btn").addClass("d-none");
                 $("#MOV_Notification").removeClass("d-none");
             }
         } else {
@@ -2712,10 +3201,19 @@ $(document).ready(function () {
         var tip                         =initialize_values($(this).val());
 
 
+
+
         var amount_elem = $("#cart_payable_amount_original");
         var currency = amount_elem.attr('data-curr');
         var amount_payable =initialize_values(amount_elem.val());
+
         var payable_amount=0;
+
+        // if (!tip) {
+        //     alert(amount_payable);
+        //     $("#cart_total_payable_amount").html( currency +   amount_payable.toFixed(parseInt(digit_count)));
+        //     $("input[name='cart_total_payable_amount']").val(  amount_payable.toFixed(parseInt(digit_count)));
+        // }
 
         $("#cart_tip_amount").val(tip.toFixed(parseInt(digit_count)));
         // $("#cart_total_payable_amount").html(currency + (amount_payable+other_taxes).toFixed(parseInt(digit_count)));
@@ -2726,12 +3224,15 @@ $(document).ready(function () {
         }
         if(wallet_amount_available>0){
             if(wallet_amount_available >= wallet_amount_used_fixed+tip){
+
                 /* Paid amount is less then available wallet amount*/
                 $("#wallet_amount_used").text(" - "+currency+ " "+(token_currency*(wallet_amount_used_fixed+(tip/token_currency))).toFixed(parseInt(digit_count)));
             }else{
+
                 /* Paid amount is greater then available wallet amount*/
                 $("#wallet_amount_used").text(" - "+currency+ " "+wallet_amount_available.toFixed(parseInt(digit_count)));
-                payable_amount=((gross_amount + tip)  - (total_subscription_discount+wallet_amount_available+loyalty_amount));
+                payable_amount=((gross_amount + tip + total_taxable_amount) - wallet_amount_available);
+                // payable_amount=((amount_payable + tip)  - (total_subscription_discount+wallet_amount_available+loyalty_amount));
 
                 $("#cart_total_payable_amount").html( currency +   payable_amount.toFixed(parseInt(digit_count)));
                 $("input[name='cart_total_payable_amount']").val(  payable_amount.toFixed(parseInt(digit_count)));
@@ -2746,7 +3247,9 @@ $(document).ready(function () {
                 $("#MOV_Notification").removeClass("d-none");
             }
         }else{
-            payable_amount=((gross_amount + tip + total_taxable_amount)  - (total_subscription_discount+loyalty_amount));
+
+            // payable_amount=((amount_payable + tip + total_taxable_amount)  - (total_subscription_discount+loyalty_amount));
+            payable_amount=((amount_payable + tip));
             $("#cart_total_payable_amount").html(currency + payable_amount.toFixed(parseInt(digit_count)));
             $("input[name='cart_total_payable_amount']").val(payable_amount.toFixed(parseInt(digit_count)));
             if(amount_payable >= parseFloat($('#mov').text())){
@@ -2763,6 +3266,8 @@ $(document).ready(function () {
 
     });
     $(document).on('click', '.qty-minus', function () {
+        $('.qty-minus').prop('disabled', true);
+        $('.qty-plus').prop('disabled', true);
         let base_price = $(this).data('base_price');
         let cartproduct_id = $(this).attr("data-id");
         let minimum_order_count = $(this).attr("data-minimum_order_count");
@@ -2792,7 +3297,23 @@ $(document).ready(function () {
             $('#remove_item_modal #cartproduct_id').val(cartproduct_id);
         }
     });
+
+    $(document).on('click', '.checked-cart-product', function () {
+        if ($(this).is(':checked')) {
+            var cart_product_id = $(this).val();
+            var is_cart_checked = 1;
+        } else {
+            var cart_product_id = $(this).val();
+            var is_cart_checked = 0;
+        }
+        $('#fa_spinner_'+cart_product_id).removeClass("d-none");
+        $(this).addClass("d-none");
+        updateCartProductStatus(cart_product_id, is_cart_checked);
+    });
+
     $(document).on('click', '.qty-plus', function () {
+        $('.qty-plus').prop('disabled', true);
+        $('.qty-minus').prop('disabled', true);
         let base_price = $(this).data('base_price');
         let cartproduct_id = $(this).attr("data-id");
         let qty = $('#quantity_' + cartproduct_id).val();
@@ -2850,9 +3371,9 @@ $(document).ready(function () {
         $('#add_new_address_btn').show();
         $('#add_new_address_form').hide();
     });
-    $(document).on("click", "#add_new_address_btn", function () {
+    $(document).on("click", "#add_new_address_btn a.add-address", function () {
         if(auth){
-        $(this).hide();
+        // $(this).hide();
         initialize();
         $("#add_new_address_form_modal").modal('show');
         $('#add_new_address_form').show();
@@ -2863,6 +3384,7 @@ $(document).ready(function () {
     $(document).on("click", "#save_address", function () {
         let city = $('#add_new_address_form #city').val();
         let state = $('#add_new_address_form #state').val();
+        let state_code = $('#add_new_address_form #state_code').val();
         let street = $('#add_new_address_form #street').val();
         let address = $('#add_new_address_form #address').val();
         let country = $('#add_new_address_form #country').val();
@@ -2889,7 +3411,8 @@ $(document).ready(function () {
                     "latitude": latitude,
                     "longitude": longitude,
                     "house_number": house_number,
-                    "extra_instruction": extra_instruction
+                    "extra_instruction": extra_instruction,
+                    "state_code":state_code
                 },
                 beforeSend: function () {
                     if ($("#cart_table").length > 0) {
@@ -2898,7 +3421,15 @@ $(document).ready(function () {
                     }
                 },
                 success: function (response) {
-
+                    if (response.status == 'error') {
+                        Swal.fire({
+                            title: "Warning!",
+                            text: response.message,
+                            icon: "warning",
+                            button: "OK",
+                        });
+                        return
+                    }
                     if ($("#add_edit_address").length > 0) {
 
                         $("#add_edit_address").modal('hide');
@@ -3014,10 +3545,36 @@ $(document).ready(function () {
     function addToCart() {
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
+        var booking_time = $('#range-datepicker').val();
+        var start_date_time, end_date_time;
+
+        if(booking_time)
+        {
+
+
+        if (booking_time.includes(' to ')) {
+            var dateParts = booking_time.split(' to ');
+            start_date_time = dateParts[0];
+            end_date_time = dateParts[1];
+        } else if (booking_time.trim() !== '') {
+            start_date_time = booking_time;
+            end_date_time = booking_time;
+        }
+    }
         var addLongTerm = 0;
         var addRecurringBooking = 0;
         vendor_id = (vendor_id == undefined || vendor_id =='') ?  document.querySelector('input[name=vendor_id]').value : vendor_id;
-
+        if($('#is_recurring_booking').length > 0){
+            // var booking_type   = $('input[name="booking_type"]:checked').val();
+            // recurringformPost
+            if(product_id == OrderStorage.getStorage('cartFirstProductId')){
+                var message  = _language.getLanString('Product Already added in cart');
+                sweetAlert.error('',message);
+                return false;
+            }
+        }else{
+            recurringformPost = {};
+        }
         if (Product_quantity <= 0) {
             Swal.fire({
                 // title: "Warning!",
@@ -3052,15 +3609,15 @@ $(document).ready(function () {
             return false;
         }
 
-        if($('#sele_slot_id').val() == ''){
+        // if($('#sele_slot_id').val() == ''){
 
-            Swal.fire({
-                text: _language.getLanString('Please select delivery slot to continue'),
-                icon: "warning",
-                button: "OK",
-            });
-            return false;
-        }
+        //     Swal.fire({
+        //         text: _language.getLanString('Please select delivery slot to continue'),
+        //         icon: "warning",
+        //         button: "OK",
+        //     });
+        //     return false;
+        // }
 
         if($('#is_long_term_service').length > 0){
             addLongTerm =1;
@@ -3087,20 +3644,12 @@ $(document).ready(function () {
 
 
        // Recuring booking code
-        if($('#is_recurring_booking').length > 0){
-            // var booking_type   = $('input[name="booking_type"]:checked').val();
-            // recurringformPost
-            if(product_id == OrderStorage.getStorage('cartFirstProductId')){
-                var message  = _language.getLanString('Product Already added in cart');
-                sweetAlert.error('',message);
-                return false;
-            }
-        }
+
 
 
         // if($('#is_recurring_bookingss').val() > 0){
         //     addRecurringBooking =1;
-         
+
 
         //     var booking_type        = $('input[name="booking_type"]:checked').val();
         //     var recurring_week_type = '';
@@ -3173,7 +3722,10 @@ $(document).ready(function () {
                 var service_day             =  $('#service_day').val();
                 var service_date            =  $('#service_date').val();
                 var service_start_time      =  $('#service_start_time').val();
-                
+                var is_template             = $('#is_template').val();
+
+
+
                 if (((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1)) || (OrderStorage.getStorage('LongTermServiceAdded') == 1 ) || (OrderStorage.getStorage('cartProductCount') > 0 &&  addLongTerm ==1 ) ) {
                     var modelText = _language.getLanString('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?');
                     if(OrderStorage.getStorage('LongTermServiceAdded') == 1 || addLongTerm ==1 ){
@@ -3184,8 +3736,22 @@ $(document).ready(function () {
                     }
                    showRemoveCart(modelText);
                 } else {
+                    // if(serviceType == 'yacht'){
+
+                    //     var booking_duration = $('input[name="booking_duration"]');
+                    //     let isDurationSelected = false;
+
+                    //     booking_duration.each(function(inbdex, element){
+                    //         if(element.checked){
+                    //             let isDurationSelected = false;
+                    //             console.log(element.value)
+                    //         }
+                    //     })
+                    //     return false;
+                    // }
                     var variant_id = $('#prod_variant_id').val();
                     var start_date =  $('#start_time').val();
+
                     var end_date =  $('#end_time').val();
                     var quantity = $('.quantity_count').val();
                     var incremental_hrs =  $('#incremental_hrs').val();
@@ -3194,14 +3760,14 @@ $(document).ready(function () {
                     var sele_slot_id = $("#sele_slot_id").val();
                     var sele_slot_price = $("#sele_slot_price").val();
                     var delivery_date = $("#date_input").val();
-
-                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date, sele_slot_id, sele_slot_price, delivery_date,recurringformPost);
+                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date, sele_slot_id, sele_slot_price, delivery_date,recurringformPost,is_template,start_date_time, end_date_time);
                 }
             }
         }
     }
 
-    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='', sele_slot_id='', sele_slot_price='', delivery_date='',recurringformPost='') {
+    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='', sele_slot_id='', sele_slot_price='', delivery_date='',recurringformPost='',is_template='',start_date_time = '', end_date_time='') {
+
         var returnResponse = false;
         $.ajax({
             type: "post",
@@ -3226,14 +3792,24 @@ $(document).ready(function () {
                 "recurringformPost":recurringformPost,
                  "sele_slot_id":sele_slot_id,
                  "delivery_date":delivery_date,
-                 "sele_slot_price":sele_slot_price
+                 "sele_slot_price":sele_slot_price,
+                 "is_template" : is_template,
+                 "start_date_time":start_date_time,
+                 "end_date_time":end_date_time,
             },
             success: function (response) {
                 if (response.status == 'success') {
-                    $(".shake-effect").effect("shake", { times: 3 }, 1200);
+                    // $(".shake-effect").effect("shake", { times: 0 }, 1200);
                     returnResponse = true;
                     cartHeader();
-                    if(vendor_type == 'rental') {
+
+                    if($("#pickup_service").is(":checked")){
+                        location.href =  '/category/cabservice?destination_location='+response.vendor.address+'&destination_location_latitude'+response.vendor.latitude+'&destination_location_longitude'+response.vendor.longitude+'&yacht_id='+product_id;
+                    }
+                    if(vendor_type == 'rental' || vendor_type == 'p2p') {
+                        location.href =  '/viewcart';
+                    }
+                    if(response.vendor.rental == 1) {
                        location.href =  '/viewcart';
                     }
                 } else {
@@ -3498,6 +4074,7 @@ $(document).ready(function () {
     });
 
     function updateProductQuantity(product_id, cartproduct_id, quantity, base_price = 0, iconElem = '') {
+
         ajaxCall = $.ajax({
             type: "post",
             dataType: "json",
@@ -3734,7 +4311,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.status == 'success') {
                     returnResponse = true;
-                    $(".shake-effect").effect("shake", { times: 3 }, 1200);
+                    // $(".shake-effect").effect("shake", { times: 0 }, 1200);
                     cartHeader();
                     if (that.hasClass('add_vendor_addon_product')) {
                         that.parents('.modal').modal('hide');
@@ -3826,7 +4403,6 @@ $(document).ready(function () {
                 }
             },
             error: function (error) {
-                console.log(error);
                 var response = $.parseJSON(error.responseText);
                 alert(response.message);
                 success_error_alert('error', response.message, ".cart_response");
@@ -3834,6 +4410,7 @@ $(document).ready(function () {
             }
         });
    });
+
 
 
 
@@ -3859,7 +4436,6 @@ $(document).ready(function () {
     });
 
     $(document).on("click", ".productAddonOption", function () {
-
         var cart_id = '';
         var cart_product_id = '';
         let that = $(this);
@@ -3995,7 +4571,7 @@ $(document).ready(function () {
             success: function (response) {
                 var address_id = dispatcherAgentData?.address_id;
                 if (response.status == 'success') {
-                    $(".shake-effect").effect("shake", { times: 3 }, 1200);
+                    // $(".shake-effect").effect("shake", { times: 0 }, 1200);
                     cartHeader(address_id);
                     if($(`#added_button_href${product_id}`).length > 0){
                         $(`#add_button_href${product_id}`).hide();
@@ -4064,7 +4640,6 @@ $(document).ready(function () {
     $(document).on('change', '.vendor_schedule_datetime, .vendor_schedule_slot', async function () {
 
         var task_type = 'schedule';
-
         let schedule_type = $(this).data("schedule_type");
         let cart_product_id = $(this).data("cart_product_id");
         let vendor_id = $(this).data("vendor_id");
@@ -4103,6 +4678,8 @@ $(document).ready(function () {
                     return false;
                 }
             }
+        }else{
+            var schedule_dt = $(this).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
         }
 
         $.ajax({
@@ -4141,7 +4718,6 @@ $(document).ready(function () {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(output) {
-                console.log(output);
                 // Check if orderCount is greaten equal to orders_per_slot //&& (output.orders_per_slot !=0)
                 if(output.orderCount >= output.orders_per_slot && (output.orders_per_slot !=0)  ){
                     success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
@@ -4179,7 +4755,6 @@ $(document).ready(function () {
             dispatch_agent_id = agent_ids[0] ;
         }
         if((show_agent != undefined && show_agent ==1  ) && (agent_ids != undefined && agent_ids !='' )  ){
-           console.log('show driver');
            showDispatchDriver(agent_ids,cart_product_id,'');
         }
         $("#show_time" + cart_product_id).html(selected_time);
@@ -4303,6 +4878,7 @@ $(document).ready(function () {
         var quan = parseInt($('.quantity_count').val());
         var hasInv = $('#hasInventory').val();
         var str = $('#instock').val();
+        $message= 'Only '+str+' is available for this product';
         var batch_count = $(this).data("batch_count");
         // var res = parseInt(str.substring(10, str.length - 1));
         if (batch_count > 0)
@@ -4313,7 +4889,7 @@ $(document).ready(function () {
         if ((quan + batch_count) > str && hasInv == "1") {
             Swal.fire({
                 // title: "Warning!",
-                text: "Quantity is not available in stock",
+                text: $message,
                 icon: "warning",
                 button: "OK",
             });
@@ -4716,11 +5292,13 @@ $(document).ready(function () {
                 error: function (reject) {
                     if (reject.status === 422) {
                         var message = $.parseJSON(reject.responseText);
+                        sweetAlert.error(message.message,"");
                         $(".invalid-feedback.manual_promocode").html("<strong>" + message.message + "</strong>");
                     }
                 }
             });
         } else {
+            sweetAlert.error("Enter a Promocode","");
             $(".invalid-feedback.manual_promocode").html("<strong>Please enter promocode</strong>");
         }
     });
@@ -4924,6 +5502,8 @@ $(document).ready(function () {
             case 45:
                 paymentViaTelr('', payment_option_id, '');
             break;
+            case 46:
+                paymentViaMastercard('subscription');
             case 47:
                 paymentViaKhalti('', '');
             break;
@@ -4935,11 +5515,48 @@ $(document).ready(function () {
                  break;
             case 50:
                 paymentViazulpay('', payment_option_id, '');
-                 break;
+            break;
+
             case 52:
                 paymentViaSkipCash('',payment_option_id,'');
+            break;
+
+            case 55:
+                paymentViaDataTrans('', payment_option_id, '');
+            break;
+            case 56:
+                paymentViaOboPay('', payment_option_id);
+            break;
+
+            case 57:
+                payWithPesapal(payment_option_id,'');
+            break;
+
+            case 58:
+                payWithPowerTrans(payment_option_id,'');
+            break;
+            case 59:
+                payWithLivees(payment_option_id);
                 break;
-                
+             case 62:
+                paymentViaMpesaSafari('', payment_option_id, '');
+            break;
+            case 65:
+                paymentViaTotalpay('', payment_option_id, '');
+            break;
+            case 67:
+                paymentViaThawanipg('', payment_option_id, '');
+            break;
+            case 69:
+                paymentViaHitpay('', payment_option_id, '');
+            break;
+            case 70:
+                paymentViaCyberSourcePay('', payment_option_id, '');
+            break;
+            case 71:
+                paymentViaOrangePay('', payment_option_id, '');
+            break;
+
         }
 
     }
@@ -5367,7 +5984,6 @@ $(document).ready(function () {
             break;
             case '44':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                console.log('order', order);
                 if (order != '') {
                     paymentViaConekta(address_id, order);
                 }
@@ -5377,7 +5993,6 @@ $(document).ready(function () {
             break;
             case '45':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                console.log('order', order);
                 if (order != '') {
                     paymentViaTelr(address_id, order);
                 }
@@ -5385,6 +6000,12 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+
+            case '46': {
+                let order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                paymentViaMastercard('cart', order);
+                break;
+            }
 
             case '47':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
@@ -5400,7 +6021,6 @@ $(document).ready(function () {
                 //console.log('address_id',address_id,'payment_option_id',payment_option_id,'tip',tip);
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 if (order != '') {
-                    console.log('order',order);
                     paymentViaMtnMomo(address_id, order, payment_from='cart');
                 }
                 else{
@@ -5415,8 +6035,8 @@ $(document).ready(function () {
                 }
                 else{
                     return false;
-                }     
-              break; 
+                }
+              break;
 
             case '50':
 				if(creditCardValidation()){
@@ -5430,7 +6050,7 @@ $(document).ready(function () {
                 }else{
 					         $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
 				}
-              break; 
+              break;
             case '52':
               var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
               if (order != '') {
@@ -5438,7 +6058,8 @@ $(document).ready(function () {
               } else {
                   return false;
               }
-          break 
+          break ;
+
           case '53':
 
             cardJson = {
@@ -5458,14 +6079,92 @@ $(document).ready(function () {
             }else{
                 $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
             }
-            break; 
+            break;
+
+            case '55':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaDataTrans(address_id,payment_option_id,order);
+                }
+            break ;
+
+            case '56':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaOboPay(address_id, payment_option_id, order);
+                }else{
+                    return false;
+                }
+            break;
+
+            case '57':
+              var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+              if (order != '') {
+                payWithPesapal(payment_option_id, order);
+              } else {
+                  return false;
+              }
+            break;
+
+            case '58':
+              var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+              if (order != '') {
+                payWithPowerTrans(payment_option_id, order);
+              }
+            break;
+            case '59':
+              var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+              if (order != '') {
+                payWithLivees(address_id, payment_option_id, order);
+              }
+            break;
+           case '62':
+              var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+              if (order != '') {
+                paymentViaMpesaSafari(address_id, payment_option_id, order);
+              }
+            break;
+            case '65':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaTotalpay(address_id, payment_option_id, order);
+                }
+            break;
+            case '67':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                paymentViaThawanipg(address_id, payment_option_id, order);
+                }else {
+                return false;
+                }
+            break;
+            case '69':
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaHitpay(address_id, payment_option_id, order);
+            }
+            break;
+            case '70':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaOranngepay('', payment_option_id, '');
+                    paymentViaCyberSourcePay('', payment_option_id, '');
+                }
+            break;
+            case '71':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaOrangePay('', payment_option_id, '');
+                }
+            break;
         }
 
     }
 
 
     function walletPaymentOPtions(payment_option_id)
-    {  
+    {
+
         switch (payment_option_id) {
             case 3:
                     paymentViaPaypal('', payment_option_id);
@@ -5485,26 +6184,10 @@ $(document).ready(function () {
                                 card: card,
                             }).then(stripePaymentMethodHandler);
                             // paymentViaStripeSource(result.source.id, address_id, payment_option_id,delivery_type, order);
-                        // }else{
-                        //     stripe.createToken(card).then(function(result) {
-                        //         if (result.error) {
-                        //             $('#stripe_card_error').html(result.error.message);
-                        //             $(".topup_wallet_confirm").attr("disabled", false);
-                        //         } else {
-                        //             paymentViaStripe(result.token.id, '', payment_option_id, '', '');
-                        //         }
-                        //     });
-                        // }
+
                     }
                 });
-                // stripe.createToken(card).then(function (result) {
-                //     if (result.error) {
-                //         $('#stripe_card_error').html(result.error.message);
-                //         $(".topup_wallet_confirm").attr("disabled", false);
-                //     } else {
-                //         paymentViaStripe(result.token.id, '', payment_option_id, '', '');
-                //     }
-                // });
+
             break;
 
             case 5:
@@ -5530,7 +6213,6 @@ $(document).ready(function () {
                     }
                 }).catch(function (error) {
                     // Re-enable button now that request is complete
-                    // alert("error occured: " + error);
                 Swal.fire({
                     // title: "Warning!",
                     text: "error occured: " + error,
@@ -5672,6 +6354,9 @@ $(document).ready(function () {
             case 45:
                 paymentViaTelr('', payment_option_id, '');
                 break;
+            case 46:
+                paymentViaMastercard('wallet');
+                break;
             case 47:
                 paymentViaKhalti('', '');
                 break;
@@ -5688,7 +6373,7 @@ $(document).ready(function () {
             case 52:
                 paymentViaSkipCash('',payment_option_id,'');
                 break;
-            
+
             case 53:
                 cardJson = {
                     'cno': $('#card-element-nmi').val(),
@@ -5699,8 +6384,44 @@ $(document).ready(function () {
                 if(cardValidation(cardJson)){
                     paymentNmipay('', payment_option_id,'',cardJson);
                 }
-                break; 
 
+            break;
+
+            case 55:
+                paymentViaDataTrans('',payment_option_id,null);
+            break;
+
+            case 56:
+                paymentViaOboPay('', payment_option_id);
+
+            case 57:
+                payWithPesapal(payment_option_id,'');
+            break;
+
+            case 58:
+                payWithPowerTrans(payment_option_id,'');
+            break;
+             case 59:
+                payWithLivees(payment_option_id,payment_from='wallet');
+            break;
+            case 62:
+                paymentViaMpesaSafari('',payment_option_id,'');
+            break;
+            case 65:
+                paymentViaTotalpay('', payment_option_id, '');
+            break;
+            case 67:
+                paymentViaThawanipg('', payment_option_id, '');
+            break;
+            case 69:
+            paymentViaHitpay('', payment_option_id, '');
+            break;
+            case 70:
+                paymentViaCyberSourcePay('', payment_option_id, '');
+            break;
+            case 71:
+                paymentViaOrangePay('', payment_option_id, '');
+            break;
         }
     }
 
@@ -5710,6 +6431,130 @@ function numberWithCommas(x) {
     // x=x.toFixed(2)
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
-//   var number = 213242.3412;
-//   alert(numberWithCommas(number));
+
 $(".related-css").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"20px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}}]});
+
+$('#add_edit_address').on('hidden.bs.modal', function () {
+    $("html").removeClass("intro");
+  });
+
+$(".add_edit_address_btn").click(function(){
+    $("html").addClass("intro");
+  });
+
+
+// nine template slider
+$('.categories_slider').slick({
+    slidesToShow: 7,
+    slidesToScroll: 1,
+    arrows: true,
+    dots: false,
+    speed: 300,
+    infinite: true,
+    autoplaySpeed: 5000,
+    autoplay: true,
+    responsive: [
+        {
+            breakpoint: 991,
+            settings: {
+            slidesToShow: 4,
+            }
+        },
+        {
+            breakpoint: 767,
+            settings: {
+            slidesToShow: 3,
+            }
+        },
+        {
+            breakpoint: 576,
+            settings: {
+            slidesToShow: 2,
+            }
+        }
+    ]
+});
+
+$('.featured_slider').slick({
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    arrows: true,
+    dots: false,
+    speed: 300,
+    infinite: true,
+    autoplaySpeed: 5000,
+    autoplay: true,
+    responsive: [
+        {
+            breakpoint: 1440,
+            settings: {
+            slidesToShow: 4,
+            }
+        },
+        {
+            breakpoint: 991,
+            settings: {
+            slidesToShow: 3,
+            }
+        },
+        {
+            breakpoint: 767,
+            settings: {
+            slidesToShow: 2,
+            }
+        },
+        {
+            breakpoint: 576,
+            settings: {
+            slidesToShow: 1,
+            }
+        }
+    ]
+});
+
+
+
+
+$('.category_responsive').slick({
+    dots: false,
+    infinite: false,
+    speed: 300,
+    slidesToShow: 6,
+    slidesToScroll: 1,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 5,
+          slidesToScroll: 1,
+          infinite: true,
+          dots: false
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  });
+
+
+
+
+  if (typeof action_type !== "undefined" && action_type === "p2p") {
+    const initReadMore = new readMore();
+    initReadMore.bootstrap();
+}
+
+
+AOS.init({disable: 'mobile'});

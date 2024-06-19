@@ -8,9 +8,8 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use App\Models\ClientPreference;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Session;
-
-
 
 class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMapping{
     /**
@@ -28,8 +27,11 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
         $user = Auth::user();
         if (Session::has('preferences') && !empty(Session::get('preferences'))) {
             $client_preference_detail = (object)Session::get('preferences');
+            if(!isset($client_preference_detail->is_tax_price_inclusive)){
+                $client_preference_detail =  (object)getAdditionalPreference(['is_tax_price_inclusive']);
+            }
         }else{
-            $client_preference_detail = ClientPreference::select('is_tax_price_inclusive')->first();
+            $client_preference_detail = (object)getAdditionalPreference(['is_tax_price_inclusive']);
         }
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
         $vendor_orders =  OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment'])->orderBy('id', 'DESC');
@@ -41,9 +43,10 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
         if(isset($this->data->date_range)){
             $date = explode(' to ',$this->data->date_range);
             $dateF = $date[0];
-            $dateT = $date[1] ?? $date[0];
-            $vendor_orders = $vendor_orders->whereDate('created_at', '>=', $dateF)
-            ->whereDate('created_at', '<=', $dateT);
+            $dateT = !empty($date[1]) ?$date[1]: $date[0];
+            $dateF = Carbon::parse($dateF, $timezone)->setTimezone('UTC');
+            $dateT = Carbon::parse($dateT, $timezone)->setTimezone('UTC')->addDays(1);
+            $vendor_orders = $vendor_orders->whereBetween('created_at',[$dateF, $dateT]);
         }
         if(isset($this->data->vendor)){
             $vendor = $this->data->vendor;
@@ -66,8 +69,10 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
             }
             $vendor_orders = $vendor_orders->where('order_status_option_id',$status);
         }
-        $vendor_orders = $vendor_orders->get();          
+        $vendor_orders = $vendor_orders->get();
         foreach ($vendor_orders as $vendor_order) {
+
+
             $adminDiscount = 0.00;
             $vendor_order->created_date = dateTimeInUserTimeZone($vendor_order->created_at, $timezone);
             $vendor_order->user_name = $vendor_order->user ? $vendor_order->user->name : '';
@@ -85,13 +90,27 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
             if ($vendor_order->coupon_paid_by == 1) {
                 $adminDiscount = $vendor_order->discount_amount;
             }
-            $vendor_order->total_amount = $tip+$vendor_order->payable_amount;
-            $vendor_order->order_status = $order_status;
-            $revenue = $vendor_order->admin_commission_percentage_amount + $vendor_order->admin_commission_fixed_amount + $vendor_order->total_markup_price;           
-            if($client_preference_detail->is_tax_price_inclusive){
-                $vendor_order->admin_revenue = ($revenue + $vendor_order->total_container_charges + $vendor_order->service_fee_percentage_amount + $vendor_order->delivery_fee) - $adminDiscount - number_format($vendor_order->orderDetail->loyalty_amount_saved??0.00);                                            
+            $vendor_order->total_amount = (double)$tip + (double)$vendor_order->payable_amount;
+            $vendor_order->cash_payment = 0;
+            if ($vendor_order->orderDetail->payment_option_id == 1) {
+                $vendor_order->cash_payment = $vendor_order->payable_amount;
+            }
+            if(!empty($vendor_order->orderDetail)){
+                $vendor_order->taxable_amount  =   (float) array_sum(explode(":", $vendor_order->orderDetail->total_other_taxes));
             }else{
-                $vendor_order->admin_revenue = ($revenue + $vendor_order->taxable_amount +$vendor_order->total_container_charges+  $vendor_order->service_fee_percentage_amount  + $vendor_order->delivery_fee) - $adminDiscount - decimal_format($vendor_order->orderDetail->loyalty_amount_saved??0.00);                                             
+                $vendor_order->taxable_amount = $vendor_order->orderDetail->total_other_taxes_amount;
+            }
+
+            $vendor_order->taxable_amount  = round($vendor_order->taxable_amount,2);
+            $vendor_order->cash_payment  = $vendor_order->cash_payment;
+
+            $vendor_order->order_status = $order_status;
+            $revenue = $vendor_order->admin_commission_percentage_amount + $vendor_order->admin_commission_fixed_amount + $vendor_order->total_markup_price;
+            $vendor_order->online_payment = isset($vendor_order->payment) ? $vendor_order->payment->balance_transaction :'';
+            if(@$client_preference_detail->is_tax_price_inclusive){
+                $vendor_order->admin_revenue = ($revenue + $vendor_order->total_container_charges + $vendor_order->service_fee_percentage_amount + $vendor_order->delivery_fee) - $adminDiscount - number_format($vendor_order->orderDetail->loyalty_amount_saved??0.00);
+            }else{
+                $vendor_order->admin_revenue = ($revenue + $vendor_order->taxable_amount +$vendor_order->total_container_charges+  $vendor_order->service_fee_percentage_amount  + $vendor_order->delivery_fee) - $adminDiscount - decimal_format($vendor_order->orderDetail->loyalty_amount_saved??0.00);
             }
         }
         return $vendor_orders;
@@ -108,6 +127,10 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 'Customer Name',
                 'Vendor Name',
                 'Subtotal Amount',
+                'Wallet',
+                'Cash',
+                'Online',
+                'Total Discount',
                 'Promo Code Used',
                 'Promo Code Discount',
                 'Service Fee',
@@ -137,6 +160,10 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 'Customer Name',
                 'Vendor Name',
                 'Subtotal Amount',
+                'Wallet',
+                'Cash',
+                'Online',
+                'Total Discount',
                 'Promo Code Used',
                 'Promo Code Discount',
                 'Service Fee',
@@ -169,6 +196,10 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 $order_vendors->user_name,
                 $order_vendors->vendor ? $order_vendors->vendor->name : '',
                 decimal_format($order_vendors->subtotal_amount),
+                decimal_format($order_vendors->orderDetail ? $order_vendors->orderDetail->wallet_amount_used : 0),
+                decimal_format($order_vendors->cash_payment),
+                decimal_format(floatval($order_vendors->online_payment)),
+                decimal_format(floatval($order_vendors->orderDetail->total_discount ?? 0)),
                 $order_vendors->coupon_code,
                 decimal_format($order_vendors->discount_amount),
                 decimal_format($order_vendors->service_fee_percentage_amount),
@@ -186,8 +217,8 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 ($order_vendors->orderDetail && $order_vendors->orderDetail->paymentOption) ? $order_vendors->orderDetail->paymentOption->title : '',
                 $order_vendors->order_status,
                 $order_vendors->orderDetail->shipping_delivery_type == 'L' ?'Lalamove' :'Dispatcher',
-                $order_vendors->orderDetail ? ($order_vendors->orderDetail->address)? $order_vendors->orderDetail->address->house_number.','.$order_vendors->orderDetail->address->city.', '.$order_vendors->orderDetail->address->state : '' : '',
                 $order_vendors->vendor ? $order_vendors->vendor->address ?? '' : '',
+                $order_vendors->orderDetail ? (($order_vendors->orderDetail->address)?$order_vendors->orderDetail->address->fullAddress : '') : '',
             ];
         }else{
             return [
@@ -198,6 +229,10 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 $order_vendors->user_name,
                 $order_vendors->vendor ? $order_vendors->vendor->name : '',
                 decimal_format($order_vendors->subtotal_amount),
+                decimal_format($order_vendors->orderDetail ? $order_vendors->orderDetail->wallet_amount_used : 0),
+                decimal_format($order_vendors->cash_payment),
+                decimal_format(floatval($order_vendors->online_payment)),
+                decimal_format(floatval($order_vendors->orderDetail->total_discount ?? 0)),
                 $order_vendors->coupon_code,
                 decimal_format($order_vendors->discount_amount),
                 decimal_format($order_vendors->service_fee_percentage_amount),
@@ -205,14 +240,15 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 decimal_format($order_vendors->fixed_fee),
                 $order_vendors->orderDetail ? $order_vendors->orderDetail->tip_amount : '',
                 decimal_format($order_vendors->taxable_amount),
-                $order_vendors->vendor_amount,
+                $order_vendors->vendor_amount = 20.12,
                 decimal_format($order_vendors->admin_commission_fixed_amount),
                 decimal_format($order_vendors->admin_commission_percentage_amount),
                 decimal_format($order_vendors->total_amount),
                ($order_vendors->orderDetail && $order_vendors->orderDetail->paymentOption)? $order_vendors->orderDetail->paymentOption->title : '',
                 $order_vendors->order_status,
                 $order_vendors->orderDetail->shipping_delivery_type == 'L' ?'Lalamove' :'Dispatcher',
-                $order_vendors->orderDetail ? ($order_vendors->orderDetail->address)? $order_vendors->orderDetail->address->house_number.','.$order_vendors->orderDetail->address->city.', '.$order_vendors->orderDetail->address->state : '' : '',
+                $order_vendors->vendor ? $order_vendors->vendor->address ?? '' : '',
+                $order_vendors->orderDetail ? (($order_vendors->orderDetail->address)?$order_vendors->orderDetail->address->fullAddress : '') : '',
             ];
 
         }

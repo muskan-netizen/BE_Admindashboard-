@@ -1,10 +1,10 @@
 <div class="row">
     <div class="col-md-12">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="form-group">
                     {!! Form::label('title', __('Select '. getNomenclatureName('Category')),['class' => 'control-label']) !!}
-                    <select class="selectize-select form-control" required id="cateSelectBox" name="cate_id">
+                    <select class="selectize-select form-control" required id="cateSelectBox" name="cate_id[]" multiple>
                         <option value="">{{ __("Select Category") }}...</option>
                         @foreach($categories as $cate)
                             <option value="{{$cate['id']}}">{{$cate['hierarchy']}}</option>
@@ -30,6 +30,15 @@
                         <option value="6">{{ __("Location") }}</option>
                         <option value="7">{{ __("DatePicker") }}</option>
                     </select>
+                    <span class="invalid-feedback" role="alert">
+                        <strong></strong>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('title', __('Icon'),['class' => 'control-label']) !!}
+                    <input type="file" class="form-control"  name="icon">
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
                     </span>

@@ -1,9 +1,10 @@
 @php
 $add_to_cart =  route('addToCart') ;
-    $additionalPreference = getAdditionalPreference(['is_token_currency_enable','is_service_product_price_from_dispatch']);
+    $additionalPreference = getAdditionalPreference(['is_token_currency_enable','is_service_product_price_from_dispatch','is_service_price_selection']);
+    $getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
     $is_service_product_price_from_dispatch_forOnDemand = 0;
     $category_type_idForNotShowshPlusMinus = ['12'];
-    if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+    if($getOnDemandPricingRule['is_price_from_freelancer'] ==1){
         $is_service_product_price_from_dispatch_forOnDemand =1;
         array_push($category_type_idForNotShowshPlusMinus,8);
     }
@@ -11,9 +12,11 @@ $add_to_cart =  route('addToCart') ;
 @endphp
 <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
     <nav class="scrollspy-menu">
-        <ul>
+        <ul>    
             @forelse($listData as $key => $data)
+
             <li class="side-scroll-menu-li"><a href="#{{ str_replace(' ', '-', $data->category->slug) }}">{{ @$data->category->translation[0]->name??'' }}({{ $data->products_count }})</a></li>
+
             @empty
             @endforelse
         </ul>
@@ -68,7 +71,9 @@ $add_to_cart =  route('addToCart') ;
                                 <div
                                     class="d-flex align-items-start justify-content-between">
                                     <h5 class="mt-0">
-                                        {{ $prod->translation_title }}
+                                        {{ $prod->translation_title }} @if ($prod->calories)
+                                        ({{$prod->calories}} {{ __("calories") }})
+                                    @endif 
 
                                     </h5>
                                     <div class="product_variant_quantity_wrapper">
@@ -356,12 +361,6 @@ $add_to_cart =  route('addToCart') ;
     <h4 class="mt-3 mb-3 text-center">{{__('No product found')}}</h4>
 @endforelse
 
-
-
-
-
-
-
 </div>
 {{--@endif--}}
         <div class="col-12 col-lg-3 d-lg-inline-block d-none">
@@ -379,3 +378,16 @@ $add_to_cart =  route('addToCart') ;
                 </div>
             </div>
         </div>
+        <script>
+            $(".side-scroll-menu-li").click(function(){
+                $("body").removeClass("overflow-hidden");
+                $(".scrollspy-menu").removeClass("side-menu-open");
+                $(".manu-bars").removeClass("menu-btn");
+             });              
+
+            // function getVendorProduct(id)
+            // {
+            //     vendorProductsSearchResults(id);
+            // }
+            </script>        
+        

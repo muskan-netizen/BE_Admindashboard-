@@ -3,6 +3,8 @@
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+<link href="https://cdn.datatables.net/buttons/1.5.1/css/buttons.dataTables.min.css" rel="stylesheet" />
+
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 <style type="text/css">
 @media(min-width: 1440px){.content{min-height: calc(100vh - 100px);}.dataTables_scrollBody {height: calc(100vh - 500px);}}
@@ -12,19 +14,25 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
 <style type="text/css">
     .pac-container,.pac-container .pac-item{z-index:99999!important}.fc-v-event{border-color:#43bee1;background-color:#43bee1}.dd-list .dd3-content{position:relative}span.inner-div{top:50%;-webkit-transform:translateY(-50%);-moz-transform:translateY(-50%);transform:translateY(-50%)}.button{position:relative;padding:8px 16px;background:#009579;border:none;outline:0;border-radius:50px;cursor:pointer}.button:active{background:#007a63}.button__text{font:bold 20px Quicksand,san-serif;color:#fff;transition:all .2s}.button--loading .button__text{visibility:hidden;opacity:0}.button--loading::after{content:"";position:absolute;width:16px;height:16px;top:0;left:0;right:0;bottom:0;margin:auto;border:4px solid transparent;border-top-color:#fff;border-radius:50%;animation:button-loading-spinner 1s ease infinite}@keyframes button-loading-spinner{from{transform:rotate(0turn)}to{transform:rotate(1turn)}}
 </style>
+
 @endsection
 @section('content')
 <div class="container-fluid vendor-page">
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="page-title-box">
-
                 @php
-                $vendors = getNomenclatureName('vendors', true);
-                $newvendors = ($vendors === "vendors") ? __('vendors') : $vendors ;
+                    $vendors = getNomenclatureName('vendors', true);
+                    $newvendors = ($vendors === "vendors") ? __('vendors') : $vendors ;
+                    $ordersNom = getNomenclatureName('Orders', true);
+                    $ordersNom = ($ordersNom=="Orders")?__('Orders'):__($ordersNom);
+                    $productsNom = getNomenclatureName('Products', true);
+                    $productsNom = ($productsNom=="Products")?__('Products'):__($productsNom);
+                    $OpenNom = getNomenclatureName('Open', true);
+                    $OpenNom = ($OpenNom=="Open")?__('Open'):__($OpenNom);
                 @endphp
                 @php
-                    $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module']);
+                    $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'gofrugal_enable_status']);
                 @endphp
 
                 <h4 class="page-title">{{ $newvendors }}</h4>
@@ -72,7 +80,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                                     <i class="mdi mdi-store-24-hour text-primary mdi-24px"></i>
                                     <span data-plugin="counterup" id="total_order_count">{{$available_vendors_count}}</span>
                                 </h3>
-                                <p class="text-muted font-15 mb-0"> {{ __('Open') }} {{getNomenclatureName('vendors', true)}}</p>
+                                <p class="text-muted font-15 mb-0"> {{ __($OpenNom) }} {{getNomenclatureName('vendors', true)}}</p>
                             </div>
                         </div>
                         <div class="col-6 col-md-3 mb-3 mb-md-0">
@@ -81,7 +89,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                                     <i class="fas fa-money-check-alt text-primary"></i>
                                     <span data-plugin="counterup" id="total_cash_to_collected">{{$vendors_product_count}}</span>
                                 </h3>
-                                <p class="text-muted font-15 mb-0">{{ __('Total Products') }}</p>
+                                <p class="text-muted font-15 mb-0">{{ __('Total '.$productsNom) }}</p>
                             </div>
                         </div>
                         <div class="col-6 col-md-3 mb-3 mb-md-0">
@@ -90,7 +98,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                                     <i class="fas fa-money-check-alt text-primary"></i>
                                     <span data-plugin="counterup" id="total_delivery_fees">{{$vendors_active_order_count}}</span>
                                 </h3>
-                                <p class="text-muted font-15 mb-0">{{ __('Total Active Orders') }}</p>
+                                <p class="text-muted font-15 mb-0">{{ __('Total Active '.$ordersNom) }}</p>
                             </div>
                         </div>
                     </div>
@@ -150,9 +158,9 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                                                     <th>{{ __('Offers') }}</th>
                                                     <th class="text-center">{{ __('Can Add') }} <br> {{ __('Category') }}</th>
                                                     <th class="text-center">{{ __('Commission') }} <br> {{ __('Percentage') }}</th>
-                                                    <th class="text-center">{{ __('Products') }}</th>
-                                                    <th class="text-center">{{ __('Orders') }}</th>
-                                                    <th class="text-center">{{ __('Active') }} <br> {{ __('Orders') }}</th>
+                                                    <th class="text-center">{{ __(getNomenclatureName('Products', true)) }}</th>
+                                                    <th class="text-center">{{ __(getNomenclatureName('Orders', true)) }}</th>
+                                                    <th class="text-center">{{ __('Active') }} <br> {{ __(getNomenclatureName('Orders', true)) }}</th>
                                                     {{-- <th class="text-center">{{ __('Manager') }}</th> --}}
                                                     <th class="text-center">{{ __('Action') }}</th>
                                                 </tr>
@@ -390,7 +398,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
         var code = $(this).attr('data-country-code');
         $('#vendorCountryCode').val(code);
         var dial_code = $(this).attr('data-dial-code');
-        $('#vendorDialCode').val(dial_code);
+        $("input[name='vendor_dial_code']").val(dial_code);
     });
     $(document).on('change', '#Vendor_order_pre_time', function(){
         vendorOrderTime();
@@ -412,10 +420,14 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
             $('#Vendor_order_pre_time_show').text(txt);
        }
     }
-
+    var gofrugalEnableStatus = "{{ @$getAdditionalPreference['gofrugal_enable_status'] }}";
+    var toggleGroFrugalBtn = gofrugalEnableStatus != 1 ? 'd-none' : '';
+    var goFrugalUrl = '{{route("gofrugal.home")}}';
 </script>
 @include('backend.vendor.pagescript')
 <script src="{{asset('js/admin_vendor.js')}}"></script>
+@include('backend.export_pdf')
+
 <script type="text/javascript">
     var search_text = "{{__('Search By '). getNomenclatureName('vendors', false) . __(' Name')}}";
     var table_info = '{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}';

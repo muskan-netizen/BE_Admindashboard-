@@ -1,13 +1,20 @@
 
 @section('customcss')
 <link defer type="text/css" href="{{asset('css/ondemand.css')}}" rel="stylesheet" id="bs-default-stylesheet" />
+<style>
+.home-serivces .step-indicator .step1 p{
+    width: max-content;
+}   
+</style>
 @endsection
 @php
 $add_to_cart =  route('addToCart') ;
-$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
+$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch','is_service_price_selection']);
+$getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
+
 $is_service_product_price_from_dispatch_forOnDemand = 0;
 $category_type_idForNotShowshPlusMinus = ['12'];
-if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+if($getOnDemandPricingRule['is_price_from_freelancer']==1){
     $is_service_product_price_from_dispatch_forOnDemand =1;
     array_push($category_type_idForNotShowshPlusMinus,8);
 }
@@ -16,7 +23,8 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
 <section class="home-serivces" id="alSixHomeServices">
     <div class="container">
         <div class="row mb-lg-5 mb-md-4 mb-3">
-            <div class="col-xl-8 offset-xl-2">
+        <!-- class="col-xl-8 offset-xl-2 replace class to col-md-12" -->
+            <div class="col-md-12">
                 <div class="step-indicator">
 
                     <div class="step step1 @if(app('request')->input('step') >= '1' || empty(app('request')->input('step'))) active @endif">
@@ -73,6 +81,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                     <!-- Start Conent Wrapper -->
                                     <div id='main-wrapper'  class="@if(app('request')->input('addons') == 1) d-none @endif">
                                                 @foreach ($category->childs as $key => $childs)
+                                               
                                                 @if( in_array($childs->type_id , [8,12]))
 
                                                 <h4><b>{{ $childs->translation_name }}</b></h4>
@@ -87,7 +96,6 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                             @foreach ($childs->products as $data)
 
                                                             @php
-
                                                                 $data->translation_title = (!empty($data->translation->first())) ? $data->translation->first()->title : $data->sku;
                                                                 $data->translation_description = (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku;
                                                                 $data->variant_multiplier = (!empty($clientCurrency)) ? $clientCurrency->doller_compare : 1;
@@ -95,7 +103,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                 $productInquiryCheck = $data->inquiry_only  ; 
                                                                 $redirec = ($data->is_recurring_booking ==1) ? route('productDetail', [@$data->vendor->slug, $data->url_slug]) : 'javascript:void(0)' ;
                                                                 $class = ($data->is_recurring_booking ==1) ? 'add_on_demand_btn' : 'add_on_demand' ;
-                                                                
+                                                                $data->category_type_id = $childs->type_id
                                                             @endphp
 
                                                             <div class="row classes_wrapper no-gutters align-items-center" href="#">
@@ -104,6 +112,31 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                     <div class="productDetails pr-2">
                                                                         <p class="mb-1 ">{!! (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku !!}</p>
                                                                     </div>
+                                                                    
+                                                                </div>
+
+
+
+
+                                                                <div class="col-md-3 col-sm-4 mb-sm-0 mb-3">
+                                                                    <?php $imagePath = $imagePath2 = '';
+                                                                        $mediaCount = count($data->media);
+                                                                        for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
+                                                                            if($i == 0){
+                                                                                $imagePath = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
+                                                                            }
+                                                                            $imagePath2 = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
+                                                                        } ?>
+                                                                    <div class="class_img">
+                                                                        @if($imagePath != '')
+                                                                        <img src="{{$imagePath}}" alt="">
+                                                                        @else
+
+                                                                        @endif
+
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 ac-royo-btn">
                                                                     <div class="d-flex align-items-center justify-content-between productBookingBtns">
                                                                         @if($productInquiryCheck == 0)
                                                                     
@@ -127,6 +160,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                             @else
                                                                                 <a class="btn btn-solid {{  $class }}" style="display:none;" id="add_button _href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="{{ $redirec }}">Add <i class="fa fa-plus"></i></a>
                                                                             @endif
+
                                                                             @if(
                                                                                 isset($data->category_type_id) && 
                                                                                 ( 
@@ -176,29 +210,6 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
 
                                                                             @endif
                                                                         @endif
-
-                                                                    </div>
-                                                                </div>
-
-
-
-
-                                                                <div class="col-md-3 col-sm-4 mb-sm-0 mb-3">
-                                                                    <?php $imagePath = $imagePath2 = '';
-                                                                        $mediaCount = count($data->media);
-                                                                        for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
-                                                                            if($i == 0){
-                                                                                $imagePath = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
-                                                                            }
-                                                                            $imagePath2 = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
-                                                                        } ?>
-                                                                    <div class="class_img">
-                                                                        @if($imagePath != '')
-                                                                        <img src="{{$imagePath}}" alt="">
-                                                                        @else
-
-                                                                        @endif
-
                                                                     </div>
                                                                 </div>
 
@@ -279,7 +290,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                     $cartcount = 1;
                                                                 @endphp
                                                             @endif
-                                                                @if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand'))
+                                                                @if($is_service_product_price_from_dispatch_forOnDemand==1)
                                                                 @if($cartcount > 0)
                                                                         <h5 class="my-sm-0 my-3 "></h5>
                                                                         <a class="btn btn-solid float-right"  id="added_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
@@ -339,10 +350,12 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                     </div>
                                                 </div>
                                                 <hr>
-
-
-
                                                 @endforeach
+                                                @if(count($listData))
+                                                <div class="pagination pagination-rounded justify-content-end mb-0 page-m-20">
+                                                    {{ $listData->links() }}
+                                                </div>
+                                                @endif
                                             @else
                                                 <div class="col-xl-12 col-12 mt-4"><h5 class="text-center">{{ __('No Product Found') }}</h5></div>
                                             @endif
@@ -367,7 +380,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                             <h4 class="mb-2"><b>{!! (!empty($cart_data->product->translation->first())) ? $cart_data->product->translation->first()->title : $cart_data->product->sku !!}</b></h4>
                                             @foreach($cart_data->product->addOn as $row => $addon)
                                             <div class="add-on-main-div">
-                                                <h6 class="product-title">{{ $addon->addOnName->title }}
+                                                <h6 class="product-title">{{ $addon->addOnName->translation_one->title }}
                                                         @php
                                                             $min_select = '';
                                                             if($addon->addOnName->min_select > 0){
@@ -407,7 +420,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                 <div class="radios">
                                                                 <input type="{{$type_input}}" class="productAddonOption " {{ $checked }} id="inlineCheckbox_{{$key}}{{$row.'_'.$k}}"  class="productAddonOption"  name="addonData{{$row}}[{{$cart_data->id}}][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}"/>
                                                                     <label for='inlineCheckbox_{{$key}}{{$row.'_'.$k}}'>
-                                                                        <span class="customCheckbox productAddonOptionspan_{{ $checked }}" aria-hidden="true">{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price,',').')' }} </span>
+                                                                        <span class="customCheckbox productAddonOptionspan_{{ $checked }}" aria-hidden="true">{{$option->translation_one->title .' ('.Session::get('currencySymbol').decimal_format($option->price,',').')' }} </span>
                                                                     </label>
                                                                 </div>
                                                             </div>
@@ -432,6 +445,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
 
 
                             @if(app('request')->input('step') == '2')
+                             
                                 <div id="step-2-ondemand">
                                    @php
                                    $lastKey = count($cartData) - 1;
@@ -442,13 +456,15 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                         @php
                                          $last_cart_product_id =  $cart_data->id
                                          @endphp
-                                        @if(($cart_data->cateTypeId ==8) && ($additionalPreference['is_service_product_price_from_dispatch'] !=1))
+                                        
+                                        @if(in_array($cart_data->cateTypeId , [8,12]) && ($additionalPreference['is_service_product_price_from_dispatch'] !=1))
+                                          
                                             @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
-                                            @php
-                                                $productDate = trim(date('Y-m-d', strtotime($cart_data->scheduled_date_time)));
-                                            @endphp
+                                                @php
+                                                    $productDate = trim(date('Y-m-d', strtotime($cart_data->scheduled_date_time)));
+                                                @endphp
 
-
+                                               
                                             <div  id="date_time_set_div{{$cart_data->id}}" class="booking_date_section">
 
                                                 <h4 class="mb-2" ><b>{{ __('When would you like your service?')}}</b></h4>
@@ -483,6 +499,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                 @else
                                                 <h5 class="text-center">{{ __("Vendor has not created slots for this Date yet.") }}</h5>
                                                 @endif
+                                               
                                                 @if($cart_data->is_dispatch_slot == 1)
                                                 @php
 
@@ -496,7 +513,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                 @endphp
                                                 <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" >
                                                     {{-- style="@if($cart_data->schedule_slot != '')  @else display: none; @endif " --}}
-                                                @include('frontend.ondemand.dispatcher_agent_slots')
+                                                    @include('frontend.ondemand.dispatcher_agent_slots')
                                                 </div>
                                                 @else
                                                     @php
@@ -712,6 +729,15 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                         <li class="alVendorProductTotals">
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
+                                                    <span class="ellips">{{__('Delivery Charges')}}</span>
+                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.delivery_charges) %></span>
+                                                </h6>
+                                            </div>
+                                        </li>
+
+                                        <li class="alVendorProductTotals">
+                                            <div class='media-body'>
+                                                <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Tax')}}</span>
                                                     <span>{{Session::get('currencySymbol')}}<%= cart_details.total_taxable_amount %></span>
                                                 </h6>
@@ -733,7 +759,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Total')}}</span>
-                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.sub_total_inc_tax) %></span>
+                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.total_payable_amount) %></span>
                                                 </h6>
                                             </div>
                                         </li>
@@ -779,7 +805,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
         </div>
     </div>
 </section>
-@include('frontend.ondemand.productPriceModel');
+@include('frontend.ondemand.productPriceModel')
 @section('custom-js')
 
 <script src="{{ asset('js/onDemand/GetDispatcherPrice.js') }}"></script>

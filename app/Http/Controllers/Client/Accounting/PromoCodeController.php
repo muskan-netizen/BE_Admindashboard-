@@ -77,7 +77,12 @@ class PromoCodeController extends Controller{
             $user = Auth::user();
             $search_value = $request->get('search');
             $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
-            $vendor_orders_query = OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment','orderstatus']);
+            $vendor_orders_query = OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment','orderstatus'])->whereHas('orderDetail',function ($query){
+                $query->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
+                $query->orWhere(function ($q2) {
+                    $q2->whereIn('payment_option_id', [1,38]);
+                });
+            });
             if (Auth::user()->is_superadmin == 0) {
                 $vendor_orders_query = $vendor_orders_query->whereHas('vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);

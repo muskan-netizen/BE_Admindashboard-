@@ -27,14 +27,14 @@
                        
 
                         <div class="top-banner-content small-section">
-                            <h4>{{ $category->translation_one->name }}</h4>
-<!-- deleted code -->
+                            <h4>{{ isset($category->translation_one)?$category->translation_one->name:$category->slug }}</h4>
+                            <!-- deleted code -->
                         </div>
                     </div>
                 </div>
             </div>
             <div class="row mb-sm-5 homepageSix vendor_onetem">
-                <div class="collection-filter col-lg-3 al">
+                <div class="collection-filter col-lg-3 al d-none">
                 @if( !empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
@@ -110,7 +110,7 @@
                     <!-- side-bar banner end here -->
                     @endif
                 </div>
-                <div class="collection-content col-lg-9">
+                <div class="collection-content col-lg-12">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
@@ -177,7 +177,7 @@
                                                         $vendor_url = route('vendorDetail', $data->slug);
                                                     }
                                                     @endphp
-                                                    <div class="col-xl-3 col-lg-4 col-6 col-grid-box mt-sm-3 mt-1" >
+                                                    <div class="col-xl-3 col-lg-3 col-6 col-grid-box mt-sm-3 mt-1" >
                                                         <div class="product-card-box position-relative alInnerBox">
                                                             <div class="add-to-fav">
                                                                 <input id="fav_pro_one" type="checkbox">
@@ -373,6 +373,9 @@
         filterProducts();
     });
     function filterProducts(){
+
+
+        
         var brands = [];
         var variants = [];
         var options = [];

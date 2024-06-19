@@ -131,7 +131,7 @@ class OrderCancelRequestsController extends BaseController
                 }
             })
             ->addColumn('vendor', function ($req) {
-                return ($req->order_vendor->vendor) ? $req->order_vendor->vendor->name : '';
+                return isset($req->order_vendor->vendor) ? $req->order_vendor->vendor->name : '';
             })
             ->addColumn('reject_reason', function ($req) {
                 if (!empty($req->return_reason_id) && $req->reason->title == "Other") {
@@ -210,8 +210,10 @@ class OrderCancelRequestsController extends BaseController
                     $query->where('vendor_id', $vendor_id);
                 }
             ))->find($order_id);
+            
             $currentOrderStatus = OrderVendor::with('orderDetail', 'vendor', 'products')->where(['id' => $order_vendor_id, 'vendor_id' => $vendor_id, 'order_id' => $order_id])->first();
             $orderVendorProduct = OrderProduct::with('addon', 'addon.option', 'variant')->where('order_vendor_id', $currentOrderStatus->id)->where('id', $order_vendor_product_id)->first();
+            
 
             $cancelledProductPrice = $this->checkreplaceProduct($request, $orderVendorProduct) * $orderVendorProduct->quantity;
 
@@ -229,6 +231,7 @@ class OrderCancelRequestsController extends BaseController
 
                     if (!empty($currentOrderStatus->dispatch_traking_url)) {
                         $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
+                        
                         $response = Http::get($dispatch_traking_url . '?reject_reason=' . $cancel_req->reject_reason);
                         $response = json_decode($response->getBody(), true);
 

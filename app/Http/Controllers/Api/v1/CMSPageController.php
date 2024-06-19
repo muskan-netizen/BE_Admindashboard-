@@ -30,12 +30,14 @@ class CMSPageController extends BaseController
         })
             ->where(['page_translations.language_id' => $locallanguage, 'page_translations.is_published' => 1])
            // ->orderBy('pages.id', 'Desc')
-            ->orderBy('pages.order_by','ASC')
+            ->orderBy('pages.order_by','ASC')->groupBy('pages.id')
             ->get([
                 'page_translations.id',
                 'pages.slug',
                 'page_translations.title',
             ]);
+            $pages = $pages->unique('slug')->values()->all();
+
         return $this->successResponse($pages, '', 201);
     }
 
@@ -46,18 +48,17 @@ class CMSPageController extends BaseController
         $code = $request->header('code');
         $client = Client::where('code',$code)->first();
         $server_url = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/";
-
         $data['terms_and_conditions'] = $server_url . 'page/terms-conditions';
         $data['privacy_policy'] = $server_url . 'page/privacy-policy';
 
         $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module']);
 
-        $data['is_gst_required_for_vendor_registration'] = $getAdditionalPreference['is_gst_required_for_vendor_registration']??0;
-        $data['is_baking_required_for_vendor_registration'] = $getAdditionalPreference['is_baking_details_required_for_vendor_registration']??0;
-        $data['is_advance_details_required_for_vendor_registration'] = $getAdditionalPreference['is_advance_details_required_for_vendor_registration']??0;
-        $data['is_vendor_category_required_for_vendor_registration'] = $getAdditionalPreference['is_vendor_category_required_for_vendor_registration']??0;
-        $data['is_seller_module'] = $getAdditionalPreference['is_seller_module']??0;
-
+        $data['is_gst_required_for_vendor_registration'] = (int)  $getAdditionalPreference['is_gst_required_for_vendor_registration']??0;
+        $data['is_baking_required_for_vendor_registration'] = (int)  $getAdditionalPreference['is_baking_details_required_for_vendor_registration']??0;
+        $data['is_advance_details_required_for_vendor_registration'] = (int)  $getAdditionalPreference['is_advance_details_required_for_vendor_registration']??0;
+        $data['is_vendor_category_required_for_vendor_registration'] = (int)  $getAdditionalPreference['is_vendor_category_required_for_vendor_registration']??0;
+        $data['is_seller_module'] = (int)  $getAdditionalPreference['is_seller_module']??0;
+               
         $user = Auth::user();
       //  $langId = $user->language;
 
@@ -76,7 +77,7 @@ class CMSPageController extends BaseController
         })->first();
 
         $data['page_detail'] = $page_detail;
-        $page_detail->primary = $page_detail->translation;
+        $page_detail->primary = $page_detail->translation ?? null;
         if ($page_detail->translation->type_of_form != 2) {
             if($page_detail->primary->type_of_form == 3){
                 $faq =   FaqTranslations::where('page_id',$page_detail->id)->where('language_id', $langId)->get();
@@ -106,6 +107,7 @@ class CMSPageController extends BaseController
             $data['driver_types'] = $driver_types;
             $data['teams'] = $driverDocs['all_teams'];
             $data['tags'] = $driverDocs['agent_tags'];
+            
         }
 
         return $this->successResponse($data, '', 200);

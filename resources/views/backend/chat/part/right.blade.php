@@ -3,13 +3,13 @@
 		<h2 id="roomName" class="font-size-15 mb-0"></h2>
 	</div> --}}
 	<div class="conversation-head row py-3 px-3 mx-0 mb-2">
-		<div class="col-5 alOrderDetailsBox pr-0">
+		<div class="col-4 alOrderDetailsBox pr-0">
 			<p class="alOrderDetails m-0">Order #<span id="order_num"></span></p>
 			<p class="alVendorDetails m-0">Vendor <span id="vendor_name">Food Hub (Cheese Avenue, Texas)</span></p>
 			<p class="alAmountDetails m-0">Order Amount <span id="order_vendor_price">$100</span></p>
 		</div>
-		<div class="col-7 pl-0">
-			<div class="d-flex align-items-center justify-content-between user_data">
+		<div class="col-8 pl-0">
+			<div class="d-flex align-items-center flex-wrap justify-content-between user_data" style="grid-gap:10px 0;">
 				{{-- <div class="alPhoneNumberDetails">
 					<ul class="p-0 m-0 d-lg-flex align-items-center text-lg-left text-center">
 						<li class="mr-xl-2"><img class="rounded-circle userImg" src="images/avatar-5.jpg"></li>
@@ -141,6 +141,8 @@
 					<svg width="13" height="13" viewBox="0 0 24 24" tabindex="-1">
 						<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="white"></path>
 					</svg>
+				</a>
+				<a href="javascript:void(0)" style="font-size:30px;cursor:pointer" onclick="openMediaNav()"><i class="fa fa-camera" aria-hidden="true"></i>
 				</a>
 				<a type="submit" href="javascript:void(0)"  data-id="" class="btn btn-primary btn-rounded chat-send w-md send_message"><span class="d-none d-sm-inline-block mr-2">Send</span>
 					<svg width="13" height="13" viewBox="0 0 24 24" tabindex="-1">

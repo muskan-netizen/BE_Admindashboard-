@@ -54,7 +54,6 @@ class ProductBookingController extends FrontController
         $variant_product_detail = ProductVariant::select('product_id', 'quantity')->whereIn('id', $product_variant_id)->first();
        
         $variant_product_quantity = $variant_product_detail->quantity;
-
         if($variant_product_detail->quantity > count($ProductBooking)){
           $available_product_variant[] = $product_variant_id;
           $product_variant_data =  ProductVariant::where('id',$available_product_variant[0])->with(['product','checkIfInCart'])->first();

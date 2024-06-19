@@ -25,6 +25,8 @@
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
+    var pyment_totalpay_url= "{{ route('make.payment') }}";
+    var payment_thawani_url= "{{ route('pay-by-thawanipg') }}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var wallet_payment_options_url = "{{route('wallet.payment.option.list')}}";
     var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
@@ -38,8 +40,11 @@
     var payment_method_required_error_msg = "{{__('Please select payment method.')}}";
     var wallet_balance_insufficient_msg = "{{ __('Insufficient funds in wallet') }}";
     var user_wallet_balance = parseFloat("{{ $user_wallet_balance }}");
-    var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
+    var create_mtn_momo_token = "{{route('mtn.momo.createToken')}}";
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
 	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+    var payment_hitpay_url="{{ route('make.hitpay.payment') }}";
+    var payment_orangepay_url =  "{{ route('orangepay.initiate.payment') }}";
+    var payment_cybersource_url =  "{{ route('cybersource.initiate.payment') }}";
 </script>

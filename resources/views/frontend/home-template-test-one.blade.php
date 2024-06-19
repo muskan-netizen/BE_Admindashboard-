@@ -8,12 +8,6 @@
 
 @php
 $preference = $client_preference_detail;
-$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
-$is_service_product_price_from_dispatch_forOnDemand = 0;
-
-if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
-   $is_service_product_price_from_dispatch_forOnDemand =1;
-}
 @endphp
 @section('css')
 <style>
@@ -337,11 +331,12 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
 @endif
 
 
+@if($vendor_type!="car_rental")
 <section class="section-b-space ratio_asos  pt-0 mt-0 pb-0 mt-0" id="our_vendor_main_div">
    <div class="vendors">
       @foreach($homePageLabels as $key => $homePageLabel)
          @if($homePageLabel->slug == 'pickup_delivery')
-            @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories))
+            @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories) && $vendor_type=="pick_drop")
                @include('frontend.booking.cabbooking-single-module')
             @endif
          @elseif($homePageLabel->slug == 'dynamic_page')
@@ -507,7 +502,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                               $video_extensions = ['mp4', 'avi', 'mov', 'wmv']; // list of video extensions
                            @endphp
                            @if(in_array($extension, $image_extensions))
-                              <img alt="" title="" class="blur blurload w-100" data-src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" height="300">	
+                              <img alt="" title="" class="blur blurload w-100" data-src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}">	
                            @elseif (in_array($extension, $video_extensions))
                               <video id="video1" width="100%" controls autoplay muted>
                                  <source data-src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" type="video/mp4">
@@ -545,6 +540,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
       @endforeach
    </div>
 </section>
+@endif
 <section class="no-store-wrapper mb-3" style="display: none;"  >
    <div class="container">
       @if(count($for_no_product_found_html)) @foreach($for_no_product_found_html as $key => $homePageLabel) @include('frontend.included_files.dynamic_page') @endforeach @else
@@ -580,6 +576,46 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
       </div>
    </div>
 </div>
+@if($vendor_type=="p2p")
+@if(!empty($navCategories) && count($navCategories))
+<section class="p2p-categories">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12 text-center mb-4">
+				<h2>Categories</h2>
+			</div>
+		</div>
+		<div class="categories_slider" >
+			{{-- @dump($navCategories) --}}
+			@foreach($navCategories as $cate)
+				@if($cate['name'])
+					<div class="item">
+						<div class="cate-item text-center">
+							<a href="{{route('categoryDetail', $cate['slug'])}}">
+								<img
+									class="blur-up lazyload"
+									data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}"
+									data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}"
+									data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}"
+									alt=""
+									onmouseover='changeImage(this,1)'
+									onmouseout='changeImage(this,0)'
+								>
+								<h3>{{$cate['name']}}</h3>
+							</a>
+						</div>
+					</div>
+				@endif
+			@endforeach
+		</div>
+	</div>
+</section>
+@endif
+@endif
+
+@if($vendor_type=="car_rental")
+   @include('frontend.yacht.rental');
+@endif
 
 <script type="text/template" id="desktop_banners_template">
 	<div class="carousel-inner">
@@ -630,7 +666,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
 				url = "{{route('vendorDetail')}}" + "/" + banner.vendor.slug;
 			 }
 		  }
-		  %>
+		  %> 
 		  <div class="carousel-item <% if(k == 0) { %> active <% } %>">
 			 <a class="banner-img-outer" href="<%= url %>">
 				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>1370/300<%= banner.image.image_path %>" />

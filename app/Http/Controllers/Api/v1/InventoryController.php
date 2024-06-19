@@ -8,6 +8,7 @@ use App\Jobs\SyncToDispatcher;
 use App\Models\Category;
 use App\Models\ClientPreference;
 use App\Models\Vendor;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Traits\InventoryTrait;
 
@@ -20,7 +21,7 @@ class InventoryController extends Controller
     {
        try{
             if(isset($request->assigned_order_side_vendor_id) && is_array($request->assigned_order_side_vendor_id)){
-                $unAssignedOrderCategory = Vendor::select('id', 'name')->whereNotIn('id', $request->assigned_order_side_vendor_id)->where('status', 1)->get();
+                $unAssignedOrderCategory = Vendor::select('id', 'name', 'logo')->where('status', 1)->get(); //->whereNotIn('id', $request->assigned_order_side_vendor_id)
 
                 return response()->json([
                     'status' => 200,
@@ -41,15 +42,42 @@ class InventoryController extends Controller
            
     }
 
+    public function getSyncStoreOrderProductIds(Request $request)
+    {
+       try{
+            if(isset($request->order_vendor_id) && isset($request->inv_store_id)){
+                $syncCatIds = Product::where('store_id', $request->inv_store_id)->where('vendor_id', $request->order_vendor_id)->distinct('sync_inventory_side_product_id')->pluck('sync_inventory_side_product_id')->toArray();
+
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'fetched succesfully',
+                    'data' => $syncCatIds
+                ]);
+            }else{
+                throw new \ErrorException('parameter missing', 400);
+            }
+            
+       }catch(\Exception $e){
+            return response()->json([
+                'status' => 400,
+                'message' => $e->getMessage(),
+                'data' => []
+            ]);
+       }
+           
+    }
+
     public function getOrderVendorById(Request $request)
     {
         try{
             if(@$request->vendor_id){
-                $vendor = Vendor::select('id', 'name')->where('id', $request->vendor_id)->first();
+                $vendorIds = $request->vendor_id;
+                $vendors = Vendor::select('id', 'name', 'logo')->whereIn('id', $vendorIds)->get();
+
                 return response()->json([
                     'status' => 200,
                     'message' => 'fetched succesfully',
-                    'data' => $vendor
+                    'data' => $vendors
                 ]);
             }else{
                 throw new \ErrorException('parameter missing', 400);
@@ -68,7 +96,7 @@ class InventoryController extends Controller
     {
         try{
            
-                $vendors = Vendor::select('id', 'name')->where('status', 1)->get();;
+                $vendors = Vendor::vendorOnline()->select('id', 'name')->where('status', 1)->get();;
                 return response()->json([
                     'status' => 200,
                     'message' => 'fetched succesfully',
@@ -146,7 +174,6 @@ class InventoryController extends Controller
         try{
 
             if(@$request->products && is_array($request->products)){
-                \Log::info($request->all());
                 DB::beginTransaction();
                 $order_vendor_id = $request->order_vendor_id;
                 $synced_product = [];

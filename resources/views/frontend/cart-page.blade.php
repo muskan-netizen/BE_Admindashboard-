@@ -81,6 +81,8 @@
 
 @endphp
 
+
+
 @if ($cart_details->totalQuantity <= 0)
     <div class="container">
         <div class="row mt-2 mb-4 mb-lg-5">
@@ -154,9 +156,13 @@
                         <div class="col-md-2 col text-center">
                             <span>{{ __('Price') }}</span>
                         </div>
-                        @if ($serviceType == 'rental')
+                        @if ($serviceType == 'rental' || $serviceType == 'p2p')
                             <div class="col-md-2 col text-center">
-                                <span>Duration By(min)</span>
+                                @if($serviceType == 'rental' && Session::get('vendorType') == 'p2p')
+                                    <span>Duration By(Days)</span>
+                                @elseif($serviceType == 'rental')
+                                    <span>Duration By(min)</span>
+                                @endif
                             </div>
                         @else
                             <div class="col-md-2 col text-center">
@@ -236,21 +242,20 @@
                                 <div id="mov" style="display:none;">{{ $product->vendor->order_min_amount }}
                                 </div>
                                 @if ($product->isDeliverable != '' && $product->isDeliverable == 0)
-                                    <div class="col-12">
-                                        <div class="text-danger">
-                                            <i class="fa fa-exclamation-circle"></i>
-                                            {{ __('Products for this vendor are not deliverable at your area. Please change address or remove product.') }}
-                                        </div>
+                                <div class="col-12">
+                                    <div class="text-danger">
+                                        <i class="fa fa-exclamation-circle"></i>
+                                        {{ __('Products for this vendor are not deliverable at your area. Please change address or remove product.') }}
                                     </div>
-                                @endif
+                                </div>
+                            @endif
 
                             </div>
                         </div>
 
                         <div class="col-12 cart-heading mt-2 px-0">
                             <h5 class="my-1"><b>{{ $product->vendor ? @$product->vendor->name : '' }}</b></h5>
-                            <input type="hidden" name="category_name" id="category_name"
-                                value="{{ $product->vendor ? @$product->vendor->name : '' }}" />
+                            <input type="hidden" name="category_name" id="category_name" value="{{ $product->vendor ? @$product->vendor->name : '' }}" />
                         </div>
 
 
@@ -258,23 +263,30 @@
 
                         <div id="tbody_{{ $product->vendor->id }}">
 
+
                             @foreach ($product->vendor_products as $vendor_product)
-                                {{-- @php
-                                pr($vendor_product->schedule_slot_name);
-                                @endphp --}}
-                                <div class="row al align-items-md-center vendor_products_tr alFourTemplateCartPage"
-                                    id="tr_vendor_products_{{ $vendor_product->id }}">
-                                    <div class="product-img col-3 col-md-2">
-                                        @if (!empty($vendor_product->pvariant->media_one))
-                                            <img class='blur-up lazyload w-100'
-                                                data-src="{{ $vendor_product->pvariant->media_one->pimage->image->path->proxy_url . '200/200' . $vendor_product->pvariant->media_one->pimage->image->path->image_path }}">
-                                        @elseif(!empty($vendor_product->pvariant->media_second) && !empty($vendor_product->pvariant->media_second->image))
-                                            <img class='blur-up lazyload w-100'
-                                                data-src="{{ $vendor_product->pvariant->media_second->image->path->proxy_url . '200/200' . $vendor_product->pvariant->media_second->image->path->image_path }}">
-                                        @elseif(!empty($vendor_product->image_ur))
-                                            <img class='blur-up lazyload w-100'
-                                                data-src="{{ $vendor_product->image_url }}">
-                                        @endif
+                                <div class="row al align-items-md-center vendor_products_tr alFourTemplateCartPage" id="tr_vendor_products_{{ $vendor_product->id }}">
+                                    <div class="col-3 col-md-2">
+                                        <div class="product_img_grid">
+                                            <div class="product-img">
+                                                <div class="product-img w-auto  ">
+                                                    <input type="checkbox" name="checked_cart_product" class="checked-cart-product" id="checked_cart_product" value="{{$vendor_product->id}}" {{ @$vendor_product->is_cart_checked ? 'checked' : '' }} >
+                                                    <i class="fa fa-spinner fa-pulse d-none" id="fa_spinner_{{$vendor_product->id}}" aria-hidden="true" style="color: var(--theme-deafult)"></i>
+                                                </div>
+                                            </div>
+                                            <div class="product-img">
+                                                @if (!empty($vendor_product->pvariant->media_one))
+                                                    <img class='blur-up lazyload w-100'
+                                                        data-src="{{ $vendor_product->pvariant->media_one->pimage->image->path->proxy_url . '200/200' . $vendor_product->pvariant->media_one->pimage->image->path->image_path }}">
+                                                @elseif(!empty($vendor_product->pvariant->media_second) && !empty($vendor_product->pvariant->media_second->image))
+                                                    <img class='blur-up lazyload w-100'
+                                                        data-src="{{ $vendor_product->pvariant->media_second->image->path->proxy_url . '200/200' . $vendor_product->pvariant->media_second->image->path->image_path }}">
+                                                @elseif(!empty($vendor_product->image_ur))
+                                                    <img class='blur-up lazyload w-100'
+                                                        data-src="{{ $vendor_product->image_url }}">
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-9 col-md-10">
                                         <div class="row align-items-md-center">
@@ -298,12 +310,17 @@
                                             </div>
 
                                             @if (isset($vendor_product->pvariant->actual_price))
+
+                                            @php
+
+
+                                            @endphp
                                                 <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
                                                     <div class="items-price">
                                                         @if ($additionalPreference['is_token_currency_enable'])
-                                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->pvariant->actual_price * (@$vendor_product->pvariant->multiplier ?? 1))) }}
+                                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->price??0 * (@$vendor_product->days ?? 1))) }}
                                                         @else
-                                                            {{ Session::get('currencySymbol') . decimal_format($vendor_product->pvariant->actual_price * (@$vendor_product->pvariant->multiplier ?? 1)) }}
+                                                            {{ Session::get('currencySymbol') . decimal_format($vendor_product->pvariant->price*$cart_details->conversion_rate ?? 0 * (@$vendor_product->days ?? 1)) }}
                                                         @endif
                                                         @if (in_array($serviceType, ['appointment', 'on_demand']))
                                                             <span class="">
@@ -313,9 +330,42 @@
                                                     </div>
                                                 </div>
                                             @endif
+
                                             @if (!empty(@$vendor_product->quantity_price))
                                                 <div class="col-6 col-md-2 text-left order-md-4">
-                                                    @if ($serviceType == 'rental')
+                                                    @if ($serviceType == 'p2p')
+
+                                                        @php
+
+
+                                                            $additionalPrice = 0;
+                                                            if ($vendor_product->pvariant->incremental_price_per_min > 0) {
+                                                                $additionalPrice = ($vendor_product->additional_increments_hrs_min/(60*24)) * $vendor_product->quantity_price;
+                                                            }
+                                                            $price = $vendor_product->pvariant->price;
+
+
+
+                                                            if(@$vendor_product->days  <= 7){
+                                                                $price = $vendor_product->pvariant->price;
+                                                            }elseif(@$vendor_product->days >= 7 && @$vendor_product->days < 30){
+                                                                $price = $vendor_product->pvariant->week_price;
+                                                            }else{
+                                                                $price = $vendor_product->pvariant->month_price;
+                                                            }
+
+
+
+                                                        @endphp
+
+                                                        <div class="items-price">
+                                                            @if ($additionalPreference['is_token_currency_enable'])
+                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($price * (@$vendor_product->days ?? 0))) }}
+                                                            @else
+                                                                {{ Session::get('currencySymbol') . decimal_format($price * (@$vendor_product->days ?? 1)) }}
+                                                            @endif
+                                                        </div>
+                                                    @elseif ($serviceType == 'rental')
                                                         @php
                                                             $additionalPrice = 0;
                                                             if ($vendor_product->pvariant->incremental_price_per_min > 0) {
@@ -342,7 +392,7 @@
                                             @endif
 
 
-                                            @if ($serviceType == 'rental')
+                                            @if ($serviceType == 'rental' || $serviceType == 'p2p')
                                                 <div class="col-10 col-md-4 text-md-center order-md-3">
                                                     <div class="number d-flex justify-content-md-center border-0">
                                                         <div style="display: none !important;"
@@ -358,7 +408,11 @@
                                                         <div class="qty-box alCartInput">
                                                             <div class="input-group">
                                                                 @php
-                                                                    $dura = getHoursMinutes($vendor_product->total_booking_time);
+                                                                    if($serviceType == 'p2p'){
+                                                                        $dura = getDaysBetweenTwoDates($vendor_product->start_date_time, $vendor_product->end_date_time);
+                                                                    }else{
+                                                                        $dura = getHoursMinutes($vendor_product->total_booking_time);
+                                                                    }
                                                                 @endphp
                                                                 <p class="mb-0">{{ $dura }}</p>
 
@@ -373,7 +427,7 @@
                                                             $class = 'validate_prescription';
                                                         }
                                                     @endphp
-                                                    
+
                                                     @if ($vendor_product->product->pharmacy_check == 1)
                                                         <button type="button"
                                                             class="float-left btn btn-solid prescription_btn mt-2 {{$class}}"
@@ -426,7 +480,7 @@
                                                     </div>
 
                                                     @if ($cart_details->pharmacy_check == 1)
-                                                    
+
                                                         @if ($vendor_product->product->pharmacy_check == 1)
                                                             <button type="button"
                                                                 class="float-left btn btn-solid prescription_btn mt-2"
@@ -435,7 +489,7 @@
                                                                 data-vendor_id="{{ $vendor_product->vendor_id }}">{{ __('Add Prescription') }}</button>
                                                             @if ($vendor_product->cart_product_prescription > 0)
                                                                 <h4 class="mt-0 mb-1"
-                                                                    style="word-wrap: break-word; line-height:20px">
+                                                                    style="word-wrap: break-word; line-height:20px;float: left;">
                                                                     <strong>{{ $vendor_product->cart_product_prescription }}
                                                                         {{ __('Prescription Added') }}</strong></h4>
                                                             @endif
@@ -444,7 +498,7 @@
 
                                                     @if (isset($vendor_product->product_delivery_fee) && $vendor_product->product_delivery_fee > 0)
                                                         <div class="float-left mt-2">Delivery Fee : <span
-                                                                style="color: #000;font-size: 14px;font-weight: 500;">{{ Session::get('currencySymbol') }}{{ $vendor_product->product_delivery_fee }}</span>
+                                                                style="color: #000;font-size: 14px;font-weight: 500;">{{ Session::get('currencySymbol') }}{{ $vendor_product->product_delivery_fee  }}</span>
                                                         </div>
                                                     @endif
                                                 </div>
@@ -459,11 +513,11 @@
                                             </div>
 
                                         </div>
-                                        
+
                                         @if($serviceType == 'rental')
                                             <hr class="my-2">
                                             <div class="row align-items-md-center alRentalStartDate">
-                                                <div class="col-3">
+                                                   <div class="col-3">
                                                     <h6 class="m-0 pl-0">{{ __('Start Date') }}</h6>
                                                     <p>{{ date('m/d/Y g:i A', strtotime($vendor_product->start_date_time)) }}
                                                     </p>
@@ -473,13 +527,16 @@
                                                     <p>{{ date('m/d/Y g:i A', strtotime($vendor_product->end_date_time)) }}
                                                     </p>
                                                 </div>
+
+                                                @if($vendor_product->product->security_amount > 0)
                                                 <div class="col-3">
                                                     <h6 class="m-0 pl-0" style="font-weight: 600;">{{ __('Security Amount') }}</h6>
                                                     <p>{{ Session::get('currencySymbol') . decimal_format($vendor_product->product->security_amount) }}</p>
                                                 </div>
+                                                @endif
                                             </div>
                                         @endif
-                                        
+
                                         @if (count($vendor_product->addon) != 0)
                                             <hr class="my-2">
                                             <div class="row align-items-md-center add_head">
@@ -559,9 +616,9 @@
 
 
                                         {{-- Home Service Schedual code Start at down --}}
-                                       
+
                                         @if (
-                                            ($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) 
+                                            ($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1)
                                             && ((in_array($serviceType, ['appointment', 'on_demand'])  )
                                             && ( ($vendor_product->product->mode_of_service == 'schedule') || ($is_service_product_price_from_dispatch_forOnDemand ==1))
                                          ))
@@ -574,17 +631,17 @@
                                                             <p class="text-dark">{{ __('Scheduled Slot') }} :</p>
                                                              @if($is_service_product_price_from_dispatch_forOnDemand ==1)
                                                                 <p class="m-0 mx-2">{{ $vendor_product->selected_dispatcher_time   }}  </p>
-                                                                
+
                                                                 <p class="m-0" > {{$vendor_product->schedule_slot_name}}</p>
-                                                               
+
                                                             @endif
                                                         </div>
-                                                        
+
                                                         @if($is_service_product_price_from_dispatch_forOnDemand !=1)
                                                             <div class="col-4 vendor_slot_cart">
                                                                 <input type="hidden" class="custom-control-input vendor_product_schedule_datetime check"
                                                                     id="tasknow" name="task_type" value='schedule'>
-                                                                  
+
                                                                         @if ($product->slotsCnt != 0)
                                                                             <input type="date"
                                                                                 class="form-control vendor_schedule_datetime"
@@ -633,9 +690,9 @@
                                                                                     data-cart_product_id="{{ $vendor_product->id }}">
                                                                             @endif
                                                                         @endif
-                                                                     
+
                                                             </div>
-                                                        @endif  
+                                                        @endif
                                                     </div>
                                                 @else
                                                     {{-- Dispatch sloat shot --}}
@@ -708,10 +765,7 @@
                             @endforeach
 
                             {{-- End Product Detail Loop --}}
-                            {{-- @php
-                //dd($product->is_promo_code_available);
-                @endphp
-                --}}
+
                             <div class="row my-2">
                                 @if (!$cart_details->guest_user)
                                     <div class="col-lg-6">
@@ -742,12 +796,12 @@
                                 <div class="col-lg-6">
                                     @if ($product->delOptions)
                                         <div
-                                            class="row mb-1 d-flex align-items-center  dfsdf  @if ($product->promo_free_deliver == 1) {{ $product->promo_free_deliver }} org_price @endif ">
+                                            class="row mb-1 d-flex align-items-center  @if ($product->promo_free_deliver == 1) {{ $product->promo_free_deliver }} org_price @endif ">
                                             <div class="col-5 text-lg-right">
                                                 <label class="m-0 radio">
                                                     {{ __('Delivery Fee') }} :</label>
                                             </div>
-                                            <div class="col-7">
+                                            <div class="col-7 text-right">
                                                 {!! $product->delOptions !!}
                                             </div>
                                         </div>
@@ -785,7 +839,7 @@
                                         <div class="row mb-1 d-flex align-items-center">
                                             <div class="col-5 text-lg-right">
                                                 <label class="m-0 radio">
-                                                    {{ __('Fixed Fee') }} :</label>
+                                                    {{getNomenclatureName('Fixed Fee', true)}} :</label>
                                             </div>
                                             <div class="col-7">
                                                 @if ($additionalPreference['is_token_currency_enable'])
@@ -880,6 +934,8 @@
                                             </div>
                                         </div>
                                     @endif
+
+
                                     <div class="row">
                                         {{-- @if ($cart_details->vendorCnt > 1) --}}
                                         <div class="col-5 text-lg-right">
@@ -892,7 +948,14 @@
                                             <p class="total_amt m-0">
 
                                                 @if ($additionalPreference['is_token_currency_enable'])
-                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($product->product_total_amount + $product->vendor->fixed_fee_amount)) }}@else{{ Session::get('currencySymbol') . decimal_format($product->product_total_amount + $product->vendor->fixed_fee_amount - $product->bid_vendor_discount ?? 0) }}
+
+                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($product->product_total_amount)) }}
+                                                    @else
+                                                    @if($serviceType == 'rental')
+                                                    {{ Session::get('currencySymbol') . decimal_format($product->product_sub_total_amount + $product->vendor->fixed_fee_amount +$additionalPrice - $product->bid_vendor_discount ?? 0) }}
+                                                    @else
+                                                    {{ Session::get('currencySymbol') . decimal_format($product->product_sub_total_amount + $product->vendor->fixed_fee_amount + $vendor_product->pvariant->container_charges - $product->bid_vendor_discount ?? 0  ) }}
+                                                    @endif
                                                 @endif
                                             </p>
                                         </div>
@@ -932,7 +995,7 @@
                     <div class="cart-summary p-2 pb-4">
                         <div class="col-12 mb-2">
                             <h5 class="order_text">{{ __('Order Summary') }}</h5>
-                            @if (array_key_exists('gift_card_id', $cart_details) && empty($cart_details->gift_card))
+                            @if (array_key_exists('gift_card_id', (array) $cart_details) && empty($cart_details->gift_card))
                                 <a id='open_gift_card' href="javascript:void(0)"
                                     class="btn btn-solid w-100">{{ __('open gift Card') }}</a>
                             @endif
@@ -944,10 +1007,9 @@
                                 @if ($vendor_product->recurring_booking_type == 1)
                                     <input type="hidden" id="is_recurring_booking" value="{{ $vendor_product->recurring_booking_type }}" />
                                 @endif
-                                @else
+                            @else
                                 <input type="hidden" id="is_recurring_booking" value="0" />
                             @endif
-
 
 
                         @if ($client_preference_detail->category_kyc_documents == 1)
@@ -1084,7 +1146,7 @@
                                             id="specific_instructions"
                                             value="{{ $cart_details->specific_instructions ?? '' }}"
                                             name="specific_instructions">
-                                             {{-- @if($getAdditionalPreference['is_file_cart_instructions']) 
+                                             {{-- @if($getAdditionalPreference['is_file_cart_instructions'])
                                                 <div class="Instructions_file">
                                                         <label>{{ __('Instructions file') }}</label>
                                                         <div class="instructions_image">
@@ -1118,6 +1180,8 @@
 
 
                         </div>
+
+
                         <div class="col-lg-12 mt-3 cart-price">
 
                             @if ($cart_details->sub_total > 0)
@@ -1126,30 +1190,49 @@
                                     {{-- <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->sub_total - $cart_details->bid_total_discount)}}</b></div> --}}
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->sub_total)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->sub_total) }}
+
+                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->total_gross_amount )) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->total_gross_amount   +@$additionalPrice) }}
+
                                             @endif
                                         </b>
                                     </div>
                                 </div>
                                 <hr class="my-2">
                             @endif
-                            @if ($cart_details->delivery_charges > 0)
-                                <div class="row">
-                                    <div class="col-6">{{ __('Total Delivery Fee') }}</div>
+                            @if ($price_bifurcation != 1)
+                                <!-- <hr class="my-2"> -->
+                                {{-- <div class="row">
+                                    <div class="col-6">{{ __('Sub Total') }}</div>
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->delivery_charges)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->delivery_charges) }}
+                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}
+                                            @else
+                                                {{ Session::get('currencySymbol') }}
                                             @endif
-                                        </b>
+                                            <span
+                                                id="gross_amount">{{ $additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($cart_details->gross_amount - $cart_details->bid_total_discount - $cart_details->total_service_fee )) : decimal_format($cart_details->gross_amount - $cart_details->bid_total_discount - $cart_details->total_service_fee ) }}
+                                        </b></span>
+                                        <span id="other_taxes" style="display:none;">{{ $other_taxes }}</span>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <hr class="my-2">
                             @endif
-                            @if ($serviceType == 'rental')
+
+
+                            @if ($serviceType == 'rental' || $serviceType == 'p2p')
                                 <div class="row">
                                     <div class="col-6">{{ __('Security Amount') }}</div>
                                     <div class="col-6 text-right">
                                         <b>{{ Session::get('currencySymbol') . decimal_format($cart_details->security_amount) }}</b>
+                                    </div>
+                                </div>
+                                <hr class="my-2">
+                            @endif
+                            @if ($serviceType == 'p2p' && @$cart_details->plateform_fee > 0)
+                                <div class="row">
+                                    <div class="col-6">{{ __('Platform Fee') }}</div>
+                                    <div class="col-6 text-right">
+                                        <b>{{ Session::get('currencySymbol') . decimal_format($cart_details->plateform_fee) }}</b>
                                     </div>
                                 </div>
                                 <hr class="my-2">
@@ -1187,16 +1270,6 @@
                                         value="{{ $total_fixed_fee_amount }}">
                                 </div>
                             @endif
-                            {{--
-                @if (cart_details . total_container_charges > 0 && price_bifurcation != 1)
-                <hr class="my-2">
-                <div class="row">
-                    <div class="col-6">{{__('Total Container Charges')}}</div>
-                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol'). decimal_format(cart_details.total_container_charges) %></b></div>
-                </div>
-                <hr class="my-2">
-            @endif
-            --}}
                             @php
                                 if ($product_container_charges_tax_amount > 0) {
                                     $other_taxes = $other_taxes + $product_container_charges_tax_amount;
@@ -1209,38 +1282,11 @@
                                 }
                             @endphp
                             <input type="hidden" id="other_taxes_string" value="{{ $other_taxes_string }}">
-                            @if ($serviceType == 'rental')
-                                {{-- <div class="row">
-                    <div class="col-6">{{__('Extended Duration')}}</div>
-                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
-                    </div>
-                </div> --}}
+                            @if ($serviceType == 'rental' || $serviceType == 'p2p')
+
                             @endif
 
-                            @if ($price_bifurcation != 1)
-                                <!-- <hr class="my-2"> -->
-                                <div class="row">
-                                    <div class="col-6">{{ __('Sub Total') }}</div>
-                                    {{-- @if ($serviceType == 'rental')
-                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount+$vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
-                    <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
-                @else  --}}
-                                    {{-- <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount - $cart_details->bid_total_discount)}}</b></span> --}}
-                                    <div class="col-6 text-right"><b>
-                                            @if ($additionalPreference['is_token_currency_enable'])
-                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}
-                                            @else
-                                                {{ Session::get('currencySymbol') }}
-                                            @endif
-                                            <span
-                                                id="gross_amount">{{ $additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($cart_details->gross_amount)) : decimal_format($cart_details->gross_amount - $cart_details->bid_total_discount) }}
-                                        </b></span>
-                                        <span id="other_taxes" style="display:none;">{{ $other_taxes }}</span>
-                                    </div>
-                                    {{-- @endif --}}
-                                </div>
-                                <hr class="my-2">
-                            @endif
+
 
                             @if ($cart_details->total_taxable_amount + $other_taxes > 0)
                                 <div class="row">
@@ -1251,9 +1297,9 @@
                                             @else
                                                 {{ Session::get('currencySymbol') }}
                                             @endif
-                                           
+
                                             <span
-                                                id="total_taxable_amount">{{ $additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($cart_details->total_taxable_amount + $other_taxes)) : decimal_format($cart_details->total_taxable_amount + $other_taxes) }}</span>
+                                                id="total_taxable_amount">{{ $additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($cart_details->total_taxable_amount)) : decimal_format($cart_details->total_taxable_amount) }}</span>
                                         </b>
                                     </div>
                                 </div>
@@ -1305,12 +1351,12 @@
                                     </div>
                                     <div class="col-6 text-right" id="wallet_amount_used"> - @if ($additionalPreference['is_token_currency_enable'])
                                             {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}
-                                            {{ getInToken(decimal_format($cart_details->wallet_amount_used + $other_taxes)) }}
-                                            @else{{ Session::get('currencySymbol') . decimal_format($cart_details->wallet_amount_used + $other_taxes) }}
+                                            {{ getInToken(decimal_format($cart_details->wallet_amount_used )) }}
+                                            @else{{ Session::get('currencySymbol') . decimal_format($cart_details->wallet_amount_used ) }}
                                         @endif
                                     </div>
                                     <div class="col-6 text-right" id="wallet_amount_used_fixed" style="display:none">
-                                        {{ $cart_details->wallet_amount_used + $other_taxes }}</div>
+                                        {{ $cart_details->wallet_amount_used }}</div>
                                     <div class="col-6 text-right" id="wallet_amount_available" style="display:none">
                                         {{ $cart_details->wallet_amount_available }}</div>
                                     <div class="col-6 text-right" id="token_currency" style="display:none">
@@ -1320,6 +1366,34 @@
                                 <hr class="my-2">
                             @else
                                 <div class="col-6 text-right" id="wallet_amount_used" style="display:none">0</div>
+                            @endif
+
+                            @if ($cart_details->total_deliver_charges > 0 )
+                                <div class="row">
+                                    <div class="col-6">{{ __('Total Delivery Fee') }}</div>
+                                    <div class="col-6 text-right" >  @if ($additionalPreference['is_token_currency_enable'])
+                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}
+                                            {{ getInToken(decimal_format($cart_details->total_deliver_charges )) }}
+                                            @else{{ Session::get('currencySymbol') . decimal_format($cart_details->total_deliver_charges ) }}
+                                        @endif
+                                    </div>
+                                </div>
+                                <hr class="my-2">
+                            @endif
+
+                            @if ($cart_details->free_delivery_amount > 0 )
+                            <div class="row">
+                                    <div class="col-6">
+                                        {{  __('Free Delivery Discount') }}
+                                    </div>
+                                    <div class="col-6 text-right" > - @if ($additionalPreference['is_token_currency_enable'])
+                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}
+                                            {{ getInToken(decimal_format($cart_details->free_delivery_amount )) }}
+                                            @else{{ Session::get('currencySymbol') . decimal_format($cart_details->free_delivery_amount ) }}
+                                        @endif
+                                    </div>
+                                </div>
+                                <hr class="my-2">
                             @endif
 
                             @if ($client_preference_detail->tip_before_order == 1)
@@ -1334,7 +1408,7 @@
                                         </div>
                                         <div class="tip_radio_controls">
                                             @if ($cart_details->total_payable_amount > 0)
-                                                <input type="radio" class="tip_radio" id="control_01"
+                                                {{-- <input type="radio" class="tip_radio" id="control_01"
                                                     name="select"
                                                     value="{{ $additionalPreference['is_token_currency_enable'] ? getInToken($cart_details->tip_5_percent) : $cart_details->tip_5_percent }}"
                                                     @if ($client_preference_detail->auto_implement_5_percent_tip == 1) checked @endif>
@@ -1378,7 +1452,7 @@
                                                         @endif
                                                     </h5>
                                                     <p class="m-0">15%</p>
-                                                </label>
+                                                </label> --}}
 
                                                 <input type="radio" class="tip_radio" id="custom_control"
                                                     name="select" value="custom">
@@ -1409,8 +1483,7 @@
                                             <label class="custom-control-label" for="is_gift"><img
                                                     class="pr-1 align-middle blur-up lazyload"
                                                     data-src="{{ asset('assets/images/gifts_icon.png') }}"
-                                                    alt=""> <span class="align-middle pt-1">
-                                                    {{ __('Does this include a gift?') }}</span></label>
+                                                    alt=""> <span class="align-middle pt-1">{{getNomenclatureName('Include Gift', true)}}</span></label>
                                         </div>
                                     </div>
                                 </div>
@@ -1427,7 +1500,7 @@
                                         <div class="ml-2 alInfoIocn position-relative">
                                             <i class="fa fa-info-circle"></i>
                                             <span class="tooltiptext">Equivalent to
-                                                {{ (decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent)) * $cart_details->conversion_rate }}
+                                                {{ (decimal_format($cart_details->total_payable_amount  ?? 0) + decimal_format($cart_details->tip_5_percent)) * $cart_details->conversion_rate }}
                                                 USD</span>
                                         </div>
                                     @endif
@@ -1435,15 +1508,17 @@
 
 
                                 <div class="col-6 text-right">
+
+
                                     @if ($client_preference_detail->auto_implement_5_percent_tip == 1)
                                         @if (decimal_format($cart_details->wallet_amount_used) > 0)
                                             <p class="total_amt m-0" id="cart_total_payable_amount"
                                                 data-cart_id="{{ $cart_details->id }}">
                                                 @if ($additionalPreference['is_token_currency_enable'])
                                                     {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}
-                                                    {{ getInToken(decimal_format(decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent))) }}
+                                                    {{ getInToken(decimal_format(decimal_format($cart_details->total_payable_amount ?? 0) + decimal_format($cart_details->tip_5_percent))) }}
                                                 @else
-                                                    {{ Session::get('currencySymbol') . decimal_format(decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent)) }}
+                                                    {{ Session::get('currencySymbol') . decimal_format(decimal_format($cart_details->total_payable_amount  ?? 0) + decimal_format($cart_details->tip_5_percent)) }}
                                                 @endif
                                             </p>
                                         @else
@@ -1451,20 +1526,25 @@
                                                 data-cart_id="{{ $cart_details->id }}">
                                                 @if ($additionalPreference['is_token_currency_enable'])
                                                     {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}
-                                                    {{ getInToken(decimal_format(decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes))) }}
+                                                    {{ getInToken(decimal_format(decimal_format($cart_details->total_payable_amount ?? 0) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes))) }}
                                                 @else
-                                                    {{ Session::get('currencySymbol') . decimal_format(decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes)) }}
+                                                    {{ Session::get('currencySymbol') . decimal_format(decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent) ) }}
                                                 @endif
                                             </p>
                                         @endif
                                         <input type="hidden" name="cart_tip_amount" id="cart_tip_amount"
                                             value="{{ decimal_format($cart_details->tip_5_percent) }}">
-                                        <input type="hidden" name="cart_total_payable_amount"
-                                            value="{{ decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes) }}">
+                                        <input type="hidden" name="cart_total_payable_amount "
+                                            value="{{ decimal_format($cart_details->product_total_amount  ?? 0) + decimal_format($cart_details->tip_5_percent)  }}">
                                     @else
+
                                         <p class="total_amt m-0" id="cart_total_payable_amount"
                                             data-cart_id="{{ $cart_details->id }}">
-                                            {{ Session::get('currencySymbol') }}{{ decimal_format($cart_details->total_payable_amount - $cart_details->bid_total_discount + $other_taxes) }}
+
+                                            {{ Session::get('currencySymbol') }}
+
+                                            {{ decimal_format($cart_details->total_payable_amount  ?? 0 - $cart_details->bid_total_discount) }}
+
                                         </p>
 
                                         <input type="hidden" name="cart_tip_amount" id="cart_tip_amount"
@@ -1472,13 +1552,13 @@
                                         <input type="hidden" name="cart_total_payable_amount"
                                             value="{{ $additionalPreference['is_token_currency_enable']
                                                 ? ''
-                                                : decimal_format($cart_details->total_payable_amount) + decimal_format($other_taxes) }}">
+                                                : decimal_format($cart_details->total_payable_amount  ?? 0)  }}">
                                     @endif
                                     <div>
                                         <input type="hidden" name="cart_payable_amount_original"
                                             id="cart_payable_amount_original"
                                             data-curr="{{ Session::get('currencySymbol') }}"
-                                            value="{{ decimal_format($cart_details->total_payable_amount - $cart_details->bid_total_discount) + decimal_format($other_taxes) }}">
+                                            value="{{ decimal_format($cart_details->total_payable_amount  ?? 0 - $cart_details->bid_total_discount)  }}">
                                     </div>
 
 
@@ -1500,34 +1580,34 @@
                                             @if (decimal_format($cart_details->wallet_amount_used) > 0)
                                                 <p class="total_amt m-0 11" id="advance_cart_total_payable_amount"
                                                     data-cart_id="{{ $cart_details->id }}">
-                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(((decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
+                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(((decimal_format($cart_details->total_payable_amount  ?? 0) + decimal_format($cart_details->tip_5_percent)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
                                                 </p>
                                             @else
                                                 <p class="total_amt m-0 22" id="advance_cart_total_payable_amount"
                                                     data-cart_id="{{ $cart_details->id }}">
-                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(((decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
+                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(((decimal_format($cart_details->total_payable_amount  ?? 0) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
                                                 </p>
                                             @endif
                                             <input type="hidden" name="cart_tip_amount" id="cart_tip_amount"
                                                 value="{{ decimal_format($cart_details->tip_5_percent) }}">
                                             <input type="hidden" name="cart_total_payable_amount"
-                                                value="{{ decimal_format(((decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}">
+                                                value="{{ decimal_format(((decimal_format($cart_details->total_payable_amount  ?? 0) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}">
                                         @else
                                             @if (decimal_format($cart_details->wallet_amount_used) > 0)
                                                 <p class="total_amt m-0 33" id="advance_cart_total_payable_amount"
                                                     data-cart_id="{{ $cart_details->id }}">
-                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(((decimal_format($cart_details->total_payable_amount) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
+                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(((decimal_format($cart_details->total_payable_amount  ?? 0) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
                                                 </p>
                                             @else
                                                 <p class="total_amt m-0 44" id="advance_cart_total_payable_amount"
                                                     data-cart_id="{{ $cart_details->id }}">
-                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(((decimal_format($cart_details->total_payable_amount) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
+                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(((decimal_format($cart_details->total_payable_amount  ?? 0) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
                                                 </p>
                                             @endif
                                             <input type="hidden" name="cart_tip_amount" id="cart_tip_amount"
                                                 value="0">
-                                            <input type="hidden" name="cart_total_payable_amount"
-                                                value="{{ decimal_format(((decimal_format($cart_details->total_payable_amount) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}">
+                                            <input type="hidden" name="cart_total_payable_amount "
+                                                value="{{ decimal_format(((decimal_format($cart_details->total_payable_amount ?? 0) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}">
                                         @endif
                                     </div>
                                 </div>
@@ -1541,24 +1621,24 @@
                                             @if (decimal_format($cart_details->wallet_amount_used) > 0)
                                                 <p class="total_amt m-0 11" id="pending_cart_total_payable_amount"
                                                     data-cart_id="{{ $cart_details->id }}">
-                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent) - ((decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
+                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(decimal_format($cart_details->total_payable_amount  ?? 0) + decimal_format($cart_details->tip_5_percent) - ((decimal_format($cart_details->total_payable_amount  ?? 0) + decimal_format($cart_details->tip_5_percent)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
                                                 </p>
                                             @else
-                                                <p class="total_amt m-0 22" id="pending_cart_total_payable_amount"
+                                                <p class="total_amt m-0 22" id="pending_cart_total_payable_amount "
                                                     data-cart_id="{{ $cart_details->id }}">
-                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes) - ((decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
+                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(decimal_format($cart_details->total_payable_amount ?? 0) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes) - ((decimal_format($cart_details->total_payable_amount  ?? 0) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
                                                 </p>
                                             @endif
                                         @else
                                             @if (decimal_format($cart_details->wallet_amount_used) > 0)
                                                 <p class="total_amt m-0 33" id="pending_cart_total_payable_amount"
                                                     data-cart_id="{{ $cart_details->id }}">
-                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(decimal_format($cart_details->total_payable_amount) + decimal_format($other_taxes) - ((decimal_format($cart_details->total_payable_amount) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
+                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(decimal_format($cart_details->total_payable_amount  ?? 0) + decimal_format($other_taxes) - ((decimal_format($cart_details->total_payable_amount  ?? 0) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
                                                 </p>
                                             @else
                                                 <p class="total_amt m-0 44" id="pending_cart_total_payable_amount"
                                                     data-cart_id="{{ $cart_details->id }}">
-                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(decimal_format($cart_details->total_payable_amount) + decimal_format($other_taxes) - ((decimal_format($cart_details->total_payable_amount) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
+                                                    {{ Session::get('currencySymbol') }}{{ decimal_format(decimal_format($cart_details->total_payable_amount  ?? 0) + decimal_format($other_taxes) - ((decimal_format($cart_details->total_payable_amount  ?? 0) + decimal_format($other_taxes)) * $getAdditionalPreference['advance_booking_amount_percentage']) / 100) }}
                                                 </p>
                                             @endif
                                         @endif
@@ -1569,12 +1649,12 @@
                                     <input type="hidden" name="cart_tip_amount" id="cart_tip_amount"
                                         value="{{ decimal_format($cart_details->tip_5_percent) }}">
                                     <input type="hidden" name="cart_total_payable_amount"
-                                        value="{{ decimal_format($cart_details->total_payable_amount) + decimal_format($cart_details->tip_5_percent) + decimal_format($other_taxes) }}">
+                                        value="{{ decimal_format($cart_details->total_payable_amount  ?? 0) + decimal_format($cart_details->tip_5_percent) }}">
                                 @else
                                     <input type="hidden" name="cart_tip_amount" id="cart_tip_amount"
                                         value="0">
                                     <input type="hidden" name="cart_total_payable_amount"
-                                        value="{{ decimal_format($cart_details->total_payable_amount) + decimal_format($other_taxes) }}">
+                                        value="{{ decimal_format($cart_details->total_payable_amount  ?? 0) }}">
                                 @endif
                             @endif
                             {{-- till date --}}
@@ -1587,10 +1667,10 @@
                             $product->vendor->order_min_amount > 0 &&
                             $product->product_total_amount + $product->vendor->fixed_fee_amount < $product->vendor->order_min_amount
                         ))
-                        @if($cart_details->is_recurring_booking != 1 && $serviceType != 'rental') 
+                        @if($cart_details->is_recurring_booking != 1 && $serviceType != 'rental')
                               @include('frontend.cart.scheduleSlot')
                         @endif
-                         
+
                             <div class="col-sm-6 col-lg-12 mt-2 text-sm-right cart-checkout_btn">
                                 @if (isset($ageVerify->status) && $ageVerify->status == 1)
                                     {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
@@ -1603,19 +1683,24 @@
                                     <input type="hidden" id="edit_order_schedule_slot"
                                         value="{{ $schedule_slots_edit }}">
                                 @endif
-                                @if ($serviceType == 'rental')
+                                @if (@$additionalPreference['cart_cms_page_status'] == 1)
                                     <div class="text-sm-left mb-2">
-                                        <input type="checkbox" name="agree_term_check" id="agree_term_check" value="" disabled> <a href="javascript:void(0);" class="agree_term_btn">Agree Term</a>
+                                            <input type="checkbox" name="refund_term_check" id="refund_term_check" value="" disabled> <a href="javascript:void(0);" class="refund_term_policy">I accept the refund Terms & policy</a>
+                                    </div>
+                                @endif
+                                @if ($serviceType == 'rental' || @$additionalPreference['cart_cms_page_status'] == 1)
+                                    <div class="text-sm-left mb-2">
+                                        <input type="checkbox" name="agree_term_check" id="agree_term_check" value="" disabled> <a href="javascript:void(0);" class="agree_term_btn">I accept the Terms & Conditions</a>
                                     </div>
                                 @endif
                                 @php
                                     $disablePlaceBtn = '';
-                                    if(count($cart_details->user_allAddresses) == 0 || $serviceType == 'rental'){
+                                    if(count($cart_details->user_allAddresses) == 0 || $serviceType == 'rental' || $serviceType == 'p2p'){
                                         $disablePlaceBtn = 'disabled';
                                     }
                                 @endphp
                                 @if ($additionalPreference['is_token_currency_enable'] == 1)
-                               
+
                                     @if ($cart_details->wallet_amount_used > 0)
                                         @if ($cart_error_message == '')
                                             <button id="order_placed_btn" class="btn btn-solid d-none" type="button"
@@ -1742,8 +1827,21 @@
     </div>
 
 @endif
-@if ($serviceType == "rental")
-    @include('frontend.cart.rentalConsentFormModal')
+@php
+    $termsPage = $cmsPages->filter(function($page) {
+            return $page->slug == 'terms-conditions';
+    })->first();
+    $refundPolicy = $cmsPages->filter(function($page) {
+            return $page->slug == 'refund-policy';
+    })->first();
+@endphp
+
+@if ($serviceType == "rental" || $serviceType == 'p2p' || @$additionalPreference['cart_cms_page_status'] == 1)
+    @include('frontend.cart.rentalConsentFormModal', ['page' => $termsPage])
+@endif
+
+@if (@$additionalPreference['cart_cms_page_status'] == 1)
+    @include('frontend.cart.refundPolicyFormModal', ['page' => $refundPolicy])
 @endif
 
 <script>
@@ -1811,6 +1909,20 @@
             backdrop: 'static',
             keyboard: false
         });
+    });
+
+    $(document).on('click', '.refund_term_policy', function(){
+        $('#refund_form_rental').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+
+    $(document).on('click', '#refund_agree_btn', function(){
+        $('#refund_term_check').prop('checked', true);
+        $('#refund_term_check').attr('disabled', false);
+        $("#order_placed_btn").attr('disabled', false);
+        $('#refund_form_rental').modal('hide');
     });
 
     $(document).on('click', '#agree_btn', function(){

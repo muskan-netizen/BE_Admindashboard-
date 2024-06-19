@@ -133,6 +133,9 @@ $(document).ready(function(){
     function initialize() {
         var input = document.getElementById('static-address');
         var autocomplete = new google.maps.places.Autocomplete(input);
+        if(is_map_search_perticular_country){
+                autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+            }
         autocomplete.bindTo('bounds', bindMap);
 
         google.maps.event.addListener(autocomplete, 'place_changed', function () {

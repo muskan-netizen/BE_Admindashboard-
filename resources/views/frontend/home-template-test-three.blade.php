@@ -626,7 +626,8 @@
                 </div>
             </div>
         </section>
-		@elseif($homePageLabel->slug == 'recent_orders' && count($homePageData['recent_orders']) != 0 )
+					
+	   @elseif($homePageLabel->slug == 'recent_orders' && (@count($homePageData['recent_orders']) != 0 ))
 			<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
 				<div class="top-heading d-flex justify-content-between">
 					<h2 class="h2-heading"> @php
@@ -637,7 +638,7 @@
 					<div class="col-12">
 						<div class="recent-orders product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 							@foreach ($homePageData[$homePageLabel->slug] as $order )
-							@include('frontend.common_section.recent_order')
+								@include('frontend.home_page_3.recent_order')
 							@endforeach
 						</div>
 					</div>
@@ -679,7 +680,7 @@
 									$video_extensions = ['mp4', 'avi', 'mov', 'wmv']; // list of video extensions
 								@endphp
 								@if(in_array($extension, $image_extensions))
-									<img alt="" title="" class="blur-up lazyload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" height="300">	
+									<img alt="" title="" class="blur-up lazyload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}">	
 								@elseif (in_array($extension, $video_extensions))
 									<video id="video1" width="100%" controls autoplay muted>
 										<source src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" type="video/mp4">

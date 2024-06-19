@@ -25,7 +25,7 @@ class CategoryController extends BaseController
             $limit = $request->has('limit') ? $request->limit : 12;
             $page = $request->has('page') ? $request->page : 1;
             $product_list = $request->has('product_list') ? $request->product_list : 'false';
-            $mod_type = $request->has('type') ? $request->type : 'delivery';
+            $mod_type = $request->has('type') ? $request->type : 'pick_drop';
             if ($cid == 0) {
                 return response()->json(['error' => 'No record found.'], 404);
             }
@@ -46,7 +46,7 @@ class CategoryController extends BaseController
             ])
                 ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products')
                 ->where('id', $cid)->first();
-                // /pr($category->toArray());
+                // pr($category->toArray());
             $mode_of_service = "";
             // if (!empty($category)) {
             //     if (!empty($category->products) && count($category->products) > 0) {
@@ -71,36 +71,40 @@ class CategoryController extends BaseController
             $client = Client::where('code', $code)->first();
             $category->share_link = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/category/" . $category->slug;
             //return $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service, $limit, $page);
-            // \Log::info($category->type->redirect_to);
+
             $response['category'] = $category;
             $response['filterData'] = $variantSets;
-            $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service, $limit, $page);
+            $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service=null, $limit, $page, $request);
             return $this->successResponse($response);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
 
-    public function listData($langId, $category_id, $type = '', $userid, $product_list, $mod_type, $mode_of_service = null, $limit = 12, $page = 1)
+    public function listData($langId, $category_id, $type = '', $userid, $product_list, $mod_type, $mode_of_service = null, $limit = 12, $page = 1, $request)
     {
+        $type = strtolower($type);
+        $user = Auth::user();
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area','subscription_mode')->where('id', '>', 0)->first();
 
+        $latitude = !empty($request->latitude) ? $request->latitude : $preferences->Default_latitude;
+        $longitude = !empty($request->longitude) ? $request->longitude : $preferences->Default_longitude;
+
         if ($type == 'vendor' && $product_list == 'false') {
-         
-            $user = Auth::user();
+
             $vendor_ids = [];
             $vendor_categories = VendorCategory::where('category_id', $category_id)->where('status', 1)->get();
-       
+
             foreach ($vendor_categories as $vendor_category) {
                 if (!in_array($vendor_category->vendor_id, $vendor_ids)) {
                     $vendor_ids[] = $vendor_category->vendor_id;
                 }
             }
-          
+
             //return $vendor_categories;
 
-            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->with('vendor_promo')->select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude');
-            
+            $vendorData = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->with('vendor_promo')->select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude');
+
             $ses_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
 
             // if (($preferences) && ($preferences->is_hyperlocal == 1)) {
@@ -134,7 +138,7 @@ class CategoryController extends BaseController
                 $vendorData = $vendorData->whereIn('id', $ses_vendors);
             }
             $vendorData = $vendorData->where($mod_type, 1)->with('slot')->where('status', 1)->whereIn('id', $vendor_ids)->withAvg('product', 'averageRating')->paginate($limit, $page);
-            
+
 
             //$vendorData = $vendorData->where($mod_type, 1)->where('status', 1)->whereIn('id', $vendor_ids)->with('slot')->withAvg('product', 'averageRating')->paginate($limit, $page);
             foreach ($vendorData as $vendor) {
@@ -142,7 +146,7 @@ class CategoryController extends BaseController
                $vendor->vendorOffer = $vendor->vendor_promo->max('amount');
                $vendor->vendorNoOfRatings = $this->vendorNoOfRatings($vendor->products);
                 unset($vendor->products);
-                //$vendor = $this->getLineOfSightDistanceAndTime($vendor, $preferences);
+                $vendor = $this->getLineOfSightDistanceAndTime($vendor, $preferences);
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4 ) ? 1 : 0;
                 $vendor->is_show_products_with_category = ($vendor->vendor_templete_id == 5) ? 1 : 0;
                 $vendorCategories = VendorCategory::with(['category.translation' => function($q) use($langId){
@@ -181,8 +185,9 @@ class CategoryController extends BaseController
             }
             return $vendorData;
         } elseif ($type == 'vendor' && $product_list == 'true') {
-            $vendor_ids = Vendor::byVendorSubscriptionRule($preferences)->where('status', 1);
-           
+            $latitude = !empty($request->latitude) ? $request->latitude : $preferences->Default_latitude;
+            $longitude = !empty($request->longitude) ? $request->longitude : $preferences->Default_longitude;
+            $vendor_ids = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->where('status', 1);
             $vendor_ids =  $vendor_ids->pluck('id')->toArray();
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $products = Product::has('vendor')->with([
@@ -202,7 +207,7 @@ class CategoryController extends BaseController
                 'tags.tag.translations' => function ($q) use ($langId) {
                     $q->where('language_id', $langId);
                 }
-            ])->select('products.category_id', 'products.id', 'products.mode_of_service', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.tags')
+            ])->select('products.category_id', 'products.id', 'products.mode_of_service', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.tags','products.is_recurring_booking')
                 ->where('products.category_id', $category_id)->where('products.is_live', 1)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit, $page);
                 //->where('mode_of_service', $mode_of_service)
             if (!empty($products)) {
@@ -240,8 +245,23 @@ class CategoryController extends BaseController
                     }
                 }
             }
+            $vendorDistance[] = [];
+            if (!empty($products)) {
+                 foreach ($products as $key => $product) {
+                    if(empty($vendorDistance[$product->vendor_id])){
+                        $vendorDistance[$product->vendor->id] = $this->getVendorDistanceWithTime($latitude, $longitude, $product->vendor, $preferences, $request->type);
+                    }
+                        if($vendorDistance[$product->vendor_id])
+                        {
+                            $product->lineOfSightDistance =$vendorDistance[$product->vendor_id]->lineOfSightDistance??0;
+                            $product->timeofLineOfSightDistance =$vendorDistance[$product->vendor_id]->timeofLineOfSightDistance??0;
+                        }
+
+                }
+            }
+
             return $products;
-        } elseif ($type == 'Pickup/Delivery' || $type == 'pickup/delivery') {
+        } elseif ($type == 'pickup/delivery') {
             $vendor_ids = [];
             $user = Auth::user();
             $pickup_latitude = $user->latitude ? $user->latitude : '';
@@ -255,8 +275,8 @@ class CategoryController extends BaseController
                     $vendor_ids[] = $vendor_category->vendor_id;
                 }
             }
-            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id');
-         
+            $vendorData = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id');
+
             if(isset($preferences->pickup_delivery_service_area) && ($preferences->pickup_delivery_service_area == 1)){
 
                 if (!empty($pickup_latitude) && !empty($pickup_longitude)) {
@@ -298,12 +318,20 @@ class CategoryController extends BaseController
                 );
             }
             return $category_details;
-        } elseif ($type == 'product' || $type == 'Product' || $type == 'on demand service' || $type == 'laundry' || $type == 'Laundry') {
-            $vendor_ids = Vendor::byVendorSubscriptionRule($preferences)->where('status', 1);
-            
-            $vendor_ids =  $vendor_ids->pluck('id')->toArray();
+        } elseif ($type == 'product' || $type == 'on demand service' || $type == 'laundry') {
 
+            $latitude = !empty($request->latitude) ? $request->latitude : $preferences->Default_latitude;
+            $longitude = !empty($request->longitude) ? $request->longitude : $preferences->Default_longitude;
+
+
+            $vendor_ids = Vendor::vendorOnline()->byVendorSubscriptionRule($preferences)->where('status', 1);
+
+            $vendor_ids =  $vendor_ids->pluck('id')->toArray();
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
+            if(empty($clientCurrency)){
+                $clientCurrency = ClientCurrency::where('is_primary',1)->first();
+            }
+            $dollorCompare = $clientCurrency->doller_compare??1;
             $products = Product::has('vendor')->with([
                 'category.categoryDetail', 'category.categoryDetail.translation' => function ($q) use ($langId) {
                     $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
@@ -332,8 +360,13 @@ class CategoryController extends BaseController
                 'tags.tag.translations' => function ($q) use ($langId) {
                     $q->where('language_id', $langId);
                 }
-            ])->select('products.category_id', 'mode_of_service', 'products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.tags')
-                ->where('products.category_id', $category_id)->where('products.is_live', 1)->where('mode_of_service', $mode_of_service)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit, $page);
+            ])->select('products.category_id', 'mode_of_service', 'products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.tags','products.is_recurring_booking')
+            ->where('products.category_id', $category_id)->where('products.is_live', 1)
+            ->where('mode_of_service', $mode_of_service)
+            ->whereIn('products.vendor_id', $vendor_ids)
+            ->paginate($limit, $page);
+
+
             if (!empty($products)) {
                 foreach ($products as $key => $product) {
                     foreach ($product->addOn as $key => $value) {
@@ -343,7 +376,7 @@ class CategoryController extends BaseController
                             } else {
                                 $v->is_free = false;
                             }
-                            $v->multiplier = $clientCurrency->doller_compare;
+                            $v->multiplier = $dollorCompare;
                         }
                     }
 
@@ -382,19 +415,36 @@ class CategoryController extends BaseController
                     $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
                     $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html)) : '';
                     $product->translation_description = !empty($product->translation_description) ? mb_substr($product->translation_description, 0, 70) . '...' : '';
-                    $product->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                    $product->variant_multiplier = $dollorCompare;
                     $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
                     $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
                     $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
                     if ($product->variant->count() > 0) {
                         foreach ($product->variant as $k => $v) {
-                            $product->variant[$k]->multiplier = $clientCurrency->doller_compare;
+                            $product->variant[$k]->multiplier = $dollorCompare;
                         }
                     } else {
                         $product->variant =  $product;
                     }
                 }
             }
+
+            $vendorDistance[] = [];
+            if (!empty($products)) {
+                 foreach ($products as $key => $product) {
+                    if(empty($vendorDistance[$product->vendor_id])){
+                        $vendorDistance[$product->vendor->id] = $this->getVendorDistanceWithTime($latitude, $longitude, $product->vendor, $preferences, $request->type);
+                    }
+                        if($vendorDistance[$product->vendor_id])
+                        {
+                            $product->lineOfSightDistance =$vendorDistance[$product->vendor_id]->lineOfSightDistance??0;
+                            $product->timeofLineOfSightDistance =$vendorDistance[$product->vendor_id]->timeofLineOfSightDistance??0;
+                        }
+
+                }
+
+            }
+
             $listData = $products;
             return $listData;
         }
@@ -496,7 +546,7 @@ class CategoryController extends BaseController
 
                     $q->groupBy('product_id');
                 },
-            ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.tags')
+            ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.tags','products.is_recurring_booking')
                 ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
                 ->join('product_translations', 'product_translations.product_id', '=', 'products.id') // Or whatever the join logic is
                 ->withCount('OrderProduct')
@@ -536,6 +586,7 @@ class CategoryController extends BaseController
             if (!empty($order_type) && $order_type == 'popular_product') {
                 $products = $products->orderBy('order_product_count', 'desc');
             }
+
             $paginate = $request->has('limit') ? $request->limit : 12;
             $products = $products->groupBy('id');
             $products = $products->paginate($paginate);
@@ -553,7 +604,7 @@ class CategoryController extends BaseController
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
-     # get product faq 
+     # get product faq
      public function getcategoryKycDocument(Request $request,$domain = ''){
         $user = Auth::user();
         if (!$user->id) {
@@ -567,29 +618,47 @@ class CategoryController extends BaseController
             $is_alrady_submit = CaregoryKycDoc::where('cart_id',$cart->id)->pluck('category_kyc_document_id');
             $is_alrady_submit = $is_alrady_submit->isNotEmpty() ? $is_alrady_submit->toArray() : [];
         }
-       
+
         $category_ids = explode(",",$request->category_ids);
-       
+
         $langId = Auth::user()->language;
 
         if(empty($langId))
         $langId = ClientLanguage::orderBy('is_primary','desc')->value('language_id');
         $product_faqs=[];
-        
+
         $category_kyc_documents = CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_ids){
             $q->whereIn('category_id',$category_ids);
            })->with(['translations' => function ($qs) use($langId){
                 $qs->where('language_id',$langId);
             },'primary'])
             ->whereNotIn('id',$is_alrady_submit)->get();
-      
+
             if(!$category_kyc_documents){
                 return response()->json(['error' => 'No record found.'], 404);
             }
             return response()->json([
                 'data' => $category_kyc_documents,
             ]);
-       
+
     }
+    public function getHourlyBasePrice(Request $request)
+
+    {
+
+        if($request->has('cat_id'))
+        {
+            $category_id = $request->get('cat_id');
+            $product = ProductVariant::whereHas('product', function ($query) use ($category_id) {
+                $query->where('category_id', $category_id);
+            })->orderBy('price','asc')->first();
+
+             return $this->successResponse($product,null,200);
+
+        }
+        return $this->errorResponse('No Product Found ', 404);
+
+    }
+
 
 }
