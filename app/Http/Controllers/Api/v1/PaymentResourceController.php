@@ -100,13 +100,17 @@ class PaymentResourceController extends BaseController
                 'payment_method'       => $savedPaymentMethod->card_id ?? $request->payment_method_id,
                 'amount'               => $request->amount * 100,
                 'currency'             => $this->currency,
-                'confirmation_method'  => 'automatic',
+                // 'confirmation_method'  => 'automatic',
                 'confirm'              => true,
                 'customer'             => $customer_id,
                 'metadata' => [
                     'user_id' => $user->id,
                     'payment_form' => $payment_form
-                ]
+                ],
+                'automatic_payment_methods' => array(
+                    'enabled'         => true,
+                    'allow_redirects' => 'never'
+                )
             );
         // $saved_payment_method = UserSavedPaymentMethods::where('user_id', $user->id)->where('payment_option_id', $request->payment_option_id)->first();
         // if (!$saved_payment_method) {
