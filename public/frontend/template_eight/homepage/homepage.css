@@ -1136,7 +1136,7 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
     width: 100%;
     height: 250px;
     /* height: 100%; */
-    object-fit: fill;
+    object-fit: cover;
     overflow: hidden;
 }
 
@@ -1623,9 +1623,9 @@ section.suppliers-section.container.vender_slider .supplier-rating h5 {
 
 .vender-logo.deals-product.product-card-box.position-relative.text-center.al_custom_vendors_sec .suppliers-img-outer.position-relative {
     border-radius: 10px 10px 0 0;
-    min-height: 300px;
+    min-height: 250px;
     height: 100%;
-    max-height: 300px;
+    max-height: 250px;
 }
 
 /* .render_full_spotlight_deals .supplier-rating {
@@ -2450,6 +2450,10 @@ section.main-product.single_category_products.mb-0.render_full_selected_products
 
     section#homepage_top_rated .top-heading.text-center {
         margin: 20px 0 0;
+    }
+
+    .al_body_template_eight .suppliers-box .suppliers-img-outer img {
+        height: 150px;
     }
 }
 
