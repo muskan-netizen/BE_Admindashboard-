@@ -1524,7 +1524,7 @@ body.al_body_template_two .vendor-design_new .product-bottom-bar {
 .menu-navigation .pixelstrap ul,
 .menu_navigation_al_four .pixelstrap .alMainMenu ul,
 .menu-navigation_al .pixelstrap .al_main_category_list {
-    max-height: 132px;
+    max-height: 300px !important;
     overflow-y: auto;
     overflow-x: hidden;
 }
