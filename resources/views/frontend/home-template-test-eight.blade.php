@@ -270,7 +270,7 @@
 				<div class="carousel-item @if($key == 0) active @endif">
 					<a class="banner-img-outer" href="{{$url??'#'}}"  target="_blank">
 						<link rel="preload" as="image" href="{{ get_file_path($banner->image,'IMG_URL1','1170','500') }}" />
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{ get_file_path($banner->image,'IMG_URL1','1170','500') }}">
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{ get_file_path($banner->image,'IMG_URL1','1914','490') }}">
 					</a>
 				</div>
 				@endforeach
