@@ -1701,7 +1701,7 @@ class AuthController extends BaseController
                         ],
                         [
                             'name' => 'country_code',
-                            'contents' => $request->country_code
+                            'contents' => $request->dialCode
                         ],
                         [
                             'name' => 'type',
