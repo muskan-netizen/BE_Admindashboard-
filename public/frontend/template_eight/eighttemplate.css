@@ -18,7 +18,7 @@ body.al_body_template_eight .category-block .brand-img img {
 }
 
 body.al_body_template_eight .home-slider-wrapper .banner-img-outer img {
-    height: auto;
+    height: 490px;
 }
 
 body.al_body_template_eight .category-related-product.suggested-product.slick-initialized.slick-slider .flag-discount::before {
@@ -3647,7 +3647,7 @@ body.dark .number .counter-container {
 
     body.al_body_template_eight .home-slider-wrapper .banner-img-outer img,
     body.al_body_template_eight .al_mobile_banner {
-        height: auto !important;
+        height: 150px !important;
     }
 
     body.al_body_template_eight ul.exzoom_img_ul.img-sidebar img {
