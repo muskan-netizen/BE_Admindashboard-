@@ -74,7 +74,7 @@ trait ProductActionTrait{
             } else{
                 $query = $query->where('token_id', session()->get('_token'));
             }
-            $return = $query->orderBy('updated_at','DESC')->pluck('product_id');
+            $return = $query->orderBy('updated_at','DESC')->take(6)->pluck('product_id');
             if(sizeof($return) > 0){
                 $return = $return->toArray();
             }
@@ -559,8 +559,6 @@ trait ProductActionTrait{
             // }
 
             // $returnArray = $products;
-
-
 
             return $returnArray;
         }

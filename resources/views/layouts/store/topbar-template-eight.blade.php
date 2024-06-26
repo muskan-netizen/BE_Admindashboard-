@@ -17,7 +17,7 @@ if(session()->has('applocale')){
             <div class="row d-flex align-items-center justify-content-between w-100">
                 <div class="col-lg-6 p-0 d-md-flex align-items-center justify-content-start"   >
                     <a class="navbar-brand mr-3"  href="{{ route('userHome') }}">
-                    <img class="logo-image" style="height:50px;" alt="" src="{{$urlImg}}"></a>
+                    <img class="logo-image" style="height:auto;" alt="" src="{{$urlImg}}"></a>
                     <div class="al_custom_head_map_box px-2 py-1 d-md-inline-flex  d-flex align-items-center justify-content-start">
                         @if(isset($preference))
                         @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
@@ -159,7 +159,7 @@ l-6 97 841 0 841 0 -6 -97z m1171 20 c-14 -161 -67 -373 -137 -548 -54 -135
                                             ({{$listl->language->nativeName}})
                                             @endif </a>
                                     </li>
-                                    
+
                                 @endforeach
                             </ul>
                         </li>
@@ -292,17 +292,17 @@ c0 -287 129 -543 350 -697 139 -97 286 -145 448 -146 105 0 162 50 162 143 0
                                         <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a>
                                     </li>
                                 @else
-                                
+
                                @php
                                 $getAdditionalPreference = getAdditionalPreference(['is_user_pre_signup']);
                                 @endphp
                                 @if(isset($getAdditionalPreference) && ($getAdditionalPreference['is_user_pre_signup'] == 1))
-                                
+
                                  <li>
                                     <a href="{{route('customer.register')}}" data-lng="es">{{__('Pre Signup')}}</a>
                                 </li>
                                @else
-                                  
+
                                 <li>
                                     <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
                                 </li>
@@ -372,13 +372,13 @@ c0 -287 129 -543 350 -697 139 -97 286 -145 448 -146 105 0 162 50 162 143 0
                               <div class="icon-nav d-none d-lg-inline-block ">
                                   <form name="filterData" id="filterData" action="{{route('changePrimaryData')}}"> @csrf <input type="hidden" id="cliLang" name="cliLang" value="{{session('customerLanguage')}}"> <input type="hidden" id="cliCur" name="cliCur" value="{{session('customerCurrency')}}"> </form>
                                   <ul class="d-flex align-items-center m-0 ">
-                                      
+
                                       <li class="onhover-div pl-0 shake-effect d-none">
                                           @if($client_preference_detail) @if($client_preference_detail->cart_enable==1)
                                           <a class="btn btn-solid d-flex align-items-center p-0" href="{{route('showCart')}}">
                                               <span class="mr-1"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17H7.36729C6.86964 17 6.44772 16.6341 6.37735 16.1414M18 14H6.07143L4.5 3H2M9 5H21L19 11M11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z" stroke="#001A72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      
-                                              
+
+
                                               <span id="cart_qty_span"></span>
                                           </a> @endif @endif
                                           <script type="text/template" id="header_cart_template"> <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{__('Subtotal')}}: <span id='totalCart'>{{Session::get('currencySymbol')}}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{__('View Cart')}}</a> </script>
@@ -435,7 +435,7 @@ c0 -287 129 -543 350 -697 139 -97 286 -145 448 -146 105 0 162 50 162 143 0
                                           </div>
                                       </li>
                                   </ul>
-      
+
                                   <div class="ipad-view order-lg-3">
                                       <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
                                           @if (Session::get('preferences')) @if(
@@ -484,7 +484,7 @@ c0 -287 129 -543 350 -697 139 -97 286 -145 448 -146 105 0 162 50 162 143 0
                                                               <path d="M15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17H7.36729C6.86964 17 6.44772 16.6341 6.37735 16.1414M18 14H6.07143L4.5 3H2M9 5H21L19 11M11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z" stroke="#001A72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                                               </svg>
                                                               </span>
-                                                             
+
                                                               <span id="cart_qty_span">
                                                               </span>
                                                           </a>
@@ -556,7 +556,7 @@ c0 -287 129 -543 350 -697 139 -97 286 -145 448 -146 105 0 162 50 162 143 0
                                           </div>
                                       </div>
                                   </div>
-      
+
                               </div>
                           </div>
                       </div>
@@ -690,7 +690,7 @@ c42 -28 59 -60 59 -112 0 -76 -59 -135 -135 -135 -80 0 -135 58 -135 144 0 43
                             {{ __('Add Post') }}</span>
                         </a></li>
                 @endif
-                
+
                 <div class="al_new_cart">
                     @if($client_preference_detail->cart_enable == 1)
                     <div class="onhover-dropdown_al onhover-div mobile-cart">
@@ -702,7 +702,7 @@ c42 -28 59 -60 59 -112 0 -76 -59 -135 -135 -135 -80 0 -135 58 -135 144 0 43
                     </div>
                     @endif
                 </div>
-            
+
                 <a class="al_toggle-menu" href="javascript:void(0)">
                     <i></i>
                     <i></i>

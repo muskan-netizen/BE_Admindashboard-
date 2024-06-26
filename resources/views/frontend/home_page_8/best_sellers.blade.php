@@ -1,8 +1,8 @@
-<div class="col-md-12 p-0">
+<div class="col-md-12">
     <div class="deals-product product-card-box position-relative text-center al_custom_vendors_sec"  >
         <a class="suppliers-box d-block" href="{{route('vendorDetail')}}/{{ $vendor->slug }}">
             <div class="suppliers-img-outer position-relative ">
-                @if($vendor->is_vendor_closed==1) 
+                @if($vendor->is_vendor_closed==1)
                     <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="{{ get_file_path($vendor->logo,'FILL_URL','200','200') }}" alt="" title="">
                 @else
                     <img  class="fluid-img mx-auto blur-up lazyload" data-src="{{ get_file_path($vendor->logo,'FILL_URL','200','200') }}" alt="" title="">
@@ -22,7 +22,7 @@
             </div>
             @if($client_preference_detail && $client_preference_detail->rating_check==1)
             @if($vendor->vendorRating >0) <span class="rating-number">{{ $vendor->vendorRating }} </span>
-            @endif @endif 
+            @endif @endif
         </a>
     </div>
 </div>
