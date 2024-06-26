@@ -733,7 +733,7 @@ class CartController extends FrontController
                         ];
                         $cart_product = CartProduct::updateOrCreate(['cart_id' =>  $cart_detail->id, 'product_id' => $product['product_id']], $cart_product_detail);
                     }
-                    $exist = UserWishlist::where('user_id', Auth::user()->id)->where('product_id', $product['product_id'])->orWhere('product_variant_id', $product['variant_id'])->first();
+                    $exist = UserWishlist::where('user_id', Auth::user()->id)->where('product_id', $product['product_id'])->where('product_variant_id', $product['variant_id'])->first();
                     if ($exist) {
                         $exist->delete();
                     }
