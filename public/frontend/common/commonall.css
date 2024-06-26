@@ -2378,9 +2378,18 @@ body[dir="rtl"] #step-4-ondemand .add-on-main-div {
 }
 
 @media (max-width:767px) {
+    .al_body_template_nine   .payment-card-bottom ul{
+        display: flex;
+    }
+        .al_body_template_nine .payment-card-bottom ul li{
+            padding-right: 10px!important;
+        }
     .al_body_template_one #side_menu_toggle {
         bottom: 140px !important;
     }
+        .al_body_template_nine .social-links li{
+            padding-right: 5px!important;
+        }
 
     .al_body_template_one #page-container section,
     body .vendors section {

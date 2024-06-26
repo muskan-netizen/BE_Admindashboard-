@@ -359,10 +359,14 @@ trait ProductActionTrait{
                 $product_ids = OrderProductRating::selectRaw('id, product_id, count(product_id) as total')->groupBy('product_id')->orderBy('total', 'DESC')->take(10)->get()->pluck('product_id')->toArray();
             } elseif($type == 'recent_viewed'){
                 $product_ids = $this->getRecentProductIds();
-            }elseif($type == 'all' || $type == 'is_new' || $type == 'is_featured'){
+            }elseif($type == 'all' || $type == 'is_new' || $type == 'is_featured'|| $type == 'on_sale'){
                 $completeWhere = ' ';
                 if($type != 'all'){
                     $completeWhere = ' AND `products`.`'.$type.'` = 1';
+                }
+                if($type = 'on_sale' ){
+               
+                    $completeWhere = "";
                 }
                 $raw_query = "SELECT
                     `products`.`id`
@@ -380,8 +384,8 @@ trait ProductActionTrait{
 
                             $whereProductType
 
-                            GROUP BY `products`.`id`
-                            LIMIT 6";
+                            GROUP BY `products`.`id`";
+                            // LIMIT 6";
 
                 $products = DB::select( DB::raw($raw_query));
 
@@ -459,7 +463,9 @@ trait ProductActionTrait{
             $single_category_product_ids = $this->getProductsId($where, $vendorWhereIN, $whereProductType);
 
             if(count($single_category_product_ids) > 0){
-                $single_category_product_ids = @implode(',',$single_category_product_ids);
+                shuffle($single_category_product_ids);
+                $random_numbers = array_slice($single_category_product_ids, 0, 6);
+                $single_category_product_ids = @implode(',',$random_numbers);
                 if($single_category_product_ids){
                     $completeWhere .= ' AND  `products`.`id` IN  ('.$single_category_product_ids.')';
                 }
