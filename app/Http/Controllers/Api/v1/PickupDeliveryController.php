@@ -931,7 +931,7 @@ class PickupDeliveryController extends BaseController{
                 $order_product->product_id = $product->id;
                 $order_product->created_by = null;
                 $order_product->variant_id = $variant->id;
-                $order_product->product_name = $product->sku;
+                $order_product->product_name = $product->title;
                 $order_product->no_seats_for_pooling = (isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0;
                 $order_product->is_cab_pooling = isset($request->is_cab_pooling)?$request->is_cab_pooling:0;
                 $order_product->is_one_push_booking = isset($request->is_one_push_booking)?$request->is_one_push_booking:0;
