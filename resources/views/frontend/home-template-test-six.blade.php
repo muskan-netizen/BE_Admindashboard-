@@ -172,7 +172,7 @@
 
 <section class="alSixMainMenu p-0 my-menu">
       <div class="menu-navigation_al">
-      <div class="container space-slider-homeric">
+      <div class="container-fluid space-slider-homeric">
          <div class="row">
             <!-- <div class="col-12"> -->
                <ul id="main-menu" class="col sm pixelstrap sm-horizontal menu-slider" >

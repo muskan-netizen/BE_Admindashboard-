@@ -1330,7 +1330,7 @@
     padding: 6px;
     border-radius: 15px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
-
+    min-width:190px;
 }
 .my-menu ul.sm.pixelstrap.sm-horizontal {
     text-align: left;
@@ -1473,4 +1473,7 @@ padding: 0px;
     .al_body_template_six ul#main-menu
 {
     overflow: hidden;
+}
+.space-slider-homeric {
+    padding: 0 60px;
 }
