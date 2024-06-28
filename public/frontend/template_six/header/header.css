@@ -197,8 +197,8 @@ body.al_body_template_six.login.light {
 }
 
 body.al_body_template_six .menu-slider .slick-track {
-    max-width: 100% !important;
-    width: 100% !important;
+    /* max-width: 100% !important; */
+    /* width: 100% !important; */
     display: flex;
     justify-content: flex-start;
     margin: 0 auto !important;
@@ -1160,7 +1160,7 @@ body .royo_whatsapp_img {
 }
 .al_body_template_six .vendor-design_new {
     width: 100%;
-}   
+}
 .dark.al_body_template_six .vendor-design_new .vendor-info li svg g {
     stroke: #fff;
     fill: #fff!important;

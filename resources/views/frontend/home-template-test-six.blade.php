@@ -172,10 +172,10 @@
 
 <section class="alSixMainMenu p-0 my-menu">
       <div class="menu-navigation_al">
-      <div class="container space-slider-homeric">
+      <div class="container-fluid space-slider-homeric">
          <div class="row">
             <!-- <div class="col-12"> -->
-               <ul id="main-menu" class="col sm pixelstrap sm-horizontal menu-slider2" >
+               <ul id="main-menu" class="col sm pixelstrap sm-horizontal menu-slider" >
                   @foreach($navCategories as $cate)
                   @if($cate['name'])
                   <li class="al_main_category">
@@ -463,7 +463,7 @@
 									$video_extensions = ['mp4', 'avi', 'mov', 'wmv']; // list of video extensions
 								@endphp
 								@if(in_array($extension, $image_extensions))
-									<img alt="" title="" class="blur-up lazyload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" >	
+									<img alt="" title="" class="blur-up lazyload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" >
 								@elseif (in_array($extension, $video_extensions))
 									<video id="video1" width="100%" controls autoplay muted>
 										<source src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" type="video/mp4">
