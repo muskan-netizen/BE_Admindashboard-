@@ -1574,8 +1574,20 @@ class AuthController extends BaseController
                 }
                 // $dispatch_domain->delivery_service_key_code = '649a9a';
                 //  $dispatch_domain->delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
+                if($dispatch_domain->business_type == 'taxi'){
+                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
+                    $url = $dispatch_domain->pickup_delivery_service_key_url;
+                }
+                else if($dispatch_domain->business_type == 'laundry')
+                {
+                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
+                    $url = $dispatch_domain->pickup_delivery_service_key_url;
+                }
+                else
+                {
                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
                 $url = $dispatch_domain->delivery_service_key_url;
+                }
                 $key1 = 0;
                 $key2 = 0;
                 $filedata = [];
