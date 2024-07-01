@@ -118,6 +118,10 @@
     .top-header .header-dropdown li.onhover-dropdown{padding:0 15px}.onhover-dropdown .onhover-show-div{display:none}.shimmer_effect{overflow:hidden}.menu-slider.items-center .slick-track{justify-content:space-between}
 
 	body .menu-slider .slick-track{max-width:100vw!important;width:100%!important;display:flex;justify-content:center;margin:auto!important}
+
+	.al_body_template_three .menu-slider .slick-slide {
+		width: 100% !important;
+	}
 	@media(max-width:767px){
 		body .menu-slider .slick-track {
 			justify-content: flex-start;

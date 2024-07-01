@@ -45,10 +45,6 @@ article#page-container {
     min-height: 1px;
 }
 
-.al_body_template_three .menu-slider .slick-slide {
-    width: 100% !important;
-}
-
 .al_body_template_three {
     background-color: #fff
 }
@@ -1024,8 +1020,6 @@ body.al_body_template_three .al_box_third_template {
     .al_body_template_three .cab-footer button {
         width: auto !important;
     }
-
-
 
 }
 
