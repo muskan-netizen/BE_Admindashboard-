@@ -446,7 +446,7 @@ class StripeGatewayController extends FrontController
                     'description' => 'Creating Customer',
                     'name' => $user->name,
                     'email' => $user->email,
-                    'source' => $token,
+                    // 'source' => $token,
                     'metadata' => [
                         'user_id' => $user->id,
                         'phone_number' => $user->phone_number
@@ -470,16 +470,23 @@ class StripeGatewayController extends FrontController
 
 
             $postdata = [
-                'currency' => $this->currency,
                 // 'token' => $token,
-                'amount' => $amount,
+                'source'   => $token,
+                'currency' => $this->currency,
+                'amount'   => $amount,
+                'customer' => $customer_id,
+
                 'metadata' => [
-                    'user_id' => $user->id,
-                    'name'=> $user->name,
-                    'email'=> $user->email,
-                    'phone_number'=> $user->phone_number
+                    'user_id'      => $user->id,
+                    'name'         => $user->name,
+                    'email'        => $user->email,
+                    'phone_number' => $user->phone_number
                 ],
-                'customerReference' => $customer_id
+
+                'automatic_payment_methods' => [
+                    'enabled' => true,
+                    'allow_redirects' => 'never',
+                ],
             ];
 
             if($payment_form == 'cart'){
@@ -612,7 +619,7 @@ class StripeGatewayController extends FrontController
             //     return $this->errorResponse($authorizeResponse->getMessage(), 400);
             // }
         } catch (\Exception $ex) {
-          Log::info($e->getMessage());
+          Log::error($ex);
             return $this->errorResponse('Server Error', $ex->getCode());
         }
     }
