@@ -208,7 +208,7 @@ class OrangePaymentController extends Controller
     {
         try {
             if(isset($request->order_id) ){
-                $payment_data = Payment::where('payment_detail',$request->order_id)->firstOrFail();
+                $payment_data = Payment::where('transaction_id',$request->order_id)->firstOrFail();
                 $user = User::findOrFail($payment_data->user_id);
                 $response = $this->create_token($request);
                 $data = json_decode($response, true);
@@ -221,9 +221,16 @@ class OrangePaymentController extends Controller
                     'Content-Type' => 'application/json',
                 ];
                 $data = [
-                    "order_id" => $payment_data->payment_detail,
+                    "order_id" => $request->order_id,
                     "amount" =>  $payment_data->balance_transaction,
                     "pay_token" => $payment_data->transaction_id,
+                    "merchant_key" => $this->orangepay_MerchantKey,
+                    "currency" => $this->currency ,
+                    "return_url" => url('success-orangepay?order_id='.$request->order_id.'&from='. $request->from.'&action='. $request->action),
+                    "cancel_url" =>  url('cancel-orangepay?order_id='.$request->order_id.'&from='. $request->from.'&action='. $request->action),
+                    "notif_url" =>  url('success-orangepay?order_id='.$request->order_id.'&from='. $request->from.'&action='. $request->action),
+                    "lang" => $this->client_language,
+                    // "reference" => $order_number,
                 ];
                 $formattedHeaders = [];
                 foreach ($headers as $key => $value) {
@@ -319,28 +326,29 @@ class OrangePaymentController extends Controller
 
     public function orderNumber($request)
     {
+    $user = Auth::user();
      if (($request->from == 'cart') || ($request->from == 'pickup_delivery')) {
        $time = $request->order_number;
      }elseif($request->from == 'wallet')
          {
              $time = ($request->transaction_id)??'W_'.time();
-             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->total_amount,'type'=>'wallet','date'=>date('Y-m-d')]);
+             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->total_amount,'type'=>'wallet','date'=>date('Y-m-d'),'user_id'=>$user->id]);
 
          }elseif($request->from == 'tip')
          {
               $time = 'T_'.time().'_'.$request->order_number;
-              Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'tip','date'=>date('Y-m-d')]);
+              Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'tip','date'=>date('Y-m-d'),'user_id'=>$user->id]);
 
          }elseif($request->from == 'subscription')
          {
              $time = ($request->subscription_id)??'S_'.time();
-             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d')]);
+             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d'),'user_id'=>$user->id]);
 
          }
          elseif($request->from == 'giftCard')
          {
              $time = ($request->transaction_id)??'W_'.time();
-             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'giftCard','date'=>date('Y-m-d')]);
+             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'giftCard','date'=>date('Y-m-d'),'user_id'=>$user->id]);
 
          }
          return $time;
