@@ -359,12 +359,12 @@ trait ProductActionTrait{
                 $product_ids = OrderProductRating::selectRaw('id, product_id, count(product_id) as total')->groupBy('product_id')->orderBy('total', 'DESC')->take(10)->get()->pluck('product_id')->toArray();
             } elseif($type == 'recent_viewed'){
                 $product_ids = $this->getRecentProductIds();
-            }elseif($type == 'all' || $type == 'is_new' || $type == 'is_featured'|| $type == 'on_sale'){
+            }elseif($type == 'all' || $type == 'is_new' || $type == 'is_featured'|| $type == 'on_sale' || $type = 'spotlight_deals'){
                 $completeWhere = ' ';
                 if($type != 'all'){
                     $completeWhere = ' AND `products`.`'.$type.'` = 1';
                 }
-                if($type = 'on_sale' ){
+                if($type = 'on_sale' || $type = 'spotlight_deals' ){
                
                     $completeWhere = "";
                 }
