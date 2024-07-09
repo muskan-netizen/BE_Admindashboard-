@@ -9,6 +9,15 @@
 $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 $signUpImage = $preferences->signup_image ?? null;
 @endphp
+@if(Session::get('config_theme') == 'dark')
+    <style>
+        .divider_line span {background: #000000 !important;}
+    </style>
+@else
+    <style>
+        .divider_line span {background: #fff !important;}
+    </style>
+@endif
 <section class="wrapper-main py-lg-5 py-3 d-flex align-items-center main-login-page">
     <div class="container">
         <div class="row align-items-center h-100" id="login-section">
