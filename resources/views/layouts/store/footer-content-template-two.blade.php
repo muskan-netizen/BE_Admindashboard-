@@ -109,7 +109,7 @@ if(session()->has('applocale')){
                                 <ul class="contact-list">
                                     <li><i class="icon-location"></i> {{$clientData ? $clientData->company_address : ''}}</li>
                                     <li><i class="icon-ic_call"></i> <a href="tel: {{$clientData ? $clientData->phone_number : ''}}">{{$clientData ? $clientData->phone_number : ''}}</a></li>
-                                    <li><i class="icon-ic_mail"></i> <a href="mailto: {{$clientData ? $clientData->email : ''}}" style="text-transform:none">{{$clientData ? $clientData->email : ''}}</a></li>
+                                    <!-- <li><i class="icon-ic_mail"></i> <a href="mailto: {{$clientData ? $clientData->email : ''}}" style="text-transform:none">{{$clientData ? $clientData->email : ''}}</a></li> -->
                                 	 <li class="pl-0">
                                         <i class="icon-ic_mail"></i>
                                         <a href="mailto: {{$clientData ? ($clientData->contact_email ??$clientData->email) : ''}}" style="text-transform:none">{{$clientData ? ($clientData->contact_email ??$clientData->email) : ''}}</a>
