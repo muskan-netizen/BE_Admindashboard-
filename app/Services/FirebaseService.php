@@ -60,17 +60,24 @@ class FirebaseService
         }
     }
 
-    public function sendNotification($data) //$token, $title, $body
+    public function sendNotification($data,$is_vendor = 0) //$token, $title, $body
     {
         $client = new Client();
-
+         if($is_vendor == 1){
+           $preference = getAdditionalPreference(['fcm_vendor_project_id']);
+           $projectId = $preference['fcm_vendor_project_id'];
+           $accessToken = getFcmOauthTokenVendor();
+         }else{
         $preference = ClientPreference::select('fcm_project_id')->first();
+        $projectId = $preference->fcm_project_id;
+        $accessToken = getFcmOauthToken();
+         }
         if (!$preference) {
             \Log::error('FCM Send Error: FCM project ID not found in database.');
             return false;
         }
 
-        $projectId = $preference->fcm_project_id;
+        
 
 
         \Log::info('projectId');
@@ -80,7 +87,8 @@ class FirebaseService
         $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
         //$accessToken = $this->getAccessToken();
         // $accessToken = Self::getAccessToken();
-        $accessToken = getFcmOauthToken();
+          
+        
 
 
         if (!$accessToken) {
