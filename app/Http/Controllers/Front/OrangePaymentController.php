@@ -207,41 +207,47 @@ class OrangePaymentController extends Controller
     public function successPage(Request $request)
     {
         try {
-            if(isset($request->order_id) ){
-                $payment_data = Payment::where('transaction_id',$request->order_id)->firstOrFail();
-                $user = User::findOrFail($payment_data->user_id);
-                $response = $this->create_token($request);
-                $data = json_decode($response, true);
+            \Log::info($request->all());
+            // $request->merge(['status' => 'SUCCESS']);
+            $payment_data = Payment::where('transaction_id',$request->order_id)->firstOrFail();
+            // dd($request->txnid);
+            // if(isset($request->order_id) ){
+            //     \Log::info($request->all());
+            //     $user = User::findOrFail($payment_data->user_id);
+            //     $response = $this->create_token($request);
+            //     // $data = json_decode($response, true);
 
-                $accessToken = $data['access_token'];
-                $curl = curl_init();
-                $headers = [
-                    'Accept'=> 'application/json',
-                    'Authorization' => 'Bearer ' . $accessToken,
-                    'Content-Type' => 'application/json',
-                ];
-                $data = [
-                    "order_id" => $request->order_id,
-                    "amount" =>  $payment_data->balance_transaction,
-                    "pay_token" => $payment_data->transaction_id,
-                    "merchant_key" => $this->orangepay_MerchantKey,
-                    "currency" => $this->currency ,
-                    "return_url" => url('success-orangepay?order_id='.$request->order_id.'&from='. $request->from.'&action='. $request->action),
-                    "cancel_url" =>  url('cancel-orangepay?order_id='.$request->order_id.'&from='. $request->from.'&action='. $request->action),
-                    "notif_url" =>  url('success-orangepay?order_id='.$request->order_id.'&from='. $request->from.'&action='. $request->action),
-                    "lang" => $this->client_language,
-                    // "reference" => $order_number,
-                ];
-                $formattedHeaders = [];
-                foreach ($headers as $key => $value) {
-                    $formattedHeaders[] = $key . ': ' . $value;
-                }
-                $url = $this->url;
-                $response = $this->makeCurlRequest($url, 'POST', $data, $formattedHeaders);
-                $response = json_decode($response, true);
-                $request->merge(['order_id' => $response['order_id']?? $request->order_id,'transaction_id' => $response['txnid'],'order_status' => $response['status']]);
-                Auth::login($user);
-            }
+            //     // $accessToken = $data['access_token'];
+            //     // $curl = curl_init();
+            //     // $headers = [
+            //     //     'Accept'=> 'application/json',
+            //     //     'Authorization' => 'Bearer ' . $accessToken,
+            //     //     'Content-Type' => 'application/json',
+            //     // ];
+            //     // $data = [
+            //     //     "order_id" => $request->order_id,
+            //     //     "amount" =>  $payment_data->balance_transaction,
+            //     //     "pay_token" => $payment_data->transaction_id,
+            //     //     "merchant_key" => $this->orangepay_MerchantKey,
+            //     //     "currency" => $this->currency ,
+            //     //     "return_url" => url('success-orangepay?order_id='.$request->order_id.'&from='. $request->from.'&action='. $request->action),
+            //     //     "cancel_url" =>  url('cancel-orangepay?order_id='.$request->order_id.'&from='. $request->from.'&action='. $request->action),
+            //     //     "notif_url" =>  url('success-orangepay?order_id='.$request->order_id.'&from='. $request->from.'&action='. $request->action),
+            //     //     "lang" => $this->client_language,
+            //     //     // "reference" => $order_number,
+            //     // ];
+            //     // $formattedHeaders = [];
+            //     // foreach ($headers as $key => $value) {
+            //     //     $formattedHeaders[] = $key . ': ' . $value;
+            //     // }
+            //     // $url = $this->url;
+            //     // $response = $this->makeCurlRequest($url, 'POST', $data, $formattedHeaders);
+            //     // $response = json_decode($response, true);
+            //     \Log::info($request->all());
+            //     \Log::info($response);
+            //     \Log::info($request->all());
+            //     Auth::login($user);
+            // }
             if($payment_data->type =='cart'){
                 return $this->completeOrderCart($request);
             }elseif($payment_data->type=='wallet'){
@@ -257,7 +263,7 @@ class OrangePaymentController extends Controller
 
     public function completeOrderWallet($request)
     {
-        if (isset($request->order_status) && $request->order_status == 'SUCCESS') {
+        if (isset($request->status) && $request->status == 'SUCCESS') {
             $data = Payment::where('transaction_id',$request->order_id)->first();
             $user = auth()->user();
             $wallet = $user->wallet;
@@ -285,7 +291,7 @@ class OrangePaymentController extends Controller
     public function completeOrderPickup($request)
     {
 
-        if (isset($request->order_status) && ($request->order_status == 'SUCCESS')) {
+        if (isset($request->status) && ($request->status == 'SUCCESS')) {
         $order = Order::where('order_number',$request->order_id)->firstOrFail();
         $user = auth()->user();
         $order->payment_status = '1';
