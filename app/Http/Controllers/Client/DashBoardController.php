@@ -455,7 +455,7 @@ class DashBoardController extends BaseController
             }
             
             if($date_filter)
-            $total_revenue = $total_revenue->whereBetween('created_at', [$from_date, $end_date]);
+            $total_revenue = $total_revenue->whereBetween('created_at', [$from_date, $end_date])->where('payment_status', 1);
 
             $total_revenue = $total_revenue->sum('payable_amount');
             //pr($total_revenue);
@@ -493,7 +493,7 @@ class DashBoardController extends BaseController
             }else{
                   # Orders count
             if($date_filter)
-               $orders =  $orders->whereBetween('created_at', [$from_date, $end_date]);
+               $orders =  $orders->whereBetween('created_at', [$from_date, $end_date])->where('payment_status', 1);
             
             $total_orders = $orders->count();
 
