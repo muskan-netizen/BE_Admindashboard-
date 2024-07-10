@@ -495,6 +495,7 @@ class ProductController extends BaseController
             }
 
             $product->sku = $request->sku;
+            $product->title = $request->product_name;
             $product->markup_price = $request->markup_price;
             $product->url_slug = $request->url_slug;
             $product->tags        = $request->tags??null;
