@@ -836,9 +836,9 @@ footer#footer {
         margin: 0 !important;
     }
 
-    section#our_vendor_main_div .vendors {
+    /* section#our_vendor_main_div .vendors {
         padding: 0 20px;
-    }
+    } */
 
     body.al_body_template_eight .suppliers-box .suppliers-img-outer {
         height: auto;
@@ -1043,7 +1043,7 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
 } */
 
 .al_body_template_eight section#homepage_recently_viewed .slick-track {
-    padding: 20px 0 !important;
+    padding: 20px 0 0!important;
 }
 
 .al_body_template_eight .al_custom_brand .slick-slide {
@@ -1134,7 +1134,7 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
 .al_body_template_eight .suppliers-box .suppliers-img-outer img {
     margin: 0;
     width: 100%;
-    height: 250px;
+    height: 280px;
     /* height: 100%; */
     object-fit: cover;
     overflow: hidden;
@@ -1316,11 +1316,11 @@ article#page-container section .vendors section h2.h2-heading {
 }
 
 section#our_vendor_main_div .suppliers-slider-vendors.product-m.render_vendors {
-    margin-bottom: 20px;
+    margin-bottom: 0;
 }
 
-section#our_vendor_main_div .render_full_best_sellers {
-    padding: 50px 0 !important;
+body section#our_vendor_main_div .render_full_best_sellers {
+    padding: 60px 0 !important;
 }
 
 .Categories-section {
@@ -1407,9 +1407,9 @@ section.home-headings {
     display: inline-block;
 }
 
-section#homepage_recently_viewed {
+/* section#homepage_recently_viewed {
     padding: 18px 0px 18px 0px !important;
-}
+} */
 
 .main-pro-slider .suppliers-slider-recently_viewed {
     background: transparent;
@@ -1623,9 +1623,8 @@ section.suppliers-section.container.vender_slider .supplier-rating h5 {
 
 .vender-logo.deals-product.product-card-box.position-relative.text-center.al_custom_vendors_sec .suppliers-img-outer.position-relative {
     border-radius: 10px 10px 0 0;
-    min-height: 250px;
+    min-height: 280px !important;
     height: 100%;
-    max-height: 250px;
 }
 
 /* .render_full_spotlight_deals .supplier-rating {
@@ -1825,7 +1824,9 @@ body.dark.al_body_template_eight section#homepage_top_rated {
 .suppliers-section .top-heading.pt-5 {
     padding: 0 !important;
 }
-
+section.home-slider-wrapper {
+    padding: 0 !important;
+}
 
 /*------------dark theme issues-----------*/
 
