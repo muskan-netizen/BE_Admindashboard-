@@ -129,7 +129,7 @@ class ProductController extends FrontController{
         ->where('not_available', 0)
         ->selectRaw('DATE_FORMAT(date_time, "%Y-%m-%d") as formatted_date')
         ->pluck('formatted_date'));
-     
+        
         if($this->checkTemplateForAction(8)){
             $this->RecentView($p_id);
         }
