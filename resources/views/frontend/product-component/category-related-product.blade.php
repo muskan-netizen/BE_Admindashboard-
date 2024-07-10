@@ -60,7 +60,7 @@
                                 $price = $scp->variant[0]->price ?? 0;
                                 $compare_at_price = $scp->variant[0]->compare_at_price ?? 0;
                                 $multiplier = $scp->variant[0]->multiplier  ?? 0;
-                                $priceVal = $price * $multiplier;
+                                $priceVal = ($multiplier > 0) ? $price * $multiplier : $price;
                                 @endphp
                             @if(productDiscountPercentage($price, $compare_at_price))
                                 <span class="flag-discount">{{productDiscountPercentage($price, $compare_at_price)}}% Off</span>
