@@ -156,6 +156,9 @@ class ProductController  extends FrontController
                 if($is_token_enable){
                     $tokenAmount = getJsToken();
                 }
+                if(isset($selected_variant)){
+                    $selected_variant->multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                }
                 
 
                 $data['variant'] = $variantData;
