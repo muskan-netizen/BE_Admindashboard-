@@ -865,13 +865,13 @@
         /* box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25); */
     }
 
-    .al_body_template_six .alSixMainMenu .slick-slide {
+    /* .al_body_template_six .alSixMainMenu .slick-slide {
         background-color: #fff;
         margin: 0 10px;
         padding: 0 0 10px;
         border-radius: 15px;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
-    }
+    } */
 
     .al_body_template_six .alSixMainMenu .slick-list {
         overflow: visible;
@@ -960,9 +960,9 @@
         max-width: 100%;
         position: relative;
     }
-    .al_body_template_six .alSixMainMenu #main-menu .slick-list.draggable{
+    /* .al_body_template_six .alSixMainMenu #main-menu .slick-list.draggable{
         max-width: 95%;
-    }
+    } */
 
     .al_body_template_six .alSixMainMenu .slick-slide .al_main_category a .alCategoryName {
         text-transform: uppercase;
@@ -982,13 +982,13 @@
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
     }
 
-    .al_body_template_six .alSixMainMenu .slick-slide {
+    /* .al_body_template_six .alSixMainMenu .slick-slide {
         background-color: #fff;
         margin: 0 5px;
         padding: 6px;
         border-radius: 15px;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
-    }
+    } */
 
     .al_body_template_six .alSixMainMenu .slick-list {
         overflow: visible;
@@ -1315,21 +1315,32 @@
     margin-bottom: 30px;
 }
 .my-menu #main-menu li {
-    width: 16.33%;
+    /* width: 16.33%; */
     padding-right: 12px;
-    padding-left: 12px;
+    /* padding-left: 12px; */
     margin-bottom: 20px;
     margin-left: auto;
     margin-right: auto;
     display: inline-block;
 }
+.al_body_template_six ul#main-menu
+{
+    overflow: hidden;
+}
+.space-slider-homeric {
+    padding: 0 60px;
+}
 .my-menu #main-menu li a{
-    
     background-color: #fff;
     /* margin: 0 5px; */
+    margin: 0 5px;
     /* padding: 6px; */
+    padding: 6px;
+    border-radius: 15px;
     border-radius: 15px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+    min-width:190px;
   
 }
 .my-menu ul.sm.pixelstrap.sm-horizontal {
