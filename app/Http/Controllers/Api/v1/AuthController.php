@@ -817,10 +817,12 @@ class AuthController extends BaseController
             }
             if ($request->type == 'phone') {
                 $message = 'Mobile number verified successfully.';
-                $phone_number = str_ireplace(' ', '', $request->phone_number);
-                $user_detail_exist = User::where('phone_number', $phone_number)->whereNotIn('id', [$user->id])->first();
-                if ($user_detail_exist) {
-                    return response()->json(['error' => __('phone number in use!')], 404);
+                if ($request->has('phone_number')) {
+                    $phone_number = str_ireplace(' ', '', $request->phone_number);
+                    $user_detail_exist = User::where('phone_number', $phone_number)->whereNotIn('id', [$user->id])->first();
+                    if ($user_detail_exist) {
+                        return response()->json(['error' => __('phone number in use!')], 404);
+                    }
                 }
                 if ($user->phone_token != $request->otp) {
                     return $this->errorResponse(__('OTP is not valid'), 404);
@@ -836,9 +838,11 @@ class AuthController extends BaseController
                 return $this->successResponse(getUserDetailViaApi($user), $message);
             } elseif ($request->type == 'email') {
                 $message = 'Email verified successfully.';
-                $user_detail_exist = User::where('email', $request->email)->where('id', '!=', $user->id)->first();
-                if ($user_detail_exist) {
-                    return $this->errorResponse(__('Email already in use!'), 404);
+                if ($request->has('email')) {
+                    $user_detail_exist = User::where('email', $request->email)->whereNotIn('id', [$user->id])->first();
+                    if ($user_detail_exist) {
+                        return $this->errorResponse(__('Email already in use!'), 404);
+                    }
                 }
                 if ($user->email_token != $request->otp) {
                     return $this->errorResponse(__('OTP is not valid'), 404);
@@ -1570,8 +1574,20 @@ class AuthController extends BaseController
                 }
                 // $dispatch_domain->delivery_service_key_code = '649a9a';
                 //  $dispatch_domain->delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
+                if($dispatch_domain->business_type == 'taxi'){
+                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
+                    $url = $dispatch_domain->pickup_delivery_service_key_url;
+                }
+                else if($dispatch_domain->business_type == 'laundry')
+                {
+                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
+                    $url = $dispatch_domain->pickup_delivery_service_key_url;
+                }
+                else
+                {
                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
                 $url = $dispatch_domain->delivery_service_key_url;
+                }
                 $key1 = 0;
                 $key2 = 0;
                 $filedata = [];
@@ -1579,7 +1595,7 @@ class AuthController extends BaseController
                 $abc = [];
                 foreach ($files as $file) {
                     if ($file['file_name'] != null) {
-                        if ($file['file_type'] != "Text") {
+                        if ($file['file_type'] != "Text" && $file['file_type'] != "selector" && $file['file_type'] != "Date") {
                             $file_path          = $file['file_name']->getPathname();
                             $file_mime          = $file['file_name']->getMimeType('image');
                             $file_uploaded_name = $file['file_name']->getClientOriginalName();
@@ -1697,7 +1713,7 @@ class AuthController extends BaseController
                         ],
                         [
                             'name' => 'country_code',
-                            'contents' => $request->country_code
+                            'contents' => $request->dialCode
                         ],
                         [
                             'name' => 'type',

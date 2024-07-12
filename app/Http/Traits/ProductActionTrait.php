@@ -74,7 +74,7 @@ trait ProductActionTrait{
             } else{
                 $query = $query->where('token_id', session()->get('_token'));
             }
-            $return = $query->orderBy('updated_at','DESC')->pluck('product_id');
+            $return = $query->orderBy('updated_at','DESC')->take(6)->pluck('product_id');
             if(sizeof($return) > 0){
                 $return = $return->toArray();
             }
@@ -359,10 +359,14 @@ trait ProductActionTrait{
                 $product_ids = OrderProductRating::selectRaw('id, product_id, count(product_id) as total')->groupBy('product_id')->orderBy('total', 'DESC')->take(10)->get()->pluck('product_id')->toArray();
             } elseif($type == 'recent_viewed'){
                 $product_ids = $this->getRecentProductIds();
-            }elseif($type == 'all' || $type == 'is_new' || $type == 'is_featured'){
+            }elseif($type == 'all' || $type == 'is_new' || $type == 'is_featured'|| $type == 'on_sale' || $type = 'spotlight_deals'){
                 $completeWhere = ' ';
                 if($type != 'all'){
                     $completeWhere = ' AND `products`.`'.$type.'` = 1';
+                }
+                if($type = 'on_sale' || $type = 'spotlight_deals' ){
+               
+                    $completeWhere = "";
                 }
                 $raw_query = "SELECT
                     `products`.`id`
@@ -380,9 +384,8 @@ trait ProductActionTrait{
 
                             $whereProductType
 
-                            GROUP BY `products`.`id`
-
-                             LIMIT 6";
+                            GROUP BY `products`.`id`";
+                            // LIMIT 6";
 
                 $products = DB::select( DB::raw($raw_query));
 
@@ -416,8 +419,7 @@ trait ProductActionTrait{
             } else{
                 $venid = '0';
             }
-           $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
-
+            $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
             if($where!=='all' && $where!=='on_sale'){
 
                     if($where =='single_category_products' || $where == 'selected_products' || $where == 'popular_products' || $where == 'top_rated_products' ||  $where == 'recent_viewed'){
@@ -461,7 +463,9 @@ trait ProductActionTrait{
             $single_category_product_ids = $this->getProductsId($where, $vendorWhereIN, $whereProductType);
 
             if(count($single_category_product_ids) > 0){
-                $single_category_product_ids = @implode(',',$single_category_product_ids);
+                shuffle($single_category_product_ids);
+                $random_numbers = array_slice($single_category_product_ids, 0, 6);
+                $single_category_product_ids = @implode(',',$random_numbers);
                 if($single_category_product_ids){
                     $completeWhere .= ' AND  `products`.`id` IN  ('.$single_category_product_ids.')';
                 }
@@ -545,7 +549,7 @@ trait ProductActionTrait{
             $getSubCatIdsIn
             $whereProductType
             GROUP BY `products`.`id`
-             LIMIT 6";
+            LIMIT 6";
 
 
             $returnArray = DB::select( DB::raw($raw_query));
@@ -555,8 +559,6 @@ trait ProductActionTrait{
             // }
 
             // $returnArray = $products;
-
-
 
             return $returnArray;
         }

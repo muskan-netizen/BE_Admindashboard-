@@ -865,13 +865,13 @@
         /* box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25); */
     }
 
-    .al_body_template_six .alSixMainMenu .slick-slide {
+    /* .al_body_template_six .alSixMainMenu .slick-slide {
         background-color: #fff;
         margin: 0 10px;
         padding: 0 0 10px;
         border-radius: 15px;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
-    }
+    } */
 
     .al_body_template_six .alSixMainMenu .slick-list {
         overflow: visible;
@@ -960,9 +960,9 @@
         max-width: 100%;
         position: relative;
     }
-    .al_body_template_six .alSixMainMenu #main-menu .slick-list.draggable{
+    /* .al_body_template_six .alSixMainMenu #main-menu .slick-list.draggable{
         max-width: 95%;
-    }
+    } */
 
     .al_body_template_six .alSixMainMenu .slick-slide .al_main_category a .alCategoryName {
         text-transform: uppercase;
@@ -982,13 +982,13 @@
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
     }
 
-    .al_body_template_six .alSixMainMenu .slick-slide {
+    /* .al_body_template_six .alSixMainMenu .slick-slide {
         background-color: #fff;
         margin: 0 5px;
         padding: 6px;
         border-radius: 15px;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
-    }
+    } */
 
     .al_body_template_six .alSixMainMenu .slick-list {
         overflow: visible;
@@ -1315,22 +1315,22 @@
     margin-bottom: 30px;
 }
 .my-menu #main-menu li {
-    width: 16.33%;
+    /* width: 22.33%;
     padding-right: 12px;
-    padding-left: 12px;
+    padding-left: 12px; */
     margin-bottom: 20px;
     margin-left: auto;
     margin-right: auto;
     display: inline-block;
 }
 .my-menu #main-menu li a{
-    
+
     background-color: #fff;
-    /* margin: 0 5px; */
-    /* padding: 6px; */
+    margin: 0 5px;
+    padding: 6px;
     border-radius: 15px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
-  
+    min-width:190px;
 }
 .my-menu ul.sm.pixelstrap.sm-horizontal {
     text-align: left;
@@ -1359,9 +1359,9 @@ padding: 0px;
 
 
 .my-menu .nav-cate-img img {
-    height: 187px;
-    /* width: 100%;
-    min-width: 100%; */
+    height: 180px;
+    object-fit: cover;
+    width: 100%;
 }
 
 
@@ -1372,10 +1372,10 @@ padding: 0px;
         .cab-banner-area .card-box{
             padding: 18px;
         }
-    } 
+    }
     @media (max-width:1500px) {
         .al_body_template_six  h2.h2-heading.mt-4, .al_body_template_six  .h2-heading {
-            margin-bottom: 20px;        
+            margin-bottom: 20px;
         }
         .al_body_template_six .alSixMainMenu{
             margin: 50px 0px    ;
@@ -1470,3 +1470,10 @@ padding: 0px;
         body.al_body_template_six .alFindSec button.btn i {padding-left: 10px;}
         .al_body_template_six .al_count_tabs_new_design{margin:0px 0px;}
     }
+    .al_body_template_six ul#main-menu
+{
+    overflow: hidden;
+}
+.space-slider-homeric {
+    padding: 0 60px;
+}

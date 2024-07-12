@@ -131,7 +131,7 @@ class ProductController extends FrontController{
         ->where('not_available', 0)
         ->selectRaw('DATE_FORMAT(date_time, "%Y-%m-%d") as formatted_date')
         ->pluck('formatted_date'));
-     
+        
         if($this->checkTemplateForAction(8)){
             $this->RecentView($p_id);
         }
@@ -301,7 +301,17 @@ class ProductController extends FrontController{
                 $product_page = "product";
             }
             $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = [];
-
+            $suggested_product = Product::with(['vendor', 'translation', 'variant', 'productVariantByRoles']);
+            if( !empty($product->category->category_id) ) {
+                $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)
+                ->whereHas('vendor',function ($q){
+                    $q->whereIn('id',session()->get('vendors'));
+                })
+                ->where('id','!=',$p_id)
+                ->groupBy('id')
+                ->orderby('id', 'desc')
+                ->limit(10)->get();
+            }
             // $suggested_product = Product::with(['vendor', 'translation', 'variant', 'productVariantByRoles']);
             // if( !empty($product->category->category_id) ) {
             //     $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)

@@ -860,11 +860,17 @@ body_event.on("click", ".theme-layout-version", function () {
         $("body").addClass("dark"),
         window.sessionStorage.setItem("theme", "dark");
         $(".theme-layout-version").text("Light");
+        document.querySelectorAll('.divider_line span').forEach(function(element) {
+            element.style.setProperty('background-color', '#000000', 'important');
+        });
     } else {
         localStorage['theme_color'] = '';
         $("body").removeClass("dark"),
         window.sessionStorage.setItem("theme", "light");
         $(".theme-layout-version").text("Dark");
+        document.querySelectorAll('.divider_line span').forEach(function(element) {
+            element.style.setProperty('background-color', '#fff', 'important');
+        });
     }
     $.ajax({
         url: url1,

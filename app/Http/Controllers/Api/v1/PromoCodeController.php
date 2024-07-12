@@ -316,10 +316,7 @@ class PromoCodeController extends Controller{
             if(!$vendor){
                 return response()->json(['error' => __('Invalid vendor id.')], 404);
             }
-            $cart_detail = Cart::where('id', $request->cart_id)->first();
-            if(!$cart_detail){
-                return $this->errorResponse(__('Invalid Cart Id'), 422);
-            }
+           
             $promo_code = Promocode::where('name', $request->promocode)->first();
 
             if(!$promo_code){
@@ -381,6 +378,12 @@ class PromoCodeController extends Controller{
             if(!$promo_detail){
                 return $this->errorResponse(__('Invalid Promocode'), 422);
             }
+            // promocode validation from cart 
+            if(isset($request->cart_id)){
+            $cart_detail = Cart::where('id', $request->cart_id)->first();
+            if(!$cart_detail){
+                return $this->errorResponse(__('Invalid Cart Id'), 422);
+            }
             $cart_coupon_detail = CartCoupon::where('cart_id', $request->cart_id)->where('vendor_id', $request->vendor_id)->where('coupon_id', $promo_detail->id)->first();
             if($cart_coupon_detail){
                 return $this->errorResponse(__('Coupon Code already applied.'), 422);
@@ -413,6 +416,30 @@ class PromoCodeController extends Controller{
             $cart_coupon->coupon_id = $promo_detail->id;
             $cart_coupon->save();
             return $this->successResponse($promo_detail, __('Promotion Code Used Successfully'), 201);
+        }else{
+            if(isset($request->amount)){
+                if($request->amount < $promo_detail->minimum_spend){
+                    return $this->errorResponse(__('Cart amount is less than required amount'), 422);
+                }
+                if($request->amount > $promo_detail->maximum_spend){
+                    return $this->errorResponse(__('Cart amount is greater than required amount'), 422);
+                }
+            // validation from ride booking
+            if ($promo_detail->promo_type_id == 2) {
+                $promo_detail['new_amount'] = $promo_detail->amount;
+                if ($promo_detail['new_amount'] < 0)
+                    $promo_detail['new_amount'] = 0.00;
+            }
+            if ($promo_detail->promo_type_id == 1) {
+                $promo_detail['new_amount'] = ($request->amount* ($promo_detail->amount / 100));
+                if ($promo_detail['new_amount'] < 0)
+                    $promo_detail['new_amount'] = 0.00;
+            }
+            return $this->successResponse($promo_detail, __('Promotion Code Used Successfully'), 201);
+        }else{
+            return $this->errorResponse(__('Invaild cart amount'), 422);
+        }
+    }
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
