@@ -175,7 +175,7 @@
       <div class="container space-slider-homeric">
          <div class="row">
             <!-- <div class="col-12"> -->
-               <ul id="main-menu" class="col sm pixelstrap sm-horizontal menu-slider" >
+               <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider2" >
                   @foreach($navCategories as $cate)
                   @if($cate['name'])
                   <li class="al_main_category">
