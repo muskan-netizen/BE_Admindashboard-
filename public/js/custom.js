@@ -181,40 +181,38 @@ window.loadMainMenuSlider = function loadMainMenuSlider() {
     // $('.menu-slider').css("display", "flex");
     // $(".menu-slider").slick({arrows:true,dots:!1,infinite:!1,variableWidth:!0,autoplay:!1,speed:300,slidesToShow:6,slidesToScroll:1});
     $(".menu-slider").slick({
-        dots: true,
-  infinite: true,
-  speed: 300,
-  slidesToShow: 6,
-  slidesToScroll: 1,
-  responsive: [
-    {
-      breakpoint: 1024,
-      settings: {
-        slidesToShow: 3,
+        // dots: true,
+        // infinite: true,
+        speed: 300,
+        slidesToShow: 7,
         slidesToScroll: 1,
-        infinite: true,
-        dots: true
-      }
-    },
-    {
-      breakpoint: 600,
-      settings: {
-        slidesToShow: 2,
-        slidesToScroll: 1
-      }
-    },
-    {
-      breakpoint: 480,
-      settings: {
-        slidesToShow: 1,
-        slidesToScroll: 1
-      }
-    }
-    // You can unslick at a given breakpoint now by adding:
-    // settings: "unslick"
-    // instead of a settings object
-  ]
-});
+        arrows: false,
+            responsive: [
+                {
+                breakpoint: 1024,
+                    settings: {
+                        slidesToShow: 3,
+                        slidesToScroll: 1,
+                        // infinite: true,
+                        // dots: true
+                    }
+                },
+                {
+                breakpoint: 600,
+                    settings: {
+                        slidesToShow: 2,
+                        slidesToScroll: 1
+                    }
+                },
+                {
+                breakpoint: 480,
+                    settings: {
+                        slidesToShow: 2,
+                        slidesToScroll: 1
+                    }
+                }
+            ]
+    });
 }
 
 loadMainMenuSlider();
