@@ -183,7 +183,7 @@ window.loadMainMenuSlider = function loadMainMenuSlider() {
         dots: false,
         infinite: false,
         speed: 300,
-        slidesToShow: 13,
+        slidesToShow: 10,
         slidesToScroll: 1,
         arrows: true,
         responsive: [
