@@ -498,10 +498,10 @@ $pages = \App\Models\Page::with([
        <div class="container-fluid">
            <div class="row">
                <div class="col-12">
-                  <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider">
+                  <div id="main-menu" class="sm pixelstrap sm-horizontal menu-slider">
                      @foreach($navCategories as $cate)
                         @if($cate['name'])
-                            <li class="al_main_category">
+                            <div class="al_main_category">
                                 <a href="{{route('categoryDetail', $cate['slug'])}}" class="{{isset($category) && $category->slug == $cate['slug'] ? 'current_category' : ''}}">
                                     @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='categoryDetail' || \Request::route()->getName()=='homeTest'))
                                         <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}} " > <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt="" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'> </div>
@@ -524,10 +524,10 @@ $pages = \App\Models\Page::with([
                                     @endforeach
                                 </ul>
                                 @endif
-                            </li>
+                            </div>
                         @endif
                      @endforeach
-                   </ul>
+                   </div>
                </div>
            </div>
        </div>
