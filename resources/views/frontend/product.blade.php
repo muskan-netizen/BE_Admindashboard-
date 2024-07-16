@@ -424,9 +424,9 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                         </div>
                                     @endif
                                     @if($getAdditionalPreference['product_measurment'] == 1)
-                                        <div class="border-product al_disc">
-                                            <h6 class="product-title">{{ __('Product Measurement Details') }}</h6>
-                                            <div class="table-responsive">
+                                        <div class="border-product al_disc mb-2">
+                                            <h6 class="product-title measurmentClick">{{ __('Product Measurement Details') }} <i class="fa fa-plus"></i></h6>
+                                            <div class="table-responsive measurmentDiv" style="display:none">
                                                 <table class="table table-striped table-hover">
                                                     <thead class="thead-dark">
                                                         <tr>
@@ -1894,6 +1894,20 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                 return "{{Session::get('currencySymbol')}}" + amount;
             }
     });
+
+    $(document).ready(function() {
+        $('.measurmentClick').on('click', function() {
+            $('.measurmentDiv').toggle('5');
+             // Toggle the icon
+                var icon = $(this).find('i');
+                if (icon.hasClass('fa-plus')) {
+                    icon.removeClass('fa-plus').addClass('fa-minus');
+                } else {
+                    icon.removeClass('fa-minus').addClass('fa-plus');
+                }
+        });
+    });
+
 </script>
 
 

@@ -872,7 +872,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                         <thead>
                                             <tr>
                                                 @if($product->has_variant)
-                                                <th>Variant</th>
+                                                <th>{{__('Variant')}}</th>
                                                 @endif
                                                 @foreach($measurements as $data)
                                                     <th>{{ $data->key }} (In cm)</th>
@@ -901,7 +901,6 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                                         </td>
                                                         @endforeach
 
-                                                        <
                                                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                                                     </tr>
                                                 @endif
