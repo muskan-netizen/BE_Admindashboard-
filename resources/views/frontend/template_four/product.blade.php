@@ -257,6 +257,61 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                             </h3>
                                         @endif
                                     </div>
+
+                                    @if($getAdditionalPreference['product_measurment'] == 1)
+                                    <div class="border-product al_disc mb-2">
+                                        <h6 class="product-title measurmentClick">{{ __('Product Measurement Details') }} <i class="fa fa-plus"></i></h6>
+                                        <div class="table-responsive measurmentDiv" style="display:none">
+                                            <table class="table table-striped table-hover">
+                                                <thead class="thead-dark">
+                                                    <tr>
+                                                        @if($product->has_variant)
+                                                        <th>{{ __('Variant') }}</th>
+                                                        @endif
+                                                        @foreach($measurements as $keyData)
+                                                            <th>{{ $keyData->key }} ({{ __('cm') }})</th>
+                                                        @endforeach
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    
+                                                    @if($product->has_variant)
+                                                        @foreach($variants as $varnt)
+                                                            @php
+                                                                $title = $varnt->title;
+                                                                $parts = explode('-', $title);
+                                                                $letterAfterDash = end($parts);
+                                                            @endphp
+                                                                <tr class="measurement-row">
+                                                                    <td class="variant-cell">
+                                                                        <label>{{$letterAfterDash}}</label>
+                                                                    </td>
+                                                                    @foreach($measurements as $data)
+                                                                        <td>
+                                                                            <span>{{$productMeasurementData[$data->id][$varnt->id] ?? '' }}</span>
+                                                                        </td>
+                                                                    @endforeach
+                                                                </tr>
+                                                        @endforeach
+                                                        @else
+                                                        <tr class="measurement-row">
+                                                            @foreach($measurements as $data)
+                                                            <td>
+                                                                <span>{{ $productMeasurementData[$data->id][null] .'(cm)' ? : '' }}</span>
+                                                            </td>
+                                                            @endforeach
+                                                        </tr>
+                                                    @endif
+                                                </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <hr>
+
+                                @endif
+
                                     <div id="product_variant_options_wrapper">
                                         @if(!empty($product->variantSet))
                                             @php
@@ -980,6 +1035,21 @@ $checkSlot = findSlot('',$product->vendor->id,'');
         });
         return price;
     }
+
+    $(document).ready(function() {
+        $('.measurmentClick').on('click', function() {
+            $('.measurmentDiv').toggle('5');
+             // Toggle the icon
+                var icon = $(this).find('i');
+                if (icon.hasClass('fa-plus')) {
+                    icon.removeClass('fa-plus').addClass('fa-minus');
+                } else {
+                    icon.removeClass('fa-minus').addClass('fa-plus');
+                }
+        });
+    });
+
+
 </script>
 <script>
     var addonids = [];
