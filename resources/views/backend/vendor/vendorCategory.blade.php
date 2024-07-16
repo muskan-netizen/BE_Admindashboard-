@@ -63,6 +63,11 @@
                     <span>{!! \Session::get('success') !!}</span>
                 </div>
                 @endif
+                @if (\Session::has('error'))
+                <div class="alert alert-danger">
+                    <span>{!! \Session::get('error') !!}</span>
+                </div>
+                @endif
                 @if (\Session::has('error_delete'))
                 <div class="alert alert-danger">
                     <span>{!! \Session::get('error_delete') !!}</span>
@@ -172,6 +177,112 @@
                                     </div>
                                 </div>
                             </div>
+                            @php
+                                $getAdditionalPreference = getAdditionalPreference(['product_measurment']);
+                            @endphp
+                            @if(@$getAdditionalPreference['product_measurment']==1)
+                            <div class="col-xl-8">
+                                <div class="card-box">
+                                    <div class="row" style="max-height: 600px; overflow-x: auto">
+                                        <div class="col-sm-12 mb-2 d-flex justify-content-between align-items-center">
+                                            <h4 class=""> {{ __("Product Measuremnets") }}</h4>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="row addon-row">
+                                                <div class="col-md-12">
+                                                    <form method="POST" id="addMeasurement" action="{{route('measurement.storeData')}}">
+                                                    @csrf
+                                                    @method('POST')
+                                                        <div class="card-box h-100 mb-0">
+                                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                                <h4 class="header-title mb-0">{{ __('Add Measurement')}}</h4>
+                                                            </div>
+                                                            <div class="row mt-2">
+                                                                <div class="col-12">
+                                                                    <div class="form-group mb-2">
+                                                                        <label for="category_id" class="mr-3">{{ __("Category") }}</label>
+
+
+                                                                        <select class="form-control" id='category_id' name="category_id" required>
+                                                                            <option value="">{{ __("Select Product Category to add measuremnet") }}</option>
+                                                                            @foreach($category as $cat)
+                                                                            <option value="{{$cat->id}}">{{ $cat->parent->slug == 'Root' ?  '': $cat->parent->slug . '->'  }}{{ $cat->slug }}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12">
+                                                                    <div class="form-group mb-2">
+                                                                        <label for="copy_to" class="mr-3">{{ __("Field Type ") }}</label>
+                                                                        <select class="form-control" id="field_type" name="field_type" data-placeholder="Choose ..." required>
+                                                                            <option value="" disabled selected>Select type of Field</option>
+                                                                            <option value="0">Text Box</option>
+                                                                            {{-- <option value="1">Check Box</option> --}}
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12">
+                                                                    <div class="form-group mb-2">
+                                                                        <label for="copy_to" class="mr-3">{{ __("Key Name ") }}</label>
+                                                                        <input class="form-control" type="text" name="key_name" id="key_name" placeholder="Enter Key Name e.g Shoulder,Arms" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12">
+                                                                    <div class="form-group mb-2">
+                                                                        <input type="hidden" name="vendor_id" id="vendor_id" value={{$vendor->id}} >
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-12 mt-3">
+                                                                    <div class="form-group mb-0">
+                                                                        <button class="btn btn-info btn-block" id="" type="submit"> {{ __("ADD") }} </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                    <div class="card-box h-100 mb-0">
+                                                        <div class="col-sm-12 mb-2 d-flex justify-content-between align-items-center">
+                                                            <h4 class=""> {{ __(" Opted Product Measuremnets") }}</h4>
+                                                        </div>
+                                                        <table class="table table-centered table-nowrap table-striped" id="varient-datatable">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>{{ __("Key Name") }}</th>
+                                                                    <th>{{ __("Field Type") }}</th>
+                                                                    <th>{{ __("Category") }}</th>
+                                                                    {{-- <th>{{ __("Action") }}</th> --}}
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach($measurementsOpted as $opted)
+                                                                <tr>
+                                                                    <td>{{$opted->key}}</td>
+                                                                    <td>{{$opted->field_type ==0 ? 'Text Box' : 'Check Box'}}</td>
+                                                                    <td>{{$opted->category->slug}}</td>
+                                                                    {{-- <td>
+                                                                        <a class="action-icon editAddonBtn" dataid="{{$opted->id}}" href="javascript:void(0);">
+                                                                            <h3> <i class="mdi mdi-square-edit-outline"></i> </h3>
+                                                                        </a>
+    
+                                                                        <a class="action-icon deleteAddon" dataid="{{$opted->id}}" href="javascript:void(0);"> <i class="mdi mdi-delete"></i></a>
+                                                                        <form action="{{route('addon.destroy', $opted->id)}}" method="POST" style="display: none;" id="addonDeleteForm{{$opted->id}}">
+                                                                            @csrf
+                                                                            @method('DELETE')
+    
+                                                                        </form>
+                                                                    </td> --}}
+                                                                </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
                         </div>
                     </div>
                     <div class="tab-pane {{($tab == 'catalog') ? 'active show' : '' }}" id="catalog">

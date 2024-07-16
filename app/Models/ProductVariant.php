@@ -219,5 +219,13 @@ class ProductVariant extends Model
         }
         return 0;
     }
-
+    public function measurements()
+    {
+        return $this->belongsToMany(
+            Measurements::class,
+            'product_measurement',
+            'product_variant_id',
+            'key_id'
+        )->withPivot('product_id', 'key_value');
+    }
 }
