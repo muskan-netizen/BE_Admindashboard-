@@ -6686,7 +6686,7 @@ if (typeof action_type !== "undefined" && action_type === "p2p") {
 }
 $(".menu-slider2").slick({
     dots: false,
-    infinite: false,
+    infinite: true,
     speed: 300,
     slidesToShow: 6,
     slidesToScroll: 1,
