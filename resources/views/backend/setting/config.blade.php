@@ -1176,7 +1176,7 @@
         </div>
         <div class="col-lg-6 mb-3">
             <!-- Firebase Notification Configuration start -->
-            <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}" class="h-100">
+            <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}" class="h-100" enctype="multipart/form-data">
                 @csrf
                 <div class="card-box h-100 h-100">
                     <div class="d-flex align-items-center justify-content-between mb-2">
@@ -1254,6 +1254,44 @@
                                 @if ($errors->has('fcm_project_id'))
                                     <span class="text-danger" role="alert">
                                         <strong>{{ $errors->first('fcm_project_id') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="fcm_vendor_project_id">{{ __('Vendor Project ID') }}</label>
+                                <input type="text" name="fcm_vendor_project_id" id="fcm_vendor_project_id" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('fcm_vendor_project_id', $getAdditionalPreference['fcm_vendor_project_id']?? '') }}" required>
+                                @if ($errors->has('fcm_vendor_project_id'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('fcm_vendor_project_id') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="firebase_account_json_file">{{ __('Firebase Service Account Json File') }}</label>
+                                <input type="file" accept="json"  name="firebase_account_json_file" data-plugins="dropify"/>
+
+                                @if ($errors->has('firebase_account_json_file'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('firebase_account_json_file') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="firebase_vendor_account_json_file">{{ __('Firebase Service Vendor Account Json File') }}</label>
+                                <input type="file" accept="json"  name="firebase_vendor_account_json_file" data-plugins="dropify"/>
+
+                                @if ($errors->has('firebase_vendor_account_json_file'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('firebase_vendor_account_json_file') }}</strong>
                                     </span>
                                 @endif
                             </div>

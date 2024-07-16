@@ -193,7 +193,6 @@
                                                                 @endphp
                                                             </li>
                                                         @endif
-
                                                     @endforeach
                                                 </ul>
                                             </div>
