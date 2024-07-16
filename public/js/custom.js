@@ -176,6 +176,12 @@ window.easyZoomInitialize = function easyZoomInitialize() {
     thumbs.css('height', productCarouselThumbsItemWith);
 }
 
+
+
+
+
+
+
 window.loadMainMenuSlider = function loadMainMenuSlider() {
     // $('.menu-slider').css("display", "flex");
     // $(".menu-slider").slick({ arrows: true, dots: !1, infinite: !1, variableWidth: !0, autoplay: !1, speed: 300, slidesToShow: 9, slidesToScroll: 1 });
@@ -6678,6 +6684,39 @@ if (typeof action_type !== "undefined" && action_type === "p2p") {
     const initReadMore = new readMore();
     initReadMore.bootstrap();
 }
+$(".menu-slider2").slick({
+    dots: false,
+    infinite: true,
+    speed: 300,
+    slidesToShow: 6,
+    slidesToScroll: 1,
+    arrows: true,
+    responsive: [
+        {
+            breakpoint: 1024,
+            settings: {
+                slidesToShow: 3,
+                slidesToScroll: 1,
+                // infinite: true,
+                // dots: true
+            }
+        },
+        {
+            breakpoint: 600,
+            settings: {
+                slidesToShow: 2,
+                slidesToScroll: 1
+            }
+        },
+        {
+            breakpoint: 480,
+            settings: {
+                slidesToShow: 2,
+                slidesToScroll: 1
+            }
+        }
+    ]
+});
 
 
 AOS.init({ disable: 'mobile' });
