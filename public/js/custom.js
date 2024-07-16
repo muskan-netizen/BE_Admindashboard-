@@ -177,11 +177,6 @@ window.easyZoomInitialize = function easyZoomInitialize() {
 }
 
 
-
-
-
-
-
 window.loadMainMenuSlider = function loadMainMenuSlider() {
     // $('.menu-slider').css("display", "flex");
     // $(".menu-slider").slick({ arrows: true, dots: !1, infinite: !1, variableWidth: !0, autoplay: !1, speed: 300, slidesToShow: 9, slidesToScroll: 1 });
@@ -190,30 +185,35 @@ window.loadMainMenuSlider = function loadMainMenuSlider() {
         dots: false,
         infinite: false,
         speed: 300,
-        slidesToShow: 6,
+        slidesToShow: 13,
         slidesToScroll: 1,
         arrows: true,
         responsive: [
             {
+                breakpoint: 1366,
+                settings: {
+                    slidesToShow: 8,
+                    slidesToScroll: 1
+                }
+            },
+            {
                 breakpoint: 1024,
                 settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 1,
-                    // infinite: true,
-                    // dots: true
+                    slidesToShow: 6,
+                    slidesToScroll: 1
                 }
             },
             {
                 breakpoint: 600,
                 settings: {
-                    slidesToShow: 2,
+                    slidesToShow: 4,
                     slidesToScroll: 1
                 }
             },
             {
                 breakpoint: 480,
                 settings: {
-                    slidesToShow: 2,
+                    slidesToShow: 3,
                     slidesToScroll: 1
                 }
             }

@@ -55845,7 +55845,6 @@ body[dir=rtl] .slick-slide {
 
 .al_body_template_three .menu-navigation.alThreeMenu .slick-initialized .slick-slide {
     display: block;
-    width: 110px !important;
 }
 
 .slick-loading .slick-slide {
