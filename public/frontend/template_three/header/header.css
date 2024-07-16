@@ -624,16 +624,16 @@ li.onhover-dropdown.change-language {
     transition: .5s;
 }
 
-.menu-navigation.alThreeMenu li.al_main_category:hover ul.al_main_category_list {
+.menu-navigation.alThreeMenu .al_main_category:hover ul.al_main_category_list {
     display: block
 }
 
-.menu-navigation.alThreeMenu li.al_main_category a .nav-cate-img.activ_nav {
+.menu-navigation.alThreeMenu .al_main_category a .nav-cate-img.activ_nav {
     height: 80px;
     width: 80px
 }
 
-.menu-navigation.alThreeMenu li.al_main_category a .nav-cate-img.activ_nav img {
+.menu-navigation.alThreeMenu .al_main_category a .nav-cate-img.activ_nav img {
     height: 50px !important;
     width: 50px !important
 }
@@ -642,7 +642,7 @@ li.onhover-dropdown.change-language {
     padding: 0
 }
 
-.menu-navigation.alThreeMenu li.al_main_category a .nav-cate-img img {
+.menu-navigation.alThreeMenu .al_main_category a .nav-cate-img img {
     margin: 0 auto;
     border-radius: 50%;
     height: 100%;
@@ -656,7 +656,7 @@ li.onhover-dropdown.change-language {
     padding-bottom: 0
 }
 
-.menu-navigation.alThreeMenu li.al_main_category {
+.menu-navigation.alThreeMenu .al_main_category {
     margin: 0 20px
 }
 
@@ -857,7 +857,13 @@ li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center {
     margin: 0 15px
 }
 
-body.al_body_template_three .menu-navigation.alThreeMenu li.al_main_category a .nav-cate-img img {
+.al_body_template_three .al_main_category a,
+.al_body_template_three .al_main_category a:hover {
+    width: 100%;
+    display: block;
+}
+
+body.al_body_template_three .menu-navigation.alThreeMenu .al_main_category a .nav-cate-img img {
     height: 80px !important;
     width: 80px !important;
 }
@@ -930,6 +936,14 @@ body.dark.al_body_template_three .al_count_tabs_new_design li a.nav-link {
     color: #fffcfc;
 }
 
+.al_body_template_three .menu-slider .slick-next,
+.al_body_template_three .menu-slider .slick-prev {
+    background: #fff;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+}
+
 @media(max-width:1400px) {
     .al_count_tabs_new_design li a.nav-link {
         font-size: 12px;
@@ -981,5 +995,17 @@ body.dark.al_body_template_three .al_count_tabs_new_design li a.nav-link {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+
+    .al_body_template_three .menu-slider .slick-next,
+    .al_body_template_three .menu-slider .slick-prev {
+        background-color: #fff;
+        height: 24px !important;
+    }
+
+    .home-slider-wrapper .carousel-inner,
+    .home-slider-wrapper .banner-img-outer img,
+    .home-slider-wrapper .carousel-item.active {
+        border-radius: 0 !important;
     }
 }
