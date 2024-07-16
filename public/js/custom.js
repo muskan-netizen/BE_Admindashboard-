@@ -177,28 +177,34 @@ window.easyZoomInitialize = function easyZoomInitialize() {
 }
 
 window.loadMainMenuSlider = function loadMainMenuSlider() {
-    // $('.menu-slider').css("display", "flex");
+    $('.slick-track').css("display", "flex");
     // $(".menu-slider").slick({arrows:true,dots:!1,infinite:!1,variableWidth:!0,autoplay:!1,speed:300,slidesToShow:6,slidesToScroll:1});
     $(".menu-slider").slick({
         dots: false,
         infinite: false,
         speed: 300,
-        slidesToShow: 6,
+        slidesToShow: 13,
         slidesToScroll: 1,
+        arrows: true,
         responsive: [
+            {
+                breakpoint: 1366,
+                settings: {
+                    slidesToShow: 8,
+                    slidesToScroll: 1
+                }
+            },
             {
                 breakpoint: 1024,
                 settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 1,
-                    infinite: false,
-                    dots: false
+                    slidesToShow: 6,
+                    slidesToScroll: 1
                 }
             },
             {
                 breakpoint: 600,
                 settings: {
-                    slidesToShow: 3,
+                    slidesToShow: 4,
                     slidesToScroll: 1
                 }
             },
@@ -209,9 +215,6 @@ window.loadMainMenuSlider = function loadMainMenuSlider() {
                     slidesToScroll: 1
                 }
             }
-            // You can unslick at a given breakpoint now by adding:
-            // settings: "unslick"
-            // instead of a settings object
         ]
     });
 }
@@ -2355,38 +2358,6 @@ window.creditWallet = function creditWallet(amount, payment_option_id, transacti
                 success_error_alert('success', response.message, "#wallet_response");
                 // let wallet_transactions_template = _.template($('#wallet_transactions_template').html());
                 // $(".table.wallet-transactions table-body").append(wallet_transactions_template({wallet_transactions:response.data.transactions}));
-            } else {
-                $("#wallet_response .message").removeClass('d-none');
-                success_error_alert('error', response.message, "#wallet_response .message");
-                $("#topup_wallet_btn, .topup_wallet_confirm").attr("disabled", false);
-            }
-        },
-        error: function (error) {
-            var response = $.parseJSON(error.responseText);
-            $("#wallet_response .message").removeClass('d-none');
-            success_error_alert('error', response.message, "#wallet_response .message");
-            $("#topup_wallet_btn, .topup_wallet_confirm").removeAttr("disabled");
-        },
-        complete: function (data) {
-            $('.spinner-overlay').hide();
-        }
-    });
-}
-
-// Paypal payment transaction
-window.paypalDebitTransaction = function paypalDebitTransaction(amount, payment_option_id, transaction_id) {
-    var currentUrl = window.location.origin;
-    var paymentPaypalTransaction = currentUrl + "/payment/paypal-transaction/store";
-    $.ajax({
-        type: "POST",
-        dataType: 'json',
-        url: paymentPaypalTransaction,
-        data: { amount: amount, payment_option_id: payment_option_id, transaction_id: transaction_id },
-        success: function (response) {
-            location.href = path;
-            if (response.status == "Success") {
-                $(".wallet_balance").text(response.data.wallet_balance);
-                success_error_alert('success', response.message, "#wallet_response");
             } else {
                 $("#wallet_response .message").removeClass('d-none');
                 success_error_alert('error', response.message, "#wallet_response .message");
