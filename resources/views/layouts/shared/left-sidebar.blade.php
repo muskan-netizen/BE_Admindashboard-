@@ -1,5 +1,5 @@
 @php
-    $getAdditionalPreference = getAdditionalPreference(['is_seller_module','is_gift_card','is_marg_enable','is_vendor_marg_configuration','is_car_rental_enable']);
+    $getAdditionalPreference = getAdditionalPreference(['is_seller_module','is_gift_card','is_marg_enable','is_vendor_marg_configuration','is_car_rental_enable','product_measurment']);
 @endphp
 <div class="left-side-menu">
     <div class="logo-box d-lg-block" style="height: auto">
@@ -724,6 +724,14 @@
                                         <span> {{ __('DB Audit Logs') }} </span>
                                     </a>
                                 </li>
+                            @endif
+                            @if( Auth::user()->is_superadmin == 1 && @$getAdditionalPreference['product_measurment']==1)
+                            <li>
+                                <a href="{{route('measurement.index')}}">
+                                    <span class="icon-celebrity"></span>
+                                    <span> {{ __('Product Measurment') }} </span>
+                                </a>
+                            </li>
                             @endif
                         </ul>
                     </li>

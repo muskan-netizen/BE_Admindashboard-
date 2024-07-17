@@ -41955,10 +41955,6 @@ header.stickycls {
         right: -60px
     }
 
-    .menu-slider .slick-slide {
-        width: max-content !important
-    }
-
     .sm-horizontal .mobile-back {
         padding: 20px;
         font-size: 18px;
