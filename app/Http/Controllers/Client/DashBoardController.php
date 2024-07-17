@@ -17,8 +17,12 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use App\Services\FirebaseNotification;
 use App\Http\Controllers\Client\BaseController;
 use App\Models\{Banner, Brand, Category, Country, Order, Product, Vendor, VendorOrderStatus, UserAddress, OrderVendor, OrderReturnRequest, User, ClientCurrency, OrderNotificationsLogs, OrderVendorProduct, ServiceArea, UserVendor};
+
+
+
 
 class DashBoardController extends BaseController
 {
@@ -39,13 +43,18 @@ class DashBoardController extends BaseController
 
     public function index(Request $request)
     {   
-       $managers = User::whereHas('roles',function($q){
+   
+        $managers = User::whereHas('roles',function($q){
             $q->where('name','Manager');
        })->get();
        $setWeekDate = $this->setWeekDate;
             
         return view('backend/dashboard',compact('managers','setWeekDate'));
     }
+    
+
+  
+
 
     public function dashboard_old()
     {   

@@ -462,7 +462,7 @@ class ProductController extends FrontController{
         // Your code to be measured goes here
         //Product Measurements Code
         $measurements =Measurements::where('category_id',$product->category_id)->where('vendor_id',$product->vendor_id)->get();
-
+        $variants = '';
         if($getAdditionalPreference['product_measurment'] == 1){
             $productMeasurements=ProductMeasurement::with('measurements')->where('product_id',$product->id)->get();
             $uniqueVariantIds = ProductMeasurement::where('product_id', $product->id)
