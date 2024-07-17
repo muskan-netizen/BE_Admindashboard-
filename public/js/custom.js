@@ -2376,38 +2376,6 @@ window.creditWallet = function creditWallet(amount, payment_option_id, transacti
     });
 }
 
-// Paypal payment transaction
-window.paypalDebitTransaction = function paypalDebitTransaction(amount, payment_option_id, transaction_id) {
-    var currentUrl = window.location.origin;
-    var paymentPaypalTransaction = currentUrl + "/payment/paypal-transaction/store";
-    $.ajax({
-        type: "POST",
-        dataType: 'json',
-        url: paymentPaypalTransaction,
-        data: { amount: amount, payment_option_id: payment_option_id, transaction_id: transaction_id },
-        success: function (response) {
-            location.href = path;
-            if (response.status == "Success") {
-                $(".wallet_balance").text(response.data.wallet_balance);
-                success_error_alert('success', response.message, "#wallet_response");
-            } else {
-                $("#wallet_response .message").removeClass('d-none');
-                success_error_alert('error', response.message, "#wallet_response .message");
-                $("#topup_wallet_btn, .topup_wallet_confirm").attr("disabled", false);
-            }
-        },
-        error: function (error) {
-            var response = $.parseJSON(error.responseText);
-            $("#wallet_response .message").removeClass('d-none');
-            success_error_alert('error', response.message, "#wallet_response .message");
-            $("#topup_wallet_btn, .topup_wallet_confirm").removeAttr("disabled");
-        },
-        complete: function (data) {
-            $('.spinner-overlay').hide();
-        }
-    });
-}
-
 $(document).ready(function () {
     $.ajaxSetup({
         headers: {
