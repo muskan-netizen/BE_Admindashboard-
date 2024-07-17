@@ -3,38 +3,39 @@
 namespace App\Http\Controllers\Client;
 
 use Image;
+use DB,Log;
 use Phumbor;
 use Session;
 use Redirect;
+use Exception;
 use DataTables;
 use Carbon\Carbon;
-use App\Models\UserVendor;
 use App\Models\User;
+use App\Models\UserVendor;
 use Illuminate\Support\Str;
+use App\Models\Measurements;
 use Illuminate\Http\Request;
 use App\Imports\VendorImport;
-use App\Http\Traits\ApiResponser;
-use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Traits\ToasterResponser;
 use App\Http\Traits\VendorTrait;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Client\{BaseController, VendorPayoutController};
-use App\Http\Controllers\ShiprocketController;
-use App\Http\Controllers\AhoyController;
-use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, Bid, BidRequest, ProductTranslation, Client, ClientPreference, Country, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty, OrderVendorProduct, RoleOld, VendorSection,VendorMultiBanner, VendorMinAmount, VendorAdditionalInfo};
+use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
+use App\Services\InventoryService;
 use App\Exports\VendorSimpelExport;
 use App\Exports\VendorProductExport;
-use App\Exports\VendorPaymentReportExport;
 use App\Http\Traits\ShipEngineTrait;
-use DB,Log;
-use App\Models\VendorRegistrationDocument;
-use App\Services\InventoryService;
-use App\Models\VendorSocialMediaUrls;
-use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Traits\ToasterResponser;
+use App\Models\VendorSocialMediaUrls;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\AhoyController;
+use Illuminate\Support\Facades\Validator;
+use App\Exports\VendorPaymentReportExport;
+use App\Models\VendorRegistrationDocument;
+use App\Http\Controllers\ShiprocketController;
+use App\Http\Controllers\Client\{BaseController, VendorPayoutController};
+use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, Bid, BidRequest, ProductTranslation, Client, ClientPreference, Country, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty, OrderVendorProduct, RoleOld, VendorSection,VendorMultiBanner, VendorMinAmount, VendorAdditionalInfo};
 
 class VendorController extends BaseController
 {
@@ -828,8 +829,9 @@ class VendorController extends BaseController
         $facilties = Facilty::with(['primary'])->get();
         $roles = RoleOld::where('status',1)->get();
         $data = $this->SettingFunction($vendor,$id);
-
-        $dataMerge = array_merge($data,['client_preferences' => $client_preferences, 'vendor' => $vendor, 'tab' => 'category', 'html' => $tree, 'languages' => $langs, 'addon_sets' => $addons, 'VendorCategory' => $VendorCategory, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build,'csvVendors'=> $csvVendors, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'clientCurrency'=>$clientCurrency,'facilties'=>$facilties,'roles' => $roles]);
+        $category=Category::whereIn('id',$VendorCategory)->get();
+        $measurementsOpted=Measurements::where('vendor_id',$vendor->id)->get();
+        $dataMerge = array_merge($data,['client_preferences' => $client_preferences, 'vendor' => $vendor, 'tab' => 'category', 'html' => $tree, 'languages' => $langs, 'addon_sets' => $addons, 'VendorCategory' => $VendorCategory, 'measurementsOpted'=>$measurementsOpted,'category'=>$category,'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build,'csvVendors'=> $csvVendors, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'clientCurrency'=>$clientCurrency,'facilties'=>$facilties,'roles' => $roles]);
 
         return view('backend.vendor.vendorCategory')->with($dataMerge);
     }

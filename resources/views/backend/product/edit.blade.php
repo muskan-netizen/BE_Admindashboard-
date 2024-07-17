@@ -785,86 +785,144 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                     </thead>
                                     <tbody id="product_tbody_{{$product->id}}">
                                         @foreach($product->variant as $varnt)
-                                        <?php
-                                        $existSet = array();
+                                        @if($varnt->quantity > 0)
+                                            <?php
+                                            $existSet = array();
 
-                                        $mediaPath = Storage::disk('s3')->url('default/default_image.png');
+                                            $mediaPath = Storage::disk('s3')->url('default/default_image.png');
 
-                                        if (!empty($varnt->vimage) && isset($varnt->vimage->pimage->image)) {
-                                            $mediaPath = $varnt->vimage->pimage->image->path['proxy_url'] . '100/100' . $varnt->vimage->pimage->image->path['image_path'];
-                                        }
-                                        $existSet = explode('-', $varnt->sku);
-                                        $vsets = '';
-
-                                        foreach ($varnt->set as $vs) {
-                                            if(isset($vs) && !empty($vs->title)){
-                                                $vsets .= $vs->title . ', ';
+                                            if (!empty($varnt->vimage) && isset($varnt->vimage->pimage->image)) {
+                                                $mediaPath = $varnt->vimage->pimage->image->path['proxy_url'] . '100/100' . $varnt->vimage->pimage->image->path['image_path'];
                                             }
+                                            $existSet = explode('-', $varnt->sku);
+                                            $vsets = '';
 
-
-                                        }
-                                        ?>
-                                        <tr id="tr_{{$varnt->id}}">
-                                            <td>
-                                                <div class="image-upload">
-                                                    <label class="file-input uploadImages" for="{{$varnt->id}}">
-                                                        <img src="{{$mediaPath}}" width="30" height="30" for="{{$varnt->id}}" />
-                                                    </label>
-                                                </div>
-                                                <div class="imageCountDiv{{$varnt->id}}"></div>
-                                            </td>
-                                            <td>
-                                                <input type="hidden" name="variant_ids[]" value="{{$varnt->id}}">
-                                                <input type="hidden" class="exist_sets" value="{{$existSet[(count($existSet) - 1)]}}">
-                                                <input type="text" name="variant_titles[]" value="{{$varnt->title??null}}">
-                                            </td>
-                                            <td>{{rtrim($vsets, ', ')}}</td>
-                                            <td>
+                                            foreach ($varnt->set as $vs) {
+                                                if(isset($vs) && !empty($vs->title)){
+                                                    $vsets .= $vs->title . ', ';
+                                                }
+                                            }
+                                            ?>
+                                            <tr id="tr_{{$varnt->id}}">
+                                                <td>
+                                                    <div class="image-upload">
+                                                        <label class="file-input uploadImages" for="{{$varnt->id}}">
+                                                            <img src="{{$mediaPath}}" width="30" height="30" for="{{$varnt->id}}" />
+                                                        </label>
+                                                    </div>
+                                                    <div class="imageCountDiv{{$varnt->id}}"></div>
+                                                </td>
+                                                <td>
+                                                    <input type="hidden" name="variant_ids[]" value="{{$varnt->id}}">
+                                                    <input type="hidden" class="exist_sets" value="{{$existSet[(count($existSet) - 1)]}}">
+                                                    <input type="text" name="variant_titles[]" value="{{$varnt->title??null}}">
+                                                </td>
+                                                <td>{{rtrim($vsets, ', ')}}</td>
+                                                <td>
+                                                    @if (isset($getAdditionalPreference['is_price_by_role']))
+                                                        @if($getAdditionalPreference['is_price_by_role'] == '1')
+                                                            <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->getRawOriginal('price') )}}" onkeypress="return isNumberKey(event)">
+                                                        @else
+                                                            <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)">
+                                                        @endif
+                                                    @endif
+                                                </td>
                                                 @if (isset($getAdditionalPreference['is_price_by_role']))
                                                     @if($getAdditionalPreference['is_price_by_role'] == '1')
-                                                        <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->getRawOriginal('price') )}}" onkeypress="return isNumberKey(event)">
-                                                    @else
-                                                        <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)">
+                                                        <td>
+                                                            <a href="javascript:void(0);" title="Add Price Based On Roles" class="action-icon rolePriceModal" data-toggle="modal" data-target="#rolePriceModal" data-varient-id="{{$varnt->id}}" data-product-id="{{$product->id}}">
+                                                                <i class="mdi mdi-loupe"></i>
+                                                            </a>
+                                                        </td>
                                                     @endif
                                                 @endif
-                                                {{-- <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)"> --}}
-                                            </td>
-                                            {{-- Role Price Column to Enter price with respect to roles (START) --}}
-                                            @if (isset($getAdditionalPreference['is_price_by_role']))
-                                                @if($getAdditionalPreference['is_price_by_role'] == '1')
-                                                    <td>
-                                                        <a href="javascript:void(0);" title="Add Price Based On Roles" class="action-icon rolePriceModal" data-toggle="modal" data-target="#rolePriceModal" data-varient-id="{{$varnt->id}}" data-product-id="{{$product->id}}">
-                                                            <i class="mdi mdi-loupe"></i>
-                                                        </a>
-                                                    </td>
-                                                @endif
-                                            @endif
-                                            {{-- Role Price Column to Enter price with respect to roles (END) --}}
-                                            <td>
-                                                <input type="text" style="width: 100px;" name="variant_compare_price[]" value="{{decimal_format($varnt->compare_at_price)}}" onkeypress="return isNumberKey(event)">
-                                            </td>
-                                            <td>
-                                                <input type="text" style="width: 70px;" name="variant_cost_price[]" value="{{decimal_format($varnt->cost_price)}}" onkeypress="return isNumberKey(event)">
-                                            </td>
-                                            <td class="check_inventory">
-                                                <input type="text" style="width: 70px;" name="variant_quantity[]" value="{{$varnt->quantity}}" onkeypress="return isNumberKey(event)">
-                                            </td>
-                                            <td>
-                                                <a href="javascript:void(0);" data-varient_id="{{$varnt->id}}" class="action-icon deleteExistRow">
-                                                    <i class="mdi mdi-delete"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        @endforeach
+                                                <td>
+                                                    <input type="text" style="width: 100px;" name="variant_compare_price[]" value="{{decimal_format($varnt->compare_at_price)}}" onkeypress="return isNumberKey(event)">
+                                                </td>
+                                                <td>
+                                                    <input type="text" style="width: 70px;" name="variant_cost_price[]" value="{{decimal_format($varnt->cost_price)}}" onkeypress="return isNumberKey(event)">
+                                                </td>
+                                                <td class="check_inventory">
+                                                    <input type="text" style="width: 70px;" name="variant_quantity[]" value="{{$varnt->quantity}}" onkeypress="return isNumberKey(event)">
+                                                </td>
+                                                <td>
+                                                    <a href="javascript:void(0);" data-varient_id="{{$varnt->id}}" class="action-icon deleteExistRow">
+                                                        <i class="mdi mdi-delete"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+
                                     </tbody>
                                 </table>
                             </div>
                             @endif
                             <div id="variantRowDiv" class="col-12"></div>
                         </div>
+
                     </div>
                     @endif
                 @endif
+                @if($getAdditionalPreference['product_measurment'] == 1)
+                        <div class="card-box">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-centered table-nowrap table-striped" id="measurementsTable">
+                                        <thead>
+                                            <tr>
+                                                @if($product->has_variant)
+                                                <th>{{__('Variant')}}</th>
+                                                @endif
+                                                @foreach($measurements as $data)
+                                                    <th>{{ $data->key }} (In cm)</th>
+                                                @endforeach
+                                               
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if($product->has_variant)
+                                                @foreach($product->variant as $varnt)
+                                                @if($varnt->quantity > 0)
+
+                                                @php
+                                                    $title = $varnt->title;
+                                                    $parts = explode('-', $title);
+                                                    $letterAfterDash = end($parts);
+                                                @endphp
+                                                    <tr class="measurement-row">
+                                                        <td class="variant-cell">
+                                                            <label for="variant_id" name="variant_id[]" value="{{ $varnt->id }}">{{ $letterAfterDash }}</label>
+                                                        </td>
+                                                        @foreach($measurements as $data)
+                                                        <td>
+                                                            <input type="hidden" name="key_id[]" value="{{ $data->id }}">
+                                                            <input type="{{ $data->field_type == 0 ? 'text' : '' }}" class="form-control" name="key_value[{{ $data->id }}][{{ $varnt->id }}][]" value="{{ isset($productMeasurementData[$data->id][$varnt->id]) ? $productMeasurementData[$data->id][$varnt->id] : '' }}" placeholder="Enter the measurement in cm" required>
+                                                        </td>
+                                                        @endforeach
+
+                                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                                    </tr>
+                                                @endif
+                                                @endforeach
+                                            @else
+                                                <tr class="measurement-row">
+                                                    @foreach($measurements as $data)
+                                                    <td>
+                                                        <input type="hidden" name="key_id[]" value="{{ $data->id }}">
+                                                        <input type="{{ $data->field_type == 0 ? 'text' : '' }}" class="form-control" name="key_value[]" value="{{ isset($productMeasurementData[$data->id][null]) ? $productMeasurementData[$data->id][null] : '' }}" placeholder="Enter the measurement in cm" required>
+                                                    </td>
+                                                    @endforeach
+                                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                                </tr>
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                 @if( p2p_module_status() || is_attribute_enabled())
                     @if(!empty($productAttributes))
                     <div id="attribute_section">
@@ -873,7 +931,6 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     @endif
                 @endif
             </div>
-            
             <div class="col-lg-5">
                 <!-- <div class="card-box ">
                     <div class="row mb-2 bg-light">
@@ -2818,6 +2875,77 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
             }
         })
     </script>
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const table = document.querySelector('#measurementsTable tbody');
+
+        function updateVariantOptions() {
+            const selectedVariants = Array.from(document.querySelectorAll('.variant-select'))
+                .map(select => select.value)
+                .filter(value => value);
+
+            document.querySelectorAll('.variant-select').forEach(select => {
+                const currentValue = select.value;
+                select.querySelectorAll('option').forEach(option => {
+                    if (option.value && selectedVariants.includes(option.value) && option.value !== currentValue) {
+                        option.disabled = true;
+                    } else {
+                        option.disabled = false;
+                    }
+                });
+            });
+
+            const addButton = document.querySelector('.add-row');
+            if (addButton) {
+                addButton.disabled = selectedVariants.length >= {{ count($product->variant) }};
+            }
+        }
+
+        table.addEventListener('change', function(e) {
+            if (e.target && e.target.matches('.variant-select')) {
+                const variantIdInput = e.target.closest('tr').querySelector('.variant-id');
+                variantIdInput.value = e.target.value;
+                updateVariantOptions();
+            }
+        });
+
+        table.addEventListener('click', function(e) {
+            if (e.target && e.target.matches('button.add-row')) {
+                let currentRow = e.target.closest('.measurement-row');
+                let newRow = currentRow.cloneNode(true);
+
+                newRow.querySelectorAll('input').forEach(input => input.value = '');
+
+                let newSelect = newRow.querySelector('.variant-select');
+                newSelect.value = '';
+
+                let newVariantIdInput = newRow.querySelector('.variant-id');
+                newVariantIdInput.value = '';
+
+                let removeButton = newRow.querySelector('.remove-row');
+                if (removeButton) {
+                    removeButton.style.display = 'inline-block';
+                }
+
+                currentRow.after(newRow);
+
+                updateVariantOptions();
+            }
+
+            if (e.target && e.target.matches('button.remove-row')) {
+                let currentRow = e.target.closest('.measurement-row');
+
+                if (table.querySelectorAll('.measurement-row').length > 1) {
+                    currentRow.remove();
+                    updateVariantOptions();
+                }
+            }
+        });
+
+        updateVariantOptions();
+    });
+    </script>
+
 {{-- Insert Value to Role Price Modal (End) --}}
 @include('backend.catalog.pagescript')
 <script src="{{ asset('assets/js/backend/product/edit_product.js')}}"></script>

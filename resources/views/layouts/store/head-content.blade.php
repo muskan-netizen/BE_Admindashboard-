@@ -119,6 +119,15 @@
 
 	body .menu-slider .slick-track{display:flex;justify-content:center;margin:0 auto!important; gap: 20px;}
 
+	.al_body_template_three .menu-slider .slick-slide {
+		width: 100% !important;
+	}
+	@media(max-width:767px){
+		body .menu-slider .slick-track {
+			justify-content: flex-start;
+		}
+	}
+
 	.pixelstrap li a,.product-card-box{position:relative;-webkit-transform:scale(.95);transform:scale(.95);-webkit-transition:.3s ease-in-out;transition:.3s ease-in-out}.pixelstrap a,.pixelstrap a:active,.pixelstrap a:hover,.pixelstrap li>a{padding:0 7px 10px;text-align:center;width:100px;white-space:normal}
     :root {
 		--theme-deafult: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;

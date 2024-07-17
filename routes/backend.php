@@ -475,7 +475,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('borzoe/updateAll', 'Client\DeliveryOptionController@updateBorzoe')->name('borzoe.updateAll');
         Route::get('borzoe', 'Client\BorzoeDeliveryController@borzoe')->name('borzoe');
         Route::get('borzoe/delivery', 'Client\BorzoeDeliveryController@borzoeDelivery')->name('borzoeDelivery');
-
+        Route::resource('measurement','Client\ProductMeasurmentController');
+        Route::post('measurement/storeData','Client\ProductMeasurmentController@storeData')->name('measurement.storeData');
 
         Route::resource('inquiry', 'Client\ProductInquiryController');
         Route::get('inquiry/filter', [ProductInquiryController::class, 'show'])->name('inquiry.filter');
