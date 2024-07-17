@@ -462,7 +462,7 @@ trait ProductActionTrait{
 
             $single_category_product_ids = $this->getProductsId($where, $vendorWhereIN, $whereProductType);
 
-            if(count($single_category_product_ids) > 0){
+            if(count($single_category_product_ids) > 0 && $where!=='recent_viewed'){
                 shuffle($single_category_product_ids);
                 $random_numbers = array_slice($single_category_product_ids, 0, 6);
                 $single_category_product_ids = @implode(',',$random_numbers);
