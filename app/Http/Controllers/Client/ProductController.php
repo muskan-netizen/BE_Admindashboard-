@@ -200,7 +200,8 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        
+        $measurements="";
+        $productMeasurementData = [];
         // $this->testfun1();
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch']);
         // $this->searchCatalogObjects();
@@ -307,9 +308,13 @@ class ProductController extends BaseController
         $celebrities                        = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
         $tollPassOrigin                     = TollPassOrigin::select('id', 'toll_pass', 'desc')->get();
         $travelMode                         = TravelMode::select('id', 'travelmode', 'desc')->get();
+
         $vehicleEmissionType                = VehicleEmissionType::select('id', 'emission_type', 'desc')->get();
-        $measurements                       =Measurements::with('category')->where('category_id',$product->category_id)->where('vendor_id',$product->vendor_id)->get();
-        $productMeasurements                =ProductMeasurement::where('product_id',$product->id)->get();
+       if($getAdditionalPreference['product_measurment'] == 1){
+            $measurements                       =Measurements::with('category')->where('category_id',$product->category_id)->where('vendor_id',$product->vendor_id)->get();
+            $productMeasurements                =ProductMeasurement::where('product_id',$product->id)->get();
+       }
+
         $agent_dispatcher_tags = [];
         $agent_dispatcher_on_demand_tags = [];
         $pro_tags = [];
@@ -390,11 +395,11 @@ class ProductController extends BaseController
         $productBookingOption = $product->bookingOptions()->pluck('booking_option_id')->toArray();
         $productRentalProtection = $product->rentalProtections()->where('type_id', 2)->pluck('rental_proctection_id')->toArray();
         $inlcudedProductRentalProtection = $product->rentalProtections()->where('type_id', 1)->pluck('rental_proctection_id')->toArray();
-        $productMeasurementData = [];
-        foreach ($productMeasurements as $measurement) {
-            $productMeasurementData[$measurement->key_id][$measurement->product_variant_id] = $measurement->key_value;
+        if($getAdditionalPreference['product_measurment'] == 1){
+            foreach ($productMeasurements as $measurement) {
+                $productMeasurementData[$measurement->key_id][$measurement->product_variant_id] = $measurement->key_value;
+            }
         }
-
         return view('backend/product/edit', ['measurements'=>$measurements,'productMeasurementData'=>$productMeasurementData,'delivery_slots'=> $delivery_slots, 'product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value, 'attribute_latitude' => $attribute_latitude, 'attribute_longitude' => $attribute_longitude,'margProduct' => $margProduct??[], 'productAttributes' => $productAttributes, 'rentalProtection' => $rentalProtection, 'bookingOption' => $bookingOption, 'productBookingOption' => $productBookingOption, 'productRentalProtection' => $productRentalProtection, 'inlcudedProductRentalProtection' => $inlcudedProductRentalProtection]);
     }
 
@@ -407,7 +412,7 @@ class ProductController extends BaseController
      */
     public function update(Request $request, $domain = '', $id)
     {
-       
+
         DB::beginTransaction();
         try {
             //ProductVariant::where('product_id',$id)->update(['status'=>0]);
@@ -428,7 +433,7 @@ class ProductController extends BaseController
                         'key_id.*' => 'required|exists:measurements,id',
                         'key_value' => 'required|array',
                     ];
-            
+
                     foreach ($request->input('key_value', []) as $variantId => $keys) {
                         foreach ($keys as $keyId => $values) {
                             foreach ($values as $index => $value) {
@@ -436,11 +441,11 @@ class ProductController extends BaseController
                             }
                         }
                     }
-            
+
                     $rule = array_merge($rule, $additionalRules);
                 }
             }
-            
+
             // else{
             //     if ($getAdditionalPreference['product_measurment'] == 1) {
             //         $additionalRules = [
@@ -914,26 +919,27 @@ class ProductController extends BaseController
 
             DB::commit();
             $this->createOrUpdateProductInSquarePos($id);
-            $measuremenKeyExists=Measurements::where('vendor_id',$product->vendor_id)->where('category_id',$product->category_id)->exists();
             if ($getAdditionalPreference['product_measurment'] == 1) {
+                $measuremenKeyExists=Measurements::where('vendor_id',$product->vendor_id)->where('category_id',$product->category_id)->exists();
+
                 if ($measuremenKeyExists) {
                     $productId = $request->input('product_id');
                     $variantIds = $request->input('variant_ids');
                     $keyIds = $request->input('key_id');
                     $keyValues = $request->input('key_value');
-            
+
                     if ($request->has('variant_ids')) {
                         foreach ($variantIds as $variantId) {
                             foreach ($keyIds as $keyId) {
                                 if (isset($keyValues[$keyId][$variantId])) {
                                     $keyValue = $keyValues[$keyId][$variantId];
-            
+
                                     ProductMeasurement::where([
                                         'product_id' => $productId,
                                         'product_variant_id' => $variantId,
                                         'key_id' => $keyId
                                     ])->delete();
-            
+
                                     ProductMeasurement::create([
                                         'product_id' => $productId,
                                         'product_variant_id' => $variantId,
@@ -949,7 +955,7 @@ class ProductController extends BaseController
                                 'product_id' => $productId,
                                 'key_id' => $keyId
                             ])->delete();
-            
+
                             ProductMeasurement::create([
                                 'product_id' => $productId,
                                 'key_id' => $keyId,
@@ -961,7 +967,7 @@ class ProductController extends BaseController
                     return redirect()->back()->withInput()->withErrors(['error' => 'Please Add Measurement Keys for this Category in Category Add-Ons']);
                 }
             }
-            
+
                 $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );
 
             // return redirect('client/vendor/catalogs/' . $product->vendor_id)->with('toaster', $toaster);
