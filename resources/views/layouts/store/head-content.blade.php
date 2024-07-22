@@ -117,7 +117,7 @@
 
     .top-header .header-dropdown li.onhover-dropdown{padding:0 15px}.onhover-dropdown .onhover-show-div{display:none}.shimmer_effect{overflow:hidden}.menu-slider.items-center .slick-track{justify-content:space-between}
 
-	body .menu-slider .slick-track{max-width:100vw!important;width:100%!important;display:flex;justify-content:center;margin:auto!important}
+	body .menu-slider .slick-track{display:flex;justify-content:center;margin:0 auto!important; gap: 20px;}
 
 	.al_body_template_three .menu-slider .slick-slide {
 		width: 100% !important;
@@ -155,11 +155,11 @@
 </style>
   @yield('css')
 @php
-if(@getAdditionalPreference(['is_enable_google_analytics'])['is_enable_google_analytics'] == 1){
+if(@getAdditionalPreference(['is_enable_google_analytics'])['is_enable_google_analytics'] == 1){ 
 $header_script = getAdditionalPreference(['header_script'])['header_script'];
 
 @endphp
 {!! $header_script !!}
 
-
+  
  @php } @endphp
