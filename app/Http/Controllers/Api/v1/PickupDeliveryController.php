@@ -1626,9 +1626,9 @@ class PickupDeliveryController extends BaseController{
         if(isset($order->orderDetail->wallet_amount_used)){
             $order->wallet_amount_used = isset($order->orderDetail)?decimal_format($order->orderDetail->wallet_amount_used):0.00;
         }
-        if(isset($order->orderDetail->scheduled_date_time)){
-            $order->orderDetail->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);
-        }
+        // if(isset($order->orderDetail->scheduled_date_time)){
+        //     $order->orderDetail->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);
+        // }
 
         $order->payable_amount = decimal_format($order->payable_amount - $order->wallet_amount_used);
         if($response->status() == 200){
@@ -1638,9 +1638,9 @@ class PickupDeliveryController extends BaseController{
             $order->dispatcher_status_type=  $type ?  $type->type :1;
             $response = $response->json();
             $response['tips'] = [];
-            if(isset($response) && isset( $response['order'] ) &&  !empty($response['order']['scheduled_date_time'])){
-                $response['order']['scheduled_date_time'] = dateTimeInUserTimeZone($response['order']['scheduled_date_time'], $user->timezone);
-            }
+            // if(isset($response) && isset( $response['order'] ) &&  !empty($response['order']['scheduled_date_time'])){
+            //     $response['order']['scheduled_date_time'] = dateTimeInUserTimeZone($response['order']['scheduled_date_time'], $user->timezone);
+            // }
             if($order->orderDetail->total_amount > 0 && isset($preferences) && $preferences->tip_before_order == 1){
                 $response['tips'] = array(
                     ['label' => '5%', 'value' => decimal_format(0.05 * $order->orderDetail->total_amount)],
