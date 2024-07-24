@@ -506,11 +506,12 @@ class ReturnOrderController extends BaseController{
                     ]);
 
 
-
+                    $dispatch_requested = false;
                     if (!empty($currentOrderStatus->dispatch_traking_url) && ($request->status_option_id == 3)) {
                         if (isset($orderData->luxury_option->title) && $orderData->luxury_option->title == "pick_drop") {
                             $new_dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
                             $tracking_response = Http::get($new_dispatch_traking_url);
+                            $dispatch_requested = true;
                             if ($tracking_response->status() == 200) {
                                 if (!empty($tracking_response['tasks'])) {
                                     foreach ($tracking_response['tasks'] as $order_tasks) {
@@ -521,8 +522,10 @@ class ReturnOrderController extends BaseController{
                                 }
                             }
                         }
+                        if (!$dispatch_requested) {
                         $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
                         $response = Http::get($dispatch_traking_url);
+                        }
                     }
 
                     //if($currentOrderStatus->payment_option_id != 1){
