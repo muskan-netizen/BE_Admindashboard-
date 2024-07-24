@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\v1\v2;
 
-use DB;
-use Session;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use DateTime;
 use DateTimeZone;
 use Carbon\Carbon;
