@@ -172,9 +172,9 @@
 
 <section class="alSixMainMenu p-0 my-menu">
       <div class="menu-navigation_al">
-      <div class="container space-slider-homeric">
+      <div class="container-fluid space-slider-homeric">
          <div class="row">
-            <!-- <div class="col-12"> -->
+            <div class="col-12">
                <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider2" >
                   @foreach($navCategories as $cate)
                   @if($cate['name'])
@@ -207,7 +207,7 @@
                   @endif
                   @endforeach
                </ul>
-            <!-- </div> -->
+            </div>
          </div>
       </div>
    </section>
