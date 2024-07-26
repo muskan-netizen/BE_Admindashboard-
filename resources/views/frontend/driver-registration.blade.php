@@ -536,6 +536,10 @@
             var dial_code = $(this).attr('data-dial-code');
             $('#dialCode').val(dial_code);
         });
+
+        function escapeSpecialChars(selector) {
+        return selector.replace(/([ #;?%&,.+*~\':"!^$[\]()=>|\/@])/g, '\\$1');
+        }
         $('#register_btn').click(function() {
             $(".invalid-feedback strong").empty();
             $(" input").removeClass("is-invalid");
@@ -546,12 +550,14 @@
                 for(var i = 0; i < loop_length; i++){
                     var data_val = $('.required')[i].value;
                     var attr_name = $('.required')[i].getAttribute('name');
-                    var label = $($('.required')[i].closest('#'+attr_name+'Input')).find('label').text();
+                    var escaped_attr_name = escapeSpecialChars(attr_name);
+                    var closestElement = $($('.required')[i].closest('#' + escaped_attr_name + 'Input'));
+                    var label = closestElement.find('label').text();
                     if (data_val.length < 1 || data_val == '') {
                         // $("#data-error").text(attr_name+ " is required");
-                        $("#" + attr_name + "Input input, #" + attr_name + "Input select").addClass("is-invalid");
-                        $("#" + attr_name + "_error").children("strong").text("The "+ label.toLowerCase() +" field is required").show();
-                        $("#" + attr_name + "Input span.invalid-feedback").show();
+                        $("#" + escaped_attr_name + "Input input, #" + escaped_attr_name + "Input select").addClass("is-invalid");
+                        $("#" + escaped_attr_name + "_error").children("strong").text("The " + label.toLowerCase() + " field is required").show();
+                        $("#" + escaped_attr_name + "Input span.invalid-feedback").show();
                         if(!hasErrors){
                             hasErrors = true;
                         }
