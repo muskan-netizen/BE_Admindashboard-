@@ -956,10 +956,6 @@ class OrderController extends BaseController
                         $order_vendor->coupon_code = $coupon_name;
                         $order_vendor->order_status_option_id = 1;
                         $order_vendor->delivery_fee = $delivery_fee;
-                        $order_vendor->subtotal_amount = $actual_amount;
-                        $order_vendor->payable_amount = $vendor_payable_amount+$total_fixed_fee_amount;
-                        $order_vendor->total_markup_price = $vendor_markup_amount;
-                        $order_vendor->taxable_amount = $new_vendor_taxable_amount;
                         $order_vendor->discount_amount = $vendor_discount_amount;
 
                         if($deliveryfeeOnCoupon)
@@ -974,6 +970,10 @@ class OrderController extends BaseController
                         $new_vendor_taxable_amount = str_replace(',', '', $new_vendor_taxable_amount);
                         $new_vendor_taxable_amount = floatval($new_vendor_taxable_amount);
 
+                        $order_vendor->subtotal_amount = $actual_amount;
+                        $order_vendor->payable_amount = $vendor_payable_amount+$total_fixed_fee_amount;
+                        $order_vendor->total_markup_price = $vendor_markup_amount;
+                        $order_vendor->taxable_amount = $new_vendor_taxable_amount;
                         $order_vendor->payment_option_id = $request->payment_option_id;
                         $order_vendor->total_container_charges = $vendor_total_container_charges;
 
@@ -4015,7 +4015,7 @@ class OrderController extends BaseController
             if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
                 $from = $client_preferences->vendor_fcm_server_key;
                 $data['registration_ids'] = $vendorAppUserDevices;
-                $result = sendFcmCurlRequest($data,$from);
+                $result = sendFcmCurlRequest($data,$from,1);
             }
         }
     }
@@ -4358,7 +4358,7 @@ class OrderController extends BaseController
         if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
             $from = $client_preferences->vendor_fcm_server_key;
             $data['registration_ids'] = $vendorAppUserDevices;
-            return sendFcmCurlRequest($data,$from);
+            return sendFcmCurlRequest($data,$from,1);
         }
     }
 
@@ -5218,7 +5218,7 @@ class OrderController extends BaseController
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
         if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
-            $order_ship = $this->placeOrderToBorzoApi($checkdeliveryFeeAdded, $request->vendor_id, $request->order_id);
+            $order_ship = $this->placeOrderToBorzoApi($checkdeliveryFeeAdded , $request->vendor_id, $request->order_id);
         }
         $orderDetails = json_decode($order_ship);
         if ($order_ship) {

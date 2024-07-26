@@ -61,6 +61,6 @@ $(function () {
     //         {breakpoint: 360,settings: {slidesToShow: 3,slidesToScroll: 1}}
     //     ]
     // });
-    
+
 
 })

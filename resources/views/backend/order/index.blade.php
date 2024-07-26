@@ -535,11 +535,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 e.preventDefault();
                 var reject_reason = $('#addRejectForm #AddRejectBox .reject_reason').val();
 
-
-                //  var reject_reason = document.getElementById('reject_reason').value;
-
-                // var formData = new FormData(form);
-                // console.log(formData);
+                // var that = document.getElementById('reject');
                 var count = $("#reject").data("count");
                 var full_div = $("#reject").data("full_div");
                 var single_div =$("#reject").data("single_div");
@@ -559,10 +555,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                     success: function(response) {
                         if (response.status == 'success') {
-                            // $(".modal .close").click();
-                           // location.reload();
                             $(".modal .close").click();
                             $.NotificationApp.send('{{__("Success")}}', response.message, "top-right", "#5ba035", "success");
+                            //location.reload();
                         } else if (response.status == 'error') {
                             $('#error-case').empty();
                             $('#error-case').append(response.message);
@@ -575,9 +570,6 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                 // $(".modal .close").click();
                                 location.reload();
                             }
-
-
-
                         } else {
                             $(single_div).slideUp(1000, function() {
                                 $(this).remove();
@@ -586,10 +578,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                 //   $(".modal .close").click();
                                 location.reload();
                             }
-
                         }
-
-
                     },
                     error: function(response) {
                         if (response.status == 'error') {

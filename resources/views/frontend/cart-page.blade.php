@@ -498,7 +498,7 @@
 
                                                     @if (isset($vendor_product->product_delivery_fee) && $vendor_product->product_delivery_fee > 0)
                                                         <div class="float-left mt-2">Delivery Fee : <span
-                                                                style="color: #000;font-size: 14px;font-weight: 500;">{{ Session::get('currencySymbol') }}{{ $vendor_product->product_delivery_fee }}</span>
+                                                                style="color: #000;font-size: 14px;font-weight: 500;">{{ Session::get('currencySymbol') }}{{ $vendor_product->product_delivery_fee  }}</span>
                                                         </div>
                                                     @endif
                                                 </div>
@@ -517,7 +517,7 @@
                                         @if($serviceType == 'rental')
                                             <hr class="my-2">
                                             <div class="row align-items-md-center alRentalStartDate">
-                                                <div class="col-3">
+                                                   <div class="col-3">
                                                     <h6 class="m-0 pl-0">{{ __('Start Date') }}</h6>
                                                     <p>{{ date('m/d/Y g:i A', strtotime($vendor_product->start_date_time)) }}
                                                     </p>
@@ -930,7 +930,7 @@
                                             </div>
                                             <div class="col-7 text-right">
                                                 <p class="total_amt m-0">
-                                                {{ showPriceWithCurrency($product->vendor->service_charge_amount) }}</p>
+                                                    {{ showPriceWithCurrency($product->vendor->service_charge_amount) }}</p>
                                             </div>
                                         </div>
                                     @endif
@@ -1408,7 +1408,7 @@
                                         </div>
                                         <div class="tip_radio_controls">
                                             @if ($cart_details->total_payable_amount > 0)
-                                                <input type="radio" class="tip_radio" id="control_01"
+                                                {{-- <input type="radio" class="tip_radio" id="control_01"
                                                     name="select"
                                                     value="{{ $additionalPreference['is_token_currency_enable'] ? getInToken($cart_details->tip_5_percent) : $cart_details->tip_5_percent }}"
                                                     @if ($client_preference_detail->auto_implement_5_percent_tip == 1) checked @endif>
@@ -1452,7 +1452,7 @@
                                                         @endif
                                                     </h5>
                                                     <p class="m-0">15%</p>
-                                                </label>
+                                                </label> --}}
 
                                                 <input type="radio" class="tip_radio" id="custom_control"
                                                     name="select" value="custom">

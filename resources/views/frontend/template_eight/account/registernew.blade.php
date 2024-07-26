@@ -139,7 +139,7 @@
                                         </div>
                                     </div>
                                     @if( $getAdditionalPreference['is_user_kyc_for_registration'] == 1)
-                                       @include('frontend.account.registerKycForm') 
+                                       @include('frontend.account.registerKycForm')
                                     @endif
                                 </div>
 
@@ -231,6 +231,19 @@
                                         @endif
                                     @endforeach
                                 </div>
+                                <div class="row form-group mb-0 align-items-center">
+                                    <div class="col-md-6 position-relative mt-2">
+                                        <label for="">Referral Code</label>
+                                        <input type="text" class="form-control" id="refferal_code"
+                                            placeholder="Refferal Code" name="refferal_code"
+                                            value="{{ old('refferal_code', $code ?? '') }}">
+                                        @if ($errors->first('refferal_code'))
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $errors->first('refferal_code') }}</strong>
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
                                 <div class="form-check">
                                     <input type="checkbox" name="term_and_condition" class="form-check-input @error('term_and_condition') is-invalid @enderror" id="html">
                                     <label for="html" class="mr-3">{{ __('I accept the') }}
@@ -273,17 +286,6 @@
 
 
                                     </div> -->
-                                    <div class="col-md-6 hide position-absolute">
-                                        <label for="">Referral Code</label>
-                                        <input type="text" class="form-control" id="refferal_code"
-                                            placeholder="Refferal Code" name="refferal_code"
-                                            value="{{ old('refferal_code', $code ?? '') }}">
-                                        @if ($errors->first('refferal_code'))
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $errors->first('refferal_code') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-md-12">
@@ -297,12 +299,12 @@
                         </div>
                         @endif
                     </div>
-                    
+
                     @if (session('preferences'))
                         @if (session('preferences')->fb_login == 1 || session('preferences')->twitter_login == 1 || session('preferences')->google_login == 1 || session('preferences')->apple_login == 1)
                             <div class="divider_line mt-3">
                                 <span>{{ __('OR') }}</span>
-                            </div>    
+                            </div>
                             <ul class="social-media-links d-flex align-items-center justify-content-center mb-4 mt-3">
                                 @if (session('preferences')->google_login == 1)
                                     <li>

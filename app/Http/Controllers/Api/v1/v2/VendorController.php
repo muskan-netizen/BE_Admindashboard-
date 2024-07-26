@@ -2362,7 +2362,7 @@ class VendorController extends BaseController{
     public function vendorProductsFilterOptimize(Request $request){
         try{
             $vendor_id =  $request->has('vendor_id') && $request->vendor_id ? $request->vendor_id : null;
-            $category_id =  $request->has('category_id') && $request->category_id ? $request->category_id : null;;
+            $category_id =  $request->has('category_id') && $request->category_id ? $request->category_id : null;
             if(!$vendor_id){
                 return response()->json(['error' => 'No record found.'], 404);
             }
@@ -2472,7 +2472,6 @@ class VendorController extends BaseController{
                 $endRange = 20000;
                 if ($request->has('range') && !empty($request->range)) {
                     $range = explode(';', $request->range);
-                    $clientCurrency->doller_compare;
                     $startRange = $range[0] * $clientCurrency->doller_compare;
                     $endRange = $range[1] * $clientCurrency->doller_compare;
                 }
@@ -2576,16 +2575,14 @@ class VendorController extends BaseController{
                     }])
                     ->where('status', 1);
 
-                     if (isset($category_id) && ($category_id != '') && ($category_id)) {
+                    if (isset($category_id) && ($category_id != '') && ($category_id)) {
                         $vendor_categories = $vendor_categories->where('id', $category_id);
-
                     }
 
-                    $vendor_categories = $vendor_categories->where('status', 1);
-                    //$vendor_categories = $vendor_categories->data_count2 = $vendor_categories->data;
+                    $data_count = 0;
                     $vendor_categories = $vendor_categories->get()->map(function ($query) {
                         $query->setRelation('data', $query->data->take(15));
-                         return $query;
+                        return $query;
                     });
                     $listData =     ($vendor_categories->toArray());
                 } else {

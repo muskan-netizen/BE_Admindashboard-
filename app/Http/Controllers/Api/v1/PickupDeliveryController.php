@@ -486,8 +486,8 @@ class PickupDeliveryController extends BaseController{
             }
 
             return $this->successResponse($product);
-        } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage().''.$e->getLine(), $e->getCode());
         }
 
     }

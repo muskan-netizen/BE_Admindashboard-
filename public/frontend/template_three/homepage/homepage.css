@@ -42,7 +42,7 @@ article#page-container {
 .slick-slide {
     float: left;
     height: 100%;
-    min-height: 1px
+    min-height: 1px;
 }
 
 .al_body_template_three {
@@ -780,7 +780,8 @@ footer#footer {
 /* .product-card-box.position-relative.al_box_third_template.al {
     -webkit-transform: scale(1);
     transform: scale(1);
-} */
+}
+
 /* shimmer_effect end */
 
 @media(max-width: 1400px) {

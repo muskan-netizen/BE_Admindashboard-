@@ -2,26 +2,29 @@
 
 namespace App\Http\Controllers\Client;
 
-use App\Http\Controllers\Client\BaseController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Session;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
+use App\Models\Measurements;
+use Illuminate\Http\Request;
+use App\Imports\QrcodesImport;
+use App\Imports\ProductsImport;
 
+use App\Http\Traits\ApiResponser;
+
+use App\Jobs\ProductImportCsvJob;
+use GuzzleHttp\Client as GCLIENT;
+use App\Models\ProductMeasurement;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Traits\ToasterResponser;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Traits\SquareInventoryManager;
+use App\Http\Controllers\Client\BaseController;
 use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, RoleOld as Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, BookingOption, ProductAttribute,LongTermServiceProductAddons, ProcessorProduct, OrderProduct,DeliverySlot, MargProduct, Pincode, ProductBookingOption, ProductRentalProtection, RentalProtection};
 
-use Illuminate\Support\Facades\Storage;
-use App\Http\Traits\ApiResponser;
-use App\Http\Traits\ToasterResponser;
-use App\Http\Traits\SquareInventoryManager;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\ProductsImport;
-use App\Imports\QrcodesImport;
-use GuzzleHttp\Client as GCLIENT;
-use Carbon\Carbon;
-use App\Jobs\ProductImportCsvJob;
-use Illuminate\Support\Facades\File;
 class ProductController extends BaseController
 {
     use ApiResponser, SquareInventoryManager;
@@ -197,12 +200,13 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        
+        $measurements="";
+        $productMeasurementData = [];
         // $this->testfun1();
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch']);
         // $this->searchCatalogObjects();
 
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_attribute','is_product_measurement_in_cm_kg']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_attribute','is_product_measurement_in_cm_kg','product_measurment']);
 
         $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles', 'bookingOptions', 'rentalProtections'];
 
@@ -304,8 +308,12 @@ class ProductController extends BaseController
         $celebrities                        = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
         $tollPassOrigin                     = TollPassOrigin::select('id', 'toll_pass', 'desc')->get();
         $travelMode                         = TravelMode::select('id', 'travelmode', 'desc')->get();
-        $vehicleEmissionType                = VehicleEmissionType::select('id', 'emission_type', 'desc')->get();
 
+        $vehicleEmissionType                = VehicleEmissionType::select('id', 'emission_type', 'desc')->get();
+       if($getAdditionalPreference['product_measurment'] == 1){
+            $measurements                       =Measurements::with('category')->where('category_id',$product->category_id)->where('vendor_id',$product->vendor_id)->get();
+            $productMeasurements                =ProductMeasurement::where('product_id',$product->id)->get();
+       }
 
         $agent_dispatcher_tags = [];
         $agent_dispatcher_on_demand_tags = [];
@@ -387,7 +395,12 @@ class ProductController extends BaseController
         $productBookingOption = $product->bookingOptions()->pluck('booking_option_id')->toArray();
         $productRentalProtection = $product->rentalProtections()->where('type_id', 2)->pluck('rental_proctection_id')->toArray();
         $inlcudedProductRentalProtection = $product->rentalProtections()->where('type_id', 1)->pluck('rental_proctection_id')->toArray();
-        return view('backend/product/edit', ['delivery_slots'=> $delivery_slots, 'product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value, 'attribute_latitude' => $attribute_latitude, 'attribute_longitude' => $attribute_longitude,'margProduct' => $margProduct??[], 'productAttributes' => $productAttributes, 'rentalProtection' => $rentalProtection, 'bookingOption' => $bookingOption, 'productBookingOption' => $productBookingOption, 'productRentalProtection' => $productRentalProtection, 'inlcudedProductRentalProtection' => $inlcudedProductRentalProtection]);
+        if($getAdditionalPreference['product_measurment'] == 1){
+            foreach ($productMeasurements as $measurement) {
+                $productMeasurementData[$measurement->key_id][$measurement->product_variant_id] = $measurement->key_value;
+            }
+        }
+        return view('backend/product/edit', ['measurements'=>$measurements,'productMeasurementData'=>$productMeasurementData,'delivery_slots'=> $delivery_slots, 'product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value, 'attribute_latitude' => $attribute_latitude, 'attribute_longitude' => $attribute_longitude,'margProduct' => $margProduct??[], 'productAttributes' => $productAttributes, 'rentalProtection' => $rentalProtection, 'bookingOption' => $bookingOption, 'productBookingOption' => $productBookingOption, 'productRentalProtection' => $productRentalProtection, 'inlcudedProductRentalProtection' => $inlcudedProductRentalProtection]);
     }
 
     /**
@@ -399,24 +412,57 @@ class ProductController extends BaseController
      */
     public function update(Request $request, $domain = '', $id)
     {
-       
+
         DB::beginTransaction();
         try {
             //ProductVariant::where('product_id',$id)->update(['status'=>0]);
             $product = Product::where('id', $id)->firstOrFail();
-            $rule = array(
+            $rule = [
                 'product_name' => 'required|string',
-                'sku' => 'required|unique:products,sku,'.$product->id,
+                'sku' => 'required|unique:products,sku,' . $product->id,
                 'url_slug' => 'required',
                 'minimum_order_count' => 'required|numeric|min:1',
                 'batch_count' => 'required|numeric|min:1'
-            );
-            $validation  = Validator::make($request->all(), $rule);
+            ];
+            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role','product_measurment']);
+            if ($product->has_variant) {
+                if ($getAdditionalPreference['product_measurment'] == 1) {
+                    $additionalRules = [
+                        'product_id' => 'required',
+                        'key_id' => 'required|array',
+                        'key_id.*' => 'required|exists:measurements,id',
+                        'key_value' => 'required|array',
+                    ];
+
+                    foreach ($request->input('key_value', []) as $variantId => $keys) {
+                        foreach ($keys as $keyId => $values) {
+                            foreach ($values as $index => $value) {
+                                $additionalRules["key_value.$variantId.$keyId.$index"] = 'required';
+                            }
+                        }
+                    }
+
+                    $rule = array_merge($rule, $additionalRules);
+                }
+            }
+
+            // else{
+            //     if ($getAdditionalPreference['product_measurment'] == 1) {
+            //         $additionalRules = [
+            //             'product_id' => 'required',
+            //             'key_id' => 'required|array',
+            //             'key_id.*' => 'required|exists:measurements,id',
+            //             'key_value' => 'required|array',
+            //             'key_value.*' => 'required'
+            //         ];
+            //         $rule = array_merge($rule, $additionalRules);
+            //     }
+            // }
+            $validation = Validator::make($request->all(), $rule);
+
             if ($validation->fails()) {
                 return redirect()->back()->withInput()->withErrors($validation);
             }
-
-            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
 
             $check_url_slug = Product::where('id','!=',$id)->where('vendor_id',$request->vendor_id)->where('url_slug',$request->url_slug)->first();
@@ -874,7 +920,57 @@ class ProductController extends BaseController
 
             DB::commit();
             $this->createOrUpdateProductInSquarePos($id);
-            $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );
+            if ($getAdditionalPreference['product_measurment'] == 1) {
+                $measuremenKeyExists=Measurements::where('vendor_id',$product->vendor_id)->where('category_id',$product->category_id)->exists();
+
+                if ($measuremenKeyExists) {
+                    $productId = $request->input('product_id');
+                    $variantIds = $request->input('variant_ids');
+                    $keyIds = $request->input('key_id');
+                    $keyValues = $request->input('key_value');
+
+                    if ($request->has('variant_ids')) {
+                        foreach ($variantIds as $variantId) {
+                            foreach ($keyIds as $keyId) {
+                                if (isset($keyValues[$keyId][$variantId])) {
+                                    $keyValue = $keyValues[$keyId][$variantId];
+
+                                    ProductMeasurement::where([
+                                        'product_id' => $productId,
+                                        'product_variant_id' => $variantId,
+                                        'key_id' => $keyId
+                                    ])->delete();
+
+                                    ProductMeasurement::create([
+                                        'product_id' => $productId,
+                                        'product_variant_id' => $variantId,
+                                        'key_id' => $keyId,
+                                        'key_value' => $keyValue[0]
+                                    ]);
+                                }
+                            }
+                        }
+                    } else {
+                        foreach ($keyIds as $keyIndex => $keyId) {
+                            ProductMeasurement::where([
+                                'product_id' => $productId,
+                                'key_id' => $keyId
+                            ])->delete();
+
+                            ProductMeasurement::create([
+                                'product_id' => $productId,
+                                'key_id' => $keyId,
+                                'key_value' => $keyValues[$keyIndex]
+                            ]);
+                        }
+                    }
+                } else {
+                    return redirect()->back()->withInput()->withErrors(['error' => 'Please Add Measurement Keys for this Category in Category Add-Ons']);
+                }
+            }
+
+                $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );
+
             // return redirect('client/vendor/catalogs/' . $product->vendor_id)->with('toaster', $toaster);
             return redirect()->back()->with('toaster', $toaster);
         } catch (\Exception $e) {

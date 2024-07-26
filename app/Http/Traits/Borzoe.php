@@ -12,9 +12,9 @@ trait Borzoe{
 
     private $api_url;
     private $api_key;
+
     public function brozoConfig()
     {
-
         $shippingOption = ShippingOption::where('code', 'borzo')->first();
         $cred = json_decode($shippingOption->credentials);
         if ($shippingOption->test_mode) {
@@ -25,6 +25,7 @@ trait Borzoe{
         $this->api_url = $url;
         $this->api_key = $cred->api_key;
     }
+
     public function borzoeDelivery($vendor_id){
         try {
             $this->brozoConfig();
@@ -41,12 +42,16 @@ trait Borzoe{
                         'contact_person' => [
                             'phone' => $vendor_details->phone_no,
                         ],
+                        'latitude' => $vendor_details->latitude??'',
+                        'longitude' =>$vendor_details->longitude??''
                     ],
                     [
                         'address' => $cus_address->address,
                         'contact_person' => [
                             'phone' => $customer->phone_number,
                         ],
+                        'latitude' => $cus_address->latitude??'',
+                        'longitude' =>$cus_address->longitude??''
                     ],
                 ],
             ];
@@ -69,14 +74,12 @@ trait Borzoe{
         $order = Order::find($order_id);
         $customer = User::findOrFail($order->user_id);
         $cus_address = UserAddress::where('id', $order->address_id)->orderBy('is_primary', 'desc')->first();
-        $amountPay = $order->ordervendor->where('vendor_id',$vendor_id)->value('payable_amount')??0;
         $note = '';
         if(!empty($cus_address)){
             $note .= $cus_address->house_number.', '.$cus_address->street.', '.$cus_address->pincode.", ".$cus_address->extra_instruction;
         }
-      
+
         $amountPay = $order_vendor->payable_amount??0;
-        $payable_amount  = $amountPay;
         $vendor_details = Vendor::findOrFail($vendor_id);
         $is_cod_cash_voucher_required = false;
         $taking_amount = '';
@@ -117,7 +120,7 @@ trait Borzoe{
                     'is_cod_cash_voucher_required' => $is_cod_cash_voucher_required,
                     'taking_amount' => $taking_amount,
                     'note' => $note
-                ],
+                ]
             ],
         ];
         $ch = curl_init();
@@ -127,9 +130,6 @@ trait Borzoe{
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-DV-Auth-Token: '.$this->api_key.'']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
-        $error = json_decode($response);
-        if(!$error->is_successful)
-            \Log::info(['borzo' => $response]);
         curl_close($ch);
         return $response;
     }
@@ -154,12 +154,9 @@ trait Borzoe{
         return $response;
     }
 
-
-
 	public function Webhook(Request $request)
     {
         $this->brozoConfig();
-
 		//1-Created
 		//2-planned
 		//3-Pickup Scheduled/Generated

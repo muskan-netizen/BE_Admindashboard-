@@ -316,7 +316,7 @@ class PromoCodeController extends Controller{
             if(!$vendor){
                 return response()->json(['error' => __('Invalid vendor id.')], 404);
             }
-
+           
             $promo_code = Promocode::where('name', $request->promocode)->first();
 
             if(!$promo_code){
@@ -378,69 +378,68 @@ class PromoCodeController extends Controller{
             if(!$promo_detail){
                 return $this->errorResponse(__('Invalid Promocode'), 422);
             }
-            // promocode validation from cart
+            // promocode validation from cart 
             if(isset($request->cart_id)){
-                $cart_detail = Cart::where('id', $request->cart_id)->first();
-                if(!$cart_detail){
-                    return $this->errorResponse(__('Invalid Cart Id'), 422);
-                }
-                $cart_coupon_detail = CartCoupon::where('cart_id', $request->cart_id)->where('vendor_id', $request->vendor_id)->where('coupon_id', $promo_detail->id)->first();
-                if($cart_coupon_detail){
-                    return $this->errorResponse(__('Coupon Code already applied.'), 422);
-                }
-                $cart_coupon_detail2 = CartCoupon::where('cart_id', $request->cart_id)->where('coupon_id', $promo_detail->id)->first();
-                if($cart_coupon_detail2){
-                    return $this->errorResponse(__('Coupon Code already applied other vendor.'), 422);
-                }
-                $cart_products = CartProduct::with(['product.variant' => function ($q) {
-                    $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
-                    $q->groupBy('product_id');
-                }])->where('vendor_id', $request->vendor_id)->where('cart_id', $request->cart_id)->get();
-                $total_minimum_spend = 0;
-                foreach ($cart_products as $cart_product) {
-                    $total_price = 0;
-                    if (isset($cart_product->product->variant) && !empty($cart_product->product->variant->first())) {
-                        $total_price = $cart_product->product->variant->first()->price ?? 0;
-                    }
-                    $total_minimum_spend += $total_price * $cart_product->quantity;
-                }
-                if($total_minimum_spend < $promo_detail->minimum_spend){
-                    return $this->errorResponse(__('Cart amount is less than required amount'), 422);
-                }
-                if($total_minimum_spend > $promo_detail->maximum_spend){
-                    return $this->errorResponse(__('Cart amount is greater than required amount'), 422);
-                }
-                $cart_coupon = new CartCoupon();
-                $cart_coupon->cart_id = $request->cart_id;
-                $cart_coupon->vendor_id = $request->vendor_id;
-                $cart_coupon->coupon_id = $promo_detail->id;
-                $cart_coupon->save();
-                return $this->successResponse($promo_detail, __('Promotion Code Used Successfully'), 201);
-            }else{
-                if(isset($request->amount)){
-                    if($request->amount < $promo_detail->minimum_spend){
-                        return $this->errorResponse(__('Cart amount is less than required amount'), 422);
-                    }
-                    if($request->amount > $promo_detail->maximum_spend){
-                        return $this->errorResponse(__('Cart amount is greater than required amount'), 422);
-                    }
-                    // validation from ride booking
-                    if ($promo_detail->promo_type_id == 2) {
-                        $promo_detail['new_amount'] = $promo_detail->amount;
-                        if ($promo_detail['new_amount'] < 0)
-                            $promo_detail['new_amount'] = 0.00;
-                    }
-                    if ($promo_detail->promo_type_id == 1) {
-                        $promo_detail['new_amount'] = ($request->amount* ($promo_detail->amount / 100));
-                        if ($promo_detail['new_amount'] < 0)
-                            $promo_detail['new_amount'] = 0.00;
-                    }
-                    return $this->successResponse($promo_detail, __('Promotion Code Used Successfully'), 201);
-                }else{
-                    return $this->errorResponse(__('Invaild cart amount'), 422);
+            $cart_detail = Cart::where('id', $request->cart_id)->first();
+            if(!$cart_detail){
+                return $this->errorResponse(__('Invalid Cart Id'), 422);
+            }
+            $cart_coupon_detail = CartCoupon::where('cart_id', $request->cart_id)->where('vendor_id', $request->vendor_id)->where('coupon_id', $promo_detail->id)->first();
+            if($cart_coupon_detail){
+                return $this->errorResponse(__('Coupon Code already applied.'), 422);
+            }
+            $cart_coupon_detail2 = CartCoupon::where('cart_id', $request->cart_id)->where('coupon_id', $promo_detail->id)->first();
+            if($cart_coupon_detail2){
+                return $this->errorResponse(__('Coupon Code already applied other vendor.'), 422);
+            }
+            $cart_products = CartProduct::with(['product.variant' => function ($q) {
+                $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                $q->groupBy('product_id');
+            }])->where('vendor_id', $request->vendor_id)->where('cart_id', $request->cart_id)->get();
+            $total_minimum_spend = 0;
+            foreach ($cart_products as $cart_product) {
+                $total_price = 0;
+                if (isset($cart_product->product->variant) && !empty($cart_product->product->variant->first())) {
+                    $total_price = $cart_product->product->variant->first()->price ?? 0;
                 }
             }
-        } catch (\Exception $e) {
+            if($total_minimum_spend < $promo_detail->minimum_spend){
+                return $this->errorResponse(__('Cart amount is less than required amount'), 422);
+            }
+            if($total_minimum_spend > $promo_detail->maximum_spend){
+                return $this->errorResponse(__('Cart amount is greater than required amount'), 422);
+            }
+            $cart_coupon = new CartCoupon();
+            $cart_coupon->cart_id = $request->cart_id;
+            $cart_coupon->vendor_id = $request->vendor_id;
+            $cart_coupon->coupon_id = $promo_detail->id;
+            $cart_coupon->save();
+            return $this->successResponse($promo_detail, __('Promotion Code Used Successfully'), 201);
+        }else{
+            if(isset($request->amount)){
+                if($request->amount < $promo_detail->minimum_spend){
+                    return $this->errorResponse(__('Cart amount is less than required amount'), 422);
+                }
+                if($request->amount > $promo_detail->maximum_spend){
+                    return $this->errorResponse(__('Cart amount is greater than required amount'), 422);
+                }
+            // validation from ride booking
+            if ($promo_detail->promo_type_id == 2) {
+                $promo_detail['new_amount'] = $promo_detail->amount;
+                if ($promo_detail['new_amount'] < 0)
+                    $promo_detail['new_amount'] = 0.00;
+            }
+            if ($promo_detail->promo_type_id == 1) {
+                $promo_detail['new_amount'] = ($request->amount* ($promo_detail->amount / 100));
+                if ($promo_detail['new_amount'] < 0)
+                    $promo_detail['new_amount'] = 0.00;
+            }
+            return $this->successResponse($promo_detail, __('Promotion Code Used Successfully'), 201);
+        }else{
+            return $this->errorResponse(__('Invaild cart amount'), 422);
+        }
+    }
+        } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }

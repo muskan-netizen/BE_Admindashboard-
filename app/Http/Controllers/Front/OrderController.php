@@ -2840,8 +2840,6 @@ class OrderController extends FrontController
                 $vendor_payable_amount += $delivery_fee;
                 $vendor_payable_amount += $vendor_taxable_amount;
 
-
-
                 $payable_amount += $additionalPrice;
                 $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
                 if (@$getAdditionalPreference['is_rental_weekly_monthly_price']) {
@@ -2859,6 +2857,8 @@ class OrderController extends FrontController
                 $OrderVendor->delivery_fee = $delivery_fee;
                 $OrderVendor->subtotal_amount = $actual_amount;
                 $OrderVendor->discount_amount = $vendor_discount_amount;
+                if($deliveryfeeOnCoupon)
+                    $vendor_discount_amount =  $vendor_discount_amount - $delivery_fee;
 
                 if($deliveryfeeOnCoupon)
                     $vendor_discount_amount =  $vendor_discount_amount - $delivery_fee;
@@ -2992,7 +2992,7 @@ class OrderController extends FrontController
             //     $payable_amount = ($request->total_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
             // }
 
-            $ex_gateways_wallet = [4, 36, 40, 41, 22]; // stripe,mycash,userede,openpay
+            $ex_gateways_wallet = [4,5,36, 40, 41, 22]; // stripe,mycash,userede,openpay,paystack
 
             // $tip_amount = 0;
             // if (isset($request->tip)) {
@@ -3442,7 +3442,7 @@ class OrderController extends FrontController
                 $from = $client_preferences->vendor_fcm_server_key;
                 $data['registration_ids'] = $vendorAppUserDevices;
 
-                $result = sendFcmCurlRequest($data, $from);
+                $result = sendFcmCurlRequest($data, $from,1);
                 //// Log::info($result);
             }
         }

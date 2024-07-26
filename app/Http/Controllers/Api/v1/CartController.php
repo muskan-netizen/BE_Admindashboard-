@@ -1916,6 +1916,9 @@ class CartController extends BaseController
         }else{
             $cart->deliver_status = $delivery_status;
         }
+        if($delivery_status == 0){
+            $cart->cart_error_message = "stock is not available"; 
+        }
         $cart->loyalty_amount = $loyalty_amount_saved;
 
         if (isset($cart_product_luxury_id) && isset($cart_product_luxury_id->luxury_option_id) && $cart_product_luxury_id->luxury_option_id ==4) {

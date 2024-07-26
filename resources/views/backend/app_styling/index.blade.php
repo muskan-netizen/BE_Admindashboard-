@@ -258,7 +258,7 @@
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
                                 @endif
-                               
+
 
                                 @if($home_page_label->slug == 'selected_products')
                                 <a class="action-icon openProductsModal" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
@@ -287,7 +287,7 @@
                                             @if(!is_null($category->vendor)) ({{@$category->vendor->name}}) @endif
                                         </option>
                                         @endforeach
-                         
+
                                 </div>
                                 </div>
                                 </div>
@@ -317,7 +317,7 @@
                                 <a class="action-icon deletePickupSectionx" href="{{route('pickup.delete.section', $home_page_label->id)}}" onclick="return confirm('Are you sure you want to delete this section?');"  dataid="{{$home_page_label->id}}" href="javascript:void(0);">
                                     <i class="mdi mdi-delete"></i>
                                 </a>
-                              
+
                     </li>
 
                     @endforeach
@@ -697,7 +697,7 @@ $("#save_home_page_pickup").click(function(event) {
             }
         });
     }
-  
+
     function submitSecondaryColorForm() {
         var data_uri = "{{route('styling.updateColor')}}";
         $.ajaxSetup({
