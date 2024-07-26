@@ -62,6 +62,7 @@ class FirebaseService
 
     public function sendNotification($data,$is_vendor = 0) //$token, $title, $body
     {
+        
         $client = new Client();
          if($is_vendor == 1){
            $preference = getAdditionalPreference(['fcm_vendor_project_id']);
@@ -174,10 +175,11 @@ class FirebaseService
         //print_r($newData);
 
 
-        try {
+         try {
 
             $messages = [];
             foreach ($data['registration_ids'] as $token) {
+                
                 // $message = [
                 //     'token' => $token,
                 //     'notification' => [
@@ -196,7 +198,7 @@ class FirebaseService
                     }
                 }
 
-                $message['android'] = [
+                @$message['android'] = [
                     'priority' => $data['priority'] ?? 'HIGH',
                     'notification' => [
                         'icon' => $data['notification']['icon'] ?? '',
@@ -208,6 +210,7 @@ class FirebaseService
         
                 // Process the data section, converting specific fields to strings
                 //$newData['data'] = [];
+                if(isset($data['data'])){
                 foreach ($data['data'] as $key => $value) {
                     //if (in_array($key, ['order_id', 'order_status', 'redirect_type'])) {
                         $message['data'][$key] = (string)$value;
@@ -215,6 +218,7 @@ class FirebaseService
                         //$newData['data'][$key] = $value;
                     //}
                 }
+            }
 
                 //$messages[] = $message;
 
