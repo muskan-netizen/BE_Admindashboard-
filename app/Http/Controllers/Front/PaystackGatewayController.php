@@ -7,6 +7,7 @@ use Omnipay\Omnipay;
 use Illuminate\Http\Request;
 use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\{FrontController, OrderController, WalletController, UserSubscriptionController,PickupDeliveryController};
@@ -36,7 +37,7 @@ class PaystackGatewayController extends FrontController
     }
 
     public function paystackPurchase(Request $request){
-      // pr($request->all());
+       //pr($request->all());
         try{
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
@@ -93,7 +94,7 @@ class PaystackGatewayController extends FrontController
     }
     public function paystackCompletePurchase(Request $request)
     {
-       // pr($request->all());
+       pr($request->all());
         // Once the transaction has been approved, we need to complete it.
         if($request->has(['reference'])){
             $amount = $this->getDollarCompareAmount($request->amount);
@@ -128,7 +129,20 @@ class PaystackGatewayController extends FrontController
                             // Auto accept order
                             $orderController = new OrderController();
                             $orderController->autoAcceptOrderIfOn($order->id);
-    
+                            // Deduct wallet amount if payable amount is successfully done on gateway
+                            if ( $order->wallet_amount_used > 0 ) {
+                                $user = User::find( $user_id);
+                                $wallet = $user->wallet;
+                                $transaction_exists = Transaction::where('type', 'withdraw')->where('meta', 'LIKE', '%order_number%')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                                if(!$transaction_exists){
+                                    $wallet->withdrawFloat($order->wallet_amount_used, [
+                                        'description' => 'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>',
+                                        'order_number' => $order->order_number,
+                                        'transaction_id' => $request->tracking_id,
+                                        'payment_option' => 'paystack'
+                                    ]);
+                                }
+                                }
                             // Remove cart
                             
                             CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
