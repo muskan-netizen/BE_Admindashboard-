@@ -44,6 +44,7 @@ class CopyVendorDataToolCommand extends Command
      */
     public function handle()
     {
+        \Log::info('step1:command executed');
         $client = Client::select('database_name', 'sub_domain')->first();
         $database_name = 'royo_' . $client->database_name;
         $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME =  ?";
@@ -70,8 +71,10 @@ class CopyVendorDataToolCommand extends Command
         }        
         $copyData = CopyTool::first();
         if(!empty($copyData)){
+            \Log::info('step2:calling to store function');
             $flag = $this->toolController->store($copyData->copy_to, $copyData->copy_from);
             if($flag){
+                \Log::info('step3:delete data from copytool table');
                 $copyData->delete();
             }
         }
