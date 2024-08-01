@@ -69,7 +69,13 @@ class CopyVendorDataToolCommand extends Command
             Config::set("database.connections.$database_name", $default);
             DB::setDefaultConnection($database_name);
         }        
-        $copyData = CopyTool::first();
+        $copyData = CopyTool::on($database_name)->first();
+        //check the database name
+        
+        $connectionName = $copyData->getConnectionName();
+        $databaseName = \DB::connection($connectionName)->getDatabaseName();
+        \Log::info(['database' => $databaseName]);
+
         if(!empty($copyData)){
             \Log::info('step2:calling to store function');
             $flag = $this->toolController->store($copyData->copy_to, $copyData->copy_from);
