@@ -207,8 +207,8 @@ class OrangePaymentController extends Controller
     public function successPage(Request $request)
     {
         try {
-            \Log::info('auto response');
-            \Log::info($request->all());
+            // \Log::info('auto response');
+            // \Log::info($request->all());
             $payment_data = Payment::where('transaction_id',$request->order_id)->firstOrFail();
             if($payment_data->type =='cart'){
                 return $this->completeOrderCart($request);
@@ -225,8 +225,8 @@ class OrangePaymentController extends Controller
 
     public function completeOrderWallet($request)
     {
-        \Log::info('wallet response');
-        \Log::info($request->all());
+        // \Log::info('wallet response');
+        // \Log::info($request->all());
         if (isset($request['status']) && $request['status'] == 'SUCCESS') {
             $data = Payment::where('transaction_id',$request['order_id'])->first();
             $user = auth()->user();

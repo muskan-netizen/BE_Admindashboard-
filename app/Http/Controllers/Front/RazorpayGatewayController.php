@@ -109,7 +109,7 @@ class RazorpayGatewayController extends FrontController
             }
             return $this->successResponse($response);
         } catch (\Exception $ex) {
-            \Log::info('error response'.$ex->getMessage().'---'.$ex->getLine());
+            // \Log::info('error response'.$ex->getMessage().'---'.$ex->getLine());
             return $this->errorResponse($ex->getMessage(), 400);
         }
     }

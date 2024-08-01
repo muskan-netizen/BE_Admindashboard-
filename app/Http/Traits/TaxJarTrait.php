@@ -97,7 +97,7 @@ trait TaxJarTrait
               $line_items
             ]
         ])->json();
-        \Log::info(['response' => $response]);
+        // \Log::info(['response' => $response]);
         if (isset($response['error'])) {
             return ['status' => 208,'message' => $response['detail']];
         }

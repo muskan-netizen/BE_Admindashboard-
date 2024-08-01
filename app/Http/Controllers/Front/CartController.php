@@ -2249,7 +2249,7 @@ class CartController extends FrontController
 
     }catch(\Exception $e)
     {
-        \Log::info($e->getLine().'--'.$e->getMessage());
+        // \Log::info($e->getLine().'--'.$e->getMessage());
         return response()->json([]);
     }
     }

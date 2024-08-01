@@ -73,7 +73,7 @@ class QrcodesImport implements ToCollection{
 
             } catch(\Exception $ex){
                 $error[] = "Other: " .$ex->getMessage();
-                \Log::info($ex->getMessage()."".$ex->getLine());
+                // \Log::info($ex->getMessage()."".$ex->getLine());
             }
 
             $vendor_csv = CsvQrcodeImport::where('id', $this->csv_product_import_id)->first();
@@ -86,7 +86,7 @@ class QrcodesImport implements ToCollection{
             $vendor_csv->save();
         } catch(\Exception $ex){
             $error[] = "Other: " .$ex->getMessage();
-            \Log::info($ex->getMessage()."".$ex->getLine());
+            // \Log::info($ex->getMessage()."".$ex->getLine());
         }
     }
 

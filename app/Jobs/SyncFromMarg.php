@@ -66,7 +66,7 @@ use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, MargTrait;
                 DB::setDefaultConnection($database_name);
                 // dump(DB::connection()->getDatabaseName());
                 foreach($data as $key => $product){
-                    Log::info($product->name);
+                    // Log::info($product->name);
                    $detail = $this->addProduct($product);
                 }
                 DB::disconnect($database_name);

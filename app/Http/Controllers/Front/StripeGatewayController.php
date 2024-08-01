@@ -1052,7 +1052,7 @@ class StripeGatewayController extends FrontController
             return $this->successResponse($payment_intent->client_secret);
         }
         catch (\Exception $ex) {
-          Log::info($e->getMessage());
+        //   Log::info($e->getMessage());
             return $this->errorResponse('Server Error', $ex->getCode());
         }
     }
@@ -1339,7 +1339,7 @@ class StripeGatewayController extends FrontController
             return $this->successResponse($payment_intent);
         }
         catch (\Exception $ex) {
-            Log::info($ex->getMessage());
+            // Log::info($ex->getMessage());
             return $this->errorResponse('Server Error', $ex->getCode());
         }
     }

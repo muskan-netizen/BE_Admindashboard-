@@ -558,7 +558,7 @@ trait ApiResponser
             }
         }
         catch(\Exception $e){
-            \Log::info(['err' => $e->getMessage()]);
+            // \Log::info(['err' => $e->getMessage()]);
             return '2';
         }
         return '1';

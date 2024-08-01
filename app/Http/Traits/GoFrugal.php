@@ -46,7 +46,7 @@ trait GoFrugal
                 'data' => json_decode($response->getBody()->getContents())
             ];
         }catch(\Exception $e){
-            \Log::info($e->getMessage());
+            // \Log::info($e->getMessage());
             switch($e->getCode()){
                 case 404:
                     $message = "Given Url is not Found";

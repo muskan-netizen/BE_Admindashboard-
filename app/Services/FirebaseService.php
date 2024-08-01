@@ -81,9 +81,9 @@ class FirebaseService
         
 
 
-        \Log::info('projectId');
-        \Log::info($projectId);
-        \Log::info('projectId');
+        // \Log::info('projectId');
+        // \Log::info($projectId);
+        // \Log::info('projectId');
         //$url = "https://fcm.googleapis.com/v1/projects/{$this->projectId}/messages:send";
         $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
         //$accessToken = $this->getAccessToken();
@@ -276,10 +276,10 @@ class FirebaseService
             // ->wait();
 
        
-            \Log::info('response');
-            \Log::info($data);
-            \Log::info($messages);
-            \Log::info('response');
+            // \Log::info('response');
+            // \Log::info($data);
+            // \Log::info($messages);
+            // \Log::info('response');
 
             // $response = $client->post($url, [
             //     'headers' => [

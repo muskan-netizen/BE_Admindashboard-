@@ -750,7 +750,7 @@ class ReturnOrderController extends FrontController
                 $return_response =  $this->GetVendorProductReturnAmount($request, $orderData, $cancelledProductPrice);
 
                 /***************save cancel reason  start   ********************/
-                \Log::info(('OrderCancelRequest'));
+                // \Log::info(('OrderCancelRequest'));
 
                 $orderProductCancelReason = new OrderCancelRequest();
                 $orderProductCancelReason->order_id = $request->order_id;
@@ -807,8 +807,8 @@ class ReturnOrderController extends FrontController
 
         } catch (\Exception $e) {
             DB::rollback();
-            \Log::info(('$e->getMessage()'));
-            \Log::info(($e->getMessage()));
+            // \Log::info(('$e->getMessage()'));
+            // \Log::info(($e->getMessage()));
 
             return response()->json([
                 'status' => 'error',

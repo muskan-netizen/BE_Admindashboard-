@@ -339,10 +339,10 @@ if (!function_exists('transformToFcmV1Format')) {
 if (!function_exists('sendFcmCurlRequest')) {
     function sendFcmCurlRequest($data ,$fcm_server_key = '',$is_vendor = 0)
     {
-        \Log::info('fcm curl function ');
+        // \Log::info('fcm curl function ');
         $response = FirebaseService::sendNotification($data,$is_vendor);
-        \Log::info('fcm curl firebase response');
-        \Log::info($response);
+        // \Log::info('fcm curl firebase response');
+        // \Log::info($response);
         return $response;
 
         $fcm_server_key = ($fcm_server_key =='') ? ClientPreference::select('fcm_server_key')->first()->fcm_server_key :  $fcm_server_key ;
@@ -378,9 +378,9 @@ if (!function_exists('sendFcmCurlRequest2')) {
     function sendFcmCurlRequest2($data)
     { 
         
-        \Log::info('come sin notification');
+        // \Log::info('come sin notification');
         $response = FirebaseService::sendNotification($data);
-        \Log::info($response);
+        // \Log::info($response);
         return $response;
 
 
@@ -396,10 +396,10 @@ if (!function_exists('sendFcmCurlRequest2')) {
 
         // Get OAuth Token
         $accessToken = getFcmOauthToken();
-         \Log::info('curl fcm data');
-        \Log::info($data);
-         \Log::info('accessToken data');
-        \Log::info($accessToken);
+        //  \Log::info('curl fcm data');
+        // \Log::info($data);
+        //  \Log::info('accessToken data');
+        // \Log::info($accessToken);
         if ($accessToken) {
             $headers = [
                 'Authorization: Bearer ' . $accessToken,
@@ -408,12 +408,12 @@ if (!function_exists('sendFcmCurlRequest2')) {
             $deviceTokens = $data['registration_ids'] ?? [];
 
 
-            \Log::info('deviceTokens data');
-            \Log::info($deviceTokens);
+            // \Log::info('deviceTokens data');
+            // \Log::info($deviceTokens);
             // try{
  
             if(!empty($deviceTokens)){
-                \Log::info('in data');
+                // \Log::info('in data');
 
                 foreach($deviceTokens as $token)
                 {
@@ -439,14 +439,14 @@ if (!function_exists('sendFcmCurlRequest2')) {
         
                     $payload = ['message' => $transformedData];
         
-                    \Log::info('payload data');
-                    \Log::info($payload);
+                    // \Log::info('payload data');
+                    // \Log::info($payload);
                     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
                     $result = curl_exec($ch);
          
 
-                    \Log::info('result');
-                    \Log::info($result);
+                    // \Log::info('result');
+                    // \Log::info($result);
                     if ($result === FALSE) {
                         \Log::error('FCM Send Error: ' . curl_error($ch));
                     }
@@ -465,7 +465,7 @@ if (!function_exists('sendFcmCurlRequest2')) {
         // }
            
         } else {
-            \Log::error('FCM Send Error: Unable to fetch OAuth token.');
+            // \Log::error('FCM Send Error: Unable to fetch OAuth token.');
             return false;
         }
     }

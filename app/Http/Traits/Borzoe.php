@@ -218,7 +218,7 @@ trait Borzoe{
 			 Webhook::create(['tracking_order_id'=>(($json->delivery->order_id)?$json->delivery->order_id:''),'response'=>$request->getContent()]);
 			}
 			}catch(\Exception $e){
-				\Log::info($e->getMessage());
+				// \Log::info($e->getMessage());
 				return response([],200);
 			}
 			return response([],200);
