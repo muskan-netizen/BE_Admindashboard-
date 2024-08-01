@@ -68,7 +68,13 @@ class CopyVendorDataToolCommand extends Command
             ];
             Config::set("database.connections.$database_name", $default);
             DB::setDefaultConnection($database_name);
-        }        
+        }   
+     
+        $currentDatabaseName = \DB::connection()->getDatabaseName();
+        \Log::info([
+            'current_database' => $currentDatabaseName,
+            'active_database' => $database_name,
+        ]);     
         $copyData = CopyTool::on($database_name)->first();
         //check the database name
         
