@@ -90,10 +90,6 @@ class ToolsController extends BaseController
             $tool->copy_from = $request->copy_from;
             $tool->save();
 
-            //check database 
-            $connectionName = $tool->getConnectionName();
-            $databaseName = \DB::connection($connectionName)->getDatabaseName();
-
             return redirect()->back()->with('success', 'Catalog data saved successfully!');
 
         } catch (Exception $e) {
