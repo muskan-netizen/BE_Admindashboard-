@@ -37,7 +37,6 @@ class CopyData implements ShouldQueue
      */
     public function __construct($products, $copy_to, $copy_from, $sku_url, $from_vendor, Vendor $vendor, Product $product, Client $client, AddonSet $addonSet, Category $category, VendorCategory $vendorCategory, VendorSlot $vendorSlot, VendorSlotDate $vendorSlotDate, VendorDineinCategory $vendorDineinCategory, VendorDineinTable $vendorDineinTable)
     {
-        \log::info('inside copydata job');
         try{
         $this->products = $products;
         $this->ToolsController  = new ToolsController($vendor, $product, $client, $addonSet, $category, $vendorCategory, $vendorSlot, $vendorSlotDate, $vendorDineinCategory, $vendorDineinTable);
@@ -75,7 +74,6 @@ class CopyData implements ShouldQueue
             }
         }
         }catch(\Exception $e){
-            \Log::info("error3 ".$e->getMessage());
         }
     }
 }
