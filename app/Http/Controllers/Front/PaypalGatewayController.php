@@ -88,6 +88,7 @@ class PaypalGatewayController extends FrontController
                     $payment->type = $request->payment_form;
                     $payment->save();
                 }
+            }
         } catch (\Exception $ex) {
             $this->failMail();
             return $this->errorResponse($ex->getMessage(), 400);
