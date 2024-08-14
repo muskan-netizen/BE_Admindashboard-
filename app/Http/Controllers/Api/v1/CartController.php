@@ -752,7 +752,7 @@ class CartController extends BaseController
             'vendorProducts.product.cartRentalProtections',
             'vendorProducts.product.bookingOptions.bookingOption',
             'vendorProducts.product.cartBookingOptions.bookingOption',
-        ]);
+        ])->whereHas('product', fn ($q) => $q->where('is_live', 1));
 
         $cartData = $cartData->select('vendor_id','cart_id', 'vendor_dinein_table_id','dispatch_agent_id', 'is_cart_checked')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
 
@@ -1916,7 +1916,7 @@ class CartController extends BaseController
             $cart->deliver_status = $delivery_status;
         }
         if($cart->deliver_status == 0){
-            $cart->cart_error_message = __("We cannot deliver this product product");
+            $cart->cart_error_message = __("We cannot deliver this product");
         }
         $cart->loyalty_amount = $loyalty_amount_saved;
 

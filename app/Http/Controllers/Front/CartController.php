@@ -300,7 +300,7 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
-           
+
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         $vendor = Vendor::find($request->vendor_id);
@@ -875,7 +875,9 @@ class CartController extends FrontController
                 $qry->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
                 // $qry->where('language_id', $langId);
             }, 'vendorProducts.product.taxCategory.taxRate'
-        ])->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+            ])->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')
+            ->whereHas('product', fn ($q) => $q->where('is_live', 1))
+            ->get();
 
         //dd($cartData->toArray());
         /* Getting All Taxes available and making TaxRate array according to requirement */
@@ -1739,7 +1741,7 @@ class CartController extends FrontController
             $cart->products = $cartData->toArray();
         }
 
-           
+
         return $cart;
     }
 
@@ -1968,10 +1970,10 @@ class CartController extends FrontController
      */
     public function deleteCartProduct($domain = '', Request $request)
     {
-       
+
         $cartProd =  CartProduct::where('id', $request->cartproduct_id)->select('cart_id', 'vendor_id', 'bid_number')->first();
-     
-       
+
+
         if ($cartProd->bid_number) {
             CartProduct::where('vendor_id', $cartProd->vendor_id)->update(['bid_number' => null, 'bid_discount' => null]);
         }
@@ -1981,8 +1983,8 @@ class CartController extends FrontController
         CartRentalProtection::where('cart_id', $cartProd->cart_id)->delete();
         CartBookingOption::where('cart_id', $cartProd->cart_id)->delete();
         CartDeliveryFee::where('cart_id',$cartProd->cart_id)->where('vendor_id',$cartProd->vendor_id)->delete();
-      
-       
+
+
         if (!empty($cartProd)) {
 
             $cartpro_count = CartProduct::where('cart_id', $cartProd->cart_id)->count();
@@ -2210,7 +2212,7 @@ class CartController extends FrontController
                 $conversion_rate = (float)ClientCurrency::where('currency_id', $curId)->first()->doller_compare;
             }
             $cart_details->conversion_rate = $conversion_rate;
-            
+
             $cmsPages = Page::with(['translation' => function ($q) use ($langId) {
                 $q->where('language_id', $langId);
             }])->whereIn('slug', ['terms-conditions', 'refund-policy'])->get();
@@ -2220,7 +2222,7 @@ class CartController extends FrontController
                 $currency_code = $currency->currency->iso_code;
             }
             $cart_details->currency_code = $currency_code;
-          
+
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
             if ($action == 'car_rental') {
                 $addon = AddonSet::with('option', 'translation')->where('vendor_id', $cart_details->vendor_id)->where('status', 1)->get();
@@ -2228,7 +2230,7 @@ class CartController extends FrontController
                 $mycartView = view('frontend.yacht.cart-page')->with(['cart_details' => (($cart_details) ? json_decode($cart_details) : []), 'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm, 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message, 'addons' => $addon, 'cmsPages' => $cmsPages])->render();
             } else {
 
-                
+
                 $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details) ? json_decode($cart_details) : []), 'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm, 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message, 'cmsPages' => $cmsPages])->render();
             }
 
@@ -2342,7 +2344,7 @@ class CartController extends FrontController
                      $borzoe_deliver_fee = $this->borzoeDelivery($vendorData->vendor_id);
                      if(!empty($borzoe_deliver_fee)){
                      $deliverFee = json_decode($borzoe_deliver_fee);
-                     
+
                      $borzoe_deliver_fee = $deliverFee->order->payment_amount;
                      if ($borzoe_deliver_fee > 0) {
                          $borzoe_deliver_fee = decimal_format($borzoe_deliver_fee);
@@ -2350,7 +2352,7 @@ class CartController extends FrontController
                              'type' => 'B',
                              'courier_name' => __('Borzoe'),
                              'rate' => $borzoe_deliver_fee,
- 
+
                              'courier_company_id' => 0,
                              'etd' => 0,
                              'etd_hours' => 0,
@@ -3092,7 +3094,7 @@ class CartController extends FrontController
 
     public function checkIsolateSingleVendor(Request $request, $domain = '')
     {
-        
+
         $preference = ClientPreference::first();
         $user = Auth::user();
         $new_session_token = session()->get('_token');
