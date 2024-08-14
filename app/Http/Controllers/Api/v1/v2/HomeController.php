@@ -121,8 +121,8 @@ class HomeController extends BaseController
             if ($request->has('ref')) {
                 session(['referrer' => $request->query('ref')]);
             }
-            $latitude = Session::get('latitude') ?? null;
-            $longitude = Session::get('longitude') ?? null;
+            $latitude = Session::get('latitude') ?? $request->latitude;
+            $longitude = Session::get('longitude') ??  $request->longitude;;
             $curId = Session::get('customerCurrency');
             $preferences = Session::get('preferences');
             $user = Auth::user();

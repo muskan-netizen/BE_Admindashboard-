@@ -761,7 +761,7 @@ trait ProductActionTrait{
             $keyToFilter = 'is_vendor_closed';
             $valueToFilter = $venderFilterOpenClose;
             // $my_array = ['foo' => 1, 'bar' => 'baz', 'hello' => 'wld'];
-            if($venderFilterOpenClose === 1 || $venderFilterOpenClose === 0){
+            if($venderFilterOpenClose === 1){
                 $filteredArray = array_filter($vendors, function($item) use ($keyToFilter, $valueToFilter) {
                     return isset($item->$keyToFilter) && $item->$keyToFilter == $valueToFilter;
                 });
