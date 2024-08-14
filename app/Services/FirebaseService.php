@@ -5,7 +5,6 @@ namespace App\Services;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use App\Models\{ClientPreference, Order};
-use Illuminate\Support\Arr;
 
 class FirebaseService
 {
@@ -208,13 +207,6 @@ class FirebaseService
                         'channel_id' => $data['notification']['android_channel_id'] ?? '',
                     ],
                 ];
-
-                Arr::set($message, 'apns.payload.aps', [
-                    'sound'        => Arr::get($data, 'notification.sound', ''),
-                    'icon'         => Arr::get($data, 'notification.icon', ''),
-                    'click_action' => Arr::get($data, 'notification.click_action', ''),
-                ]);
-
 
                 // Process the data section, converting specific fields to strings
                 //$newData['data'] = [];
