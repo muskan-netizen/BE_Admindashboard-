@@ -34,7 +34,7 @@ class CopyVendorDataToolCommand extends Command
     {
         parent::__construct();
         $this->toolController  = new ToolsController($vendor, $product, $client, $addonSet, $category, $vendorCategory, $vendorSlot, $vendorSlotDate, $vendorDineinCategory, $vendorDineinTable);
-        
+
     }
 
     /**
@@ -67,14 +67,10 @@ class CopyVendorDataToolCommand extends Command
             ];
             Config::set("database.connections.$database_name", $default);
             DB::setDefaultConnection($database_name);
-        }   
-     
-        $currentDatabaseName = \DB::connection()->getDatabaseName();   
+        }
+
         $copyData = CopyTool::on($database_name)->first();
         //check the database name
-        
-        $connectionName = $copyData->getConnectionName();
-        $databaseName = \DB::connection($connectionName)->getDatabaseName();
 
         if(!empty($copyData)){
             $flag = $this->toolController->store($copyData->copy_to, $copyData->copy_from);
