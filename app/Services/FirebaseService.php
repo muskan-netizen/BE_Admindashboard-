@@ -5,6 +5,7 @@ namespace App\Services;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use App\Models\{ClientPreference, Order};
+use Illuminate\Support\Arr;
 
 class FirebaseService
 {
@@ -62,7 +63,7 @@ class FirebaseService
 
     public function sendNotification($data,$is_vendor = 0) //$token, $title, $body
     {
-        
+
         $client = new Client();
          if($is_vendor == 1){
            $preference = getAdditionalPreference(['fcm_vendor_project_id']);
@@ -78,7 +79,7 @@ class FirebaseService
             return false;
         }
 
-        
+
 
 
         // \Log::info('projectId');
@@ -88,8 +89,8 @@ class FirebaseService
         $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
         //$accessToken = $this->getAccessToken();
         // $accessToken = Self::getAccessToken();
-          
-        
+
+
 
 
         if (!$accessToken) {
@@ -179,7 +180,7 @@ class FirebaseService
 
             $messages = [];
             foreach ($data['registration_ids'] as $token) {
-                
+
                 // $message = [
                 //     'token' => $token,
                 //     'notification' => [
@@ -207,7 +208,14 @@ class FirebaseService
                         'channel_id' => $data['notification']['android_channel_id'] ?? '',
                     ],
                 ];
-        
+
+                Arr::set($message, 'apns.payload.aps', [
+                    'sound'        => Arr::get($data, 'notification.sound', ''),
+                    'icon'         => Arr::get($data, 'notification.icon', ''),
+                    'click_action' => Arr::get($data, 'notification.click_action', ''),
+                ]);
+
+
                 // Process the data section, converting specific fields to strings
                 //$newData['data'] = [];
                 if(isset($data['data'])){
@@ -233,7 +241,7 @@ class FirebaseService
                             'message' => $message,
                         ],
                     ]);
-    
+
                     $results[] = [
                         'status' => 'fulfilled',
                         'body' => (string) $response->getBody()
@@ -275,7 +283,7 @@ class FirebaseService
             // ->then($handleResponses)
             // ->wait();
 
-       
+
             // \Log::info('response');
             // \Log::info($data);
             // \Log::info($messages);
@@ -291,7 +299,7 @@ class FirebaseService
             //         'message' => $messages,
             //     ],
             // ]);
-            
+
             // return json_decode($response->getBody(), true);
         } catch (RequestException $e) {
             // Handle the error appropriately
