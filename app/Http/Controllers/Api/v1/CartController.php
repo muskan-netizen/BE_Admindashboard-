@@ -1910,14 +1910,13 @@ class CartController extends BaseController
         //     $cart->total_payable_amount  += $totalDeliveryCharges;
         // }
 
-        if($delivery_status == 0 && @$duration->closed_store_order_scheduled == 1)
-        {
+        if($delivery_status == 0 && @$cart->closed_store_order_scheduled == 1) {
             $cart->deliver_status = 1;
         }else{
             $cart->deliver_status = $delivery_status;
         }
-        if($delivery_status == 0){
-            $cart->cart_error_message = "stock is not available"; 
+        if($cart->deliver_status == 0){
+            $cart->cart_error_message = __("We cannot deliver this product");
         }
         $cart->loyalty_amount = $loyalty_amount_saved;
 
