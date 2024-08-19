@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use DB;
+use ReflectionClass;
 
 class PaypalGatewayController extends FrontController
 {
