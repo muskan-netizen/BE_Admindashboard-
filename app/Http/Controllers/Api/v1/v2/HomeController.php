@@ -122,7 +122,7 @@ class HomeController extends BaseController
                 session(['referrer' => $request->query('ref')]);
             }
             $latitude = Session::get('latitude') ?? $request->latitude;
-            $longitude = Session::get('longitude') ??  $request->longitude;;
+            $longitude = Session::get('longitude') ??  $request->longitude;
             $curId = Session::get('customerCurrency');
             $preferences = Session::get('preferences');
             $user = Auth::user();
