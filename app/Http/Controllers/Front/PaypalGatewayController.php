@@ -23,6 +23,7 @@ class PaypalGatewayController extends FrontController
     use ApiResponser;
     public $gateway;
     public $currency;
+    public $testmode;
 
     public function __construct()
     {
@@ -40,6 +41,7 @@ class PaypalGatewayController extends FrontController
 
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
+        $this->testmode = $testmode;
     }
 
     public function paypalPurchase(Request $request)
