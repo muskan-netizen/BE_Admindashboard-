@@ -1261,15 +1261,21 @@ class VendorController extends BaseController
             $sku_url = $sku_url.".".$vendor_name;
         }
 
-        $total_delivery_fees = OrderVendor::where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
+        $OrderVendor = OrderVendor::whereHas('orderDetail', function ($query) {
+            $query->where('payment_status', 1);
+            })->where('vendor_id', $id)
+            ->orderBy('id','desc')
+            ->where('order_status_option_id','!=',3);
         if ($user->is_superadmin == 0) {
-            $total_delivery_fees = $total_delivery_fees->whereHas('vendor.permissionToUser', function ($query) use($user) {
+            $total_delivery_fees = $OrderVendor->whereHas('vendor.permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
             });
         }
-        $total_delivery_fees = $total_delivery_fees->sum('delivery_fee');
+        $total_delivery_fees = $OrderVendor->sum('delivery_fee');
 
-        $total_promo_amount = OrderVendor::where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
+        $total_promo_amount = OrderVendor::whereHas('orderDetail', function ($query) {
+            $query->where('payment_status', 1);
+        })->where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
         if ($user->is_superadmin == 0) {
             $total_promo_amount = $total_promo_amount->whereHas('vendor.permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -1277,21 +1283,11 @@ class VendorController extends BaseController
         }
         $total_promo_amount = $total_promo_amount->where('coupon_paid_by', 0)->sum('discount_amount');
 
-        $total_admin_commissions = OrderVendor::where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
-        if ($user->is_superadmin == 0) {
-            $total_admin_commissions = $total_admin_commissions->whereHas('vendor.permissionToUser', function ($query) use($user) {
-                $query->where('user_id', $user->id);
-            });
-        }
-        $total_admin_commissions = $total_admin_commissions->sum(DB::raw('admin_commission_percentage_amount + admin_commission_fixed_amount'));
 
-        $total_order_value = OrderVendor::where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
-        if ($user->is_superadmin == 0) {
-            $total_order_value = $total_order_value->whereHas('vendor.permissionToUser', function ($query) use($user) {
-                $query->where('user_id', $user->id);
-            });
-        }
-        $total_order_value = $total_order_value->sum('payable_amount') - $total_delivery_fees;
+        $total_admin_commissions = $OrderVendor->sum(DB::raw('admin_commission_percentage_amount + admin_commission_fixed_amount'));
+
+     
+        $total_order_value = $OrderVendor->sum('payable_amount') - $total_delivery_fees;
 
         $vendor_payouts = VendorPayout::where('vendor_id', $id)->orderBy('id','desc');
         if($user->is_superadmin == 0){

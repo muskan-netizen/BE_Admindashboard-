@@ -189,7 +189,9 @@ class VendorPayoutController extends BaseController{
 
     public function vendorPayoutRequests(Request $request){
 
-        $total_delivery_fees = OrderVendor::orderBy('id','desc');
+        $total_delivery_fees = $orderVendor  = OrderVendor::whereHas('orderDetail', function ($query) {
+            $query->where('payment_status', 1);
+        })->orderBy('id','desc');
         if (Auth::user()->is_superadmin == 0) {
             $total_delivery_fees = $total_delivery_fees->whereHas('vendor.permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
@@ -197,7 +199,7 @@ class VendorPayoutController extends BaseController{
         }
         $total_delivery_fees = $total_delivery_fees->sum('delivery_fee');
 
-        $total_admin_commissions = OrderVendor::orderBy('id','desc');
+        $total_admin_commissions = $orderVendor;
         if (Auth::user()->is_superadmin == 0) {
             $total_admin_commissions = $total_admin_commissions->whereHas('vendor.permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
@@ -205,7 +207,7 @@ class VendorPayoutController extends BaseController{
         }
         $total_admin_commissions = $total_admin_commissions->sum(DB::raw('admin_commission_percentage_amount + admin_commission_fixed_amount'));
 
-        $total_order_value = OrderVendor::orderBy('id','desc');
+        $total_order_value = $orderVendor;
         if (Auth::user()->is_superadmin == 0) {
             $total_order_value = $total_order_value->whereHas('vendor.permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
