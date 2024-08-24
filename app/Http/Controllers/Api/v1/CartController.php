@@ -179,8 +179,8 @@ class CartController extends BaseController
             $already_added_product_variant_in_cart = CartProduct::where(["variant_id" => $request->product_variant_id, 'cart_id' => $cart_detail->id])->first();
             $totalQuantity = (!empty($already_added_product_variant_in_cart) ? $already_added_product_variant_in_cart->quantity : 0) + $request->quantity;
  
-            if($totalQuantity > $productVariant->quantity){
-                return response()->json(['error' => __('You can not add more product.')], 404);
+            if($product->has_inventory == 1 && $totalQuantity > $productVariant->quantity){
+                return response()->json(['error' => __('You have exceeded the maximum quantity for this product, please reduce it!')], 404);
             }
 
             $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
