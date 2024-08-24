@@ -44,7 +44,7 @@ class CopyVendorDataToolCommand extends Command
      */
     public function handle()
     {
-        $client = Client::select('database_name', 'sub_domain')->first();
+        $client = Client::select('database_name', 'sub_domain')->where('code','1a3404')->first();
         $database_name = 'royo_' . $client->database_name;
         $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME =  ?";
         $db = DB::select($query, [
@@ -67,20 +67,13 @@ class CopyVendorDataToolCommand extends Command
             ];
             Config::set("database.connections.$database_name", $default);
             DB::setDefaultConnection($database_name);
-        }   
-     
-        $currentDatabaseName = \DB::connection()->getDatabaseName();   
-        $copyData = CopyTool::on($database_name)->first();
-        //check the database name
-        
-        $connectionName = $copyData->getConnectionName();
-        $databaseName = \DB::connection($connectionName)->getDatabaseName();
-
+        }        
+        $copyData = CopyTool::first();
         if(!empty($copyData)){
             $flag = $this->toolController->store($copyData->copy_to, $copyData->copy_from);
-            if($flag){
+            // if($flag){
                 $copyData->delete();
-            }
+            // }
         }
     }
 }
