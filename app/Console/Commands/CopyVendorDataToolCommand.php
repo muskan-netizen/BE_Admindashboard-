@@ -34,7 +34,7 @@ class CopyVendorDataToolCommand extends Command
     {
         parent::__construct();
         $this->toolController  = new ToolsController($vendor, $product, $client, $addonSet, $category, $vendorCategory, $vendorSlot, $vendorSlotDate, $vendorDineinCategory, $vendorDineinTable);
-        
+
     }
 
     /**
