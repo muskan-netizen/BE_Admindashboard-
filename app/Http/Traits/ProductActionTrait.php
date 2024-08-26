@@ -18,9 +18,11 @@ trait ProductActionTrait{
 
     public function getRandomVendorIdsForHomePage($preferences, $type, $is_admin_vendor_rating = 0, $latitude, $longitude,$action='2')
     {
+        
         try
         {
             $vendors = Vendor::vendorOnline()->select('id')->where('status', 1)->where($type, 1);
+         
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                     $point = new Point($longitude, $latitude);
                     $vendors->whereHas('serviceArea', function ($query) use ($point) {
@@ -335,6 +337,7 @@ trait ProductActionTrait{
 
     public function getProductsId($type='', $vendorWhereIN = '', $whereProductType = '')
     {
+       
         try
         {
             $product_ids = [];
@@ -402,6 +405,7 @@ trait ProductActionTrait{
 
     public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type = '',$Products_title = '', $p_dim = '',$getSubCatIds='', $preferences = NULL, $categoryTypes = NULL)
     {
+    
         try
         {
             $user = Auth::user();
@@ -461,8 +465,9 @@ trait ProductActionTrait{
 
 
             $single_category_product_ids = $this->getProductsId($where, $vendorWhereIN, $whereProductType);
-
+              if($where!=='is_featured'){
             if(count($single_category_product_ids) > 0 && $where!=='recent_viewed'){
+            
                 shuffle($single_category_product_ids);
                 $random_numbers = array_slice($single_category_product_ids, 0, 6);
                 $single_category_product_ids = @implode(',',$random_numbers);
@@ -470,6 +475,8 @@ trait ProductActionTrait{
                     $completeWhere .= ' AND  `products`.`id` IN  ('.$single_category_product_ids.')';
                 }
             }
+        }
+
 
             $raw_query = "SELECT
             `products`.`id`,
@@ -544,14 +551,16 @@ trait ProductActionTrait{
             AND `products`.`is_live` = 1
             $whereComparePriceNotNull
             $completeWhere
-            $vendorWhereIN
+            -- $vendorWhereIN
             $getSubCatIdsIn
             $whereProductType
             GROUP BY `products`.`id`
             LIMIT 6";
 
-
+                
             $returnArray = DB::select( DB::raw($raw_query));
+             
+            
             // //$collectionproducts = collect($products)->unique('id');
             // if(empty($single_category_product_ids)){
             //     //$collectionproducts = $collectionproducts->random(10);

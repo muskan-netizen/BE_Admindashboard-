@@ -868,6 +868,7 @@ class UserhomeController extends FrontController
                 }
             }
         }
+      
         $on_sale_product_details =$on_sale_products = [];
         if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in
             $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'on_sale', $request->type,$on_sale_title, $p_dim);
@@ -877,10 +878,10 @@ class UserhomeController extends FrontController
             $new_products = $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type,$new_products_title,$p_dim);
         }
         $feature_product_details = $feature_products = [];
-
         if (in_array('featured_products', $enable_layout)) {  # if enable featured_products section in
             $feature_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type, $featured_products_title,$p_dim);
         }
+       
 
         if (in_array('banner', $enable_layout)) {  # if enable banner section in
             $cab_booking_layouts = CabBookingLayout::with('banner_image')->where('slug','banner')->get();
