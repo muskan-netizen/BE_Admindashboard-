@@ -528,9 +528,9 @@ class DashBoardController extends BaseController
             $currentyear_ordercount = clone $order_revenue;
 
             # Current week revenue sum
-            $revenueCurrentWeek = $revenueCurrentWeek->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('payable_amount');
+            $revenueCurrentWeek = $revenueCurrentWeek->where('payment_status', 1)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('payable_amount');
             # Previous week revenue sum
-            $revenueLastWeek = $revenueLastWeek->whereBetween('created_at', [Carbon::now()->startOfWeek()->subWeek(), Carbon::now()->endOfWeek()->subWeek()])->sum('payable_amount');
+            $revenueLastWeek = $revenueLastWeek->where('payment_status', 1)->whereBetween('created_at', [Carbon::now()->startOfWeek()->subWeek(), Carbon::now()->endOfWeek()->subWeek()])->sum('payable_amount');
         
             $currentmonth_start = Carbon::now()->startOfMonth();
             $currentmonth_end = Carbon::now()->endOfMonth();

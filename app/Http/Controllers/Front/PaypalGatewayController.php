@@ -16,12 +16,14 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use DB;
+use ReflectionClass;
 
 class PaypalGatewayController extends FrontController
 {
     use ApiResponser;
     public $gateway;
     public $currency;
+    public $testmode;
 
     public function __construct()
     {
@@ -39,15 +41,16 @@ class PaypalGatewayController extends FrontController
 
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
+        $this->testmode = $testmode;
     }
 
     public function paypalPurchase(Request $request)
-    { 
+    {
         try {
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
             $returnUrlParams = '?amount=' . $amount;
-            
+
             if ($request->has('tip')) {
                 $returnUrlParams = $returnUrlParams . '&tip=' . $request->tip;
             }
@@ -70,12 +73,10 @@ class PaypalGatewayController extends FrontController
                     'returnUrl' => url($request->returnUrl . $returnUrlParams),
                 ])->send();
             }
-             
             if ($response->isSuccessful()) {
-                
+
                 return $this->successResponse($response->getData());
-            }
-            elseif ($response->isRedirect()) {
+            } elseif ($response->isRedirect()) {
                 $token = $response->getData();
                 if(isset($token['TOKEN']) && $request->payment_form=="pickup_delivery"){
                     $payment = new Payment();
@@ -83,12 +84,37 @@ class PaypalGatewayController extends FrontController
                     $payment->user_id = $user->id ?? null;
                     $payment->transaction_id = $token['TOKEN'];
                     $payment->payment_option_id = 3;
-                    $payment->order_id = $request->order_id; 
+                    $payment->order_id = $request->order_id;
                     $payment->balance_transaction = $request->amount?? '';
                     $payment->type = $request->payment_form;
                     $payment->save();
                 }
+
+
+                if (method_exists($response, 'redirect')) {
+                    ['TOKEN' => $token] = $response->getData();
+
+                    $params   = http_build_query(['token' => $token, 'cmd' => '_express-checkout', 'useraction' => 'commit']);
+                    $url      = strtr('https://www{sandbox}paypal.com', ['{sandbox}' => $this->testmode ? '.sandbox.' : '']);
+                    $location = sprintf('%s/cgi-bin/webscr?%s', $url, $params);
+
+                    return $this->successResponse($location, 'Payment link generated', 200);
+                }
+
+                $responseClassReflection = new ReflectionClass($response);
+
+                return $this->errorResponse('Gateway response is invalid', 500, config('app.debug') ? [
+                    'found'           => $responseClassReflection->getName(),
+                    'methods_found'   => $responseClassReflection->getMethods(),
+                    'method_required' => 'redirect',
+                ] : null);
+            } else {
+                $this->failMail();
+                return $this->errorResponse('Payment failed', 400, $response->getData());
+            }
         } catch (\Exception $ex) {
+            Log::error($ex);
+
             $this->failMail();
             return $this->errorResponse($ex->getMessage(), 400);
         }
@@ -103,7 +129,7 @@ class PaypalGatewayController extends FrontController
             if ($request->has('tip')) {
                 $returnUrlParams = $returnUrlParams . '&tip=' . $request->tip;
             }
-            
+
             $transaction = $this->gateway->completePurchase(array(
                 'amount'                => $amount,
                 'payer_id'              => $request->PayerID,
@@ -148,14 +174,14 @@ class PaypalGatewayController extends FrontController
             $request                     = new \Illuminate\Http\Request($data);
             $plaseOrderForPickup         = new PickupDeliveryController();
             $res                         = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
-           
+
             if($come_from == 'web' && !empty($requestdata->return_route))
             {
                 $response['status']         = 'Success';
                 $response['msg']            = 'Success Added Pickup Delivery.';
                 $response['payment_from']   = 'pickup_delivery';
                 $response['data']           = $res;
-                return response()->json($response,200); 
+                return response()->json($response,200);
             }
             if($come_from == 'app')
             {
@@ -163,7 +189,7 @@ class PaypalGatewayController extends FrontController
                 $response['msg']            = 'Success Added Pickup Delivery.';
                 $response['payment_from']   = 'pickup_delivery';
                 $response['data']           = $res;
-                return response()->json($response,200); 
+                return response()->json($response,200);
             }
         }
     }
@@ -179,7 +205,7 @@ class PaypalGatewayController extends FrontController
             }else{
                 $user = Auth::user();
             }
-         
+
             $credit_amount = $request->amount;
             $payment = Payment::where('transaction_id',$request->transaction_id)->first();
             if(!$payment){
@@ -196,5 +222,5 @@ class PaypalGatewayController extends FrontController
             return $this->errorResponse($ex->getMessage(), 400);
         }
     }
-    
+
 }

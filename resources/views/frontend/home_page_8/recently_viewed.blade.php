@@ -33,14 +33,14 @@
                         </div>
                         <div class="d-flex align-items-center justify-content-left al_clock ">
                             {{-- <b>{!!$product->price_numeric ?? ''!!}</b> --}}
-                            <b> {{ showPriceWithCurrency($product->price_numeric) }} </b>
+                            <b> {{ session()->get('currencySymbol').' '.($product->price_numeric ?? 0) }} </b>
     
                             <!-- <p><i class="fa fa-clock-o"></i> 30-40 min</p>  -->
                             @php
                             $comp = @$product->compare_price_numeric??0;
                             @endphp
                             @if(@$comp && $comp>0)
-                                {!!showPriceWithCurrency($product->compare_price_numeric,'1') !!}
+                            <del class="ml-2 compare_at_price" >{{  session()->get('currencySymbol').' '.($product->compare_price_numeric ?? 0) }} </del>
                             @endif
                         </div>
                     </div>
