@@ -139,7 +139,7 @@ class OrderController extends BaseController
                 DB::beginTransaction();
 
                 $client_timezone = DB::table('clients')->first('timezone');
-                pr($client_timezone);
+                
                 if($user){
                     $timezone = $user->timezone ??  $client_timezone->timezone;
                 }else{
