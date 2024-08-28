@@ -767,11 +767,6 @@ trait ProductActionTrait{
                     $value->closed_store_order_scheduled = 0;
                 }
             }
-            $closed_vendors = array_filter($vendors, fn ($v) => $v->is_vendor_closed == 1);
-            $vendors        = array_filter($vendors, fn ($v) => $v->is_vendor_closed == 0);
-            foreach ($closed_vendors as $cv) {
-                $vendors []= $cv;
-            }
             $keyToFilter = 'is_vendor_closed';
             $valueToFilter = $venderFilterOpenClose;
             // $my_array = ['foo' => 1, 'bar' => 'baz', 'hello' => 'wld'];

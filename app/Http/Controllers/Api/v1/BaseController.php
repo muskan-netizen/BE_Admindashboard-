@@ -322,7 +322,7 @@ class BaseController extends Controller{
         return $category_list;
     }
 
-    public function categoryNav($lang_id, $vends=null,$type = 'delivery', $request = []) {
+    public function categoryNav($lang_id, $vends=[],$type = 'delivery', $request = []) {
 
         $categoryTypes = getServiceTypesCategory($type);
 
