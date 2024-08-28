@@ -495,7 +495,8 @@ if (! function_exists('sendNotificationToCustomer')) {
             ];
 
             $response = sendFcmCurlRequest($data,$client_preferences->fcm_server_key);
-            $result = json_decode($response);
+            // $result = json_decode($response);
+            $result = $response;
             return $result;
         }
     }
