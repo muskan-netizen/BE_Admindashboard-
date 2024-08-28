@@ -86,7 +86,7 @@ class OrderController extends BaseController
     }
     public function postPlaceOrder(Request $request)
     {
-
+       
        try {
             $action = ($request->has('type')) ? $request->type : 'delivery';
 
@@ -119,6 +119,7 @@ class OrderController extends BaseController
                     return response()->json($errors, 422);
                 }
             }
+        
             $rate = 0;
             $total_amount = 0;
             $total_discount = 0;
@@ -138,7 +139,7 @@ class OrderController extends BaseController
                 DB::beginTransaction();
 
                 $client_timezone = DB::table('clients')->first('timezone');
-
+                pr($client_timezone);
                 if($user){
                     $timezone = $user->timezone ??  $client_timezone->timezone;
                 }else{
