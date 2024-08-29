@@ -463,9 +463,10 @@ trait ProductActionTrait{
                 $getSubCatIdsIn = " AND `products`.`category_id` IN ($subCatIdsArray)";
             }
 
-
+          
             $single_category_product_ids = $this->getProductsId($where, $vendorWhereIN, $whereProductType);
-              if($where!=='is_featured'){
+              if($where!=='is_featured' && $where!=='spotlight_deals'){
+             
             if(count($single_category_product_ids) > 0 && $where!=='recent_viewed'){
             
                 shuffle($single_category_product_ids);
