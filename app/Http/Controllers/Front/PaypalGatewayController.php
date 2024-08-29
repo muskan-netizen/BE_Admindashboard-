@@ -95,7 +95,7 @@ class PaypalGatewayController extends FrontController
                     ['TOKEN' => $token] = $response->getData();
 
                     $params   = http_build_query(['token' => $token, 'cmd' => '_express-checkout', 'useraction' => 'commit']);
-                    $url      = strtr('https://www{sandbox}paypal.com', ['{sandbox}' => $this->testmode ? '.sandbox.' : '']);
+                    $url      = strtr('https://www.{sandbox}paypal.com', ['{sandbox}' => $this->testmode ? 'sandbox.' : '']);
                     $location = sprintf('%s/cgi-bin/webscr?%s', $url, $params);
 
                     return $this->successResponse($location, 'Payment link generated', 200);
