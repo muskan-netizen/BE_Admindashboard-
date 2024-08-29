@@ -769,6 +769,7 @@ class UserhomeController extends FrontController
                                        ->whereHas('layout', function($q) use ($slugs){
                                             $q->whereIn('slug', $slugs);
                                        })->whereNotNull('title')->select('title', 'cab_booking_layout_id')->get();
+                                       
 
         foreach($CabBookingLayoutTranslation as $translation)
         {
@@ -901,6 +902,7 @@ class UserhomeController extends FrontController
             $long_term_service_products = $this->longTermServiceProducts($vendor_ids, $this->additionalPreference, $language_id, $currency_id,'', $request->type,$p_dim);
         }
         if($this->checkTemplateForAction(8) || $this->checkTemplateForAction(1)){
+
             $recently_viewed = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'recent_viewed', $request->type, $featured_products_title,$p_dim);
             //$spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get spotlight product i.e. max discounted products
             $spot_light_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'spotlight_deals', $request->type, $featured_products_title,$p_dim);
