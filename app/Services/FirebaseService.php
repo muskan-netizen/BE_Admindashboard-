@@ -62,15 +62,22 @@ class FirebaseService
 
     public function sendNotification($data,$is_vendor = 0) //$token, $title, $body
     {
-
+     
         $client = new Client();
          if($is_vendor == 1){
            $preference = getAdditionalPreference(['fcm_vendor_project_id']);
            $projectId = $preference['fcm_vendor_project_id'];
+           if (!$projectId) {
+            return false;
+        }
            $accessToken = getFcmOauthTokenVendor();
+           
          }else{
         $preference = ClientPreference::select('fcm_project_id')->first();
         $projectId = $preference->fcm_project_id;
+        if (!$projectId) {
+            return false;
+        }
         $accessToken = getFcmOauthToken();
          }
         if (!$preference) {

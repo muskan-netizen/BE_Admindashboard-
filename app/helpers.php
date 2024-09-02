@@ -26,14 +26,19 @@ use App\Services\FirebaseService;
 if (!function_exists('getFcmOauthToken')) {
     function getFcmOauthToken($url = null) {
         try {
+            
             $preference = ClientPreferenceAdditional::where('key_name', 'firebase_account_json_file')->first();
+            if (!$preference) {
+                \Log::error('FCM Send Error: FCM project ID not found in database For Vendor.');
+                return false;
+            }
             $fileName = $preference->key_value ?? null;
             $scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
             if ($fileName) {
                 // Generate a temporary URL with the Content-Disposition header set to attachment
                 $url = Storage::disk('s3')->url($fileName);
             }
-
+              
             // If the URL is null, use the local file path
             $serviceAccountPath = $url ?? "voltaic-e59be-c73103aa2b73.json";
     
@@ -73,6 +78,11 @@ if (!function_exists('getFcmOauthTokenVendor')) {
     function getFcmOauthTokenVendor($url = null) {
         try {
             $preference = ClientPreferenceAdditional::where('key_name', 'firebase_vendor_account_json_file')->first();
+           
+            if (!$preference) {
+              
+                return false;
+            }
             $fileName = $preference->key_value ?? null;
             $scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
             if ($fileName) {
@@ -339,7 +349,8 @@ if (!function_exists('transformToFcmV1Format')) {
 if (!function_exists('sendFcmCurlRequest')) {
     function sendFcmCurlRequest($data ,$fcm_server_key = '',$is_vendor = 0)
     {
-        // \Log::info('fcm curl function ');
+        
+     
         $response = FirebaseService::sendNotification($data,$is_vendor);
         // \Log::info('fcm curl firebase response');
         // \Log::info($response);

@@ -1412,7 +1412,7 @@ trait OrderTrait
             ];
             $dataString = $data;
 
-            sendFcmCurlRequest($data);
+            sendFcmCurlRequest($data,$client_preferences,1);
         }
     }
 
