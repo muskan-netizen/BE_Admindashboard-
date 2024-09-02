@@ -1227,6 +1227,7 @@ class OrderController extends BaseController
                         $payment->save();
                     }
                     $order = $order->with(['vendors:id,order_id,dispatch_traking_url,vendor_id', 'user_vendor', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
+                   
                     if (in_array($request->payment_option_id, $ex_gateways)) {
                         $code = $request->header('code');
                         if (!empty($order->vendors)) {
@@ -1238,6 +1239,7 @@ class OrderController extends BaseController
                                     $clientDetail = Client::on('mysql')->where(['code' => $client_preference->client_code])->first();
                                     AutoRejectOrderCron::on('mysql')->create(['database_host' => $clientDetail->database_path, 'database_name' => $clientDetail->database_name, 'database_username' => $clientDetail->database_username, 'database_password' => $clientDetail->database_password, 'order_vendor_id' => $vendor_value->id, 'auto_reject_time' => Carbon::now()->addMinute($vendorDetail->auto_reject_time)]);
                                 }
+                               
                                 $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail, $code);
                             }
                             $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
@@ -1267,7 +1269,7 @@ class OrderController extends BaseController
                     # if payment type cash on delivery or payment status is 'Paid'
                     if (( ($order->payment_option_id == 1 || $order->payment_option_id == 38 )) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) {
                         # if vendor selected auto accept
-
+                     
                         $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                     }
                     // $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code','marg_date_time']);
@@ -3961,6 +3963,7 @@ class OrderController extends BaseController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData, $header_code='')
     {
+       
         $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon','vendor_fcm_server_key')->first();
         $from = '';
@@ -4009,7 +4012,7 @@ class OrderController extends BaseController
                 "priority" => "high"
             ];
             if (!empty($from)) {
-                sendFcmCurlRequest($data);
+                sendFcmCurlRequest($data,$from,1);
             }
 
             $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
@@ -4350,7 +4353,7 @@ class OrderController extends BaseController
                     ],
                     "priority" => "high"
                 ];
-            return sendFcmCurlRequest($data);
+            return sendFcmCurlRequest($data,$client_preferences,1);
             }
         }
 
