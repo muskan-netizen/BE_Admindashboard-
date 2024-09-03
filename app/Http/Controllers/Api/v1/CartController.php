@@ -178,7 +178,7 @@ class CartController extends BaseController
             $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
             $already_added_product_variant_in_cart = CartProduct::where(["variant_id" => $request->product_variant_id, 'cart_id' => $cart_detail->id])->first();
             $totalQuantity = (!empty($already_added_product_variant_in_cart) ? $already_added_product_variant_in_cart->quantity : 0) + $request->quantity;
- 
+
             if($product->has_inventory == 1 && $totalQuantity > $productVariant->quantity){
                 return response()->json(['error' => __('You have exceeded the maximum quantity for this product, please reduce it!')], 404);
             }
@@ -576,8 +576,8 @@ class CartController extends BaseController
                 $sel->groupBy('product_id');
             }
         ])->find($cartProduct->product_id);
-        if($productDetail->variant[0]->quantity < $request->quantity){
-            return response()->json(['error' => __('You can not add more product.')], 404);
+        if($productDetail->has_inventory == 1 && $productDetail->variant[0]->quantity < $request->quantity){
+            return response()->json(['error' => __('You have exceeded the maximum quantity for this product, please reduce it!')], 404);
         }
         $cartProduct->quantity = $request->quantity;
         $cartProduct->save();
@@ -1931,7 +1931,9 @@ class CartController extends BaseController
             $cart->deliver_status = $delivery_status;
         }
         if($cart->deliver_status == 0){
-            $cart->cart_error_message = __("We cannot deliver this product");
+            $cart->cart_error_message = empty(Auth::user()->id)
+                ? __("Please login before placing an order!")
+                : __("We cannot deliver this product");
         }
         $cart->loyalty_amount = $loyalty_amount_saved;
 

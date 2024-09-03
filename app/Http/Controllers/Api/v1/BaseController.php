@@ -322,7 +322,7 @@ class BaseController extends Controller{
         return $category_list;
     }
 
-    public function categoryNav($lang_id, $vends=[],$type = 'delivery', $request = []) {
+    public function categoryNav($lang_id, $vends=null,$type = 'delivery', $request = []) {
 
         $categoryTypes = getServiceTypesCategory($type);
 
@@ -378,7 +378,7 @@ class BaseController extends Controller{
                 //         });
 
 
-                $categories = $categories->when($vends, function ($query) use($vends , $include_categories) {
+                $categories = $categories->when(! is_null($vends), function ($query) use($vends , $include_categories) {
                     $query->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
                             ->where(function ($q1) use ($vends , $include_categories) {
                                 $q1->whereIn('vct.vendor_id', $vends)

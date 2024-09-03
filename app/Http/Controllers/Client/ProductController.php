@@ -965,7 +965,7 @@ class ProductController extends BaseController
                         }
                     }
                 } else {
-                    return redirect()->back()->withInput()->withErrors(['error' => 'Please Add Measurement Keys for this Category in Category Add-Ons']);
+                    /*return redirect()->back()->withInput()->withErrors(['error' => 'Please Add Measurement Keys for this Category in Category Add-Ons']);*/
                 }
             }
 
