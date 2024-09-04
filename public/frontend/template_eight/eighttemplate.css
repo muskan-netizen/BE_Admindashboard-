@@ -2950,6 +2950,7 @@ body.al_body_template_eight .p2p-full-width {
     height: 100%;
 }
 
+
 .al_body_template_eight img.blur-up.brand-logo.lazyloaded {
     width: 100% !important;
 }
@@ -2959,10 +2960,11 @@ body.al_body_template_eight .p2p-full-width {
     font-weight: 400;
     position: relative;
     line-height: 1.5;
-    padding: 0 20px;
+    padding: 0 10px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin: 0 5px;
 }
 
 .status_box li a {
@@ -3402,7 +3404,7 @@ body.dark .number .counter-container {
     }
 
     .navbar-brand img.logo-image {
-        height: 35px  !important;
+        height: 35px !important;
     }
 
     body.al_body_template_eight .custom_banner img {
