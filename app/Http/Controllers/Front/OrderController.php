@@ -3428,7 +3428,7 @@ class OrderController extends FrontController
             ];
             if (!empty($from)) {
                 // helper function
-                sendFcmCurlRequest($data, $from,1);
+                sendFcmCurlRequest($data);
             }
 
             // Individual Vendor App User Token
