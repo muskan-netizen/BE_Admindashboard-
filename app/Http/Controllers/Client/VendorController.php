@@ -74,7 +74,7 @@ class VendorController extends BaseController
         $user = Auth::user();
         $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->where('status', $request->status)->where('is_seller', 0)->orderBy('id', 'desc');
         if ($user->is_superadmin == 0) {
-            if($user->hasRole('Vendor') || $user->hasRole('Vendors') || $user->hasRole('vendor')){
+            if($user->hasRole('Vendor') || $user->hasRole('Vendors') || $user->hasRole('vendor') || $user->can('vendor-catalog')){
                 $vendors = $vendors->whereHas('permissionToUser', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
                 });
@@ -188,6 +188,7 @@ class VendorController extends BaseController
 
     public function index(){
 
+        /** @var \App\Models\User */
         $user = Auth::user();
         $csvVendors = CsvVendorImport::orderBy('id','desc')->get();
         $preferences = ClientPreference::first();
@@ -1286,7 +1287,7 @@ class VendorController extends BaseController
 
         $total_admin_commissions = $OrderVendor->sum(DB::raw('admin_commission_percentage_amount + admin_commission_fixed_amount'));
 
-     
+
         $total_order_value = $OrderVendor->sum('payable_amount') - $total_delivery_fees;
 
         $vendor_payouts = VendorPayout::where('vendor_id', $id)->orderBy('id','desc');
