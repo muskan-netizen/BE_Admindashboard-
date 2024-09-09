@@ -71,6 +71,7 @@ class VendorController extends BaseController
     public function getFilterData(Request $request){
         $client_preference = (object)Session::get('preferences');
         $getAdditionalPreference = getAdditionalPreference(['is_one_push_book_enable']);
+        /** @var \App\Models\User */
         $user = Auth::user();
         $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->where('status', $request->status)->where('is_seller', 0)->orderBy('id', 'desc');
         if ($user->is_superadmin == 0) {
