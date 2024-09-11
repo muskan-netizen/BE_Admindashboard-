@@ -62,10 +62,10 @@ class PaystackGatewayController extends FrontController
             if ($request->has('subscription_id')) {
                 $returnUrlParams = $returnUrlParams . '&subscription_id=' . $request->subscription_id;
             }
-            
+
             $returnUrlParams = $returnUrlParams.'&gateway=paystack&user_id='.$user->id;
             $returnRoute = $returnRoute .   $returnUrlParams;
-          
+
             $response = $this->gateway->purchase([
                 'amount' => $amount,
                 'currency' => $this->currency, //'ZAR'
@@ -94,7 +94,6 @@ class PaystackGatewayController extends FrontController
     }
     public function paystackCompletePurchase(Request $request)
     {
-       pr($request->all());
         // Once the transaction has been approved, we need to complete it.
         if($request->has(['reference'])){
             $amount = $this->getDollarCompareAmount($request->amount);
@@ -111,7 +110,7 @@ class PaystackGatewayController extends FrontController
                 $cart_id = $request->cart_id;
                 $user_id = $request->user_id;
                 if($payment_form == 'cart'){
-                    
+
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                     if ($order) {
                         $order->payment_status = 1;
@@ -125,7 +124,7 @@ class PaystackGatewayController extends FrontController
                             $payment->balance_transaction = $amount;
                             $payment->type = 'cart';
                             $payment->save();
-    
+
                             // Auto accept order
                             $orderController = new OrderController();
                             $orderController->autoAcceptOrderIfOn($order->id);
@@ -144,7 +143,7 @@ class PaystackGatewayController extends FrontController
                                 }
                                 }
                             // Remove cart
-                            
+
                             CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                             Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
                             CartAddon::where('cart_id', $cart_id)->delete();
@@ -192,7 +191,7 @@ class PaystackGatewayController extends FrontController
                     $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription_id);
                     $returnUrl = route('user.subscription.plans');
                     return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
-                    
+
                 }
                 elseif($request->payment_form == 'pickup_delivery'){
                     $request->request->add(['payment_option_id' => 5, 'amount' => $amount,'order_number' => $request->ordernumber, 'transaction_id' => $transactionId]);
@@ -200,7 +199,7 @@ class PaystackGatewayController extends FrontController
                     $plaseOrderForPickup = new PickupDeliveryController();
                     $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
                  // pr($request->reload_route);
-                  
+
                     $returnUrl = $request->reload_route;
                     return Redirect::to(url($returnUrl))->with('success', __('Transaction has been completed successfully'));
                 }
@@ -317,7 +316,7 @@ class PaystackGatewayController extends FrontController
                     $plaseOrderForPickup = new PickupDeliveryController();
                     $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
                  // pr($request->reload_route);
-                  
+
                     // $returnUrl = $request->reload_route;
                     // return Redirect::to(url($returnUrl))->with('success', __('Transaction has been completed successfully'));
                 }

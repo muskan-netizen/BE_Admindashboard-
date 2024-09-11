@@ -424,6 +424,9 @@ trait ProductActionTrait{
                 $venid = '0';
             }
             $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
+            if (! ($preferences->is_hyperlocal ?? false)) {
+               $vendorWhereIN = '-- ' . $vendorWhereIN;
+            }
             if($where!=='all' && $where!=='on_sale'){
 
                     if($where =='single_category_products' || $where == 'selected_products' || $where == 'popular_products' || $where == 'top_rated_products' ||  $where == 'recent_viewed'){
@@ -552,7 +555,7 @@ trait ProductActionTrait{
             AND `products`.`is_live` = 1
             $whereComparePriceNotNull
             $completeWhere
-            -- $vendorWhereIN
+            $vendorWhereIN
             $getSubCatIdsIn
             $whereProductType
             GROUP BY `products`.`id`
