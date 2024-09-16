@@ -86,10 +86,10 @@ class FirebaseService
         }
 
 
+        \Log::info('data');
 
-
-        // \Log::info('projectId');
-        // \Log::info($projectId);
+         \Log::info($data);
+     
         // \Log::info('projectId');
         //$url = "https://fcm.googleapis.com/v1/projects/{$this->projectId}/messages:send";
         $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";

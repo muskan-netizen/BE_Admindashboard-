@@ -505,6 +505,9 @@ if (! function_exists('sendNotificationToCustomer')) {
                 "priority" => "high"
             ];
 
+
+            
+
             $response = sendFcmCurlRequest($data,$client_preferences->fcm_server_key);
             // $result = json_decode($response);
             $result = $response;
