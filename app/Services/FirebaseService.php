@@ -88,7 +88,7 @@ class FirebaseService
 
         \Log::info('data');
 
-         \Log::info($data['notification']);
+         \Log::info($data['registration_ids']);
      
         // \Log::info('projectId');
         //$url = "https://fcm.googleapis.com/v1/projects/{$this->projectId}/messages:send";
@@ -182,7 +182,7 @@ class FirebaseService
         //print_r($newData);
 
 
-         try {
+        //  try {
 
             $messages = [];
             foreach ($data['registration_ids'] as $token) {
@@ -300,10 +300,10 @@ class FirebaseService
             // ]);
 
             // return json_decode($response->getBody(), true);
-        } catch (RequestException $e) {
-            // Handle the error appropriately
-            return ['error' => $e->getMessage()];
-        }
+        // } catch (RequestException $e) {
+        //     // Handle the error appropriately
+        //     return ['error' => $e->getMessage()];
+        // }
     }
 
     protected function base64UrlEncode($data)
