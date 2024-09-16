@@ -617,7 +617,7 @@ class PickupDeliveryController extends BaseController{
         // \Log::info('request data');
         // \Log::info($request->all());
         DB::beginTransaction();
-        try {
+        // try {
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
 
@@ -697,14 +697,14 @@ class PickupDeliveryController extends BaseController{
 
                return  $order_place;
 
-        }
-        catch(\Exception $e){
-            DB::rollback();
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
-        }
+        // }
+        // catch(\Exception $e){
+        //     DB::rollback();
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => $e->getMessage()
+        //     ]);
+        // }
 
     }
 
@@ -1181,7 +1181,7 @@ class PickupDeliveryController extends BaseController{
 
     // place Request To Dispatch
     public function placeRequestToDispatch($request,$order,$vendor){
-        try {
+        // try {
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             $customer = Auth::user();
             $wallet = $customer->wallet;
@@ -1345,13 +1345,13 @@ class PickupDeliveryController extends BaseController{
                 }
                 return $response;
             }
-            }catch(\Exception $e)
-            {
-                $data = [];
-                $data['status'] = 400;
-                $data['message'] =  $e->getMessage();
-                return $data;
-            }
+            // }catch(\Exception $e)
+            // {
+            //     $data = [];
+            //     $data['status'] = 400;
+            //     $data['message'] =  $e->getMessage();
+            //     return $data;
+            // }
     }
 
       /**
