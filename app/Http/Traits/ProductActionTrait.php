@@ -2,11 +2,10 @@
 namespace App\Http\Traits;
 use App\Models\{ProductRecentlyViewed,WebStylingOption,Product,Category, ClientCurrency, HomeProduct,ProductCategory,OrderVendorProduct,OrderProductRating,OrderProduct, VendorCategory, Vendor, SubscriptionInvoicesVendor};
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
+use Auth;
+use Session;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use DB;
 use Grimzy\LaravelMysqlSpatial\Types\Point;
 use App\Http\Controllers\Front\FrontController;
 use DateTime;
@@ -19,11 +18,9 @@ trait ProductActionTrait{
 
     public function getRandomVendorIdsForHomePage($preferences, $type, $is_admin_vendor_rating = 0, $latitude, $longitude,$action='2')
     {
-
         try
         {
             $vendors = Vendor::vendorOnline()->select('id')->where('status', 1)->where($type, 1);
-
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                     $point = new Point($longitude, $latitude);
                     $vendors->whereHas('serviceArea', function ($query) use ($point) {
@@ -338,7 +335,6 @@ trait ProductActionTrait{
 
     public function getProductsId($type='', $vendorWhereIN = '', $whereProductType = '')
     {
-
         try
         {
             $product_ids = [];
@@ -406,7 +402,6 @@ trait ProductActionTrait{
 
     public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type = '',$Products_title = '', $p_dim = '',$getSubCatIds='', $preferences = NULL, $categoryTypes = NULL)
     {
-
         try
         {
             $user = Auth::user();
@@ -425,9 +420,6 @@ trait ProductActionTrait{
                 $venid = '0';
             }
             $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
-            if (($preferences->is_hyperlocal ?? false)) {
-               $vendorWhereIN = '-- ' . $vendorWhereIN;
-            }
             if($where!=='all' && $where!=='on_sale'){
 
                     if($where =='single_category_products' || $where == 'selected_products' || $where == 'popular_products' || $where == 'top_rated_products' ||  $where == 'recent_viewed'){
@@ -469,10 +461,8 @@ trait ProductActionTrait{
 
 
             $single_category_product_ids = $this->getProductsId($where, $vendorWhereIN, $whereProductType);
-              if($where!=='is_featured' && $where!=='spotlight_deals'){
 
             if(count($single_category_product_ids) > 0 && $where!=='recent_viewed'){
-
                 shuffle($single_category_product_ids);
                 $random_numbers = array_slice($single_category_product_ids, 0, 6);
                 $single_category_product_ids = @implode(',',$random_numbers);
@@ -480,7 +470,6 @@ trait ProductActionTrait{
                     $completeWhere .= ' AND  `products`.`id` IN  ('.$single_category_product_ids.')';
                 }
             }
-        }
 
 
             $raw_query = "SELECT
@@ -564,8 +553,6 @@ trait ProductActionTrait{
 
 
             $returnArray = DB::select( DB::raw($raw_query));
-
-
             // //$collectionproducts = collect($products)->unique('id');
             // if(empty($single_category_product_ids)){
             //     //$collectionproducts = $collectionproducts->random(10);
@@ -772,16 +759,24 @@ trait ProductActionTrait{
                     $value->closed_store_order_scheduled = 0;
                 }
             }
+
+            $closed_vendors = array_filter($vendors, fn ($v) => $v->is_vendor_closed == 1);
+            $vendors        = array_filter($vendors, fn ($v) => $v->is_vendor_closed == 0);
+
+            foreach ($closed_vendors as $cv) {
+                $vendors []= $cv;
+            }
+
             $keyToFilter = 'is_vendor_closed';
             $valueToFilter = $venderFilterOpenClose;
             // $my_array = ['foo' => 1, 'bar' => 'baz', 'hello' => 'wld'];
-            if($venderFilterOpenClose === 1){
+            if($venderFilterOpenClose === 1 ){
                 $filteredArray = array_filter($vendors, function($item) use ($keyToFilter, $valueToFilter) {
                     return isset($item->$keyToFilter) && $item->$keyToFilter == $valueToFilter;
                 });
                 $filtered = array_values($filteredArray);
             }else {
-                $filtered = $vendors;
+                $filtered = array_values($vendors);
             }
             return $filtered;
         }
