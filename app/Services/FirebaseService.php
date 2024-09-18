@@ -85,10 +85,6 @@ class FirebaseService
             return false;
         }
 
-
-        \Log::info('data');
-
-         \Log::info($data['registration_ids']);
      
         // \Log::info('projectId');
         //$url = "https://fcm.googleapis.com/v1/projects/{$this->projectId}/messages:send";
@@ -189,7 +185,7 @@ class FirebaseService
                 $data['registration_ids'] = [$data['registration_ids']];
             }
             foreach ($data['registration_ids'] as $token) {
-                 \Log::info('test_ids');
+              
                 // $message = [
                 //     'token' => $token,
                 //     'notification' => [
