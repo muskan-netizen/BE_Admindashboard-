@@ -185,6 +185,9 @@ class FirebaseService
         //  try {
 
             $messages = [];
+            if (!is_array($data['registration_ids'])) {
+                $data['registration_ids'] = [$data['registration_ids']];
+            }
             foreach ($data['registration_ids'] as $token) {
                  \Log::info('test_ids');
                 // $message = [
