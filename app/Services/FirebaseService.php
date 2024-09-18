@@ -186,7 +186,7 @@ class FirebaseService
 
             $messages = [];
             foreach ($data['registration_ids'] as $token) {
-
+                 \Log::info('test_ids');
                 // $message = [
                 //     'token' => $token,
                 //     'notification' => [
