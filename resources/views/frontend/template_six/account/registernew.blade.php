@@ -214,7 +214,8 @@ $sign_image_url = $sign_image['image_fit'].'1920/1080'.$sign_image['image_path']
 
 
                                         </div>
-                                        <div class="col-12 hide position-absolute">
+                                        @include('frontend.consent')
+                                        <div class="col-12 hide">
                                             <label for="">Referral Code</label>
                                             <input type="text" class="form-control" id="refferal_code"
                                                 placeholder="Refferal Code" name="refferal_code"

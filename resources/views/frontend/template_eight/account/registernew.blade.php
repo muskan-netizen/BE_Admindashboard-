@@ -287,6 +287,7 @@
 
                                     </div> -->
                                 </div>
+                                @include('frontend.consent')
                                 <div class="row mt-3">
                                     <div class="col-md-12">
                                         <input type="hidden" name="device_type" value="web">
