@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{AddonOption, Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client, ClientPreferenceAdditional, Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, OrderProductAddon, OrderVendorProduct, ProductFaq, ProductFaqSelectOption, UserBidRideRequest, PickDropDriverBid, TaxRate, UserDevice};
+use App\Models\{AddonOption, Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client, ClientPreferenceAdditional, Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, OrderProductAddon, OrderVendorProduct, ProductFaq, ProductFaqSelectOption, UserBidRideRequest, PickDropDriverBid, TaxRate, UserDevice, PaymentOption};
 use App\Http\Traits\{ApiResponser,OrderTrait,GuzzleHttpTrait};
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Contracts\Session\Session;
@@ -1259,6 +1259,12 @@ class PickupDeliveryController extends BaseController{
                 {
                     $payable_amount  = $request->amount;
                 }
+
+                $payment_mode = "";
+                if(isset($request->payment_option_id) && $request->payment_option_id > 0){
+                    $payment_mode = PaymentOption::find($request->payment_option_id)->title ?? 'Cash On Delivery';
+                }
+
                 $postdata =  [
                             'notify_all' => $request->send_to_all ?1: 0,
                             'order_number' =>  $order->order_number,
@@ -1273,6 +1279,7 @@ class PickupDeliveryController extends BaseController{
                             'task_type' => $task_type,
                             'schedule_time' => $schedule_datetime_del ?? null,
                             'cash_to_be_collected' => $payable_amount??0.00,
+                            'payment_mode' => $payment_mode ?? null,
                             'barcode' => '',
                             'call_back_url' => $call_back_url??null,
                             'order_team_tag' => $team_tag,
