@@ -5,8 +5,13 @@
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.1/spectrum.min.css">
 <link href="{{asset('assets/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
-@endsection
 
+<style>
+.select2-container {
+    min-width: 300px !important;
+}
+</style>
+@endsection
 @section('content')
 <div class="col-12">
     <!-- start page title -->
