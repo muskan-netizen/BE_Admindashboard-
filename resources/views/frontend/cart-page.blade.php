@@ -1184,7 +1184,7 @@
 
                         <div class="col-lg-12 mt-3 cart-price">
 
-                            @if ($cart_details->sub_total > 0)
+                            {{-- @if ($cart_details->sub_total > 0) --}}
                                 <div class="row">
                                     <div class="col-6">{{ __('Total') }}</div>
                                     {{-- <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->sub_total - $cart_details->bid_total_discount)}}</b></div> --}}
@@ -1198,7 +1198,7 @@
                                     </div>
                                 </div>
                                 <hr class="my-2">
-                            @endif
+                            {{-- @endif --}}
                             @if ($price_bifurcation != 1)
                                 <!-- <hr class="my-2"> -->
                                 {{-- <div class="row">
@@ -1699,6 +1699,7 @@
                                         $disablePlaceBtn = 'disabled';
                                     }
                                 @endphp
+                                @if($cart_details->total_payable_amount>0)
                                 @if ($additionalPreference['is_token_currency_enable'] == 1)
 
                                     @if ($cart_details->wallet_amount_used > 0)
@@ -1722,6 +1723,7 @@
                                         <div class="alert p-0" role="alert">
                                             <div class="alert-danger p-1">{{ $cart_error_message }}</div>
                                         </div>
+                                    @endif
                                     @endif
                                 @endif
 
