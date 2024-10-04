@@ -74,7 +74,7 @@ class VendorController extends BaseController
         /** @var \App\Models\User */
         $user = Auth::user();
         $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->where('status', $request->status)->where('is_seller', 0)->orderBy('id', 'desc');
-        if ($user->is_superadmin == 0 || ! $user->hasRole('admin') || ! $user->hasRole('Admin')) {
+        if ($user->is_superadmin == 0 && ((! $user->hasRole('admin')) || (! $user->hasRole('Admin')))) {
             if($user->hasRole('Vendor') || $user->hasRole('Vendors') || $user->hasRole('vendor') || $user->can('vendor-catalog')){
                 $vendors = $vendors->whereHas('permissionToUser', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
@@ -199,7 +199,7 @@ class VendorController extends BaseController
         $client_preferences = ClientPreference::first();
         $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->where('is_seller', 0)->orderBy('id', 'desc');
 
-        if ($user->is_superadmin == 0 || ! $user->hasRole('admin') || ! $user->hasRole('Admin')) {
+        if ($user->is_superadmin == 0 && ((! $user->hasRole('admin')) || (! $user->hasRole('Admin')))) {
             if($user->hasRole('Vendor') || $user->hasRole('Vendors') || $user->hasRole('vendor')){
                 $vendors = $vendors->whereHas('permissionToUser', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
@@ -1208,7 +1208,7 @@ class VendorController extends BaseController
         $vendor = Vendor::where('id',$id);
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $user = Auth::user();
-        if ($user->is_superadmin == 0 || ! $user->hasRole('admin') || ! $user->hasRole('Admin')) {
+        if ($user->is_superadmin == 0 && ((! $user->hasRole('admin')) || (! $user->hasRole('Admin')))) {
             $vendor = $vendor->whereHas('permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
             });
