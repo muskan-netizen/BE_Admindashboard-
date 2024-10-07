@@ -1880,7 +1880,9 @@ trait OrderTrait
                  ];
                  // $res = $this->testOrderMail($email_data);
                  // dd($res);
-                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                 if ($email_template) {
+                    dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                 }
                  $notified = 1;
              } catch (\Exception $e) {
              }

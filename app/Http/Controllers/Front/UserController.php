@@ -134,20 +134,22 @@ class UserController extends FrontController{
                             $email_template_content = $email_template->content;
                             $email_template_content = str_ireplace("{code}", $otp, $email_template_content);
                             $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
+                            $data = [
+                                'code' => $otp,
+                                'link' => "link",
+                                'email' => $sendto,
+                                'mail_from' => $mail_from,
+                                'client_name' => $client_name,
+                                'logo' => $client->logo['original'],
+                                'subject' => $email_template->subject,
+                                'customer_name' => ucwords($user->name),
+                                'email_template_content' => $email_template_content,
+                            ];
+                            if ($email_template) {
+                                dispatch(new \App\Jobs\SendVerifyEmailJob($data))->onQueue('verify_email');
+                            }
+                            $notified = 1;
                         }
-                        $data = [
-                            'code' => $otp,
-                            'link' => "link",
-                            'email' => $sendto,
-                            'mail_from' => $mail_from,
-                            'client_name' => $client_name,
-                            'logo' => $client->logo['original'],
-                            'subject' => $email_template->subject,
-                            'customer_name' => ucwords($user->name),
-                            'email_template_content' => $email_template_content,
-                        ];
-                        dispatch(new \App\Jobs\SendVerifyEmailJob($data))->onQueue('verify_email');
-                        $notified = 1;
                     } catch (\Exception $e) {
                         $user->save();
                     }

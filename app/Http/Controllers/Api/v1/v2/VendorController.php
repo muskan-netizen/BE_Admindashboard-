@@ -1498,9 +1498,11 @@ class VendorController extends BaseController{
                 'mail_from' => $client_preference->mail_from,
             ];
             try{
-                dispatch(new \App\Jobs\sendVendorRegistrationEmail($email_data))->onQueue('verify_email');
-                dispatch(new \App\Jobs\sendVendorRegistrationEmail($admin_email_data))->onQueue('verify_email');
-            }catch(Exception $e) {
+                if ($email_template) {
+                    dispatch(new \App\Jobs\sendVendorRegistrationEmail($email_data))->onQueue('verify_email');
+                    dispatch(new \App\Jobs\sendVendorRegistrationEmail($admin_email_data))->onQueue('verify_email');
+                }
+            }catch(\Exception $e) {
 
             }
             DB::commit();

@@ -391,19 +391,21 @@ class ReturnOrderController extends BaseController{
                     $email_template_content = str_ireplace("{product_image}", $order_vendor_product->image['image_fit'].'200/200'.$order_vendor_product->image['image_path'], $email_template_content);
                     $email_template_content = str_ireplace("{product_name}", $order_vendor_product->product->title, $email_template_content);
                     $email_template_content = str_ireplace("{price}", $order_vendor_product->price, $email_template_content);
+
+                    $data = [
+                        'link' => "link",
+                        'email' => $sendto,
+                        'mail_from' => $mail_from,
+                        'client_name' => $client_name,
+                        'logo' => $client->logo['original'],
+                        'subject' => $email_template->subject,
+                        'customer_name' => ucwords($user->name),
+                        'email_template_content' => $email_template_content,
+                    ];
+
+                    dispatch(new \App\Jobs\SendOrderSuccessEmailJob($data))->onQueue('verify_email');
+                    $notified = 1;
                 }
-                $data = [
-                    'link' => "link",
-                    'email' => $sendto,
-                    'mail_from' => $mail_from,
-                    'client_name' => $client_name,
-                    'logo' => $client->logo['original'],
-                    'subject' => $email_template->subject,
-                    'customer_name' => ucwords($user->name),
-                    'email_template_content' => $email_template_content,
-                ];
-                dispatch(new \App\Jobs\SendOrderSuccessEmailJob($data))->onQueue('verify_email');
-                $notified = 1;
             } catch (\Exception $e) {
             }
         }

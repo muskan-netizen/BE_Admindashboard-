@@ -3114,37 +3114,38 @@ class OrderController extends BaseController
 
                 $email_template_content = '';
                 $email_template = EmailTemplate::where('id', 12)->first();
-                $email_template_content = $email_template->content;
-                    //     if ($vendor_id == "") {
-                $returnHTML = view('email.orderCancelEmail')->with(['products' => $orderData->products->toArray()])->render();
-                //     } else {
-                //$returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails,'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
-                // }
-                $user = User::where('id', $user_ids[0])->first();
-                $email_template_content = str_ireplace("{name}", ucwords($user->name), $email_template_content);
-                $email_template_content = str_ireplace("{order_id}", "#" . $orderData->orderDetail->order_number, $email_template_content);
-                // $email_template_content = str_ireplace("{description}", '', $email_template_content);
-                $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
-                $body_content =
-                $client_name = $client->name;
-                $email_data = [
-                    'link' => "link",
-                    'mail_from' => $mail_from,
-                    'client_name' => $client_name,
-                    'logo' => $client->logo['original'],
-                    'subject' => $email_template->subject,
-                    'customer_name' => ucwords($user->name),
-                    'email_template_content' => $email_template_content
-                ];
 
-                if (!empty($data['admin_email'])) {
-                    $email_data['admin_email'] = $data['admin_email'];
-                }
-                $vendor_id = $orderData->vendor_id;
+                if (!empty($vendor) && $email_template) {
+                    $email_template_content = $email_template->content;
+                        //     if ($vendor_id == "") {
+                    $returnHTML = view('email.orderCancelEmail')->with(['products' => $orderData->products->toArray()])->render();
+                    //     } else {
+                    //$returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails,'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                    // }
+                    $user = User::where('id', $user_ids[0])->first();
+                    $email_template_content = str_ireplace("{name}", ucwords($user->name), $email_template_content);
+                    $email_template_content = str_ireplace("{order_id}", "#" . $orderData->orderDetail->order_number, $email_template_content);
+                    // $email_template_content = str_ireplace("{description}", '', $email_template_content);
+                    $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
+                    $body_content =
+                    $client_name = $client->name;
+                    $email_data = [
+                        'link' => "link",
+                        'mail_from' => $mail_from,
+                        'client_name' => $client_name,
+                        'logo' => $client->logo['original'],
+                        'subject' => $email_template->subject,
+                        'customer_name' => ucwords($user->name),
+                        'email_template_content' => $email_template_content
+                    ];
 
-                /* -- Sending email to vendor -- */
-                $vendor = Vendor::where('id', $vendor_id)->first();
-                if (!empty($vendor)) {
+                    if (!empty($data['admin_email'])) {
+                        $email_data['admin_email'] = $data['admin_email'];
+                    }
+                    $vendor_id = $orderData->vendor_id;
+
+                    /* -- Sending email to vendor -- */
+                    $vendor = Vendor::where('id', $vendor_id)->first();
                     $email_data['email'] = $vendor->email;
                     dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 }
