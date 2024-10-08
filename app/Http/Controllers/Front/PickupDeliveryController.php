@@ -1371,8 +1371,8 @@ class PickupDeliveryController extends FrontController{
                 }
 
                 $payment_mode = "";
-                if(isset($request->payment_option_id) && $request->payment_option_id > 0){
-                    $payment_mode = PaymentOption::find($request->payment_option_id)->title ?? 'Cash On Delivery';
+                if(isset($order->payment_option_id) && $order->payment_option_id > 0){
+                    $payment_mode = PaymentOption::find($order->payment_option_id)->title ?? 'Cash On Delivery';
                 }
 
                 $postdata =  [
