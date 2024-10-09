@@ -2394,7 +2394,7 @@ body[dir="rtl"] #step-4-ondemand .add-on-main-div {
     .al_body_template_one #page-container section,
     body .vendors section {
         padding-bottom: 0;
-        padding-top: 8rem !important;
+        padding-top: 0rem !important;
     }
 
     .al_body_template_one .vendor-products-wrapper .price_head h5 {
