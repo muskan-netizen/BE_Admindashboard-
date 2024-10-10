@@ -115,7 +115,7 @@ class AppStylingController extends BaseController
                    
                     $select_products=Product::where(['is_live'=>'1']);
                     $select_products = $select_products->where('is_long_term_service',0);
-                    $select_products= $select_products->get();
+                    $select_products= $select_products->with('vendor:id,name:slug')->get();
         //end home page
 
       
