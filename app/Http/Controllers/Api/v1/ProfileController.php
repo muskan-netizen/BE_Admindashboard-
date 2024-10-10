@@ -85,24 +85,24 @@ class ProfileController extends BaseController
                                 $email_template_content = $email_template->content;
                                 $email_template_content = str_ireplace("{code}", $refferal_code, $email_template_content);
                                 $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
-                            }
 
-                            $t = Mail::send('email.verify', [
-                                'email' => $sendto,
-                                'mail_from' => $mail_from,
-                                'client_name' => $client_name,
-                                'code' => $refferal_code,
-                                'logo' => $client->logo['original'],
-                                'customer_name' => "Link from " . $user->name,
-                                'code_text' => 'Register yourself using this referral code below to get bonus offer',
-                                'link' => "http://local.myorder.com/user/register?refferal_code=" . $refferal_code,
-                                'email_template_content' => $email_template_content
-                            ], function ($message) use ($sendto, $client_name, $mail_from) {
-                                $message->from($mail_from, $client_name);
-                                $message->to($sendto)->subject('Referral For Registration');
-                            });
+                                Mail::send('email.verify', [
+                                    'email' => $sendto,
+                                    'mail_from' => $mail_from,
+                                    'client_name' => $client_name,
+                                    'code' => $refferal_code,
+                                    'logo' => $client->logo['original'],
+                                    'customer_name' => "Link from " . $user->name,
+                                    'code_text' => 'Register yourself using this referral code below to get bonus offer',
+                                    'link' => "http://local.myorder.com/user/register?refferal_code=" . $refferal_code,
+                                    'email_template_content' => $email_template_content
+                                ], function ($message) use ($sendto, $client_name, $mail_from) {
+                                    $message->from($mail_from, $client_name);
+                                    $message->to($sendto)->subject('Referral For Registration');
+                                });
+                            }
                         } catch (\Exception $e) {
-                            \Log::error($e->getMessage());
+                            \Log::error($e);
                         }
                     }
                     return response()->json(array(
@@ -380,21 +380,21 @@ class ProfileController extends BaseController
                         $email_template_content = $email_template->content;
                         $email_template_content = str_ireplace("{code}", $emailCode, $email_template_content);
                         $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
+                        $data = [
+                            'code' => $emailCode,
+                            'link' => "link",
+                            'email' => $sendto,
+                            'mail_from' => $mail_from,
+                            'client_name' => $client_name,
+                            'logo' => $client->logo['original'],
+                            'subject' => $email_template->subject,
+                            'customer_name' => ucwords($user->name),
+                            'email_template_content' => $email_template_content
+                        ];
+                        $user->is_email_verified = 0;
+                        dispatch(new \App\Jobs\SendVerifyEmailJob($data))->onQueue('verify_email');
+                        $notified = 1;
                     }
-                    $data = [
-                        'code' => $emailCode,
-                        'link' => "link",
-                        'email' => $sendto,
-                        'mail_from' => $mail_from,
-                        'client_name' => $client_name,
-                        'logo' => $client->logo['original'],
-                        'subject' => $email_template->subject,
-                        'customer_name' => ucwords($user->name),
-                        'email_template_content' => $email_template_content
-                    ];
-                    $user->is_email_verified = 0;
-                    dispatch(new \App\Jobs\SendVerifyEmailJob($data))->onQueue('verify_email');
-                    $notified = 1;
                 } catch (\Exception $e) {
                     $user->save();
                 }
@@ -411,9 +411,9 @@ class ProfileController extends BaseController
                         $file = $request->file($doc_name);
                         $orignal_name = $request->file($doc_name)->getClientOriginalName();
                         $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
-                       
+
                         UserDocs::updateOrCreate(
-                            
+
                             ['user_id' => $user->id, 'user_registration_document_id' => $user_registration_document->id]
                             ,
                             ['file_name' => $file_name,'file_original_name'=>$orignal_name]);
@@ -511,7 +511,7 @@ class ProfileController extends BaseController
         return response()->json([
             'message' => __('Card does\'nt exist')
         ]);
-        
+
     }
 
     public function updateWishlistVendor(Request $request)

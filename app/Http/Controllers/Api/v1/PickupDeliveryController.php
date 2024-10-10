@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use DB,Log;
-use Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Config;
 use Validation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -17,7 +17,7 @@ use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log as FacadesLog;
+use Illuminate\Support\Facades\Log;
 
 class PickupDeliveryController extends BaseController{
 

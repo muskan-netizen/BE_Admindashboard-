@@ -23,6 +23,7 @@ use App\Models\AutoRejectOrderCron;
 
 use App\Http\Traits\{OrderTrait, ReturnExchangeTrait};
 use App\Models\{LoyaltyCard, ClientCurrency, VendorOrderCancelReturnPayment};
+use Illuminate\Support\Facades\Log;
 
 class ReturnOrderController extends FrontController
 {
@@ -83,7 +84,7 @@ class ReturnOrderController extends FrontController
                 }, 'vendors.products' => function ($qw) use ($request) {
                     $qw->with(['pvariant.product', 'pvariant.media.pimage.image']);
                     $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
-                }, 
+                },
                 'products' => function ($qw) use ($request) {
                     $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
                 }
@@ -94,7 +95,7 @@ class ReturnOrderController extends FrontController
 
             // dd($order_details->vendors[0]->products);
             if (isset($order_details)) {
-                
+
                     foreach($order_details->vendors as $vendor){
                         foreach($vendor->products as $key=>$products){
                             if((@$products->pvariant->product->replaceable == 1 && @$products->pvariant->product->return_days && $this->checkOrderDaysForReturn($vendor, $products->pvariant->product->return_days)) ){
@@ -104,7 +105,7 @@ class ReturnOrderController extends FrontController
                             }
                         }
                     }
-                
+
 
                 if ($request->ajax()) {
                     return \Response::json(\View::make('frontend.modals.replace-product-order', array('order' => $order_details))->render());
@@ -354,7 +355,7 @@ class ReturnOrderController extends FrontController
     }
 
 
-    
+
     // public function sendSuccessNotification($id, $vendorId){
     //     $super_admin = User::where('is_superadmin', 1)->pluck('id');
     //     $user_vendors = UserVendor::where('vendor_id', $vendorId)->pluck('user_id');
@@ -429,9 +430,11 @@ class ReturnOrderController extends FrontController
                     'customer_name' => ucwords($user->name),
                     'email_template_content' => $email_template_content,
                 ];
-                dispatch(new \App\Jobs\SendOrderSuccessEmailJob($data))->onQueue('verify_email');
-                $notified = 1;
+                if ($email_template) {
+                    dispatch(new \App\Jobs\SendOrderSuccessEmailJob($data))->onQueue('verify_email');
+                }
             } catch (\Exception $e) {
+                Log::error($e);
             }
         }
     }
@@ -457,7 +460,7 @@ class ReturnOrderController extends FrontController
 
             $order_vendor = OrderVendor::where('id', $request->id)->first();
             $cancellation_reason = ReturnReason::where(['status' => 'Active', 'type' => 3])->get();
-           
+
 
             $orderCancellationPercentage = 0;
             if (($client_preferences->order_cancellation_time > 0)) {
@@ -896,7 +899,7 @@ class ReturnOrderController extends FrontController
                 // return $this->successResponse($returns, 'Return Submitted.');
             }
             return redirect()->back();
-           
+
         } catch (Exception $e) {
             return redirect()->back();
         }
