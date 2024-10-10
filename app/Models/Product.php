@@ -167,7 +167,12 @@ class Product extends Model implements Auditable
 
   public function reviews()
   {
-    return $this->hasMany('App\Models\OrderProductRating', 'product_id', 'id');
+      return $this->hasMany('App\Models\OrderProductRating', 'product_id', 'id')->where('status', '1');
+  }
+
+  public function allReviews()
+  {
+      return $this->hasMany(OrderProductRating::class, 'product_id', 'id');
   }
 
   public function productVariantByRoles()
