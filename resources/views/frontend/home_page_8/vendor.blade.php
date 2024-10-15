@@ -1,4 +1,4 @@
-<div class="col-md-12 p-0">
+<div class="col-md-12">
     <div class="vender-logo deals-product product-card-box position-relative text-center al_custom_vendors_sec"  >
         <a class="suppliers-box d-block" href="{{route('vendorDetail')}}/{{ $vendor->slug }}">
             <div class="suppliers-img-outer position-relative ">

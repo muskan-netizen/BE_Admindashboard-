@@ -282,7 +282,7 @@ Options']) @section('css')
                                     </label>
 
                                     <input type="text" name="mastercard_operator_id" id="mastercard_operator_id" class="form-control"
-                                        value="{{ $mastercard_operator_id }}" <?php if ($opt->status == 1) echo 'required' ?>>
+                                        value="{{ $mastercard_operator_id }}" <?php if ($opt->status == 1 && $opt->test_mode == 1) echo 'required' ?>>
                                 </div>
 
                                 <div class="form-group mb-2">
@@ -291,7 +291,7 @@ Options']) @section('css')
                                     </label>
 
                                     <input type="text" name="mastercard_gateway" id="mastercard_gateway" class="form-control"
-                                        value="{{ $mastercard_gateway }}" <?php if ($opt->status == 1 && $opt->test_mode != 1) echo 'required' ?>>
+                                        value="{{ $mastercard_gateway }}" <?php if ($opt->status == 1) echo 'required' ?>>
                                 </div>
 							</div>
 						</div>
@@ -2056,7 +2056,7 @@ Options']) @section('css')
 							</div>
 						</div>
 					@endif
-					
+
                     @if ( (strtolower($opt->code) == 'totalpay') )
 						<div class="mt-2" id="totalpay_fields_wrapper" @if($opt->
 							status != 1) style="display:none" @endif>

@@ -146,7 +146,7 @@ trait ReturnExchangeTrait{
             }
             return 2;
         } catch (\Exception $e) {
-           Log::info($e->getMessage());
+        //    Log::info($e->getMessage());
             return 2;
         }
     }

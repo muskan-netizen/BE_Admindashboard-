@@ -97,7 +97,7 @@ class MastercardPaymentController extends Controller
             ->getInteraction()
             ->setReturnUrl($return_url = url(sprintf('/payment/mastercard/return/%s', $reference_id)));
 
-        Log::info("mastercard: return url: $return_url");
+        // Log::info("mastercard: return url: $return_url");
 
         switch ($payment_info->payment_from) {
             case 'wallet':

@@ -47,7 +47,7 @@ class PostController extends FrontController
         $celebrity_check = ClientPreference::first()->value('celebrity_check');
 
         $categories = Category::with('translation_one','type')->where('id', '>', '1');
-        \Log::info(@$getAdditionalPreference['is_rental_weekly_monthly_price']);
+        // \Log::info(@$getAdditionalPreference['is_rental_weekly_monthly_price']);
         if(@$getAdditionalPreference['is_rental_weekly_monthly_price']==1){
             $categories->whereHas('type', function($q){
                 $q->where('service_type', 'rental_service');

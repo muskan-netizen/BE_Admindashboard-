@@ -33,7 +33,7 @@ trait ThawanipaymentManager
     public function getDetails(){
 
         $payOption           = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'thawani')->where('status', 1)->first();
-       \Log::info( $payOption);
+    //    \Log::info( $payOption);
         $credentials         = json_decode($payOption->credentials);
         $thawani_Apikey      = $credentials->thawani_Apikey;
         $thawani_publishKey  = $credentials->thawani_publishKey;

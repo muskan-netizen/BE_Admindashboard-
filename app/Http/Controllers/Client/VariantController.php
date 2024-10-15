@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Client;
 
-use App\Http\Controllers\Client\BaseController;
-use App\Models\{Variant, VariantOption, VariantTranslation, VariantOptionTranslation, VariantCategory, Category, ClientLanguage};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Session;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Client\BaseController;
+use App\Models\{Variant, VariantOption, VariantTranslation, VariantOptionTranslation, VariantCategory, Category, ClientLanguage};
 
 class VariantController extends BaseController
 {
@@ -28,8 +28,8 @@ class VariantController extends BaseController
             ->where('status', 1)
             ->orderBy('parent_id', 'asc')
             ->orderBy('position', 'asc')
-            ->whereIn('type_id', ['1', '3', '6','10', '13']) //see type ids in TypeSeeder seeder
-            ->where('id', '>', 1)
+            ->where('id','>', 1)
+            ->whereIn('type_id', ['1', '3', '6','8','10', '13']) //see type ids in TypeSeeder seeder
             ->whereNull('vendor_id')
             ->get();
         $langs = ClientLanguage::with('language')->select('language_id', 'is_primary', 'is_active')

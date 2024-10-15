@@ -108,6 +108,7 @@ $(document).ready(function () {
             data: ajaxData,
             success: function (response) {
                 if (response.status == "Success") {
+                    $('#proceed_to_pay_modal').modal('hide');
                     window.location.href = response.data;
                 } else {
                     if (cartElement.length > 0) {

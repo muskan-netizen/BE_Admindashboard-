@@ -32,7 +32,6 @@ class RazorpayGatewayController extends FrontController
         $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
         $api_secret_key = (isset($creds_arr->api_secret_key)) ? $creds_arr->api_secret_key : '';
         $this->test_mode = (isset($razorpay_creds->test_mode) && ($razorpay_creds->test_mode == '1')) ? true : false;
-
         $this->API_KEY = $api_key;
         $this->API_SECRET_KEY = $api_secret_key;
         $this->api = new Api($api_key, $api_secret_key);
@@ -64,7 +63,6 @@ class RazorpayGatewayController extends FrontController
             $data['amount'] = $orderResponse->amount;
             $data['currency'] = $orderResponse->currency;
             $data['payment_from'] = $request->payment_from;
-            // dd($orderResponse);
 
             return $this->successResponse($data);
             // return $this->successResponse(url('/payment/razorpay/view?amount=' . $amount . '&order=' . $order_number . '&api_key=' . $api_key));
@@ -111,7 +109,7 @@ class RazorpayGatewayController extends FrontController
             }
             return $this->successResponse($response);
         } catch (\Exception $ex) {
-            \Log::info('error response'.$ex->getMessage().'---'.$ex->getLine());
+            // \Log::info('error response'.$ex->getMessage().'---'.$ex->getLine());
             return $this->errorResponse($ex->getMessage(), 400);
         }
     }

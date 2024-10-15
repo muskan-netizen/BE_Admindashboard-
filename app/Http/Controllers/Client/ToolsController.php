@@ -82,7 +82,6 @@ class ToolsController extends BaseController
             }
 
             $toolExist = CopyTool::where(['copy_to' => $request->copy_to,'copy_from' => $request->copy_from])->first();
-            \Log::info(['toolexist' => $toolExist]);
             if(!empty($toolExist)){
                 return redirect()->back()->with('error', 'Request for copy this catalog is already exists');
             }
@@ -90,11 +89,10 @@ class ToolsController extends BaseController
             $tool->copy_to = $request->copy_to;
             $tool->copy_from = $request->copy_from;
             $tool->save();
-            \Log::info(['savedTool' => $tool]);
+
             return redirect()->back()->with('success', 'Catalog data saved successfully!');
 
         } catch (Exception $e) {
-            \Log::info($e);
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
@@ -110,7 +108,6 @@ class ToolsController extends BaseController
         try {
             $from_vendor = $this->vendorObj->getById($copy_from);
             $from_products = $this->productObj->getByVendorId($copy_from);
-            \log::info(['from_products' => $from_products]);
             $client = $this->clientObj->getClient();
 
             if (!empty($copy_to) ) {
@@ -118,7 +115,6 @@ class ToolsController extends BaseController
                     /* Block existing products */
                 $this->productObj->where('vendor_id',$copy_to)->update(['is_live'=>2]);
                 $update_vendor = $this->updateVendorData($from_vendor, $copy_to);
-                \log::info(['update_vendor'=>$update_vendor]);
                 if (isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
                     $sku_url =  ($client->custom_domain);
                 else
@@ -138,7 +134,6 @@ class ToolsController extends BaseController
                     ->where('status', 1)
                     ->where('vendor_id', $copy_from)
                     ->orderBy('position', 'asc')->get();
-                    \log::info(['addon_sets' => $addon_sets]);
                 foreach ($addon_sets as $set) {
                     $check_addon = $this->addOnSetObj->checkAddon($set, $copy_to);
                     if ($check_addon) {
@@ -148,16 +143,13 @@ class ToolsController extends BaseController
                 }
                 // ------------------------- jobs ------------------
                 foreach ($from_products->chunk(1000) as $products) {
-                    \Log::info('copying data loop');
                     CopyData::dispatch($products, $copy_to, $copy_from, $sku_url, $from_vendor,$this->vendorObj,  $this->productObj, $this->clientObj, $this->addOnSetObj, $this->categoryObj, $this->vendorCategoryObj, $this->vendorSlotObj, $this->vendorSlotDateObj, $this->vendorDineinCategoryObj, $this->vendorDineinTableObj)->onQueue('Copy_Tool');
                 }
 
                 return true;
             }
-            \Log::info('copy data is empty');
             return false;
         } catch (\Exception $e) {
-            \log::info(['exception' => $e]);
             return false;
         }
     }
@@ -208,7 +200,6 @@ class ToolsController extends BaseController
     }
     public function addProduct($from_product, $copy_to, $copy_from, $product_sku)
     {
-        \log::info('inside addproduct function ');
         $category_id = null;
         $product = $from_product;
         $product = $product->replicate();
@@ -335,7 +326,6 @@ class ToolsController extends BaseController
             Product::where('id', $id)->delete();
             DB::commit();
         } catch (\Exception $ex) {
-            \log::info(['ex' => $ex]);
             DB::rollback();
         }
     }
@@ -348,7 +338,6 @@ class ToolsController extends BaseController
             $addonSet->update();
             DB::commit();
         } catch (\Exception $ex) {
-            \log::info(['ex' => $ex]);
             DB::rollback();
         }
     }

@@ -563,7 +563,7 @@
                 <div class="card faq-card">
                     <div class="card-header faq-header" id="heading_{{$key}}">
                       <h2 class="mb-0">
-                        <button class="btn btn-link btn-block text-left collase1" type="button" data-toggle="collapse" data-target="#collapse_{{$key}}" aria-expanded="false" aria-controls="collapseOne"  style="color: black !important">
+                        <button class="btn btn-link btn-block text-left collase1" type="button" data-toggle="collapse" data-target="#collapse_{{$key}}" aria-expanded="false" aria-controls="collapseOne" style="color: black !important">
                             {{$value->question}}
                         </button>
                       </h2>

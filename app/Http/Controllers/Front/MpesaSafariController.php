@@ -176,8 +176,8 @@ class MpesaSafariController extends Controller
 
     public function successPage(Request $request)
     {
-        \Log::info("webhook success");
-        \Log::info($request->all());
+        // \Log::info("webhook success");
+        // \Log::info($request->all());
          if (isset($request->Body) && isset($request->Body['stkCallback']) && isset($request->Body['stkCallback']['ResultCode'])) {
              if($request->Body['stkCallback']['ResultCode'] == 0){
                 $payment = Payment::where('viva_order_id', $request->Body['stkCallback']['CheckoutRequestID'])->first();
@@ -208,8 +208,8 @@ class MpesaSafariController extends Controller
                  }
              }
          }else{
-             \Log::info("webhook error");
-             \Log::info($request->all());
+            //  \Log::info("webhook error");
+            //  \Log::info($request->all());
          }
     }
 

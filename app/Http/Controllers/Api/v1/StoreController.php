@@ -1900,8 +1900,7 @@ class StoreController extends BaseController
 				->whereHas('category', function ($q) use ($langId) {
 					$q->whereNull('deleted_at')->orWhere('deleted_at', '');
 				})
-				->select('category_id')->where('vendor_id', $vendor_id)->where('status', 1)->paginate($limit, $page);
-
+				->select('category_id')->where('vendor_id', $vendor_id)->where('status', 1)->distinct()->paginate($limit, $page);
 			$p_categories = collect();
 			$product_categories_hierarchy = '';
 
@@ -2759,17 +2758,19 @@ class StoreController extends BaseController
 
 
 									}
-									if (!empty($insert_arr)) {
-										ProductAttribute::where('product_id', $request->product_id)->delete();
-										ProductAttribute::insert($insert_arr);
-									}
+									// if (!empty($insert_arr)) {
+									// 	ProductAttribute::where('product_id', $request->product_id)->delete();
+									// 	ProductAttribute::insert($insert_arr);
+									// }
 
 
 								}
-								// if( !empty($insert_arr) ) {
-								// 	ProductAttribute::where('product_id',$request->product_id)->delete();
-								// 	ProductAttribute::insert($insert_arr);
-								// }
+
+								
+								if( !empty($insert_arr) ) {
+									ProductAttribute::where('product_id',$request->product_id)->delete();
+									ProductAttribute::insert($insert_arr);
+								}
 							}
 						}
 						if (@$request->date_availability) {	
