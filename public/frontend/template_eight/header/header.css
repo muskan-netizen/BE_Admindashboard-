@@ -768,7 +768,8 @@ header#al_new_design.site-header.fixed-bar .menu-navigation.alThreeMenu {
 #al_new_design .al_main_category_list li a {
     padding: 10px 10px 10px 20px !important;
     text-align: left;
-    width: 100%
+    width: 100%;
+    margin: 0 !important;
 }
 
 a.fav-button {
@@ -1118,7 +1119,7 @@ body.al_body_template_eight #al_new_design .pixelstrap ul {
 .pixelstrap a:active,
 .pixelstrap a:hover,
 .pixelstrap li>a {
-    width: unset !important;
+    width: 100% !important;
 }
 
 .menu-navigation.alThreeMenu li.al_main_category a .nav-cate-img img {

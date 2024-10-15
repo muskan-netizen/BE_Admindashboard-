@@ -259,7 +259,7 @@
                                         @endif
                                     @endforeach
                                 </div>
-                                <div class="form-check mb-4">
+                                <div class="form-check mb-2">
                                     <input type="checkbox" name="term_and_condition" class="form-check-input @error('term_and_condition') is-invalid @enderror" id="html">
                                             @if(session()->get("customerLanguage") == "59")
                                             <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
@@ -284,6 +284,7 @@
                                         </span>
                                     @endif
                                 </div>
+                                @include('frontend.consent')
                                 <div class="row form-group mb-0 align-items-center">
                                     <!-- <div class="col-12 checkbox-input">
                                         <input type="checkbox" id="html" name="term_and_condition"
@@ -309,7 +310,8 @@
 
 
                                     </div> -->
-                                    <div class="col-md-6 position-absolute">
+                               
+                                    <div class="col-md-6">
                                         <label for="">Referral Code</label>
                                         <input type="text" class="form-control" id="refferal_code"
                                             placeholder="Refferal Code" name="refferal_code"

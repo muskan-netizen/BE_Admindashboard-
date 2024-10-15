@@ -55,7 +55,7 @@ class QuickApiController extends Controller
         
         }catch(\Exception $e)
         {
-            \Log::info($e->getMessage());
+            // \Log::info($e->getMessage());
             return 0;
         }
     }

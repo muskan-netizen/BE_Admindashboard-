@@ -48,7 +48,8 @@
                         $comp = @$product->compare_price_numeric??0;
                         @endphp
                         @if(@$comp && $comp>0)
-                            {!!showPriceWithCurrency($product->compare_price_numeric,'1') !!}
+                           
+                            <del class="ml-2 compare_at_price" >{{  session()->get('currencySymbol').' '.($product->compare_price_numeric ?? 0) }} </del>
                         @endif
                     </div>
                     @endif

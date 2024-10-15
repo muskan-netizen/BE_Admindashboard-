@@ -267,8 +267,8 @@ class ShiprocketController extends Controller
 		if($orderSuc->status_code == 1)
 		{
 		  $awb = $this->AWBForShipment($orderSuc->shipment_id,$orderVendor->courier_id,$token->token);
-			\Log::info('awb');
-			\Log::info([$awb]);
+			// \Log::info('awb');
+			// \Log::info([$awb]);
 		// return $awb;
 		}
 		return (($awb==0)?$orderSuc:$awb);
@@ -373,7 +373,7 @@ class ShiprocketController extends Controller
 			}
 				
 			}catch(\Exception $e){
-				\Log::info($e->getMessage());
+				// \Log::info($e->getMessage());
 				return response([],200);
 			}
 			return response([],200);

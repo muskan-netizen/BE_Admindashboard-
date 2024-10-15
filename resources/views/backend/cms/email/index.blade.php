@@ -63,6 +63,11 @@
                                 <div class="col-md-10 mb-3">
                                     <label for="title" class="control-label mb-0">{{ __("Content") }}</label>
                                     <textarea style="visibility: hidden;" class="form-control" id="editor" placeholder="Meta Keyword" rows="6" name="meta_keyword" cols="10"></textarea>
+
+                                    <div class="d-flex justify-content-end custom-control custom-switch">
+                                        <input type="checkbox" id="email_status" name="status" class="custom-control-input">
+                                        <label for="email_status" class="custom-control-label">{{ __("Enabled") }}</label>
+                                    </div>
                                 </div>
                                 <div class="col-md-2">
                                     <label for="title" class="control-label">{{ __("Tags") }}:-<div id="tags" disabled=""></div></label>

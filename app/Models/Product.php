@@ -28,7 +28,24 @@ class Product extends Model implements Auditable
     return $this->hasMany('App\Models\ProductAddon')->join('addon_set_translations as ast', 'ast.addon_id', 'product_addons.addon_id')->select('product_addons.product_id', 'ast.title', 'product_addons.addon_id');
   }
 
-  public function brand()
+
+  public function measurements()
+    {
+        return $this->belongsToMany(
+            Measurements::class,
+            'product_measurement',
+            'product_id',
+            'key_id'
+        )->withPivot('product_variant_id', 'key_value')
+        ->with(['productVariants' => function($query) {
+            $query->select('product_variants.id', 'product_variants.title');
+        }])
+        ;
+    }
+
+
+
+    public function brand()
   {
     return $this->belongsTo('App\Models\Brand')->select('id', 'title', 'image');
   }
@@ -73,7 +90,7 @@ class Product extends Model implements Auditable
     return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id', 'container_charges', 'markup_price', 'incremental_price', 'incremental_price_per_min', 'minimum_duration','week_price','month_price')->where('status', 1)->orderBy('id', 'asc');
   }
 
-  
+
 
   public function translation($langId = 0)
   {
@@ -150,7 +167,12 @@ class Product extends Model implements Auditable
 
   public function reviews()
   {
-    return $this->hasMany('App\Models\OrderProductRating', 'product_id', 'id');
+      return $this->hasMany('App\Models\OrderProductRating', 'product_id', 'id')->where('status', '1');
+  }
+
+  public function allReviews()
+  {
+      return $this->hasMany(OrderProductRating::class, 'product_id', 'id');
   }
 
   public function productVariantByRoles()
@@ -368,7 +390,7 @@ class Product extends Model implements Auditable
       $q->whereIn('type_id', $categoryTypesArray);
     });
   }
-  // check product validate 
+  // check product validate
   public function scopeByProductWhereCheck($query)
   {
     $query = $query->where(['is_live' => 1]);
@@ -377,7 +399,7 @@ class Product extends Model implements Auditable
     }
     return $query;
   }
-  // check product validate 
+  // check product validate
   public function scopeByProductLongTerm($query)
   {
     $query = $query->where(['is_live' => 1]);
@@ -455,7 +477,7 @@ class Product extends Model implements Auditable
     }
     return $value;
   }
-  // in long term service 
+  // in long term service
   public function LongTermProducts()
   {
     $langData = $this->hasOne('App\Models\LongTermServiceProducts', 'long_term_service_id', 'id');

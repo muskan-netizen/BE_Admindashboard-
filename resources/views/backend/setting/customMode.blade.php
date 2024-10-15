@@ -920,3 +920,16 @@
             name="document_report" id="document_report" />
     </div>
 </div>
+<div class="col-md-4">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="product_measurment_switch" class="mr-2 mb-0">{{ __('Product Measurment') }}<small
+                class="d-block pr-5">{{ __('To Add Measurment for Product.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="product_measurment"
+                id="product_measurment_switch" class="form-control checkbox_change"
+                data-className="product_measurment" data-color="#43bee1"
+                @if (getAdditionalPreference(['product_measurment'])['product_measurment']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (getAdditionalPreference(['product_measurment'])['product_measurment'] == 1) value="1" @else value="0" @endif
+            name="product_measurment" id="product_measurment" />
+    </div>
+</div>

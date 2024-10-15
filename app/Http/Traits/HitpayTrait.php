@@ -48,7 +48,7 @@ trait HitpayTrait
             $responeBody = (array) json_decode($response->getBody());
             return $responeBody;
         } catch (\Exception $e) {
-            \Log::info($e->getMessage());
+            // \Log::info($e->getMessage());
             return $e->getMessage();
         }
     }

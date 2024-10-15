@@ -87,7 +87,7 @@
                                 @if($additionalPreference ['is_token_currency_enable'])
                                     <b>{!!"<i class='fa fa-money' aria-hidden='true'></i> "!!} {{getInToken($priceVal)}} </b>
                                 @else
-                                    <b>{{Session::get('currencySymbol')}} {{decimal_format($priceVal)}} </b>
+                                    <b>{{showPriceWithCurrency($priceVal)}} </b>
                                 @endif
                             </div>
                         </div>

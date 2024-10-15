@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\v1\v2;
 
-use DB;
-use Session;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use DateTime;
 use DateTimeZone;
 use Carbon\Carbon;
@@ -121,8 +121,8 @@ class HomeController extends BaseController
             if ($request->has('ref')) {
                 session(['referrer' => $request->query('ref')]);
             }
-            $latitude = Session::get('latitude') ?? null;
-            $longitude = Session::get('longitude') ?? null;
+            $latitude = Session::get('latitude') ?? $request->latitude;
+            $longitude = Session::get('longitude') ??  $request->longitude;
             $curId = Session::get('customerCurrency');
             $preferences = Session::get('preferences');
             $user = Auth::user();
@@ -271,7 +271,7 @@ class HomeController extends BaseController
             $enable_layout = CabBookingLayout::where('is_active', 1)->app();
 
                 $enable_layout = $enable_layout->orderBy('order_by', 'asc')->pluck('slug')->toArray();
-            
+
             if($request->action=='2'){
                 $homePageData = $this->postHomePageDataV2($request, $set_template, $enable_layout, $additionalPreference,$user);
             } else {
@@ -1599,7 +1599,6 @@ class HomeController extends BaseController
             $new_products = $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type,$new_products_title,$p_dim, $getSubCatIds);
         }
         $feature_product_details = $feature_products = [];
-
         if (in_array('featured_products', $enable_layout)) {  # if enable featured_products section in
             $feature_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type, $featured_products_title,$p_dim, $getSubCatIds);
         }

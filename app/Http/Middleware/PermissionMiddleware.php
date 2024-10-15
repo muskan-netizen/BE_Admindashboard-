@@ -36,6 +36,9 @@ class PermissionMiddleware
                         $page = $check[0];
                         $permissions = [];
 
+                        if ($user->is_superadmin) {
+                            return $next($request);
+                        }
 
                         if(isset($permissionArray[$page]) && count($permissionArray[$page])>0)
                         {

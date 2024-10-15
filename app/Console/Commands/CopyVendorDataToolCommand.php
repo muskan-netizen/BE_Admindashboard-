@@ -34,7 +34,7 @@ class CopyVendorDataToolCommand extends Command
     {
         parent::__construct();
         $this->toolController  = new ToolsController($vendor, $product, $client, $addonSet, $category, $vendorCategory, $vendorSlot, $vendorSlotDate, $vendorDineinCategory, $vendorDineinTable);
-        
+
     }
 
     /**
@@ -44,7 +44,7 @@ class CopyVendorDataToolCommand extends Command
      */
     public function handle()
     {
-        $client = Client::select('database_name', 'sub_domain')->first();
+        $client = Client::select('database_name', 'sub_domain')->where('code','1a3404')->first();
         $database_name = 'royo_' . $client->database_name;
         $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME =  ?";
         $db = DB::select($query, [
@@ -71,9 +71,9 @@ class CopyVendorDataToolCommand extends Command
         $copyData = CopyTool::first();
         if(!empty($copyData)){
             $flag = $this->toolController->store($copyData->copy_to, $copyData->copy_from);
-            if($flag){
+            // if($flag){
                 $copyData->delete();
-            }
+            // }
         }
     }
 }

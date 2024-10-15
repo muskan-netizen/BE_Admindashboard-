@@ -74,7 +74,6 @@ class CopyData implements ShouldQueue
             }
         }
         }catch(\Exception $e){
-            \Log::info("error ".$e->getMessage());
         }
     }
 }

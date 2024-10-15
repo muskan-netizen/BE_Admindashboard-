@@ -77,12 +77,12 @@ trait ApiResponser
 			$email_template_content = str_ireplace("{name}", Auth::user()->name, $email_template_content);
 			$email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
 			$email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
+		    Mail::send('frontend.successmail', compact('email_template_content'), function ($message) use ($mail_from) {
+		    	$message->from($mail_from);
+		    	$message->to(Auth::user()->email);
+		    	$message->subject('Payment Succesful Notification');
+		    });
 		}
-		Mail::send('frontend.successmail', compact('email_template_content'), function ($message) use ($mail_from) {
-			$message->from($mail_from);
-			$message->to(Auth::user()->email);
-			$message->subject('Payment Succesful Notification');
-		});
 	}
 
 	protected function failMail()
@@ -122,12 +122,12 @@ trait ApiResponser
 
 				$email_template_content = str_ireplace("{name}", Auth::user()->name, $email_template_content);
 				$email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
+                Mail::send('frontend.failmail', compact('email_template_content'), function ($message) use ($mail_from) {
+                    $message->from($mail_from);
+                    $message->to(Auth::user()->email);
+                    $message->subject('Payment Failure Notification');
+                });
 			}
-			Mail::send('frontend.failmail', compact('email_template_content'), function ($message) use ($mail_from) {
-				$message->from($mail_from);
-				$message->to(Auth::user()->email);
-				$message->subject('Payment Failure Notification');
-			});
 		}catch (\Exception $ex){
 
 		}
@@ -558,7 +558,7 @@ trait ApiResponser
             }
         }
         catch(\Exception $e){
-            \Log::info(['err' => $e->getMessage()]);
+            // \Log::info(['err' => $e->getMessage()]);
             return '2';
         }
         return '1';

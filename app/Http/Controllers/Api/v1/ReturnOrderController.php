@@ -148,7 +148,7 @@ class ReturnOrderController extends BaseController{
             $vendor_id = 0;
             if(isset($order_details)){
                 foreach($order_details->vendors as $key => $vendor){
-                   
+
                     // dd($vendor_id);
                     foreach($vendor->products as $product){
                         if($product->product_id == $request->product_id){
@@ -202,7 +202,7 @@ class ReturnOrderController extends BaseController{
                     },
                     'category.categoryDetail.allParentsAccount'
                 ])->where('id', $p_id);
-                
+
                 $product = $product->whereHas('vendor',function($q) use($vendor_id){
                         $q->where('id',$vendor_id);
                     })
@@ -262,12 +262,12 @@ class ReturnOrderController extends BaseController{
             $user = Auth::user();
             $order_deliver = 0;
             $order_details = OrderProduct::where('id',$request->order_vendor_product_id)->whereHas('order',function($q){$q->where('user_id',Auth::id());})->first();
-            
+
             $this->markAsReturnPending($order_details);
 
             $type = 1; // 1 = return
             $returns = $this->saveReturnExchangeRequest($request, $order_details, $type);
-            
+
             if(isset($returns)) {
 
                 $this->sendSuccessNotification($user->id, $order_details->vendor_id);
@@ -288,9 +288,9 @@ class ReturnOrderController extends BaseController{
         try {
             $user = Auth::user();
             DB::beginTransaction();
-           
+
             $orderVendorProductOld = OrderProduct::find($request->order_vendor_product_id); // get exchanged order product
-            
+
             $orderVendorOld = OrderVendor::with('products')->where('id',$orderVendorProductOld->order_vendor_id)
                                         ->whereHas('products', function ($q) use($orderVendorProductOld){
                                             $q->where('product_id', $orderVendorProductOld->product_id);
@@ -303,7 +303,7 @@ class ReturnOrderController extends BaseController{
             /****** create new exchange order Start ******************/
             $order =  $this->saveOrder($request, $orderVendorOld);
             $order_vender =  $this->saveOrderVendor($order, $orderVendorProductOld);
-            
+
             $this->saveOrderVendorProduct($request, $order, $orderVendorProductOld, $order_vender);
             $this->saveVendorOrderStatus($order, $orderVendorProductOld, $order_vender);
 
@@ -353,7 +353,7 @@ class ReturnOrderController extends BaseController{
     //     $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
     //     $notification_content = NotificationTemplate::where('id', 3)->first();
     //      if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
-            
+
     //         $data = [
     //             "registration_ids" => $token,
     //             "notification" => [
@@ -386,24 +386,26 @@ class ReturnOrderController extends BaseController{
                 if($email_template){
                     //for changeing the value upto 2 decimal
                     $order_vendor_product->price = number_format((float)$order_vendor_product->price, 2, '.', '') ?? $order_vendor_product->price;
-                    
+
                     $email_template_content = $email_template->content;
                     $email_template_content = str_ireplace("{product_image}", $order_vendor_product->image['image_fit'].'200/200'.$order_vendor_product->image['image_path'], $email_template_content);
                     $email_template_content = str_ireplace("{product_name}", $order_vendor_product->product->title, $email_template_content);
                     $email_template_content = str_ireplace("{price}", $order_vendor_product->price, $email_template_content);
+
+                    $data = [
+                        'link' => "link",
+                        'email' => $sendto,
+                        'mail_from' => $mail_from,
+                        'client_name' => $client_name,
+                        'logo' => $client->logo['original'],
+                        'subject' => $email_template->subject,
+                        'customer_name' => ucwords($user->name),
+                        'email_template_content' => $email_template_content,
+                    ];
+
+                    dispatch(new \App\Jobs\SendOrderSuccessEmailJob($data))->onQueue('verify_email');
+                    $notified = 1;
                 }
-                $data = [
-                    'link' => "link",
-                    'email' => $sendto,
-                    'mail_from' => $mail_from,
-                    'client_name' => $client_name,
-                    'logo' => $client->logo['original'],
-                    'subject' => $email_template->subject,
-                    'customer_name' => ucwords($user->name),
-                    'email_template_content' => $email_template_content,
-                ];
-                dispatch(new \App\Jobs\SendOrderSuccessEmailJob($data))->onQueue('verify_email');
-                $notified = 1;
             } catch (\Exception $e) {
             }
         }
@@ -418,7 +420,7 @@ class ReturnOrderController extends BaseController{
      */
     public function vendorOrderForCancel(Request $request, $domain = '')
     {
-        try 
+        try
         {
             if(!empty($request->status_option_id) && $request->status_option_id == 2){
                 $order_vendor_id = OrderVendor::select('id')->where('order_id', $request->order_id)->first();
@@ -467,7 +469,7 @@ class ReturnOrderController extends BaseController{
 
                 //if order is accepted or in processing
                 if ($currentOrderStatus->order_status_option_id == 2 || $currentOrderStatus->order_status_option_id == 4) { //$request->status_option_id == 2){
-                    //$checkdispatcherstatus = VendorOrderDispatcherStatus::where(['order_id'=>$request->order_id])->where('dispatcher_status_option_id','>',2)->orderBy('id', 'desc')->first();                
+                    //$checkdispatcherstatus = VendorOrderDispatcherStatus::where(['order_id'=>$request->order_id])->where('dispatcher_status_option_id','>',2)->orderBy('id', 'desc')->first();
                     if ($checkdispatcherstatus) {
                         if ($checkdispatcherstatus->dispatcher_status_option_id > 2) {
                             return response()->json(['status' => 'error', 'message' => __('Driver has started the order, you can not reject this order !!!')]);
@@ -534,10 +536,10 @@ class ReturnOrderController extends BaseController{
                         $wallet = $user->wallet;
                         $credit_amount = $return_response['vendor_return_amount']; //$currentOrderStatus->payable_amount;
                         $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $currentOrderStatus->orderDetail->order_number . ' (' . $currentOrderStatus->vendor->name . ')']);
-                        $this->sendWalletNotification($user->id, $currentOrderStatus->orderDetail->order_number);                      
+                        $this->sendWalletNotification($user->id, $currentOrderStatus->orderDetail->order_number);
                     }
                     // }
-                    // diarise loyalty 
+                    // diarise loyalty
                     $orderData->loyalty_points_used = $orderData->loyalty_points_used - $return_response['vendor_loyalty_points'];
                     $orderData->loyalty_amount_saved = $orderData->loyalty_amount_saved - $return_response['vendor_loyalty_amount'];
                     $orderData->loyalty_points_earned = $orderData->loyalty_points_earned - $return_response['vendor_loyalty_points_earned'];
@@ -570,5 +572,5 @@ class ReturnOrderController extends BaseController{
     }
 
 
-    
+
 }

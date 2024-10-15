@@ -26,22 +26,22 @@ trait OrderBlockchain{
             'user_id' => $orderData->user_id,
         ];
         
-        \Log::info('post data');
-        \Log::info($data);
+        // \Log::info('post data');
+        // \Log::info($data);
         $headers = [
             'Content-Type' => 'application/json',
         ];
         if(isset($api_domain))
         {
-            \Log::info('api domain');
-            \Log::info($api_domain->key_value);
+            // \Log::info('api domain');
+            // \Log::info($api_domain->key_value);
             $response = Http::withHeaders($headers)->post($api_domain->key_value.'/createOrder', $data);
         
             $responseData = $response->json();
         }
 
-        \Log::info('create order');
-        \Log::info($responseData);
+        // \Log::info('create order');
+        // \Log::info($responseData);
         return response()->json([
             'message' => 'Order created successfully',
             'data' => $data ?? '',
@@ -62,8 +62,8 @@ trait OrderBlockchain{
             "address_f" => $from_id->key_value ?? '',
             // 'user_id' => $orderData->user_id
         ];
-        \Log::info('update post data');
-        \Log::info($data);
+        // \Log::info('update post data');
+        // \Log::info($data);
         $headers = [
             'Content-Type' => 'application/json',
         ];
@@ -74,8 +74,8 @@ trait OrderBlockchain{
             $responseData = $response->json();
         }
 
-        \Log::info('update order');
-        \Log::info($responseData);
+        // \Log::info('update order');
+        // \Log::info($responseData);
         return response()->json([
             'message' => 'Order Updated successfully',
             'data' => $data ?? '',
@@ -108,10 +108,10 @@ trait OrderBlockchain{
             "movement" => $json_data ?? [],
             // 'user_id' => $orderData->user_id
         ];
-        \Log::info('request data');
-        \Log::info($request->all());
-        \Log::info('moveOrderToWarehouse data');
-        \Log::info($data);
+        // \Log::info('request data');
+        // \Log::info($request->all());
+        // \Log::info('moveOrderToWarehouse data');
+        // \Log::info($data);
         $headers = [
             'Content-Type' => 'application/json',
         ];
@@ -122,8 +122,8 @@ trait OrderBlockchain{
             $responseData = $response->json();
         }
 
-        \Log::info('moveOrderToWarehouse api response');
-        \Log::info($responseData);
+        // \Log::info('moveOrderToWarehouse api response');
+        // \Log::info($responseData);
         return response()->json([
             'message' => 'Order Updated successfully',
             'data' => $data ?? '',

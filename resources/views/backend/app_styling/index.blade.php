@@ -5,8 +5,13 @@
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.1/spectrum.min.css">
 <link href="{{asset('assets/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
-@endsection
 
+<style>
+.select2-container {
+    min-width: 300px !important;
+}
+</style>
+@endsection
 @section('content')
 <div class="col-12">
     <!-- start page title -->
@@ -258,7 +263,7 @@
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
                                 @endif
-                               
+
 
                                 @if($home_page_label->slug == 'selected_products')
                                 <a class="action-icon openProductsModal" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
@@ -287,7 +292,7 @@
                                             @if(!is_null($category->vendor)) ({{@$category->vendor->name}}) @endif
                                         </option>
                                         @endforeach
-                         
+
                                 </div>
                                 </div>
                                 </div>
@@ -317,7 +322,7 @@
                                 <a class="action-icon deletePickupSectionx" href="{{route('pickup.delete.section', $home_page_label->id)}}" onclick="return confirm('Are you sure you want to delete this section?');"  dataid="{{$home_page_label->id}}" href="javascript:void(0);">
                                     <i class="mdi mdi-delete"></i>
                                 </a>
-                              
+
                     </li>
 
                     @endforeach
@@ -697,7 +702,7 @@ $("#save_home_page_pickup").click(function(event) {
             }
         });
     }
-  
+
     function submitSecondaryColorForm() {
         var data_uri = "{{route('styling.updateColor')}}";
         $.ajaxSetup({

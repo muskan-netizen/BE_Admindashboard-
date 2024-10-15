@@ -3,9 +3,6 @@
 namespace App\Http\Controllers\Api\v1;
 
 
-use Log;
-use Auth;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Razorpay\Api\Api;
@@ -17,7 +14,10 @@ use App\Http\Controllers\Api\v1\BaseController;
 
 use App\Http\Controllers\Api\v1\OrderController;
 use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax};
-use Illuminate\Support\Facades\Auth as FacadesAuth;
+
+use App\Http\Middleware\DbChooserApi;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class RazorpayGatewayController extends BaseController
 {
@@ -29,6 +29,8 @@ class RazorpayGatewayController extends BaseController
 
     public function __construct()
     {
+        (new DbChooserApi)->handle(Request::capture(), fn($_) => 0);
+
         $razorpay_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'razorpay')->where('status', 1)->first();
         $creds_arr = json_decode($razorpay_creds->credentials);
         $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
@@ -43,8 +45,6 @@ class RazorpayGatewayController extends BaseController
     public function razorpayPurchase(Request $request)
     {
         try {
-            $user = Auth::user();
-            $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
             $amount = $this->getDollarCompareAmount($request->amount);
             $amount = (int)($amount * 100);
             $order_number = $request->order_number;
@@ -52,8 +52,28 @@ class RazorpayGatewayController extends BaseController
                 $order_number = 0;
             }
             $api_key = $this->API_KEY;
-            return $this->successResponse(url('/payment/razorpay/view?amount=' . $amount . '&order=' . $order_number . '&api_key=' . $api_key));
+
+            $order = $this->api->order->create([
+                'amount'   => $amount,
+                'currency' => $request->input('currency', 'INR'),
+                'payment'  => [
+                    'capture'         => 'automatic',
+                    'capture_options' => [
+                        'automatic_expiry_period' => 12,
+                        'manual_expiry_period'    => 7200,
+                        'refund_speed'            => 'optimum'
+                    ],
+                ],
+            ]);
+
+            return $this->successResponse([
+                'order_id' => $order->id,
+                'amount'   => $order->amount,
+                'currency' => $order->currency,
+                'api_key'  => $api_key,
+            ], null, 201);
         } catch (\Exception $ex) {
+            Log::error($ex);
             return $this->errorResponse($ex->getMessage(), 400);
         }
     }
@@ -90,7 +110,7 @@ class RazorpayGatewayController extends BaseController
                 return $this->razorpayNotify_fail($payment, $amount, $order, $orderData);
             }
         } catch (\Exception $ex) {
-            \Log::info('error response'.$ex->getMessage().'---'.$ex->getLine());
+            // \Log::info('error response'.$ex->getMessage().'---'.$ex->getLine());
 
             return $this->errorResponse($ex->getMessage(), 400);
         }
