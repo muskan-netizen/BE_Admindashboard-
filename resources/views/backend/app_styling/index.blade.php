@@ -271,7 +271,9 @@
                                     <select class="form-control select2-multiple" id='product' name="selected_products[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required>
                                         <option value="">{{ __("Select Product") }}</option>
                                         @foreach($select_products as $products)
-                                        <option value="{{$products->id}}" @if(!empty($selected_ids) && in_array($products->id, $selected_ids)) selected @endif>{{$products->title}}</option>
+                                            <option value="{{$products->id}}" @if(!empty($selected_ids) && in_array($products->id, $selected_ids)) selected @endif>
+                                                {{$products->title}} ({{ optional($products->vendor)->name ?? 'N/A' }})
+                                            </option>
                                         @endforeach
                                     </select>
                                     </div>
