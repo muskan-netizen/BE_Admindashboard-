@@ -106,6 +106,7 @@
                         $('#edit_page_content #email_template_id').val(response.data.id);
                         if (response.data) {
                             $('#edit_page_content #tags').html(response.data.tags);
+                            $('#edit_page_content input[name=status]').prop('checked', response.data.status == 1);
                             $('#edit_page_content #subject').val(response.data.subject);
                             // $('#edit_page_content #content').val(response.data.content);
                             // $('#edit_page_content #content').summernote({
@@ -130,9 +131,11 @@
             // let content = $('#edit_page_content #content').val();
             let content = CKEDITOR.instances.editor.getData();
             let email_template_id = $('#edit_page_content #email_template_id').val();
+            let status  = +$('#edit_page_content input[name=status]').prop('checked');
             var data = {
                 subject: subject,
                 content: content,
+                status,
                 email_template_id: email_template_id
             };
             $.post(update_url, data, function(response) {
