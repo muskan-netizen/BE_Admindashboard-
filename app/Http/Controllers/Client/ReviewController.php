@@ -161,7 +161,7 @@ class ReviewController extends BaseController
             $orderProductRating->status = Arr::get($update, 'status', $orderProductRating->status);
             $orderProductRating->save();
             $product = Product::find($orderProductRating->product_id);
-            $average = $product->reviews()->avg('rating') ?? 0;
+            $average = $product->reviews()->avg('rating');
             $product->averageRating = $average;
             $product->save();
         });
