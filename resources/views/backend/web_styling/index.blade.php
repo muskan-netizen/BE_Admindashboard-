@@ -3,6 +3,13 @@
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.1/spectrum.min.css">
+
+<style>
+.select2-container {
+    min-width: 300px !important;
+}
+</style>
+
 @endsection
 @section('content')
 <div class="web-style col-12">
@@ -47,7 +54,7 @@
                                         <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 32x32</label>
                                     </div>
                                 </div>
-                                
+
                                 @if($themeId==4 || $themeId==5 || $themeId==6)
                                 <div class="col-md-4 col-6 mb-3">
                                     <h4 class="header-title">{{ __("Sign In/Up Image") }}</h4>
@@ -158,7 +165,7 @@
                                                             <label class="custom-control-label" for="{{$homepage_style->id}}">
                                                                 <span class="card-img-top img-fluid" style="background-image: url( {{('../images/'.$homepage_style->image)}})"></span>
                                                                 <!-- <img  src="{{url('images/'.$homepage_style->image)}}" alt="Card image cap"> -->
-                        
+
                                                             </label>
                                                         </div>
                                                     </div>
@@ -171,7 +178,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
 
                     <div class="col-md-4 h-100">
                         <div class="card card-box h-100">
@@ -299,7 +306,7 @@
                                         <label for="whatsapp_url">Footer Bottom Name</label>
                                         <input type="hidden" name="bottom_name" value="bottom_name">
                                         <input type="text" name="bottom_value" id="bottom_value" placeholder="" class="form-control" value="{{old('bottom_value',$bottom_name)}}">
-                                      
+
                                     </div>
                                 </div>
                             </div>
@@ -405,7 +412,7 @@
                                   {{$icon->name }}
                                </a>
                             </td>
-                            <td>                            
+                            <td>
                                 <input type="file" accept="image/*"  data-default-file="{{$imgUrl}}" data-plugins="dropify" name="image_{{ $icon->id }}" class="dropify order_status_icon" id="icon_image" width="40px" />
                                 <span class="invalid-feedback" role="alert">
                                     <strong></strong>
@@ -505,19 +512,21 @@
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
                                 @endif
-                                
+
                                 @if($home_page_label->slug == 'selected_products')
                                 <a class="action-icon" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
                                     <div class="col pl-1">
-                                        <select class="form-control select2-multiple" id='product' name="selected_products[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required>
+                                        <select class="form-control select2-multiple selected_products" id='product' name="selected_products[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required>
                                             <option value="">{{ __("Select Product") }}</option>
                                             @if(@$select_products)
                                                 @foreach($select_products as $product)
-                                                    <option value="{{$product->id}}" @if(!empty($selected_ids) && in_array($product->id, $selected_ids)) selected @endif>{{$product->title}}</option>
+                                                    <option value="{{$product->id}}" @if(!empty($selected_ids) && in_array($product->id, $selected_ids)) selected @endif>
+                                                        {{$product->title}} ({{ optional($product->vendor)->name ?? 'N/A' }})
+                                                    </option>
                                                 @endforeach
                                             @endif
                                         </select>
-                                        </div>
+                                    </div>
                                 </a>
                                 @endif
 
@@ -555,7 +564,7 @@
                                 <a class="action-icon " userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
                                     <input required type="file" accept="video/*,image/*,.pdf,.doc" data-plugins="dropify" name="banner_image[{{$home_page_label->id}}][check]" class="dropify" data-default-file="" >
                                 </a>
-                                
+
                                 <div class="col pl-1">
                                     <input required type="url" name="banner_url[{{$home_page_label->id}}]" class="dropify form-control" placeholder="Enter Url" value="@if(isset($home_page_label->banner_image[0]['banner_url']) && !empty($home_page_label->banner_image[0]['banner_url'])) {{$home_page_label->banner_image[0]['banner_url']}} @endif">
                                 </div>
@@ -705,7 +714,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-12">
                             <div class="row">
@@ -838,7 +847,8 @@ $(document).on('click', '.deletePickupSection', function() {
         zIndex: 9999
     }
     $(document).ready(function() {
-        $('.select2-multiple').select2();
+        $('.select2-multiple').css('min-width', '300px');
+        $('.select2-multiple').select2({ width: '100%' });
         var color1 = new jscolor('#primary_color_option', options);
     });
 
@@ -1226,15 +1236,15 @@ $(document).on('click', '.deletePickupSection', function() {
         var text  = $("#product_id option:selected").text();
         console.log(productId, ' ', text);
         if ($('#product_ids').find("option[value='" + productId + "']").length) {
-           
-        } else { 
+
+        } else {
             // Create a DOM Option and pre-select by default
             var newOption = new Option(text, productId, true, true);
 
             // Append it to the select
             $('#product_ids').append(newOption).trigger('change');
-          
-        } 
+
+        }
     });
     $(document).on( 'change','#categoryForProducts', function (e) {
 
@@ -1262,7 +1272,7 @@ $(document).on('click', '.deletePickupSection', function() {
             if(data.success){
                 $('#home_products #editProductsBox').html(data.html);
             }
-           
+
         },
         error: function (data) {
             console.log('data2');
@@ -1343,11 +1353,13 @@ $(document).on('click', '.deletePickupSection', function() {
             }
         });
 
-       
+
     }
     // $.fn.modal.Constructor.prototype.enforceFocus = function() {};
-        
-        $(".select2search").select2();
+
+        $(".select2search").select2({
+            width: '100%',
+        });
 </script>
 
 @endsection

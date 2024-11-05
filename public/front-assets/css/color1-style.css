@@ -41955,10 +41955,6 @@ header.stickycls {
         right: -60px
     }
 
-    .menu-slider .slick-slide {
-        width: max-content !important
-    }
-
     .sm-horizontal .mobile-back {
         padding: 20px;
         font-size: 18px;
@@ -55845,6 +55841,11 @@ body[dir=rtl] .slick-slide {
 
 .al_body_template_three .menu-navigation.alThreeMenu .slick-initialized .slick-slide {
     display: block;
+}
+
+.al_body_template_eight .menu-navigation.alThreeMenu .slick-initialized .slick-slide {
+    display: block;
+    width: auto !important;
 }
 
 .slick-loading .slick-slide {

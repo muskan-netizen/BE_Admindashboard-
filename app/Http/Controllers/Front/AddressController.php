@@ -47,7 +47,7 @@ class AddressController extends FrontController{
      */
     public function store(Request $request, $domain = ''){
 
-       
+
         $validatedData = $request->validate([
                 'type' => 'required',
                 // 'city' => 'required',
@@ -64,7 +64,7 @@ class AddressController extends FrontController{
         ]);
         $client = getClientPreferenceDetail();
 
-        $country = Country::select('code', 'name')->where('id', $request->country)->first();        
+        $country = Country::select('code', 'name')->where('id', $request->country)->first();
         $address = new UserAddress;
         $address->type = $request->type;
         $address->city = $request->city??"";
@@ -92,11 +92,11 @@ class AddressController extends FrontController{
             }else{
                 $msg = $res['message'];
                 $status = 'error';
-            }  
+            }
         }else{
             $address->save();
-        }     
-        
+        }
+
         if($request->ajax()){
             return response()->json(['status' => $status, 'message' => $msg, 'address' => $address]);
         }else{
@@ -126,14 +126,13 @@ class AddressController extends FrontController{
         if ($user){
             $user->country_id = $request->country;
             $user->save();
-        }        
-
+        }
         //mark previous entry to delete
         $updateaddress = UserAddress::where('id', $id)->update(['status' => 0]);
 
         //create a new address
         $prevaddress = UserAddress::find($id);
-        $address = new UserAddress;        
+        $address = new UserAddress;
         $address->user_id = $prevaddress->user_id;
         $address->type = $request->type;
         $address->address = $request->address;
@@ -149,7 +148,7 @@ class AddressController extends FrontController{
         $address->extra_instruction = $request->extra_instruction??"";
         $address->is_primary = $prevaddress->is_primary;
         $address->phonecode = $prevaddress->phonecode;
-        $address->type_name = $prevaddress->type_name;        
+        $address->type_name = $prevaddress->type_name;
         $address->created_at = $prevaddress->created_at;
         $address->save();
         return redirect()->route('user.addressBook')->with('success', __('Address Has Been Updated Successfully'));
@@ -200,7 +199,7 @@ class AddressController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function delete($domain = '', $id){
-        //$address = UserAddress::find($id)->delete();        
+        //$address = UserAddress::find($id)->delete();
         $address = UserAddress::where('id', $id)->update(['status' => 0]);
         return redirect()->route('user.addressBook')->with('success', __('Address Has Been Deleted Successfully'));
     }

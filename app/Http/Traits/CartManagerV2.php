@@ -406,7 +406,7 @@ trait CartManagerV2
         $total_payable_amount = $total_subscription_discount_admin = $total_subscription_discount_vendor = $total_subscription_discount_delivery = $total_discount_amount = $total_discount_percent = $total_taxable_amount = $deliver_charges_lalmove = $total_fixed_fee_amount = 0.00;
         /* If cart have data then getting total and other variable set */
 
-
+        $vendorIdChecked = $cartData->where("is_cart_checked",1)->pluck('vendor_id')->toArray();   
         if ($cartData) {
             $addon_price = 0;
             $cart_dinein_table_id = NULL;
@@ -784,11 +784,13 @@ trait CartManagerV2
                                         $prod->quantity_container_charges = decimal_format($quantity_container_charges);
                                         //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
                                         $prod->quantity_role_price = $quantity_role_price;
+                                        if($prod->is_cart_checked == 1){
                                         if (($prod->pvariant->month_price ?? 0) > 0 && ($prod->pvariant->week_price ?? 0) > 0) {
                                             $payable_amount = $payable_amount + $prod->additional_increments_hrs_min/(60*24) * $price_in_currency;
                                         }else{
                                             $payable_amount = $payable_amount + $prod->additional_price + $quantity_price ;
                                         }
+                                    }
                                         $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $quantity_container_charges;
                                         $total_container_charges +=  $quantity_container_charges;
 
@@ -1005,7 +1007,9 @@ trait CartManagerV2
                                             $deliveryfeeOnCoupon = 1;
                                         }
                                         $promo_discount_amount += $productPriceAfterVendorDiscount['vendor_discount_amount'];
+                                        if($prod->is_cart_checked==1){
                                         $sub_total_vendor += $quantity_price;
+                                        }
                                     }
 
                                     //At this stage we calculate product price after promo discount and after add tax amount in sub_total variable.
@@ -1079,7 +1083,7 @@ trait CartManagerV2
 
                                                 //pr($NumberOfroutes);
                                             // if ((!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1))  ) {
-                                            if($checkLastMile ==1)
+                                            if($checkLastMile ==1 && $prod->is_cart_checked==1)
                                             {
                                                     $deliveriesNew = new CartController();
                                                     $deliveries = $deliveriesNew->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del, $lastMileDate['tags'],$NumberOfroutes);
@@ -1415,13 +1419,17 @@ trait CartManagerV2
                         }
                         // add total delivery fee
                         // if($vendorData->vendor->delivery_charges_tax_id)
+                        if($vendorData->is_cart_checked ==1){
                         $total_deliver_charges +=  $deliveryfee_ifnot_discounted;
+                        }
 
                         if($vendorData->vendor->add_markup_price)
                         $total_markup_charges +=  $totalMarkup;
 
                         $newRentalPrice = $payable_amount;
-
+                        if($vendorData->is_cart_checked !=1){
+                            $deliveryfee_ifnot_discounted = 0;
+                        } 
 
                         $payable_amount = $payable_amount + $deliveryfee_ifnot_discounted + $security_amount;
                         // $subtotal_amount = $sub_total + $deliveryfee_ifnot_discounted;
@@ -1833,7 +1841,7 @@ trait CartManagerV2
 
 
             $cart->delivery_slot_amount = $delivery_slot_amount;
-            $delivery_fee_total = CartDeliveryFee::where('cart_id', $cart->id)->sum('delivery_fee');
+            $delivery_fee_total = CartDeliveryFee::where('cart_id', $cart->id)->whereIn('vendor_id',$vendorIdChecked)->sum('delivery_fee');  
 
 
             // $cart->total_payable_amount = decimal_format($total_payable_amount);

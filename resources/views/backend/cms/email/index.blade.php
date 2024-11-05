@@ -63,6 +63,11 @@
                                 <div class="col-md-10 mb-3">
                                     <label for="title" class="control-label mb-0">{{ __("Content") }}</label>
                                     <textarea style="visibility: hidden;" class="form-control" id="editor" placeholder="Meta Keyword" rows="6" name="meta_keyword" cols="10"></textarea>
+
+                                    <div class="d-flex justify-content-end custom-control custom-switch">
+                                        <input type="checkbox" id="email_status" name="status" class="custom-control-input">
+                                        <label for="email_status" class="custom-control-label">{{ __("Enabled") }}</label>
+                                    </div>
                                 </div>
                                 <div class="col-md-2">
                                     <label for="title" class="control-label">{{ __("Tags") }}:-<div id="tags" disabled=""></div></label>
@@ -101,6 +106,7 @@
                         $('#edit_page_content #email_template_id').val(response.data.id);
                         if (response.data) {
                             $('#edit_page_content #tags').html(response.data.tags);
+                            $('#edit_page_content input[name=status]').prop('checked', response.data.status == 1);
                             $('#edit_page_content #subject').val(response.data.subject);
                             // $('#edit_page_content #content').val(response.data.content);
                             // $('#edit_page_content #content').summernote({
@@ -125,9 +131,11 @@
             // let content = $('#edit_page_content #content').val();
             let content = CKEDITOR.instances.editor.getData();
             let email_template_id = $('#edit_page_content #email_template_id').val();
+            let status  = +$('#edit_page_content input[name=status]').prop('checked');
             var data = {
                 subject: subject,
                 content: content,
+                status,
                 email_template_id: email_template_id
             };
             $.post(update_url, data, function(response) {

@@ -1369,6 +1369,12 @@ class PickupDeliveryController extends FrontController{
                 if(isset($request->unique_id) || isset($request->driver_id)){
                     $allocation_type = 'm';
                 }
+
+                $payment_mode = "";
+                if(isset($order->payment_option_id) && $order->payment_option_id > 0){
+                    $payment_mode = PaymentOption::find($order->payment_option_id)->title ?? 'Cash On Delivery';
+                }
+
                 $postdata =  [
                     'order_number' =>  $order->order_number,
                     //'order_type' =>  $order->type,
@@ -1384,6 +1390,7 @@ class PickupDeliveryController extends FrontController{
                     'call_back_url' => $call_back_url??null,
                     'customer_email' => $customer->email ?? '',
                     'cash_to_be_collected' => $payable_amount??0.00,
+                    'payment_mode' => $payment_mode ?? null,
                     'schedule_time' => $schedule_datetime_del ?? null,
                     'task_description' => null,
                     'order_number' =>  $order->order_number,

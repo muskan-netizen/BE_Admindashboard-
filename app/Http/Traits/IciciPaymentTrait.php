@@ -52,9 +52,9 @@ trait IciciPaymentTrait
         curl_close($curl);
     
         if ($err) {
-            \Log::info('error '.$err);
+            // \Log::info('error '.$err);
         } else {
-            \Log::info('res for ip '.$response);
+            // \Log::info('res for ip '.$response);
         }
     }
 
@@ -103,7 +103,7 @@ trait IciciPaymentTrait
         // \Log::info(['crypttext' => $crypttext]);
     
         $encrypt = json_encode(base64_encode($crypttext));
-        \Log::info(['encrypt' => $encrypt]);
+        // \Log::info(['encrypt' => $encrypt]);
     
         $header = [
             'Content-type:text/plain'
@@ -133,10 +133,10 @@ trait IciciPaymentTrait
         $priv_key=fread($fp,8192);
         fclose($fp);
         $res = openssl_get_privatekey($priv_key, "");
-        \Log::info('res '.$res);
+        // \Log::info('res '.$res);
 
         openssl_private_decrypt(base64_decode($raw_response), $newsource, $res);
-        \Log::info(['newsource' => $newsource]);
+        // \Log::info(['newsource' => $newsource]);
         $output = json_decode($newsource, true);
     
         return $output;

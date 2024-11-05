@@ -185,7 +185,7 @@ public function createOrder($orderVendor,$vendor_details,$cus_address,$customer,
         'delivery_type' => (($scheduledAt)?'SCHEDULED':null),
         'schedule_time' => (($scheduledAt)?$scheduledAt:null),
     ];
-    \Log::info($postdata);
+    // \Log::info($postdata);
 
 
     $response_d4b_dunzo = Http::withHeaders([
@@ -196,7 +196,7 @@ public function createOrder($orderVendor,$vendor_details,$cus_address,$customer,
     ])
     ->post($this->app_url.'/v2/tasks', $postdata);
 
-    \Log::info($response_d4b_dunzo->json());
+    // \Log::info($response_d4b_dunzo->json());
 
     return $response_d4b_dunzo->json();
 }

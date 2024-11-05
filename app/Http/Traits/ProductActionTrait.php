@@ -74,7 +74,7 @@ trait ProductActionTrait{
             } else{
                 $query = $query->where('token_id', session()->get('_token'));
             }
-            $return = $query->orderBy('updated_at','DESC')->pluck('product_id');
+            $return = $query->orderBy('updated_at','DESC')->take(6)->pluck('product_id');
             if(sizeof($return) > 0){
                 $return = $return->toArray();
             }
@@ -365,7 +365,7 @@ trait ProductActionTrait{
                     $completeWhere = ' AND `products`.`'.$type.'` = 1';
                 }
                 if($type = 'on_sale' || $type = 'spotlight_deals' ){
-               
+
                     $completeWhere = "";
                 }
                 $raw_query = "SELECT
@@ -385,7 +385,6 @@ trait ProductActionTrait{
                             $whereProductType
 
                             GROUP BY `products`.`id`";
-
                             // LIMIT 6";
 
                 $products = DB::select( DB::raw($raw_query));
@@ -420,8 +419,7 @@ trait ProductActionTrait{
             } else{
                 $venid = '0';
             }
-           $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
-
+            $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
             if($where!=='all' && $where!=='on_sale'){
 
                     if($where =='single_category_products' || $where == 'selected_products' || $where == 'popular_products' || $where == 'top_rated_products' ||  $where == 'recent_viewed'){
@@ -464,8 +462,7 @@ trait ProductActionTrait{
 
             $single_category_product_ids = $this->getProductsId($where, $vendorWhereIN, $whereProductType);
 
-       
-            if(count($single_category_product_ids) > 0){
+            if(count($single_category_product_ids) > 0 && $where!=='recent_viewed'){
                 shuffle($single_category_product_ids);
                 $random_numbers = array_slice($single_category_product_ids, 0, 6);
                 $single_category_product_ids = @implode(',',$random_numbers);
@@ -473,6 +470,7 @@ trait ProductActionTrait{
                     $completeWhere .= ' AND  `products`.`id` IN  ('.$single_category_product_ids.')';
                 }
             }
+
 
             $raw_query = "SELECT
             `products`.`id`,
@@ -551,7 +549,7 @@ trait ProductActionTrait{
             $getSubCatIdsIn
             $whereProductType
             GROUP BY `products`.`id`
-             LIMIT 6";
+            LIMIT 6";
 
 
             $returnArray = DB::select( DB::raw($raw_query));
@@ -561,8 +559,6 @@ trait ProductActionTrait{
             // }
 
             // $returnArray = $products;
-
-
 
             return $returnArray;
         }
@@ -763,16 +759,24 @@ trait ProductActionTrait{
                     $value->closed_store_order_scheduled = 0;
                 }
             }
+
+            $closed_vendors = array_filter($vendors, fn ($v) => $v->is_vendor_closed == 1);
+            $vendors        = array_filter($vendors, fn ($v) => $v->is_vendor_closed == 0);
+
+            foreach ($closed_vendors as $cv) {
+                $vendors []= $cv;
+            }
+
             $keyToFilter = 'is_vendor_closed';
             $valueToFilter = $venderFilterOpenClose;
             // $my_array = ['foo' => 1, 'bar' => 'baz', 'hello' => 'wld'];
-            if($venderFilterOpenClose === 1 || $venderFilterOpenClose === 0){
+            if($venderFilterOpenClose === 1 ){
                 $filteredArray = array_filter($vendors, function($item) use ($keyToFilter, $valueToFilter) {
                     return isset($item->$keyToFilter) && $item->$keyToFilter == $valueToFilter;
                 });
                 $filtered = array_values($filteredArray);
             }else {
-                $filtered = $vendors;
+                $filtered = array_values($vendors);
             }
             return $filtered;
         }

@@ -74,7 +74,7 @@ trait ProductTrait{
                     $q->whereDate('end_date_time', '>', now());
                 }]);
             }
-            $product = $product->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration','tags','is_long_term_service','service_duration', 'returnable' , 'replaceable' , 'return_days', 'same_day_delivery', 'next_day_delivery','hyper_local_delivery','is_recurring_booking', 'security_amount','captain_name','calories', 'captain_profile', 'captain_description');
+            $product = $product->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','category_id','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration','tags','is_long_term_service','service_duration', 'returnable' , 'replaceable' , 'return_days', 'same_day_delivery', 'next_day_delivery','hyper_local_delivery','is_recurring_booking', 'security_amount','captain_name','calories', 'captain_profile', 'captain_description');
           
             $product = $product->whereHas('vendor',function($q) use($vendor_slug){
                     $q->where('slug',$vendor_slug);

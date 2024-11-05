@@ -192,7 +192,7 @@ window.loadMainMenuSlider = function loadMainMenuSlider() {
     dots: false,
     infinite: false,
     speed: 300,
-    slidesToShow: 13,
+    slidesToShow: 10,
     slidesToScroll: 1,
     arrows: true,
     responsive: [
@@ -1526,7 +1526,7 @@ $(document).on("click", ".cl_category_kyc_form", function (e) {
       $("#cart_product_order_form").modal("show");
       $("#cart_product-order-form-modal").html(response);
     },
-    error: function (error) {},
+    error: function (error) { },
     //$(this).prop('disabled', false);
   });
 });
@@ -4001,7 +4001,7 @@ function cartHeader(address_id = null) {
               var schedule_datetime = "";
               if (
                 typeof $("#edit_order_schedule_datetime").val() !=
-                  "undefined" &&
+                "undefined" &&
                 $("#edit_order_schedule_datetime").val() != "" &&
                 typeof $("#edit_order_schedule_slot").val() != "undefined" &&
                 $("#edit_order_schedule_slot").val() != ""
@@ -4389,7 +4389,7 @@ function updateCartProductStatus(cartproduct_id, is_cart_checked) {
         cartHeader();
       }
     },
-    error: function (err) {},
+    error: function (err) { },
   });
 }
 
@@ -4453,7 +4453,7 @@ function setTipAmount(tip, amount_payable, currency) {
     // amount_payable = parseFloat(amount_payable) +parseFloat(fixed_fee_amount);
     $("#cart_total_payable_amount").text(
       currency +
-        parseFloat(amount_payable + other_taxes).toFixed(parseInt(digit_count))
+      parseFloat(amount_payable + other_taxes).toFixed(parseInt(digit_count))
     );
     $("#cart_tip_amount").val(0);
     $(".custom_tip").removeClass("d-none");
@@ -4518,20 +4518,20 @@ $(document).on("keyup", "#custom_tip_amount", function () {
       /* Paid amount is less then available wallet amount*/
       $("#wallet_amount_used").text(
         " - " +
-          currency +
-          " " +
-          (
-            token_currency *
-            (wallet_amount_used_fixed + tip / token_currency)
-          ).toFixed(parseInt(digit_count))
+        currency +
+        " " +
+        (
+          token_currency *
+          (wallet_amount_used_fixed + tip / token_currency)
+        ).toFixed(parseInt(digit_count))
       );
     } else {
       /* Paid amount is greater then available wallet amount*/
       $("#wallet_amount_used").text(
         " - " +
-          currency +
-          " " +
-          wallet_amount_available.toFixed(parseInt(digit_count))
+        currency +
+        " " +
+        wallet_amount_available.toFixed(parseInt(digit_count))
       );
       payable_amount =
         gross_amount + tip + total_taxable_amount - wallet_amount_available;

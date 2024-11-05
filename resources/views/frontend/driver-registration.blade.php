@@ -536,11 +536,11 @@
             var dial_code = $(this).attr('data-dial-code');
             $('#dialCode').val(dial_code);
         });
-
         function escapeSpecialChars(selector) {
         return selector.replace(/([ #;?%&,.+*~\':"!^$[\]()=>|\/@])/g, '\\$1');
         }
         $('#register_btn').click(function() {
+           
             $(".invalid-feedback strong").empty();
             $(" input").removeClass("is-invalid");
             var that = $(this);
@@ -553,12 +553,11 @@
                     var escaped_attr_name = escapeSpecialChars(attr_name);
                     var closestElement = $($('.required')[i].closest('#' + escaped_attr_name + 'Input'));
                     var label = closestElement.find('label').text();
-                    if (data_val.length < 1 || data_val == '') {
-                        // $("#data-error").text(attr_name+ " is required");
+                    if ((data_val.length < 1 || data_val == '') ) {
                         $("#" + escaped_attr_name + "Input input, #" + escaped_attr_name + "Input select").addClass("is-invalid");
                         $("#" + escaped_attr_name + "_error").children("strong").text("The " + label.toLowerCase() + " field is required").show();
                         $("#" + escaped_attr_name + "Input span.invalid-feedback").show();
-                        if(!hasErrors){
+                        if (!hasErrors) {
                             hasErrors = true;
                         }
                     }

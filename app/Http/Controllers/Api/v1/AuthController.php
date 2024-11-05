@@ -773,19 +773,19 @@ class AuthController extends BaseController
                             $email_template_content = $email_template->content;
                             $email_template_content = str_ireplace("{code}", $otp, $email_template_content);
                             $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
+                            $data = [
+                                'code' => $otp,
+                                'link' => "link",
+                                'mail_from' => $mail_from,
+                                'email' => $request->email,
+                                'client_name' =>  $client->name,
+                                'logo' => $client->logo['original'],
+                                'subject' => $email_template->subject,
+                                'customer_name' => ucwords($user->name),
+                                'email_template_content' => $email_template_content,
+                            ];
+                            dispatch(new \App\Jobs\SendVerifyEmailJob($data))->onQueue('verify_email');
                         }
-                        $data = [
-                            'code' => $otp,
-                            'link' => "link",
-                            'mail_from' => $mail_from,
-                            'email' => $request->email,
-                            'client_name' =>  $client->name,
-                            'logo' => $client->logo['original'],
-                            'subject' => $email_template->subject,
-                            'customer_name' => ucwords($user->name),
-                            'email_template_content' => $email_template_content,
-                        ];
-                        dispatch(new \App\Jobs\SendVerifyEmailJob($data))->onQueue('verify_email');
                         $message = __('An otp has been sent to your email. Please check.');
                         return $this->successResponse([], $message);
                     } else {
@@ -915,17 +915,17 @@ class AuthController extends BaseController
                     // $email_template_content = str_ireplace("{reset_link}", url('/reset-password/' . $token), $email_template_content);
                 //    $email_template_content = str_ireplace("{reset_link}", "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/reset-password/" . $token, $email_template_content);
                     $email_template_content = str_ireplace("{reset_link}", $domain_link . "/reset-password/" . $token, $email_template_content);
+                    $data = [
+                        'token' => $token,
+                        'mail_from' => $mail_from,
+                        'email' => $request->email,
+                        'client_name' => $client_name,
+                        'logo' => $client->logo['original'],
+                        'subject' => $email_template->subject,
+                        'email_template_content' => $email_template_content,
+                    ];
+                    dispatch(new \App\Jobs\sendForgotPasswordEmail($data))->onQueue('forgot_password_email');
                 }
-                $data = [
-                    'token' => $token,
-                    'mail_from' => $mail_from,
-                    'email' => $request->email,
-                    'client_name' => $client_name,
-                    'logo' => $client->logo['original'],
-                    'subject' => $email_template->subject,
-                    'email_template_content' => $email_template_content,
-                ];
-                dispatch(new \App\Jobs\sendForgotPasswordEmail($data))->onQueue('forgot_password_email');
             }
             return response()->json(['success' => __('We have e-mailed your password reset link!')], 200);
         } catch (\Exception $e) {

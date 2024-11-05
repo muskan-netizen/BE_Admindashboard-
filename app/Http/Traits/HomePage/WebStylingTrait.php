@@ -56,7 +56,7 @@ trait WebStylingTrait
     public function updateSelectedProductstoDb($id, $request,$type='')
     {
         // $delete = HomeProduct::where('layout_id', $id);
-        
+
         // if(!empty($type))
         // $delete = $delete->where('type',$type);
 
@@ -86,7 +86,7 @@ trait WebStylingTrait
     public function getSelectedProducts()
     {
         $product_ids = [];
-        
+
         $single_category_products = HomeProduct::whereSlug('selected_products')->first();
         if (!empty($single_category_products->products)) {
 
@@ -94,7 +94,7 @@ trait WebStylingTrait
         } else {
             $product_ids = [];
         }
-        
+
         return $product_ids;
     }
 
@@ -109,11 +109,12 @@ trait WebStylingTrait
     {
         $language_id = Session::get('customerLanguage') ?? 1;
         $products = Product::with([
+        'vendor:id,name,slug',
         'translation' => function ($q) use ($language_id){
             $q->select('product_id', 'title')->where('language_id', $language_id);
         }]);
 
-        //If not need all product 
+        //If not need all product
         if(empty($all)){
             if(@$request['category_id']){
                 $products->wherehas('category', function($q) use($request){
@@ -125,7 +126,7 @@ trait WebStylingTrait
             }
         }
 
-        $products = $products->where('is_live', 1)->select('id', 'title')->get();
+        $products = $products->where('is_live', 1)->select('id', 'title', 'vendor_id')->get();
         return $products;
     }
 }

@@ -71,18 +71,18 @@ class ForgotPasswordController extends FrontController{
                 if($email_template){
                     $email_template_content = $email_template->content;
                     $email_template_content = str_ireplace("{reset_link}", url('/reset-password/'.$token), $email_template_content);
+                    $data = [
+                        'token' => $token,
+                        'mail_from' => $mail_from,
+                        'email' => $request->email,
+                        'client_name' => $client_name,
+                        'logo' => $client->logo['original'],
+                        'subject' => $email_template->subject,
+                        'email_template_content' => $email_template_content,
+                    ];
+                    dispatch(new \App\Jobs\sendForgotPasswordEmail($data))->onQueue('forgot_password_email');
                 }
-                $data = [
-                    'token' => $token,
-                    'mail_from' => $mail_from,
-                    'email' => $request->email,
-                    'client_name' => $client_name,
-                    'logo' => $client->logo['original'],
-                    'subject' => $email_template->subject,
-                    'email_template_content' => $email_template_content,
-                ];
-                dispatch(new \App\Jobs\sendForgotPasswordEmail($data))->onQueue('forgot_password_email');
-               
+
                 /* Send sms to user */
                 $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username','mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
                 if ($user->dial_code == "971") {
@@ -100,7 +100,7 @@ class ForgotPasswordController extends FrontController{
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
-            
+
     }
 
     /**     * Display resetPassword Form     */
@@ -110,7 +110,7 @@ class ForgotPasswordController extends FrontController{
             'password_confirmation' => 'required',
             'password' => 'required|string|min:6|confirmed',
         ], [
-            'password.required' => __('The password field is required.'), 
+            'password.required' => __('The password field is required.'),
             'password.confirmed' => __('The password confirmation does not match.'),
             'password_confirmation.required' => __('The password confirmation field is required.')
         ]);

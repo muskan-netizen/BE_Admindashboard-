@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers\Client;
 
-use DB;
-use Auth;
-use DataTables;
+use Illuminate\Support\Facades\Auth;
+/*use DataTables;*/
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
+use Yajra\DataTables\Facades\DataTables;
 
 use App\Models\{Product, ClientCurrency, ClientPreference, LoyaltyCard,OrderProductRating,OrderDriverRating, Vendor};
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\View;
 
 class ReviewController extends BaseController
 {
@@ -65,16 +70,17 @@ class ReviewController extends BaseController
             if(isset($rating_details)){
 
                 if ($request->ajax()) {
-                 return \Response::json(\View::make('frontend.modals.vendor_rating', array('rating'=>  $rating_details->admin_rating,'vendor_id' => $request->id ,'rating_details' => $rating_details))->render());
+                    return Response::json(View::make('frontend.modals.vendor_rating', array('rating'=>  $rating_details->admin_rating,'vendor_id' => $request->id ,'rating_details' => $rating_details))->render());
                 }
 
                 return $this->successResponse($rating_details,'Rating Details.');
             }
-            return \Response::json(\View::make('frontend.modals.vendor_rating', array('rating'=> 0 ,'vendor_id' => $request->id ,'rating_details' => '10'))->render());
+            return Response::json(View::make('frontend.modals.vendor_rating', array('rating'=> 0 ,'vendor_id' => $request->id ,'rating_details' => '10'))->render());
 
+            // ???
             return $this->errorResponse('Invalid rating', 404);
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
@@ -89,19 +95,20 @@ class ReviewController extends BaseController
     }
 
     public function update_vendor_rating(Request $request){
-        try{
-           $ratings= Vendor::where('id', $request->vendor_id)->update(['admin_rating' => $request->rating]);
-           
-           if(isset($ratings)) {
-            return 'Success';
-        }
-        return $this->errorResponse('Invalid order', 200);
-        
-        } catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(), 400);
-        }
+        try {
+            $ratings= Vendor::where('id', $request->vendor_id)->update(['admin_rating' => $request->rating]);
+
+            if(isset($ratings)) {
+                return 'Success';
             }
-        
+
+            return $this->errorResponse('Invalid order', 200);
+
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 400);
+        }
+    }
+
 
     /**
      * Store a newly created country resource in storage.
@@ -122,7 +129,7 @@ class ReviewController extends BaseController
      */
     public function show(Request $request,$domain = '',$product_sku)
     {
-        $product =  Product::with('translation_one','media.image','vendor','reviews.reviewFiles','reviews.user')->where('sku',$product_sku)->first();
+        $product =  Product::with('translation_one','media.image','vendor','allReviews.reviewFiles','reviews.user')->where('sku',$product_sku)->first();
         // echo '<pre>';
         // print_r($product->toArray());
         return view('backend.review.detail',compact('product'));
@@ -145,9 +152,30 @@ class ReviewController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, string $domain = '', int $id = 0)
     {
+        $update = $request->only(['status']);
+
+        DB::transaction(function () use ($id, $update) {
+            $orderProductRating = OrderProductRating::findOrFail($id);
+            $orderProductRating->status = Arr::get($update, 'status', $orderProductRating->status);
+            $orderProductRating->save();
+            $product = Product::find($orderProductRating->product_id);
+            $average = $product->reviews()->avg('rating');
+            $product->averageRating = $average;
+            $product->save();
+        });
+
+        if ($request->ajax()) {
+            Session::flash('success', 'Review updated successfully');
+            return response()->json([
+                'status' => 'Success',
+                'message' => 'Review updated successfully',
+            ]);
         }
+
+        return back()->with('success', 'Review updated successfully');
+    }
 
     /**
      * Remove the specified country resource from storage.

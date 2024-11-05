@@ -3,38 +3,39 @@
 namespace App\Http\Controllers\Client;
 
 use Image;
+use DB,Log;
 use Phumbor;
 use Session;
 use Redirect;
+use Exception;
 use DataTables;
 use Carbon\Carbon;
-use App\Models\UserVendor;
 use App\Models\User;
+use App\Models\UserVendor;
 use Illuminate\Support\Str;
+use App\Models\Measurements;
 use Illuminate\Http\Request;
 use App\Imports\VendorImport;
-use App\Http\Traits\ApiResponser;
-use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Traits\ToasterResponser;
 use App\Http\Traits\VendorTrait;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Client\{BaseController, VendorPayoutController};
-use App\Http\Controllers\ShiprocketController;
-use App\Http\Controllers\AhoyController;
-use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, Bid, BidRequest, ProductTranslation, Client, ClientPreference, Country, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty, OrderVendorProduct, RoleOld, VendorSection,VendorMultiBanner, VendorMinAmount, VendorAdditionalInfo};
+use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
+use App\Services\InventoryService;
 use App\Exports\VendorSimpelExport;
 use App\Exports\VendorProductExport;
-use App\Exports\VendorPaymentReportExport;
 use App\Http\Traits\ShipEngineTrait;
-use DB,Log;
-use App\Models\VendorRegistrationDocument;
-use App\Services\InventoryService;
-use App\Models\VendorSocialMediaUrls;
-use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Traits\ToasterResponser;
+use App\Models\VendorSocialMediaUrls;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\AhoyController;
+use Illuminate\Support\Facades\Validator;
+use App\Exports\VendorPaymentReportExport;
+use App\Models\VendorRegistrationDocument;
+use App\Http\Controllers\ShiprocketController;
+use App\Http\Controllers\Client\{BaseController, VendorPayoutController};
+use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, Bid, BidRequest, ProductTranslation, Client, ClientPreference, Country, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty, OrderVendorProduct, RoleOld, VendorSection,VendorMultiBanner, VendorMinAmount, VendorAdditionalInfo};
 
 class VendorController extends BaseController
 {
@@ -70,10 +71,11 @@ class VendorController extends BaseController
     public function getFilterData(Request $request){
         $client_preference = (object)Session::get('preferences');
         $getAdditionalPreference = getAdditionalPreference(['is_one_push_book_enable']);
+        /** @var \App\Models\User */
         $user = Auth::user();
         $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->where('status', $request->status)->where('is_seller', 0)->orderBy('id', 'desc');
-        if ($user->is_superadmin == 0) {
-            if($user->hasRole('Vendor') || $user->hasRole('Vendors') || $user->hasRole('vendor')){
+        if ($user->is_superadmin == 0 && ((! $user->hasRole('admin')) || (! $user->hasRole('Admin')))) {
+            if($user->hasRole('Vendor') || $user->hasRole('Vendors') || $user->hasRole('vendor') || $user->can('vendor-catalog')){
                 $vendors = $vendors->whereHas('permissionToUser', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
                 });
@@ -187,6 +189,7 @@ class VendorController extends BaseController
 
     public function index(){
 
+        /** @var \App\Models\User */
         $user = Auth::user();
         $csvVendors = CsvVendorImport::orderBy('id','desc')->get();
         $preferences = ClientPreference::first();
@@ -196,7 +199,7 @@ class VendorController extends BaseController
         $client_preferences = ClientPreference::first();
         $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->where('is_seller', 0)->orderBy('id', 'desc');
 
-        if ($user->is_superadmin == 0) {
+        if ($user->is_superadmin == 0 && ((! $user->hasRole('admin')) || (! $user->hasRole('Admin')))) {
             if($user->hasRole('Vendor') || $user->hasRole('Vendors') || $user->hasRole('vendor')){
                 $vendors = $vendors->whereHas('permissionToUser', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
@@ -828,8 +831,9 @@ class VendorController extends BaseController
         $facilties = Facilty::with(['primary'])->get();
         $roles = RoleOld::where('status',1)->get();
         $data = $this->SettingFunction($vendor,$id);
-
-        $dataMerge = array_merge($data,['client_preferences' => $client_preferences, 'vendor' => $vendor, 'tab' => 'category', 'html' => $tree, 'languages' => $langs, 'addon_sets' => $addons, 'VendorCategory' => $VendorCategory, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build,'csvVendors'=> $csvVendors, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'clientCurrency'=>$clientCurrency,'facilties'=>$facilties,'roles' => $roles]);
+        $category=Category::whereIn('id',$VendorCategory)->get();
+        $measurementsOpted=Measurements::where('vendor_id',$vendor->id)->get();
+        $dataMerge = array_merge($data,['client_preferences' => $client_preferences, 'vendor' => $vendor, 'tab' => 'category', 'html' => $tree, 'languages' => $langs, 'addon_sets' => $addons, 'VendorCategory' => $VendorCategory, 'measurementsOpted'=>$measurementsOpted,'category'=>$category,'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build,'csvVendors'=> $csvVendors, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'clientCurrency'=>$clientCurrency,'facilties'=>$facilties,'roles' => $roles]);
 
         return view('backend.vendor.vendorCategory')->with($dataMerge);
     }
@@ -1204,7 +1208,7 @@ class VendorController extends BaseController
         $vendor = Vendor::where('id',$id);
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $user = Auth::user();
-        if ($user->is_superadmin == 0) {
+        if ($user->is_superadmin == 0 && ((! $user->hasRole('admin')) || (! $user->hasRole('Admin')))) {
             $vendor = $vendor->whereHas('permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
             });
@@ -1259,15 +1263,21 @@ class VendorController extends BaseController
             $sku_url = $sku_url.".".$vendor_name;
         }
 
-        $total_delivery_fees = OrderVendor::where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
+        $OrderVendor = OrderVendor::whereHas('orderDetail', function ($query) {
+            $query->where('payment_status', 1);
+            })->where('vendor_id', $id)
+            ->orderBy('id','desc')
+            ->where('order_status_option_id','!=',3);
         if ($user->is_superadmin == 0) {
-            $total_delivery_fees = $total_delivery_fees->whereHas('vendor.permissionToUser', function ($query) use($user) {
+            $total_delivery_fees = $OrderVendor->whereHas('vendor.permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
             });
         }
-        $total_delivery_fees = $total_delivery_fees->sum('delivery_fee');
+        $total_delivery_fees = $OrderVendor->sum('delivery_fee');
 
-        $total_promo_amount = OrderVendor::where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
+        $total_promo_amount = OrderVendor::whereHas('orderDetail', function ($query) {
+            $query->where('payment_status', 1);
+        })->where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
         if ($user->is_superadmin == 0) {
             $total_promo_amount = $total_promo_amount->whereHas('vendor.permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -1275,21 +1285,11 @@ class VendorController extends BaseController
         }
         $total_promo_amount = $total_promo_amount->where('coupon_paid_by', 0)->sum('discount_amount');
 
-        $total_admin_commissions = OrderVendor::where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
-        if ($user->is_superadmin == 0) {
-            $total_admin_commissions = $total_admin_commissions->whereHas('vendor.permissionToUser', function ($query) use($user) {
-                $query->where('user_id', $user->id);
-            });
-        }
-        $total_admin_commissions = $total_admin_commissions->sum(DB::raw('admin_commission_percentage_amount + admin_commission_fixed_amount'));
 
-        $total_order_value = OrderVendor::where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
-        if ($user->is_superadmin == 0) {
-            $total_order_value = $total_order_value->whereHas('vendor.permissionToUser', function ($query) use($user) {
-                $query->where('user_id', $user->id);
-            });
-        }
-        $total_order_value = $total_order_value->sum('payable_amount') - $total_delivery_fees;
+        $total_admin_commissions = $OrderVendor->sum(DB::raw('admin_commission_percentage_amount + admin_commission_fixed_amount'));
+
+
+        $total_order_value = $OrderVendor->sum('payable_amount') - $total_delivery_fees;
 
         $vendor_payouts = VendorPayout::where('vendor_id', $id)->orderBy('id','desc');
         if($user->is_superadmin == 0){

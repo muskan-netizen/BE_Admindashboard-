@@ -465,6 +465,8 @@
                 "country": country,
                 "pincode": pincode,
                 "latitude": latitude,
+                "extra_instruction":extra_info,
+                "house_number":house_number,
                 "longitude": longitude,
                 "extra_instruction":extra_info,
                 "house_number":house_number

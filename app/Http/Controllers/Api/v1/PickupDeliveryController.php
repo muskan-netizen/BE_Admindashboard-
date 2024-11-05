@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use DB,Log;
-use Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Config;
 use Validation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -11,13 +11,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{AddonOption, Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client, ClientPreferenceAdditional, Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, OrderProductAddon, OrderVendorProduct, ProductFaq, ProductFaqSelectOption, UserBidRideRequest, PickDropDriverBid, TaxRate, UserDevice};
+use App\Models\{AddonOption, Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client, ClientPreferenceAdditional, Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, OrderProductAddon, OrderVendorProduct, ProductFaq, ProductFaqSelectOption, UserBidRideRequest, PickDropDriverBid, TaxRate, UserDevice, PaymentOption};
 use App\Http\Traits\{ApiResponser,OrderTrait,GuzzleHttpTrait};
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log as FacadesLog;
+use Illuminate\Support\Facades\Log;
 
 class PickupDeliveryController extends BaseController{
 
@@ -486,8 +486,8 @@ class PickupDeliveryController extends BaseController{
             }
 
             return $this->successResponse($product);
-        } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage().''.$e->getLine(), $e->getCode());
         }
 
     }
@@ -617,7 +617,7 @@ class PickupDeliveryController extends BaseController{
         // \Log::info('request data');
         // \Log::info($request->all());
         DB::beginTransaction();
-        try {
+        // try {
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
 
@@ -697,14 +697,14 @@ class PickupDeliveryController extends BaseController{
 
                return  $order_place;
 
-        }
-        catch(\Exception $e){
-            DB::rollback();
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
-        }
+        // }
+        // catch(\Exception $e){
+        //     DB::rollback();
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => $e->getMessage()
+        //     ]);
+        // }
 
     }
 
@@ -1181,7 +1181,7 @@ class PickupDeliveryController extends BaseController{
 
     // place Request To Dispatch
     public function placeRequestToDispatch($request,$order,$vendor){
-        try {
+        // try {
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             $customer = Auth::user();
             $wallet = $customer->wallet;
@@ -1259,6 +1259,12 @@ class PickupDeliveryController extends BaseController{
                 {
                     $payable_amount  = $request->amount;
                 }
+
+                $payment_mode = "";
+                if(isset($order->payment_option_id) && $order->payment_option_id > 0){
+                    $payment_mode = PaymentOption::find($order->payment_option_id)->title ?? 'Cash On Delivery';
+                }
+
                 $postdata =  [
                             'notify_all' => $request->send_to_all ?1: 0,
                             'order_number' =>  $order->order_number,
@@ -1273,6 +1279,7 @@ class PickupDeliveryController extends BaseController{
                             'task_type' => $task_type,
                             'schedule_time' => $schedule_datetime_del ?? null,
                             'cash_to_be_collected' => $payable_amount??0.00,
+                            'payment_mode' => $payment_mode ?? null,
                             'barcode' => '',
                             'call_back_url' => $call_back_url??null,
                             'order_team_tag' => $team_tag,
@@ -1345,13 +1352,13 @@ class PickupDeliveryController extends BaseController{
                 }
                 return $response;
             }
-            }catch(\Exception $e)
-            {
-                $data = [];
-                $data['status'] = 400;
-                $data['message'] =  $e->getMessage();
-                return $data;
-            }
+            // }catch(\Exception $e)
+            // {
+            //     $data = [];
+            //     $data['status'] = 400;
+            //     $data['message'] =  $e->getMessage();
+            //     return $data;
+            // }
     }
 
       /**

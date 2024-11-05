@@ -110,7 +110,8 @@ class PaymentResourceController extends BaseController
                 'automatic_payment_methods' => array(
                     'enabled'         => true,
                     'allow_redirects' => 'never'
-                )
+                ),
+                'return_url' => url('/payment/gateway/returnResponse') . '?' . http_build_query(['status' => 200])
             );
         // $saved_payment_method = UserSavedPaymentMethods::where('user_id', $user->id)->where('payment_option_id', $request->payment_option_id)->first();
         // if (!$saved_payment_method) {

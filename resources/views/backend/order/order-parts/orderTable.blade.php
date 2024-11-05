@@ -1,6 +1,4 @@
     @if(count($orders['orders']) > 0)
-
-   
     @foreach ($orders['orders'] as $k => $order)
 
         <div class="{{$ClassName}} al_order_sec" id="full-order-div{{ $k }}">

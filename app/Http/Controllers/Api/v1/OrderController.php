@@ -20,13 +20,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
-use Log;
 use App\Http\Controllers\Client\BorzoeDeliveryController;
 use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption,Bid, CartBookingOption, CartRentalProtection, Notification, OrderNotificationsLogs, ProcessorProduct,OrderFiles, OrderVendorProduct, ProductAvailability, VendorMargConfig};
 
 use App\Models\AutoRejectOrderCron;
 
 use App\Models\{VendorOrderCancelReturnPayment};
+use Illuminate\Support\Facades\Log;
+
 class OrderController extends BaseController
 {
     use ApiResponser,CartManager,OrderTrait,DispatcherSlot,VendorTrait,MargTrait,Borzoe;
@@ -119,6 +120,7 @@ class OrderController extends BaseController
                     return response()->json($errors, 422);
                 }
             }
+
             $rate = 0;
             $total_amount = 0;
             $total_discount = 0;
@@ -956,10 +958,6 @@ class OrderController extends BaseController
                         $order_vendor->coupon_code = $coupon_name;
                         $order_vendor->order_status_option_id = 1;
                         $order_vendor->delivery_fee = $delivery_fee;
-                        $order_vendor->subtotal_amount = $actual_amount;
-                        $order_vendor->payable_amount = $vendor_payable_amount+$total_fixed_fee_amount;
-                        $order_vendor->total_markup_price = $vendor_markup_amount;
-                        $order_vendor->taxable_amount = $new_vendor_taxable_amount;
                         $order_vendor->discount_amount = $vendor_discount_amount;
 
                         if($deliveryfeeOnCoupon)
@@ -974,6 +972,10 @@ class OrderController extends BaseController
                         $new_vendor_taxable_amount = str_replace(',', '', $new_vendor_taxable_amount);
                         $new_vendor_taxable_amount = floatval($new_vendor_taxable_amount);
 
+                        $order_vendor->subtotal_amount = $actual_amount;
+                        $order_vendor->payable_amount = $vendor_payable_amount+$total_fixed_fee_amount;
+                        $order_vendor->total_markup_price = $vendor_markup_amount;
+                        $order_vendor->taxable_amount = $new_vendor_taxable_amount;
                         $order_vendor->payment_option_id = $request->payment_option_id;
                         $order_vendor->total_container_charges = $vendor_total_container_charges;
 
@@ -1226,6 +1228,7 @@ class OrderController extends BaseController
                         $payment->save();
                     }
                     $order = $order->with(['vendors:id,order_id,dispatch_traking_url,vendor_id', 'user_vendor', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
+
                     if (in_array($request->payment_option_id, $ex_gateways)) {
                         $code = $request->header('code');
                         if (!empty($order->vendors)) {
@@ -1237,6 +1240,7 @@ class OrderController extends BaseController
                                     $clientDetail = Client::on('mysql')->where(['code' => $client_preference->client_code])->first();
                                     AutoRejectOrderCron::on('mysql')->create(['database_host' => $clientDetail->database_path, 'database_name' => $clientDetail->database_name, 'database_username' => $clientDetail->database_username, 'database_password' => $clientDetail->database_password, 'order_vendor_id' => $vendor_value->id, 'auto_reject_time' => Carbon::now()->addMinute($vendorDetail->auto_reject_time)]);
                                 }
+
                                 $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail, $code);
                             }
                             $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
@@ -2246,10 +2250,9 @@ class OrderController extends BaseController
                 //pr( $cartDetails->toArray());
                 $luxuryOptionTitle = !empty($order->luxury_option) ? $order->luxury_option->title : 'delivery';
                 if ($email_template) {
-
                     $email_template_content = $email_template->content;
                    // if ($vendor_id == "") {
-                        $returnHTML = view('email.newOrderProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                    $returnHTML = view('email.newOrderProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                    // } else {
                    //     $returnHTML = view('email.newOrderVendorProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                    // }
@@ -2261,33 +2264,34 @@ class OrderController extends BaseController
                     if(!empty($address)){
                         $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
                     }
+                    $email_data = [
+                        'code' => $otp,
+                        'link' => "link",
+                        'email' => $sendto,//"harbans.sayonakh@gmail.com",//  $sendto,//
+                        'mail_from' => $mail_from,
+                        'client_name' => $client_name,
+                        'logo' => $client->logo['original'],
+                        'subject' => $email_template->subject,
+                        'customer_name' => ucwords($user->name),
+                        'email_template_content' => $email_template_content,
+                        'cartData' => $cartDetails,
+                        'user_address' => $address,
+                    ];
+                    if (!empty($data['admin_email'])) {
+                        $email_data['admin_email'] = $data['admin_email'];
+                    }
+                    if ($vendor_id == "") {
+                        $email_data['send_to_cc'] = 1;
+                    }else{
+                        $email_data['send_to_cc'] = 0;
+                    }
+                    // $res = $this->testOrderMail($email_data);
+                    // dd($res);
+                    dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                    $notified = 1;
                 }
-                $email_data = [
-                    'code' => $otp,
-                    'link' => "link",
-                    'email' => $sendto,//"harbans.sayonakh@gmail.com",//  $sendto,//
-                    'mail_from' => $mail_from,
-                    'client_name' => $client_name,
-                    'logo' => $client->logo['original'],
-                    'subject' => $email_template->subject,
-                    'customer_name' => ucwords($user->name),
-                    'email_template_content' => $email_template_content,
-                    'cartData' => $cartDetails,
-                    'user_address' => $address,
-                ];
-                if (!empty($data['admin_email'])) {
-                    $email_data['admin_email'] = $data['admin_email'];
-                }
-                if ($vendor_id == "") {
-                    $email_data['send_to_cc'] = 1;
-                }else{
-                    $email_data['send_to_cc'] = 0;
-                }
-                // $res = $this->testOrderMail($email_data);
-                // dd($res);
-                dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
-                $notified = 1;
             } catch (\Exception $e) {
+                Log::error($e);
             }
         }
     }
@@ -3960,6 +3964,7 @@ class OrderController extends BaseController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData, $header_code='')
     {
+
         $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon','vendor_fcm_server_key')->first();
         $from = '';
@@ -4008,14 +4013,14 @@ class OrderController extends BaseController
                 "priority" => "high"
             ];
             if (!empty($from)) {
-                sendFcmCurlRequest($data);
+                sendFcmCurlRequest($data,$from,1);
             }
 
             $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
             if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
                 $from = $client_preferences->vendor_fcm_server_key;
                 $data['registration_ids'] = $vendorAppUserDevices;
-                $result = sendFcmCurlRequest($data,$from);
+                $result = sendFcmCurlRequest($data,$from,1);
             }
         }
     }
@@ -4350,7 +4355,7 @@ class OrderController extends BaseController
                     ],
                     "priority" => "high"
                 ];
-            return sendFcmCurlRequest($data);
+            return sendFcmCurlRequest($data,$client_preferences,1);
             }
         }
 
@@ -4359,7 +4364,7 @@ class OrderController extends BaseController
         if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
             $from = $client_preferences->vendor_fcm_server_key;
             $data['registration_ids'] = $vendorAppUserDevices;
-            return sendFcmCurlRequest($data,$from);
+            return sendFcmCurlRequest($data,$from,1);
         }
     }
 
@@ -5219,7 +5224,7 @@ class OrderController extends BaseController
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
         if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00) {
-            $order_ship = $this->placeOrderToBorzoApi($checkdeliveryFeeAdded, $request->vendor_id, $request->order_id);
+            $order_ship = $this->placeOrderToBorzoApi($checkdeliveryFeeAdded , $request->vendor_id, $request->order_id);
         }
         $orderDetails = json_decode($order_ship);
         if ($order_ship) {

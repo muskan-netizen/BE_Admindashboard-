@@ -177,7 +177,11 @@ class CartController extends BaseController
             }
             $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
             $already_added_product_variant_in_cart = CartProduct::where(["variant_id" => $request->product_variant_id, 'cart_id' => $cart_detail->id])->first();
+            $totalQuantity = (!empty($already_added_product_variant_in_cart) ? $already_added_product_variant_in_cart->quantity : 0) + $request->quantity;
 
+            if($product->has_inventory == 1 && $totalQuantity > $productVariant->quantity){
+                return response()->json(['error' => __('You have exceeded the maximum quantity')], 404);
+            }
 
             $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
             if( (@$luxury_option->id == 6) && ($additionalPreference['is_service_product_price_from_dispatch'] ==1) ){
@@ -563,6 +567,17 @@ class CartController extends BaseController
         $cartProduct = CartProduct::where('cart_id', $cart->id)->where('id', $request->cart_product_id)->first();
         if (!$cartProduct) {
             return response()->json(['error' => __('Product not exist in cart.')], 404);
+        }
+
+        $variant_id = $cartProduct->variant_id;
+        $productDetail = Product::with([
+            'variant' => function ($sel) use ($variant_id) {
+                $sel->where('id', $variant_id);
+                $sel->groupBy('product_id');
+            }
+        ])->find($cartProduct->product_id);
+        if($productDetail->has_inventory == 1 && $productDetail->variant[0]->quantity < $request->quantity){
+            return response()->json(['error' => __('You have exceeded the maximum quantity')], 404);
         }
         $cartProduct->quantity = $request->quantity;
         $cartProduct->save();
@@ -1910,11 +1925,16 @@ class CartController extends BaseController
         //     $cart->total_payable_amount  += $totalDeliveryCharges;
         // }
 
-        if($delivery_status == 0 && @$duration->closed_store_order_scheduled == 1)
-        {
+        if($delivery_status == 0 && @$cart->closed_store_order_scheduled == 1) {
             $cart->deliver_status = 1;
         }else{
             $cart->deliver_status = $delivery_status;
+        }
+        if($cart->deliver_status == 0){
+            if (empty(Auth::user()->id)) $cart->deliver_status = 1;
+            $cart->cart_error_message = empty(Auth::user()->id)
+                ? null
+                : __("We cannot deliver this product");
         }
         $cart->loyalty_amount = $loyalty_amount_saved;
 

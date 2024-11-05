@@ -87,22 +87,15 @@
                                         </tr>
                                     </thead>
                                     <tbody id="review_table_tbody_list">
-                                        @foreach ($product->reviews as $key => $reviwe)
+                                        @foreach ($product->allReviews as $key => $reviwe)
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
                                                 <td>{{ $reviwe->user->name }}</td>
                                                 <td>{{ $reviwe->review }}</td>
                                                 <td>
-                                                    <i
-                                                        class="fa fa-star {{ $reviwe->rating >= 1 ? 'checked' : '' }}"></i>
-                                                    <i
-                                                        class="fa fa-star {{ $reviwe->rating >= 2 ? 'checked' : '' }}"></i>
-                                                    <i
-                                                        class="fa fa-star {{ $reviwe->rating >= 3 ? 'checked' : '' }}"></i>
-                                                    <i
-                                                        class="fa fa-star {{ $reviwe->rating >= 4 ? 'checked' : '' }}"></i>
-                                                    <i
-                                                        class="fa fa-star {{ $reviwe->rating >= 5 ? 'checked' : '' }}"></i>
+                                                    @foreach(range(1, 5) as $ratingPoint)
+                                                        <i @class(['fa', 'fa-star', 'checked' => $reviwe->rating >= $ratingPoint])></i>
+                                                    @endforeach
                                                 </td>
                                                 <td>
                                                     <div class="file-outer">
@@ -117,7 +110,7 @@
                                                 <td>
                                                     <div class='form-ul'>
                                                         <div class='inner-div'>
-                                                            <input type='checkbox' data-id='' id='ss' data-plugin='switchery' name='userAccountStatus' class='chk_box' data-color='#43bee1' checked>
+                                                            <input type='checkbox' data-id='{{ $reviwe->id }}' data-plugin='switchery' name='reviewAccountStatus-{{ $reviwe->id }}' class='chk_box review_status_update' data-color='#43bee1' @if($reviwe->status == 1) checked @endif>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -127,7 +120,7 @@
                                                             <a href='{{ route('review.delete',[$reviwe->id]) }}' class='action-icon'>
                                                                 <i class='mdi mdi-delete' title='Delete review'></i>
                                                              </a>
-                                                           
+
                                                         </div>
                                                     </div>
                                                 </td>
@@ -179,5 +172,22 @@
 
 @endsection
 @section('script')
+    <script>
+        $('.review_status_update').change(function () {
+            const url = `{{ url('client/review') }}/${$(this).attr('data-id')}`;
+
+            const data = {
+                status: +this.checked,
+            };
+
+            $.ajax({
+                method: 'PATCH',
+                url, data,
+                success() {
+                    window.location.reload();
+                }
+            });
+        })
+    </script>
     {{-- <script src="{{asset('assets/libs/datatables/datatables.min.js')}}"></script> --}}
 @endsection

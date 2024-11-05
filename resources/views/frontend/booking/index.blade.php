@@ -928,6 +928,7 @@ input[type=number]::-webkit-outer-spin-button {
                         ="discount_amount" style="display:none;"></sub> <b id="real_total_amount">{{Session::get('currencySymbol')}}<%= (result.total_tags_price)%></b></label></h4>
                     <% } %>
 
+                    <input type="hidden" id="stripe_token" value=""/>
                     <input type="hidden" id="hddn_amount_toll_fee" value="<%= (result.toll_fee)%>"/>
                     <input type="hidden" name="cart_product_ids[]" value="<%= result.id %>">
                     <input type="hidden" id="hddn_real_amount" value="<%= (result.tags_price)%>"/>
@@ -1772,7 +1773,7 @@ input[type=number]::-webkit-outer-spin-button {
         var payment_hitpay_url="{{ route('make.hitpay.payment') }}";
         var payment_orangepay_url =  "{{ route('orangepay.initiate.payment') }}";
         var payment_cybersource_url =  "{{ route('cybersource.initiate.payment') }}";
-        
+
         @if ($client_preference_detail->distance_unit_for_time == 'mile')
             var distance_unit = "IMPERIAL";
         @else

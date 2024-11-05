@@ -18,7 +18,7 @@ body.al_body_template_eight .category-block .brand-img img {
 }
 
 body.al_body_template_eight .home-slider-wrapper .banner-img-outer img {
-    height: auto;
+    height: 490px;
 }
 
 body.al_body_template_eight .category-related-product.suggested-product.slick-initialized.slick-slider .flag-discount::before {
@@ -2950,6 +2950,7 @@ body.al_body_template_eight .p2p-full-width {
     height: 100%;
 }
 
+
 .al_body_template_eight img.blur-up.brand-logo.lazyloaded {
     width: 100% !important;
 }
@@ -2959,10 +2960,11 @@ body.al_body_template_eight .p2p-full-width {
     font-weight: 400;
     position: relative;
     line-height: 1.5;
-    padding: 0 20px;
+    padding: 0 10px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin: 0 5px;
 }
 
 .status_box li a {
@@ -3365,6 +3367,10 @@ body.dark .number .counter-container {
     body.dark.al_body_template_eight.homeHeader .collection-product-wrapper .col-md-3.col-6.col-grid-box {
         background: transparent !important;
     }
+
+    body.al_body_template_eight .home-slider-wrapper .banner-img-outer img {
+        height: 390px;
+    }
 }
 
 /*-------------ipad css--------*/
@@ -3381,6 +3387,10 @@ body.dark .number .counter-container {
         font-size: 10px;
         text-transform: capitalize;
     }
+
+    body.al_body_template_eight .home-slider-wrapper .banner-img-outer img {
+        height: 310px;
+    }
 }
 
 @media(max-width:991px) {
@@ -3390,6 +3400,11 @@ body.dark .number .counter-container {
 
     body.al_body_template_eight .home-slider-wrapper .banner-img-outer img {
         border-radius: 0 !important;
+        height: 220px;
+    }
+
+    .navbar-brand img.logo-image {
+        height: 35px !important;
     }
 
     body.al_body_template_eight .custom_banner img {
@@ -3647,7 +3662,7 @@ body.dark .number .counter-container {
 
     body.al_body_template_eight .home-slider-wrapper .banner-img-outer img,
     body.al_body_template_eight .al_mobile_banner {
-        height: auto !important;
+        height: 150px !important;
     }
 
     body.al_body_template_eight ul.exzoom_img_ul.img-sidebar img {

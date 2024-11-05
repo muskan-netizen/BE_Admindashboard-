@@ -1412,7 +1412,7 @@ trait OrderTrait
             ];
             $dataString = $data;
 
-            sendFcmCurlRequest($data);
+            sendFcmCurlRequest($data,$client_preferences,1);
         }
     }
 
@@ -1664,7 +1664,7 @@ trait OrderTrait
                 // send sms
             $this->sendOrderSuccessSMS($order);
         }catch(\Exception $e){
-            \Log::info('sendSuccessSMS error :-'.$e->getMessage());
+            // \Log::info('sendSuccessSMS error :-'.$e->getMessage());
             return true;
         }
         return true;
@@ -1721,7 +1721,7 @@ trait OrderTrait
 
             }catch(\Exception $e)
             {
-                \Log::info('failedOrderWalletRefund error :-'.$e->getMessage());
+                // \Log::info('failedOrderWalletRefund error :-'.$e->getMessage());
                 return true;
             }
             return true;
@@ -1880,7 +1880,9 @@ trait OrderTrait
                  ];
                  // $res = $this->testOrderMail($email_data);
                  // dd($res);
-                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                 if ($email_template) {
+                    dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                 }
                  $notified = 1;
              } catch (\Exception $e) {
              }

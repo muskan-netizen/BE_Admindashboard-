@@ -55,7 +55,7 @@ class D4BDunzoController extends Controller
                 // 'schedule_time' => Carbon::now()->timestamp,
                     ];
 
-                \Log::info($locationData);
+                // \Log::info($locationData);
 
 
                 $response = Http::withHeaders([
@@ -64,7 +64,7 @@ class D4BDunzoController extends Controller
                     'Accept-Language' => 'en_US',
                     'Content-Type' => 'application/json',
                 ])->post($this->app_url.'/v2/quote', $locationData);
-                \Log::info($response->json());
+                // \Log::info($response->json());
 
                 if($response->successful()){
                     return $response->json();
@@ -165,7 +165,7 @@ class D4BDunzoController extends Controller
             return response([], 200);
         } catch (\Exception $e) {
             // Handle exceptions here
-            \Log::info('webhook error dunzod4--'.$e->getMessage().$e->getLine());
+            // \Log::info('webhook error dunzod4--'.$e->getMessage().$e->getLine());
             Webhook::create(['tracking_order_id'=>'2222','response'=>$request->getContent()]);
             return response([],200);
         }

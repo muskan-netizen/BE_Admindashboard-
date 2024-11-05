@@ -79,7 +79,7 @@ trait GiftCardTrait
             }
             
         } catch (\Exception $e) {   
-           Log::info($e->getMessage()); 
+        //    Log::info($e->getMessage()); 
         }
     }
 
