@@ -993,7 +993,7 @@ class DispatcherController extends FrontController
             $user_id = $orderNumber ? $orderNumber->user_id : '';
             // $checkuservendor = UserVendor::where('user_id',$user_id)->first();
             // $sound = ($checkuservendor)?"notification.wav":"default";
-            $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_id)->pluck('device_token');
+            $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_id)->first();
 
             $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
             if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
@@ -1007,7 +1007,7 @@ class DispatcherController extends FrontController
                     //pr($title);
                     //pr($body);
                     $data = [
-                        "registration_ids" => $devices,
+                        "registration_ids" => $devices->device_token,
                         "notification" => [
                             'title' => $title,
                             'body'  => $body_content,
