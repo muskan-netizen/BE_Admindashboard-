@@ -967,7 +967,7 @@ class DispatcherController extends FrontController
                         ],
                         "priority" => "high"
                     ];
-                    \Log::info($data);
+                   
                 $result = sendFcmCurlRequest($data);
             }
         }

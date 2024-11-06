@@ -3037,7 +3037,7 @@ class OrderController extends BaseController
 
     public function sendStatusChangePushNotificationCustomer($user_ids, $orderData, $order_status_id)
     {
-        \Log::info('test_noti');
+       
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();

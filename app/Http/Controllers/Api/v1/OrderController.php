@@ -4027,7 +4027,7 @@ class OrderController extends BaseController
 
     public function sendStatusChangePushNotificationCustomer($user_ids, $orderData, $order_status_id, $header_code)
     {
-        \Log::info('test');
+       
         $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
         $vendorAppDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
