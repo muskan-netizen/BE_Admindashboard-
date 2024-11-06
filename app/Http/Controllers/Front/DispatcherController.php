@@ -543,9 +543,12 @@ class DispatcherController extends FrontController
                     'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
                     'vendor_id' =>  $checkiftokenExist->vendor_id,
                     'type' =>  $request->task_type??1]);
+                
+
+                    $order_details = Order::where('id',$update->order_id)->first();
                     
                 $this->sendOrderNotification($update->id);
-                $this->sendStatusChangePushNotificationCustomer($orderUserInfo->id,$update,$request->dispatcher_status_option_id);
+                $this->sendStatusChangePushNotificationCustomer($orderUserInfo->id,$order_details,$request->dispatcher_status_option_id);
 
             if(isset($request->dispatch_traking_url) && !empty($request->dispatch_traking_url))
             {
