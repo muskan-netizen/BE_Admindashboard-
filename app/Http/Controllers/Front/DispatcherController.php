@@ -543,12 +543,8 @@ class DispatcherController extends FrontController
                     'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
                     'vendor_id' =>  $checkiftokenExist->vendor_id,
                     'type' =>  $request->task_type??1]);
-                
-
-                    $order_details = Order::where('id',$update->order_id)->first();
                     
                 $this->sendOrderNotification($update->id);
-                // $this->sendStatusChangePushNotificationCustomer($orderUserInfo->id,$order_details,$request->status_option_id);
 
             if(isset($request->dispatch_traking_url) && !empty($request->dispatch_traking_url))
             {
@@ -587,59 +583,6 @@ class DispatcherController extends FrontController
             DB::rollback();
             return $this->errorResponse($e->getMessage(), $e->getCode());
 
-        }
-    }
-
-
-    public function sendStatusChangePushNotificationCustomer($user_ids, $orderData, $order_status_id)
-    {
-		\Log::info('testing');
-        \Log::info($user_ids);
-        \Log::info($order_status_id);
-        \Log::info($orderData);
-        $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_ids)->first();
-        \Log::info($devices);
-        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
-        if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-           if ($order_status_id == 2) {
-                $notification_content = NotificationTemplate::where('id', 5)->first();
-            } elseif ($order_status_id == 3) {
-                $notification_content = NotificationTemplate::where('id', 6)->first();
-            } elseif ($order_status_id == 4) {
-                $notification_content = NotificationTemplate::where('id', 7)->first();
-            } elseif ($order_status_id == 5) {
-                //Check for order is takeaway
-                if(@$orderData->luxury_option_id == 3)
-                {
-                    $notification_content = NotificationTemplate::where('slug', 'order-out-for-takeaway-delivery')->first();
-                }else{
-                    $notification_content = NotificationTemplate::where('id', 8)->first();
-                }
-            } elseif ($order_status_id == 6) {
-                $notification_content = NotificationTemplate::where('id', 9)->first();
-            }
-            if ($notification_content) {
-
-                $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
-                $data = [
-                    "registration_ids" => $devices->device_token,
-                    "notification" => [
-                        'title' => $notification_content->subject,
-                        'body'  => $body_content,
-                        'sound' => "default",
-                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                        'click_action' => url('user/orders'),
-                        "android_channel_id" => "default-channel-id"
-                    ],
-                    "data" => [
-                        'title' => $notification_content->subject,
-                        'body'  => $body_content,
-                        "type" => "order_status_change"
-                    ],
-                    "priority" => "high"
-                ];
-                sendFcmCurlRequest($data);
-            }
         }
     }
 
@@ -993,7 +936,7 @@ class DispatcherController extends FrontController
             $user_id = $orderNumber ? $orderNumber->user_id : '';
             // $checkuservendor = UserVendor::where('user_id',$user_id)->first();
             // $sound = ($checkuservendor)?"notification.wav":"default";
-            $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_id)->first();
+            $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_id)->pluck('device_token')->toArray();
 
             $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
             if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
@@ -1007,7 +950,7 @@ class DispatcherController extends FrontController
                     //pr($title);
                     //pr($body);
                     $data = [
-                        "registration_ids" => $devices->device_token,
+                        "registration_ids" => $devices,
                         "notification" => [
                             'title' => $title,
                             'body'  => $body_content,
