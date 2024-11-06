@@ -545,6 +545,7 @@ class DispatcherController extends FrontController
                     'type' =>  $request->task_type??1]);
                     
                 $this->sendOrderNotification($update->id);
+                $this->sendStatusChangePushNotificationCustomer($orderUserInfo->id,$update,$request->dispatcher_status_option_id);
 
             if(isset($request->dispatch_traking_url) && !empty($request->dispatch_traking_url))
             {
@@ -583,6 +584,56 @@ class DispatcherController extends FrontController
             DB::rollback();
             return $this->errorResponse($e->getMessage(), $e->getCode());
 
+        }
+    }
+
+
+    public function sendStatusChangePushNotificationCustomer($user_ids, $orderData, $order_status_id)
+    {
+		\Log::info('testing');
+        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+           if ($order_status_id == 2) {
+                $notification_content = NotificationTemplate::where('id', 5)->first();
+            } elseif ($order_status_id == 3) {
+                $notification_content = NotificationTemplate::where('id', 6)->first();
+            } elseif ($order_status_id == 4) {
+                $notification_content = NotificationTemplate::where('id', 7)->first();
+            } elseif ($order_status_id == 5) {
+                //Check for order is takeaway
+                if(@$orderData->luxury_option_id == 3)
+                {
+                    $notification_content = NotificationTemplate::where('slug', 'order-out-for-takeaway-delivery')->first();
+                }else{
+                    $notification_content = NotificationTemplate::where('id', 8)->first();
+                }
+            } elseif ($order_status_id == 6) {
+                $notification_content = NotificationTemplate::where('id', 9)->first();
+            }
+            if ($notification_content) {
+
+                $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
+                $data = [
+                    "registration_ids" => $devices,
+                    "notification" => [
+                        'title' => $notification_content->subject,
+                        'body'  => $body_content,
+                        'sound' => "default",
+                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                        'click_action' => url('user/orders'),
+                        "android_channel_id" => "default-channel-id"
+                    ],
+                    "data" => [
+                        'title' => $notification_content->subject,
+                        'body'  => $body_content,
+                        "type" => "order_status_change"
+                    ],
+                    "priority" => "high"
+                ];
+                sendFcmCurlRequest($data);
+            }
         }
     }
 
@@ -927,7 +978,7 @@ class DispatcherController extends FrontController
     /******************    ---- send notification to user -----   ******************/
     public function sendOrderNotification( $vendor_order_status_id )
     {
-       \Log::info('test_notiifcations');
+       
         $OrderStatus = VendorOrderDispatcherStatus::select('*','dispatcher_status_option_id as status_data')->find($vendor_order_status_id);
 
         if($OrderStatus){
