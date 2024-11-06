@@ -591,6 +591,9 @@ class DispatcherController extends FrontController
     public function sendStatusChangePushNotificationCustomer($user_ids, $orderData, $order_status_id)
     {
 		\Log::info('testing');
+        \Log::info($user_ids);
+        \Log::info($order_status_id);
+        \Log::info($orderData);
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
