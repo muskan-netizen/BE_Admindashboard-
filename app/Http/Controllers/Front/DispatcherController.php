@@ -927,7 +927,7 @@ class DispatcherController extends FrontController
     /******************    ---- send notification to user -----   ******************/
     public function sendOrderNotification( $vendor_order_status_id )
     {
-       
+       \Log::info('test_notiifcations');
         $OrderStatus = VendorOrderDispatcherStatus::select('*','dispatcher_status_option_id as status_data')->find($vendor_order_status_id);
 
         if($OrderStatus){
