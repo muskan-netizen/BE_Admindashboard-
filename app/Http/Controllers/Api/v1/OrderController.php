@@ -2326,14 +2326,14 @@ class OrderController extends BaseController
     }
     public function sendOrderNotification($id)
     {
-        $token = UserDevice::whereNotNull('device_token')->pluck('device_token')->where('user_id', $id)->toArray();
+        $token = UserDevice::whereNotNull('device_token')->first();
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         //$from = env('FIREBASE_SERVER_KEY');
         $notification_content = NotificationTemplate::where('id', 1)->first();
         if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
 
             $data = [
-                "registration_ids" => $token,
+                "registration_ids" => $token->device_token,
                 "notification" => [
                     'title' => $notification_content->label,
                     'body'  => $notification_content->content,
