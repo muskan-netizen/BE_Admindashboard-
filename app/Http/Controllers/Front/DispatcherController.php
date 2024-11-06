@@ -597,7 +597,7 @@ class DispatcherController extends FrontController
         \Log::info($user_ids);
         \Log::info($order_status_id);
         \Log::info($orderData);
-        $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_ids)->pluck('device_token');
+        $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_ids)->first();
         \Log::info($devices);
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
@@ -622,7 +622,7 @@ class DispatcherController extends FrontController
 
                 $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
                 $data = [
-                    "registration_ids" => $devices,
+                    "registration_ids" => $devices->device_token,
                     "notification" => [
                         'title' => $notification_content->subject,
                         'body'  => $body_content,
