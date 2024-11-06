@@ -548,7 +548,7 @@ class DispatcherController extends FrontController
                     $order_details = Order::where('id',$update->order_id)->first();
                     
                 $this->sendOrderNotification($update->id);
-                $this->sendStatusChangePushNotificationCustomer($orderUserInfo->id,$order_details,$request->dispatcher_status_option_id);
+                $this->sendStatusChangePushNotificationCustomer($orderUserInfo->id,$order_details,$request->status_option_id);
 
             if(isset($request->dispatch_traking_url) && !empty($request->dispatch_traking_url))
             {
