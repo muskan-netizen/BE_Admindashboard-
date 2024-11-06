@@ -352,8 +352,8 @@ if (!function_exists('sendFcmCurlRequest')) {
         
      
         $response = FirebaseService::sendNotification($data,$is_vendor);
-        // \Log::info('fcm curl firebase response');
-        // \Log::info($response);
+        \Log::info('fcm curl firebase response');
+        \Log::info($response);
         return $response;
 
         $fcm_server_key = ($fcm_server_key =='') ? ClientPreference::select('fcm_server_key')->first()->fcm_server_key :  $fcm_server_key ;
