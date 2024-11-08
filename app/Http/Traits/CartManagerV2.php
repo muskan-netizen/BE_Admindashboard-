@@ -534,11 +534,17 @@ trait CartManagerV2
                 $coupon_product_discount = 0;
                 $in_or_not = 0;
                 $vendor_details['vendor_address'] = $vendorData->vendor->select('id', 'latitude', 'longitude', 'address')->where('id', $vendorData->vendor_id)->first();
-                if (isset($vendorData->coupon) && !empty($vendorData->coupon) && isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
-                    if ($vendorData->coupon->promo->restriction_on == 0) {
-                        $coupon_product_ids = $vendorData->coupon->promo->details->pluck('refrence_id')->toArray();
-                        $in_or_not = $vendorData->coupon->promo->restriction_type;
-                    } elseif ($vendorData->coupon->promo->restriction_on == 1) {
+                $promoCode = optional($vendorData->coupon)->promo;
+                if (! is_null($promoCode) && $promoCode instanceof \App\Models\Promocode) {
+                    if($promoCode->restriction_on == 0) {
+                        $calculateDiscount = function ($product_price) use ($promoCode) {
+                            return $promoCode->promo_type_id == 1
+                                ? $product_price * $promoCode->amount / 100
+                                : $promoCode->amount;
+                        };
+                    }
+                    //
+                    if($vendorData->coupon->promo->restriction_on == 1){
                         $coupon_vendor_ids = $vendorData->coupon->promo->details->pluck('refrence_id')->toArray();
                         $in_or_not = $vendorData->coupon->promo->restriction_type;
                     }
@@ -981,7 +987,10 @@ trait CartManagerV2
                                             $tax_amount = ($price_in_doller_compare * $rate) / 100;
 
                                             //Find vendor Product Discount here
-                                            $productPriceAfterVendorDiscount  = productPriceAfterVendorDiscount($vendorData,$quantity_price,$doller_compare,$cart);
+                                            $productPriceAfterVendorDiscount  = (optional($promoCode)->restriction_on === 0) ? [
+                                                'deliveryFeeOnCoupon'    => 0,
+                                                'vendor_discount_amount' => ($promoCode->details()->where('refrence_id', $prod->product_id)->exists()) ? $calculateDiscount($quantity_price) : 0,
+                                            ] : productPriceAfterVendorDiscount($vendorData, $quantity_price, $doller_compare, $cart);
                                             $quantity_price = $quantity_price - $productPriceAfterVendorDiscount['vendor_discount_amount'];
                                             if(!$this->additionalPreferences->is_tax_price_inclusive){
                                                 $product_tax = ($quantity_price )* $rate / 100;
@@ -1001,7 +1010,10 @@ trait CartManagerV2
                                         }
                                     }else{
                                         //Find vendor Product Discount here
-                                        $productPriceAfterVendorDiscount  = productPriceAfterVendorDiscount($vendorData,$quantity_price,$doller_compare,$cart);
+                                        $productPriceAfterVendorDiscount  = (optional($promoCode)->restriction_on === 0) ? [
+                                            'deliveryfeeOnCoupon'    => 0,
+                                            'vendor_discount_amount' => ($promoCode->details()->where('refrence_id', $prod->product_id)->exists()) ? $calculateDiscount($quantity_price) : 0,
+                                        ] : productPriceAfterVendorDiscount($vendorData, $quantity_price, $doller_compare, $cart);
                                         $quantity_price = $quantity_price - $productPriceAfterVendorDiscount['vendor_discount_amount'];
                                         if ($productPriceAfterVendorDiscount['deliveryfeeOnCoupon'] == 1) {
                                             $deliveryfeeOnCoupon = 1;
