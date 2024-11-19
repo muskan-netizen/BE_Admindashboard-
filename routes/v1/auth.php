@@ -74,6 +74,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('get/agents', 'Api\v1\PickupDeliveryController@getAgents');
         Route::get('account', 'Api\v1\ProfileController@account');
         Route::get('orders', 'Api\v1\OrderController@getOrdersList');
+        Route::post('generateInvoice', 'Api\v1\OrderController@generatePDF');
         Route::get('orders-all', 'Api\v1\OrderController@getOrdersListLenderBorrower');
         Route::get('orders_upcoming_ongoing', 'Api\v1\OrderController@getOrdersLenderBorrower');
         Route::get('RejectedOrderProduct', 'Api\v1\OrderController@getRejectedOrdersList');
