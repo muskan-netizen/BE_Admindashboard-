@@ -4013,7 +4013,13 @@ class OrderController extends BaseController
                 "priority" => "high"
             ];
             if (!empty($from)) {
-                sendFcmCurlRequest($data,$from,1);
+                sendFcmCurlRequest($data,$from); // We send notification to applications where vendor app
+                                                 // is not separated and notifications on the admin panel itself.
+                                                 //
+                                                 // The FCM configuration file for both is the same one that is
+                                                 // used for sending notifications to the user.
+                                                 //
+                                                 // So we have to pass the third parameter as false (which is default).
             }
 
             $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
