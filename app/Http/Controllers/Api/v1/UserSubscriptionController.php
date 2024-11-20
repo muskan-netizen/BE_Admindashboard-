@@ -31,9 +31,12 @@ class UserSubscriptionController extends BaseController
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         $sub_plans = SubscriptionPlansUser::with('features.feature')->where('status', '1')->orderBy('id', 'asc')->get();
         $featuresList = SubscriptionFeaturesListUser::where('status', 1)->get();
+
         $active_subscription = SubscriptionInvoicesUser::with(['plan', 'features.feature'])
-                            ->where('user_id', $user->id)
-                            ->orderBy('end_date', 'desc')->first();
+            ->where('user_id', $user->id)
+            ->where('end_date', '>', today())
+            ->orderBy('end_date', 'desc')->first();
+
         if($sub_plans){
             foreach($sub_plans as $sub){
                 $subFeaturesList = array();

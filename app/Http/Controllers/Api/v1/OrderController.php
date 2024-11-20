@@ -17,11 +17,13 @@ use App\Http\Controllers\Front\QuickApiController;
 use App\Http\Controllers\Front\TempCartController;
 use App\Http\Controllers\ShiprocketController;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BorzoeDeliveryController;
-use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption,Bid, CartBookingOption, CartRentalProtection, Notification, OrderNotificationsLogs, ProcessorProduct,OrderFiles, OrderVendorProduct, ProductAvailability, VendorMargConfig};
+use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption,Bid, CartBookingOption, CartRentalProtection, Notification, OrderDriverRating, OrderNotificationsLogs, ProcessorProduct,OrderFiles, OrderVendorProduct, ProductAvailability, VendorMargConfig};
 
 use App\Models\AutoRejectOrderCron;
 
@@ -5243,6 +5245,144 @@ class OrderController extends BaseController
             return 1;
         }
         return false;
+    }
+
+    public function generatePDF(Request $request)
+    {
+        // Define the data to pass to the view
+        $user = Auth::user();
+        
+        $langId = $user->language ?? 1;
+        $preferences = ClientPreference::where('id', '>', 0)->first();
+        $order = OrderVendor::with('orderDetail','orderDetail.orderLocation','user','vendor')->where('order_id',$request->order_id)
+        ->with(['products.productRating.reviewFiles','products.product.translation', 'products.product.category.categoryDetail.translation' => function($q) use($langId){
+            $q->where('category_translations.language_id', $langId);
+        }])
+        ->select('*','dispatcher_status_option_id as dispatcher_status')->first();
+        
+        $order->subtotal_amount = $order->subtotal_amount;
+        $order->payable_amount = $order->payable_amount;
+        $dispatch_traking_url = ($request->has('new_dispatch_traking_url') && !empty($request->new_dispatch_traking_url)) ? $request->new_dispatch_traking_url : $order->dispatch_traking_url;
+        $dispatch_traking_url = str_replace('/order/', '/order-details/', $dispatch_traking_url);
+        $response = Http::get($dispatch_traking_url, [
+            'headers' => [
+                'timezone' => $user->timezone
+            ]
+        ]);
+        $product_id = $order->products[0]['product_id'];
+        $productData = Product::with(['category.categoryDetail','taxCategory.taxRate'])->whereId($product_id)->first();
+
+        $loyalty_amount_saved = 0;
+        $total_service_fee = 0;
+        $total_toll_amount = 0;
+        $redeem_points_per_primary_currency = '';
+        $loyalty_card = LoyaltyCard::where('status', '0')->first();
+        if ($loyalty_card) {
+            $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
+        }
+
+        $loyalty_points_used = 0;
+        $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+        if ($order_loyalty_points_earned_detail) {
+            $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+            if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
+                $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
+            }
+        }
+
+        $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+        $payable_amount= 0;
+        $vendor_payable_amount=0;
+        $taxable_amount = 0;
+        $tax_amount = 0;
+
+        $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
+        $divider = isset($divider) ? $divider : 1;
+        $price_in_currency = $order->subtotal_amount / $divider;
+        $price_in_dollar_compare = $price_in_currency * $divider;
+        $quantity_price = $price_in_dollar_compare * 1;
+        $payable_amount = $payable_amount + $quantity_price;
+        $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
+        $vendor_payable_amount = $vendor_payable_amount - $loyalty_amount_saved ?? 0;
+
+        if ($productData['taxCategory']) {
+            foreach ($productData['taxCategory']['taxRate'] as $tax_rate_detail) {
+                $rate                  = round($tax_rate_detail->tax_rate); // 2
+                $tax_amount            = ($price_in_dollar_compare * $rate) / 100;  // 20/100
+                $product_tax           = $payable_amount * $rate / 100;
+                $payable_amount        = $payable_amount + $product_tax;
+                $taxable_amount        = $taxable_amount + $product_tax;
+            }
+        }
+
+        $order->tax_rate =  $tax_amount;
+        // $order->subtotal_amount = $order->subtotal_amount + $tax_amount;
+        $order->loyalty_amount_saved = $loyalty_amount_saved ?? 0;
+        $order->payable_amount =  $order->payable_amount + $tax_amount - $order->orderDetail['subscription_discount'];
+        // $order->total_tags_price = decimal_format($product->total_tags_price + $taxable_amount);
+
+        // $product->payable_amount =  $payable_amount;
+
+        // $product->taxable_amount =  $taxable_amount;
+        $now = Carbon::now()->toDateTimeString();
+        $userid = Auth::user()->id;
+        $subscriptionInvoiceUser = SubscriptionInvoicesUser::with('features')->whereUserId($userid)->where('end_date', '>', $now)
+        ->orderBy('end_date', 'desc')->first();
+        if($subscriptionInvoiceUser){
+            $percentValue = $subscriptionInvoiceUser->features[0]['percent_value'];
+            if(!empty($percentValue)){
+                $calulateSubscription = ($percentValue / 100)* $response['order']['base_price'];
+                $subscriptionPercentage = $percentValue;
+                $subscriptionAmount = $calulateSubscription;
+                $totalTagPriceWithSubscription = $response['order']['base_price'] - $calulateSubscription;
+                $order->subscriptionPercentage = $percentValue;
+                $order->subscriptionAmount = decimal_format($calulateSubscription);
+                $order->payable_amount = decimal_format($totalTagPriceWithSubscription)+ $order->service_fee_percentage_amount- $loyalty_amount_saved??0.00;
+            }
+        }
+        $order->wallet_amount_used = 0.00;
+        if(isset($order->orderDetail->wallet_amount_used)){
+            $order->wallet_amount_used = isset($order->orderDetail)?decimal_format($order->orderDetail->wallet_amount_used):0.00;
+        }
+        /*if(isset($order->orderDetail->scheduled_date_time)){*/
+        /*    $order->orderDetail->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);*/
+        /*}*/
+
+        $order->payable_amount = decimal_format($order->payable_amount - $order->wallet_amount_used);
+        if($response->status() == 200){
+          
+            $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order->order_id ,'vendor_id' =>$order->vendor_id ])->latest()->first();
+            // OrderProductRating::where('order_id', $order->order_id)
+            $order_driver_rating = OrderDriverRating::where('order_id', $request->order_id)->first();
+            $order->dispatcher_status_type=  $type ?  $type->type :1;
+            $response = $response->json();
+            $response['order_details'] = $order->toArray();
+          
+           
+           
+         }
+         $client = Client::select('id', 'name', 'email', 'phone_number', 'logo', 'sub_domain','custom_domain')->where('id', '>', 0)->first();
+        // Load the view and pass data
+        $pdf = Pdf::loadView('frontend.invoice', [
+            'response' => $response,
+            'client' => $client
+        ]);
+
+       $fileName = "invoices/{$request->order_id}_{$user->id}.pdf";
+
+    // Store the PDF in S3
+    Storage::disk('s3')->put($fileName, $pdf->output(),'public');
+
+    // Generate the S3 download URL
+    $downloadLink = Storage::disk('s3')->url($fileName);
+   
+      
+
+        return response()->json([
+            'success' => true,
+            'message' => 'PDF generated successfully',
+            'download_link' => $downloadLink,
+        ]);
     }
 
 }
