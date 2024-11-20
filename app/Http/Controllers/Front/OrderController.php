@@ -3428,7 +3428,13 @@ class OrderController extends FrontController
             ];
             if (!empty($from)) {
                 // helper function
-                sendFcmCurlRequest($data,$from,1);
+                sendFcmCurlRequest($data,$from); // We send notification to applications where vendor app
+                                                 // is not separated and notifications on the admin panel itself.
+                                                 //
+                                                 // The FCM configuration file for both is the same one that is
+                                                 // used for sending notifications to the user.
+                                                 //
+                                                 // So we have to pass the third parameter as false (which is default).
             }
 
             // Individual Vendor App User Token
