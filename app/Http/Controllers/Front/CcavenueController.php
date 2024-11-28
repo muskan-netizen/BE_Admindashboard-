@@ -64,7 +64,7 @@ class CcavenueController extends Controller
 
    public function orderNumber($request)
    {
-    $time = '';
+    $time = time();
     if (($request->from == 'cart') || ($request->from == 'pickup_delivery')) {
       $time = $request->order_number;
     }elseif($request->from == 'wallet')
