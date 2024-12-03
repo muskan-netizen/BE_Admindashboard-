@@ -128,7 +128,7 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     }
 
     public function orders(){
-       return $this->hasMany('App\Models\Order', 'user_id', 'id')->select('id', 'user_id','total_amount','total_discount');
+       return $this->hasMany('App\Models\Order', 'user_id', 'id')->select('id', 'user_id','total_amount','total_discount')->where('payment_status','1');
     }
 
     public function activeOrders(){
