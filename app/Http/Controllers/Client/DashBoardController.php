@@ -432,6 +432,7 @@ class DashBoardController extends BaseController
 
             # Revenue sum
             $orders = new Order;
+            
             $order_revenue = $total_revenue = clone $orders;
             if (Auth::user()->is_superadmin == 0) {
                 $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) {
@@ -455,10 +456,11 @@ class DashBoardController extends BaseController
             }
             
             if($date_filter)
+            
             $total_revenue = $total_revenue->whereBetween('created_at', [$from_date, $end_date])->where('payment_status', 1);
 
             $total_revenue = $total_revenue->sum('payable_amount');
-            //pr($total_revenue);
+            
             # Customers count
             $users = new User;
             $total_customers = $users->where(['status' => 1, 'is_superadmin' => 0]);
@@ -493,6 +495,7 @@ class DashBoardController extends BaseController
             }else{
                   # Orders count
             if($date_filter)
+          
                $orders =  $orders->whereBetween('created_at', [$from_date, $end_date])->where('payment_status', 1);
             
             $total_orders = $orders->count();
@@ -523,8 +526,9 @@ class DashBoardController extends BaseController
             $sale = clone $order_revenue;
             $data = clone $order_revenue;
             $data1 = clone $order_revenue;
+           
             $locationwise_revenue = clone $order_revenue;
-            
+            // pr($locationwise_revenue->get()->toArray());
             $currentyear_ordercount = clone $order_revenue;
 
             # Current week revenue sum
@@ -673,10 +677,10 @@ class DashBoardController extends BaseController
 
             # Revenue location wise
             // dd($orders->with('address:id,city')->get());  
-            // pr($locationwise_revenue->get()->toArray());
-            $locationwise_revenueNew = $locationwise_revenue->with('address:id,city')->groupBy('address_id')->selectRaw('address_id, sum(payable_amount) as sum, COUNT(address_id) as addressCount');
+            //  pr($locationwise_revenue->get()->toArray());
+            $locationwise_revenueNew = $locationwise_revenue->with('address:id,city')->where('payment_status','1')->groupBy('address_id')->selectRaw('address_id, sum(payable_amount) as sum, COUNT(address_id) as addressCount');
             // ->whereYear('created_at', date('Y'));
-            // dd($locationwise_revenueNew->get());
+            //  pr($locationwise_revenueNew->get()->toArray());
 
             $currentyear_orderCount = $currentyear_ordercount->whereYear('created_at', date('Y'))->count();
             
