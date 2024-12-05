@@ -1156,7 +1156,7 @@ class OrderController extends BaseController
 
                     $order->fixed_fee_amount = $fixed_fee_amount;
                     $order->total_container_charges = $total_container_charges;
-                    if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
+                    if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id))) || $request->payment_option_id == 1) {
                         $order->payment_status = 1;
                     }
 
