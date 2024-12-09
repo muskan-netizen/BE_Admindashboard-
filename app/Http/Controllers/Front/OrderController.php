@@ -3124,7 +3124,7 @@ class OrderController extends FrontController
             $order->additional_price        = $totalAdditionalPrice;
             $order->total_container_charges = $total_container_charges;
             $order->is_long_term            = $is_long_term_order;
-            if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
+            if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id))) || $request->payment_option_id == 1) {
                 $order->payment_status  = 1;
             }
             $order->bid_discount        = $Order_bid_discount ?? 0;
