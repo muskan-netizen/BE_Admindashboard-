@@ -650,8 +650,14 @@ class DashBoardController extends BaseController
             }
             $range = range(1,12,1); 
             # Month wise revenue total
-            $month_revenue = $month_revenue->select(DB::raw('SUM(payable_amount) as total_amount, MONTH( created_at ) as month'))->whereYear('created_at', date('Y'))
-            ->whereIn(DB::raw('MONTH(created_at)'),$range)->groupBy(DB::raw('MONTH(created_at)'))->orderBy(DB::raw('MONTH(created_at)'),'ASC')->get();
+            $month_revenue = $month_revenue
+                ->select(DB::raw('SUM(payable_amount) as total_amount, MONTH( created_at ) as month'))
+                ->whereYear('created_at', date('Y'))
+                ->whereIn(DB::raw('MONTH(created_at)'),$range)
+                ->where('payment_status', 1)
+                ->groupBy(DB::raw('MONTH(created_at)'))
+                ->orderBy(DB::raw('MONTH(created_at)'),'ASC')
+                ->get();
             $monthwise_revenue = [];
             $monthData = $month_revenue->mapWithKeys(function($item) {
                 return [$item['month'] => $item['total_amount']];
@@ -663,7 +669,7 @@ class DashBoardController extends BaseController
             $previousweek_startdate = Carbon::now()->startOfWeek()->subWeek()->format('Y-m-d');
             $previousweek_revenue_daywise = [];
             for ($i = 0; $i < 7; $i++) {
-                $dataSum = $data->where(\DB::raw("DATE(created_at)"), date('Y-m-d', strtotime($previousweek_startdate . '+' . $i . ' day')))->sum('payable_amount');
+                $dataSum = $data->where('payment_status', 1)->where(\DB::raw("DATE(created_at)"), date('Y-m-d', strtotime($previousweek_startdate . '+' . $i . ' day')))->sum('payable_amount');
                 $previousweek_revenue_daywise[] = round($dataSum);
             }
 
@@ -671,7 +677,7 @@ class DashBoardController extends BaseController
             $currentweek_startdate = Carbon::now()->startOfWeek()->format('Y-m-d');
             $currentweek_revenue_daywise = [];
             for ($i = 0; $i < 7; $i++) {
-                $dataSum2 = $data1->where(\DB::raw("DATE(created_at)"), date('Y-m-d', strtotime($currentweek_startdate . '+' . $i . ' day')))->sum('payable_amount');
+                $dataSum2 = $data1->where('payment_status', 1)->where(\DB::raw("DATE(created_at)"), date('Y-m-d', strtotime($currentweek_startdate . '+' . $i . ' day')))->sum('payable_amount');
                 $currentweek_revenue_daywise[] = round($dataSum2);
             }
 
