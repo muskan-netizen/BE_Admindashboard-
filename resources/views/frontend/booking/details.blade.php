@@ -215,6 +215,7 @@
             @endforeach
         </ul>
 
+        <button id="cancel_ride" class="d-none btn btn-danger text-white">Cancel</button>
     </div>
 
 
@@ -256,8 +257,9 @@ var cab_booking_promo_code_remove_url = "{{url('looking/promo-code/remove')}}";
 var apply_cab_booking_promocode_coupon_url = "{{ route('verify.cab.booking.promo-code') }}";
 var order_place_driver_details_url = "{{$route}}";
 var location_icon = "{{asset("demo/images/location.png")}}";
-$(document).ready(function (){
+var cancel_url    = "{{ route('order.cancel.customer') }}";
 
+$(document).ready(function (){
     setOrderDetailsPage();
 });
 
