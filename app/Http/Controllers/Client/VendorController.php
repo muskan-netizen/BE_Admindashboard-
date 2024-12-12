@@ -1286,7 +1286,7 @@ class VendorController extends BaseController
         $total_promo_amount = $total_promo_amount->where('coupon_paid_by', 0)->sum('discount_amount');
 
 
-        $total_admin_commissions = $OrderVendor->sum(DB::raw('admin_commission_percentage_amount + admin_commission_fixed_amount'));
+        $total_admin_commissions = $OrderVendor->sum(DB::raw('COALESCE(admin_commission_percentage_amount, 0) + COALESCE(admin_commission_fixed_amount, 0)'));
 
 
         $total_order_value = $OrderVendor->sum('payable_amount') - $total_delivery_fees;

@@ -37,7 +37,7 @@ $.ajaxSetup({
     headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
 });
 
-   function setOrderDetailsPage() {
+function setOrderDetailsPage() {
     $('.address-form').addClass('d-none');
     $('.cab-detail-box').removeClass('d-none');
      $.ajax({
@@ -53,6 +53,14 @@ $.ajaxSetup({
                 var orderSuccessData = _.extend({ Helper: NumberFormatHelper },{result: response.data, product_image: response.data.product_image});
                 let order_success_template = _.template($('#order_success_template').html());
                 $("#cab_detail_box").append(order_success_template(orderSuccessData)).show();
+
+                console.debug(response.data);
+
+                $('#cancel_ride').on('click', function (e) {
+                    e.preventDefault();
+                    cancelRide.bind(this)(response.data);
+                });
+
                 setInterval(function(){
                     product_image = response.data.product_image;
                     getOrderDriverDetails(response.data.dispatch_traking_url,response.data.id,product_image)
@@ -62,8 +70,30 @@ $.ajaxSetup({
     });
 }
 
+function cancelRide(order) {
+    const { id: order_id, products, order_number }       = order;
+    const [ { vendor_id, order_vendor_id, product_id } ] = products;
 
+    $.post(cancel_url, {
+        vendor_id,
+        order_id,
+        order_vendor_id,
+        product_id,
+        order_number,
+        reject_pickup_delivery: true,
+        _token: $('meta[name="_token"]').attr('content'),
+    }).done(function (response) {
+        if (response.status?.toLowerCase() !== 'success') {
+            iqwerty.toast.toast(response.message);
+            return;
+        }
 
+        window.location.replace('/');
+    }).fail(function (error) {
+        console.error(error);
+        $('#cancel_error').text('Server Error...!');
+    })
+}
 
 function getOrderDriverDetails(dispatch_traking_url,order_id,product_image) {
     var new_dispatch_traking_url = dispatch_traking_url.replace('/order/','/order-details/');
@@ -119,6 +149,8 @@ function getOrderDriverDetails(dispatch_traking_url,order_id,product_image) {
                     iqwerty.toast.toast(response.data.order_details.dispatcher_status);
                 }
                
+            } else {
+                $('#cancel_ride').removeClass('d-none');
             }
 
                       

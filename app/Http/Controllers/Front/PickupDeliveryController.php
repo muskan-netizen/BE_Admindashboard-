@@ -63,7 +63,9 @@ class PickupDeliveryController extends FrontController{
 
         if(count($order) > 0) {
             if($response->status() == 200){
-                if(($order['dispatcher_status'] === __('Hold on! We are looking for drivers nearby!'))){
+                if ($order['order_status_option_id'] == 3) {
+                    $order['dispatcher_status'] = __('This order has been rejected!');
+                } else if (($order['dispatcher_status'] === __('Hold on! We are looking for drivers nearby!'))) {
                     if($order['order_detail']['scheduled_date_time']){ //  show scheduled ride
                         $user = Auth::user();
                         if(empty($user->timezone))

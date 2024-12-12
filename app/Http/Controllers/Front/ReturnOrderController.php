@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Front;
 
-use DB;
 use Config;
 use Validation;
 use Carbon\Carbon;
@@ -24,6 +23,8 @@ use App\Models\AutoRejectOrderCron;
 use App\Http\Traits\{OrderTrait, ReturnExchangeTrait};
 use App\Models\{LoyaltyCard, ClientCurrency, VendorOrderCancelReturnPayment};
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class ReturnOrderController extends FrontController
 {
@@ -547,6 +548,7 @@ class ReturnOrderController extends FrontController
         if ($currentOrderStatus->order_status_option_id == 3 && $request->status_option_id == 3) { //$request->status_option_id == 2){
             return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
         }
+
         if ($currentOrderStatus->order_status_option_id >= 2) { //$request->status_option_id == 2){
             return response()->json(['status' => 'error', 'message' => __('Order is accepted, you can not reject this order !!!')]);
         }
@@ -693,7 +695,8 @@ class ReturnOrderController extends FrontController
             if ($currentOrderStatus->order_status_option_id == 3 && $request->status_option_id == 3) { //$request->status_option_id == 2){
                 return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
             }
-            if ($currentOrderStatus->order_status_option_id >= 2) { //$request->status_option_id == 2){
+
+            if ($currentOrderStatus->order_status_option_id >= 2 && (! $request->has('reject_pickup_delivery'))) { //$request->status_option_id == 2){
                 return response()->json(['status' => 'error', 'message' => __('Order is accepted, you can not reject this order !!!')]);
             }
 
@@ -708,7 +711,11 @@ class ReturnOrderController extends FrontController
                     $vendor_order_status->order_id = $request->order_id;
                     $vendor_order_status->vendor_id = $request->vendor_id;
                     $vendor_order_status->order_vendor_id = $request->order_vendor_id;
-                    $vendor_order_status->order_vendor_product_id = $orderVendorProduct->id;
+
+                    if (Schema::hasColumn($vendor_order_status->getTable(), 'order_vendor_product_id')) {
+                        $vendor_order_status->order_vendor_product_id = $orderVendorProduct->id;
+                    }
+
                     $vendor_order_status->order_status_option_id = $request->status_option_id;
                     $vendor_order_status->save();
                     if ($request->status_option_id == 2 || $request->status_option_id == 3) {
@@ -812,6 +819,7 @@ class ReturnOrderController extends FrontController
             DB::rollback();
             // \Log::info(('$e->getMessage()'));
             // \Log::info(($e->getMessage()));
+            report($e);
 
             return response()->json([
                 'status' => 'error',
