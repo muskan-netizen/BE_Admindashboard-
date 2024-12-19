@@ -1328,6 +1328,16 @@ class DispatcherController extends FrontController
                 ))->find($order_vendor->order_id);
                 $return_response =  $this->GetVendorReturnAmount([], $order);
                 //return amount to user wallet
+                if($order->payment_option_id =='1'){
+                    if ($return_response['vendor_wallet_amount'] > 0) {
+                        $user = User::find($order_vendor->user_id);
+                        $wallet = $user->wallet;
+                        $credit_amount = $return_response['vendor_wallet_amount'];
+                        $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $order_vendor->orderDetail->order_number . ' (' . $order_vendor->vendor->name  . ')']);
+                        $this->sendWalletNotification($user->id, $order_vendor->orderDetail->order_number);
+                    }
+
+                }else{
                 if ($return_response['vendor_return_amount'] > 0) {
                     $user = User::find($order_vendor->user_id);
                     $wallet = $user->wallet;
@@ -1335,6 +1345,7 @@ class DispatcherController extends FrontController
                     $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $order_vendor->orderDetail->order_number . ' (' . $order_vendor->vendor->name . ')']);
                     $this->sendWalletNotification($user->id,  $order_vendor->orderDetail->order_number);
                 }
+            }
         }
     }
 
