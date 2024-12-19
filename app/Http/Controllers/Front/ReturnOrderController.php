@@ -600,12 +600,22 @@ class ReturnOrderController extends FrontController
             // $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #'. $currentOrderStatus->orderDetail->order_number.' ('.$currentOrderStatus->vendor->name.')']);
 
             // }
+            if($orderData->payment_option_id =='1'){
+                if ($return_response['vendor_wallet_amount'] > 0) {
+                    $user = User::find(Auth::id());
+                    $wallet = $user->wallet;
+                    $credit_amount = $return_response['vendor_wallet_amount'];
+                    $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $currentOrderStatus->orderDetail->order_number. ' (' . $currentOrderStatus->vendor->name  . ')']);
+                }
+
+            }else{
             if ($return_response['vendor_return_amount'] > 0) {
                 $user = User::find(Auth::id());
                 $wallet = $user->wallet;
                 $credit_amount = $return_response['vendor_return_amount']; //$currentOrderStatus->payable_amount;
                 $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $currentOrderStatus->orderDetail->order_number . ' (' . $currentOrderStatus->vendor->name . ')']);
             }
+        }
             // diarise loyalty
             $orderData->loyalty_points_used    =  $orderData->loyalty_points_used - $return_response['vendor_loyalty_points'];
             $orderData->loyalty_amount_saved   =  $orderData->loyalty_amount_saved - $return_response['vendor_loyalty_amount'];
@@ -705,7 +715,7 @@ class ReturnOrderController extends FrontController
 
                 // get vendor return amount from order
                 $return_response =  $this->GetVendorReturnAmount($request, $orderData);
-
+                
                 if (!$vendor_order_status_check) {
                     $vendor_order_status = new VendorOrderStatus();
                     $vendor_order_status->order_id = $request->order_id;
@@ -784,6 +794,15 @@ class ReturnOrderController extends FrontController
                 //code--------
                 /***************cancel product from dispatcher  end   ********************/
             }
+            if($orderData->payment_option_id =='1'){
+                if ($return_response['vendor_wallet_amount'] > 0) {
+                    $user = User::find(Auth::id());
+                    $wallet = $user->wallet;
+                    $credit_amount = $return_response['vendor_wallet_amount'];
+                    $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $currentOrderStatus->orderDetail->order_number. ' (' . $currentOrderStatus->vendor->name  . ')']);
+                }
+
+            }else{
             if ($return_response['vendor_return_amount'] > 0) {
                 $user = User::find(Auth::id());
                 $wallet = $user->wallet;
@@ -791,6 +810,7 @@ class ReturnOrderController extends FrontController
                 $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $currentOrderStatus->orderDetail->order_number . ' (' . $currentOrderStatus->vendor->name . ')']);
                 $this->sendWalletNotification($user->id, $currentOrderStatus->orderDetail->order_number);
             }
+        }
             // diarise loyalty
             $orderData->loyalty_points_used    =  $orderData->loyalty_points_used - $return_response['vendor_loyalty_points'];
             $orderData->loyalty_amount_saved   =  $orderData->loyalty_amount_saved - $return_response['vendor_loyalty_amount'];

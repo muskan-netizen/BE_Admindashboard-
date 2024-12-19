@@ -3903,7 +3903,16 @@ class OrderController extends BaseController
                         ))->find($request->order_id);
                         // get vendor return amount from order
                         $return_response =  $this->GetVendorReturnAmount($request,$order);
+                        if($order->payment_option_id =='1'){
+                            if ($return_response['vendor_wallet_amount'] > 0) {
+                                $user = User::find($currentOrderStatus->user_id);
+                                $wallet = $user->wallet;
+                                $credit_amount = $return_response['vendor_wallet_amount'];
+                                $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $currentOrderStatus->orderDetail->order_number . ' (' . $currentOrderStatus->vendor->name . ')']);
+                                $this->sendWalletNotification($user->id, $currentOrderStatus->orderDetail->order_number);
+                            }
 
+                        }else{
                         // return amount to user wallet
                         if($return_response['vendor_return_amount'] > 0){
                             $user = User::find($currentOrderStatus->user_id);
@@ -3912,7 +3921,7 @@ class OrderController extends BaseController
                             $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #'. $currentOrderStatus->orderDetail->order_number.' ('.$currentOrderStatus->vendor->name.')']);
                             $this->sendWalletNotification($user->id, $currentOrderStatus->orderDetail->order_number);
                         }
-
+                    }
                         // diarise loyalty in order table
                         $order->loyalty_points_used    =  $order->loyalty_points_used - $return_response['vendor_loyalty_points'];
                         $order->loyalty_amount_saved   =  $order->loyalty_amount_saved - $return_response['vendor_loyalty_amount'];
