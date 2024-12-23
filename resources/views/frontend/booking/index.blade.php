@@ -1846,7 +1846,17 @@ input[type=number]::-webkit-outer-spin-button {
         <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
     @endif
     @if (in_array('flutterwave', $client_payment_options))
+
         <script src="https://checkout.flutterwave.com/v3.js"></script>
+        <script>
+        HTMLElement.prototype.remove = function () {
+            if (this && this.parentElement) {
+              this.parentElement.removeChild(this);
+            } else {
+            //   console.warn("Element or its parent is already null.");
+            }
+          };
+          </script>
     @endif
     <script type="text/javascript" src="{{ asset('js/developer.js') }}"></script>
     <script src="{{ asset('js/payment.js') }}"></script>
