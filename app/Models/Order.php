@@ -179,10 +179,13 @@ class Order extends Model implements Auditable
         $otherTaxes = explode(',', $otherTaxes);
         $otherTaxes = array_map(static fn ($t) => explode(':', $t), $otherTaxes);
 
-        $headers = array_column($otherTaxes, 0);
-        $taxes   = array_column($otherTaxes, 1);
-        $taxes   = array_map(static fn ($t) => (float) $t, $taxes);
+        $taxCollection = [];
 
-        return collect(array_combine($headers, $taxes));
+        foreach ($otherTaxes as $taxes) {
+            [$header, $tax] = array_merge($taxes, array_fill(0, 2, null));
+            $taxCollection[$header] = $tax;
+        }
+
+        return collect($taxCollection);
     }
 }
