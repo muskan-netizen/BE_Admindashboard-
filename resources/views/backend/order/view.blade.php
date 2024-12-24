@@ -834,6 +834,14 @@ $timezone = Auth::user()->timezone;
                             </td>
                     </tr>
                     @endif
+                    @if($order->subscription_discount>0)
+                    <tr>
+                            <th scope="row" colspan="4" class="text-end">{{ __("Subscription Discount") }} :</th>
+                            <td>
+                                <div class="fw-bold">-{{$clientCurrency->currency->symbol}}{{decimal_format($order->subscription_discount)}}</div>
+                            </td>
+                    </tr>
+                    @endif
                         <tr>
                             <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                             <td>
@@ -844,7 +852,7 @@ $timezone = Auth::user()->timezone;
                                     $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges+$order->rental_protection_amount+$order->booking_option_price - $order->wallet_amount_used +$order->total_other_taxes_amount;
                                 }else{
 
-                                    $total = $order->total_service_fee+$order->fixed_fee_amount+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount - $order->wallet_amount_used + $order->total_other_taxes_amount;
+                                    $total = $order->total_service_fee+$order->fixed_fee_amount+$order->total_delivery_fee+$order->tip_amount-$order->subscription_discount+$order->total_amount - $order->wallet_amount_used + $order->total_other_taxes_amount;
                                 }
                                 @endphp
 
