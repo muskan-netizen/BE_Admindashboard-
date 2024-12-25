@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use Image;
-use DB,Log;
+use Illuminate\Support\Facades\{DB, Log};
 use Phumbor;
 use Session;
 use Redirect;
@@ -1205,7 +1205,7 @@ class VendorController extends BaseController
         $product_categories = [];
         $active = array();
         $categoryToggle = array();
-        $vendor = Vendor::where('id',$id);
+        $vendor = Vendor::where('id', $id);
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $user = Auth::user();
         if ($user->is_superadmin == 0 && ((! $user->hasRole('admin')) || (! $user->hasRole('Admin')))) {
@@ -1214,7 +1214,7 @@ class VendorController extends BaseController
             });
         }
         $vendor  =  $vendor->first();
-        if(empty($vendor)){
+        if (empty($vendor)) {
             abort(404);
         }
 
@@ -1249,54 +1249,81 @@ class VendorController extends BaseController
         $client_preferences = ClientPreference::first();
         $woocommerce_detail = Woocommerce::first();
 
-        $client = Client::with('country')->orderBy('id','asc')->first();
-        if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
-        $sku_url =  ($client->custom_domain);
+        $client = Client::with('country')->orderBy('id', 'asc')->first();
+        if (isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
+            $sku_url =  ($client->custom_domain);
         else
-        $sku_url =  ($client->sub_domain.env('SUBMAINDOMAIN'));
+            $sku_url =  ($client->sub_domain . env('SUBMAINDOMAIN'));
 
-        $sku_url = array_reverse(explode('.',$sku_url));
-        $sku_url = implode(".",$sku_url);
+        $sku_url = array_reverse(explode('.', $sku_url));
+        $sku_url = implode(".", $sku_url);
         $vendor_name = $vendor->name;
         $vendor_name = preg_replace('/\s+/', '', $vendor_name);
-        if(isset($vendor_name) && !empty($vendor_name)){
-            $sku_url = $sku_url.".".$vendor_name;
+        if (isset($vendor_name) && !empty($vendor_name)) {
+            $sku_url = $sku_url . "." . $vendor_name;
         }
 
         $OrderVendor = OrderVendor::whereHas('orderDetail', function ($query) {
             $query->where('payment_status', 1);
-            })->where('vendor_id', $id)
+        })->where('vendor_id', $id)
             ->orderBy('id','desc')
             ->where('order_status_option_id','!=',3);
+
         if ($user->is_superadmin == 0) {
-            $total_delivery_fees = $OrderVendor->whereHas('vendor.permissionToUser', function ($query) use($user) {
+            $total_delivery_fees = $OrderVendor->whereHas('vendor.permissionToUser', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             });
         }
+
         $total_delivery_fees = $OrderVendor->sum('delivery_fee');
+        $orderStatistics     = Order::whereHas('vendors', fn ($q) => $q->where('vendor_id', $id))
+            ->selectRaw('SUM(total_service_fee) as total_service_fee')
+            ->selectRaw('SUM(taxable_amount) as total_taxable_amount')
+            ->first();
+
+        [   'total_service_fee'    => $total_service_fee,
+            'total_taxable_amount' => $total_taxable_amount,
+        ] = transform($orderStatistics, fn ($o) => $o->toArray(), fn () => [
+            'total_service_fee'    => 0,
+            'total_taxable_amount' => 0,
+        ]);
+
+        $total_other_taxes = Order::whereHas('vendors', fn ($v) => $v->where('vendor_id', $id))
+            ->select('total_other_taxes')
+            ->get()
+            ->map(static fn (Order $order) => $order->total_tax_casted);
+
+        foreach ($total_other_taxes as $tax) {
+            $total_taxable_amount += $tax->get('tax_fixed_fee', 0);
+            $total_taxable_amount += $tax->get('tax_delivery_charges', 0);
+            $total_taxable_amount += $tax->get('tax_service_charges', 0);
+            $total_taxable_amount += $tax->get('tax_markup_fee', 0);
+        }
 
         $total_promo_amount = OrderVendor::whereHas('orderDetail', function ($query) {
             $query->where('payment_status', 1);
-        })->where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
+        })->where('vendor_id', $id)->orderBy('id', 'desc')->where('order_status_option_id', '!=', 3);
+
         if ($user->is_superadmin == 0) {
-            $total_promo_amount = $total_promo_amount->whereHas('vendor.permissionToUser', function ($query) use($user) {
+            $total_promo_amount = $total_promo_amount->whereHas('vendor.permissionToUser', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             });
         }
-        $total_promo_amount = $total_promo_amount->where('coupon_paid_by', 0)->sum('discount_amount');
 
+        $total_promo_amount      = $total_promo_amount->where('coupon_paid_by', 0)->sum('discount_amount');
+        $total_admin_commissions = $OrderVendor->sum(DB::raw('COALESCE(admin_commission_percentage_amount, 0) + COALESCE(admin_commission_fixed_amount, 0)'))
+            + $total_service_fee
+            + $total_taxable_amount;
+        $total_order_value       = $OrderVendor->sum('payable_amount') - $total_delivery_fees - $total_service_fee - $total_taxable_amount;
 
-        $total_admin_commissions = $OrderVendor->sum(DB::raw('COALESCE(admin_commission_percentage_amount, 0) + COALESCE(admin_commission_fixed_amount, 0)'));
+        $vendor_payouts = VendorPayout::where('vendor_id', $id)->orderBy('id', 'desc');
 
-
-        $total_order_value = $OrderVendor->sum('payable_amount') - $total_delivery_fees;
-
-        $vendor_payouts = VendorPayout::where('vendor_id', $id)->orderBy('id','desc');
-        if($user->is_superadmin == 0){
-            $vendor_payouts = $vendor_payouts->whereHas('vendor.permissionToUser', function ($query) use($user) {
+        if ($user->is_superadmin == 0) {
+            $vendor_payouts = $vendor_payouts->whereHas('vendor.permissionToUser', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             });
         }
+
         $vendor_payouts = $vendor_payouts->where('status', 1)->sum('amount');
 
         $past_payout_value = $vendor_payouts;
@@ -1311,14 +1338,13 @@ class VendorController extends BaseController
 
         $taxCate = TaxCategory::all();
 
-
         $vendorMultiBanner = $this->getMultiBanner($vendor->id);
         $socialMediaUrls = VendorSocialMediaUrls::where('vendor_id', $vendor->id)->get();
 
 
-        $data = $this->SettingFunction($vendor,$id);
+        $data = $this->SettingFunction($vendor, $id);
 
-        $dataMerge = array_merge($data,['categoryToggle' => $categoryToggle,'taxCate' => $taxCate,'sku_url' => $sku_url, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'tab' => 'payout',  'templetes' => $templetes, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled,'categories' => $categories,'total_order_value' => decimal_format($total_order_value), 'total_admin_commissions' => decimal_format($total_admin_commissions), 'total_promo_amount'=>$total_promo_amount, 'past_payout_value'=>$past_payout_value, 'available_funds'=>decimal_format($available_funds), 'payout_options' => $payout_options,'vendorMultiBanner'=>$vendorMultiBanner,'socialMediaUrls'=>$socialMediaUrls]);
+        $dataMerge = array_merge($data, ['categoryToggle' => $categoryToggle, 'taxCate' => $taxCate, 'sku_url' => $sku_url, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory, 'tab' => 'payout',  'templetes' => $templetes, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled' => $this->is_payout_enabled, 'categories' => $categories, 'total_order_value' => decimal_format($total_order_value), 'total_admin_commissions' => decimal_format($total_admin_commissions), 'total_promo_amount' => $total_promo_amount, 'past_payout_value' => $past_payout_value, 'available_funds' => decimal_format($available_funds), 'payout_options' => $payout_options, 'vendorMultiBanner' => $vendorMultiBanner, 'socialMediaUrls' => $socialMediaUrls]);
 
         return view('backend.vendor.vendorPayout')->with($dataMerge);
     }

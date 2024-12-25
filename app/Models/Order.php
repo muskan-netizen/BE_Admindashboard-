@@ -11,9 +11,11 @@ class Order extends Model implements Auditable
 
     use HasFactory;
     use \OwenIt\Auditing\Auditable;
-    
+
     protected $casts = ['total_amount' => 'float'];
-	protected $fillable = ['total_delivery_fee','total_waiting_price','total_waiting_time','recurring_booking_type','recurring_week_day','recurring_week_type','recurring_day_data','recurring_booking_time','scheduled_date_time','marg_max_attempt','marg_status','rental_hours','total_amount'];
+    protected $fillable = ['total_delivery_fee', 'total_waiting_price', 'total_waiting_time', 'recurring_booking_type', 'recurring_week_day', 'recurring_week_type', 'recurring_day_data', 'recurring_booking_time', 'scheduled_date_time', 'marg_max_attempt', 'marg_status', 'rental_hours', 'total_amount', 'attachment_path'];
+
+    protected $appends = ['total_tax_casted'];
 
     public function products()
     {
@@ -23,7 +25,7 @@ class Order extends Model implements Auditable
     {
         return $this->hasOne('App\Models\OrderVendor', 'order_id', 'id')->select('*', 'dispatcher_status_option_id as dispatcher_status');
     }
-    
+
     public function orderVendorProduct()
     {
         return $this->hasOne('App\Models\OrderVendorProduct', 'order_id', 'id')->select('*');
@@ -70,8 +72,9 @@ class Order extends Model implements Auditable
     {
         return $this->hasOne('App\Models\Payment', 'order_id', 'id');
     }
-    
-    public function refund(){
+
+    public function refund()
+    {
         return $this->hasMany('App\Models\OrderRefund', 'order_id', 'id');
     }
     public function loyaltyCard()
@@ -133,16 +136,18 @@ class Order extends Model implements Auditable
     {
         return $this->hasOne('App\Models\OrderReturnRequest', 'order_id', 'id');
     }
-    
+
     public function getByNumber($order_number)
     {
-        return self::where('order_number',$order_number)->with('user','products','products.addon','products.addon.option','products.pvariant')->first();
+        return self::where('order_number', $order_number)->with('user', 'products', 'products.addon', 'products.addon.option', 'products.pvariant')->first();
     }
-    public function giftCard(){
-        return $this->hasOne('App\Models\GiftCard','id','gift_card_id');
+    public function giftCard()
+    {
+        return $this->hasOne('App\Models\GiftCard', 'id', 'gift_card_id');
     }
-    public function userGiftCard(){
-        return $this->hasOne('App\Models\UserGiftCard','gift_card_code','gift_card_code');
+    public function userGiftCard()
+    {
+        return $this->hasOne('App\Models\UserGiftCard', 'gift_card_code', 'gift_card_code');
     }
     public function editingInCart()
     {
@@ -152,13 +157,35 @@ class Order extends Model implements Auditable
     {
         return $this->hasMany('App\Models\OrderFiles'); //, 'order_id', 'id'
     }
-    public function scopeOnlyEnabledLuxuryOptions($query,$EnabledLuxuryOptions=[])
+    public function scopeOnlyEnabledLuxuryOptions($query, $EnabledLuxuryOptions = [])
     {
-        return $query->whereIn('luxury_option_id',$EnabledLuxuryOptions);
+        return $query->whereIn('luxury_option_id', $EnabledLuxuryOptions);
     }
-    
-    public function getOrderScheduleDateAttribute(){
+
+    public function getOrderScheduleDateAttribute()
+    {
         $timezone = \Auth::user()->timezone;
-        return dateTimeInUserTimeZone($this->scheduled_date_time,$timezone,true,false,false);
+        return dateTimeInUserTimeZone($this->scheduled_date_time, $timezone, true, false, false);
+    }
+
+    public function getTotalTaxCastedAttribute()
+    {
+        $otherTaxes = $this->total_other_taxes;
+
+        if (is_null($otherTaxes)) {
+            return null;
+        }
+
+        $otherTaxes = explode(',', $otherTaxes);
+        $otherTaxes = array_map(static fn ($t) => explode(':', $t), $otherTaxes);
+
+        $taxCollection = [];
+
+        foreach ($otherTaxes as $taxes) {
+            [$header, $tax] = array_merge($taxes, array_fill(0, 2, null));
+            $taxCollection[$header] = $tax;
+        }
+
+        return collect($taxCollection);
     }
 }

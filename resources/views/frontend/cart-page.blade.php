@@ -1699,7 +1699,7 @@
                                         $disablePlaceBtn = 'disabled';
                                     }
                                 @endphp
-                                @if($cart_details->total_payable_amount>0)
+                                @if($cart_details->total_payable_amount>0 || $cart_details->wallet_amount_used > 0)
                                 @if ($additionalPreference['is_token_currency_enable'] == 1)
 
                                     @if ($cart_details->wallet_amount_used > 0)
