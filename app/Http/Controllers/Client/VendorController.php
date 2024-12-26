@@ -1314,7 +1314,7 @@ class VendorController extends BaseController
         $total_admin_commissions = $OrderVendor->sum(DB::raw('COALESCE(admin_commission_percentage_amount, 0) + COALESCE(admin_commission_fixed_amount, 0)'))
             + $total_service_fee
             + $total_taxable_amount;
-        $total_order_value       = $OrderVendor->sum('payable_amount') - $total_delivery_fees - $total_service_fee - $total_taxable_amount;
+        $total_order_value       = $OrderVendor->sum('payable_amount') - $total_delivery_fees;
 
         $vendor_payouts = VendorPayout::where('vendor_id', $id)->orderBy('id', 'desc');
 
