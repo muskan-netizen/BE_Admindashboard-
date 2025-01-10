@@ -92,7 +92,7 @@ if (!function_exists('getFcmOauthTokenVendor')) {
               
             // If the URL is null, use the local file path
             $serviceAccountPath = $url ?? "voltaic-e59be-c73103aa2b73.json";
-            \Log::info($serviceAccountPath);
+          
            
             // Determine if the file is local or on S3 based on the URL scheme
             if (filter_var($serviceAccountPath, FILTER_VALIDATE_URL)) {
