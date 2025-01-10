@@ -1276,7 +1276,7 @@ class VendorController extends BaseController
         }
 
         $total_delivery_fees = $OrderVendor->sum('delivery_fee');
-        $orderStatistics     = Order::whereHas('vendors', fn ($q) => $q->where('vendor_id', $id))
+        $orderStatistics     = Order::whereHas('vendors', fn ($q) => $q->where('vendor_id', $id)->where('order_status_option_id', '!=', 3))
             ->selectRaw('SUM(total_service_fee) as total_service_fee')
             ->selectRaw('SUM(taxable_amount) as total_taxable_amount')
             ->first();
@@ -1294,10 +1294,7 @@ class VendorController extends BaseController
             ->map(static fn (Order $order) => $order->total_tax_casted);
 
         foreach ($total_other_taxes as $tax) {
-            $total_taxable_amount += $tax->get('tax_fixed_fee', 0);
-            $total_taxable_amount += $tax->get('tax_delivery_charges', 0);
-            $total_taxable_amount += $tax->get('tax_service_charges', 0);
-            $total_taxable_amount += $tax->get('tax_markup_fee', 0);
+            $total_taxable_amount += $tax->except(['product_tax_fee'])->values()->sum();
         }
 
         $total_promo_amount = OrderVendor::whereHas('orderDetail', function ($query) {
@@ -1310,13 +1307,14 @@ class VendorController extends BaseController
             });
         }
 
+        $total_discounted_amount = (clone $total_promo_amount)->where('coupon_paid_by', 1)->sum('discount_amount');
         $total_promo_amount      = $total_promo_amount->where('coupon_paid_by', 0)->sum('discount_amount');
         $total_admin_commissions = $OrderVendor->sum(DB::raw('COALESCE(admin_commission_percentage_amount, 0) + COALESCE(admin_commission_fixed_amount, 0)'))
             + $total_service_fee
             + $total_taxable_amount;
-        $total_order_value       = $OrderVendor->sum('payable_amount') - $total_delivery_fees;
 
-        $vendor_payouts = VendorPayout::where('vendor_id', $id)->orderBy('id', 'desc');
+        $total_order_value = $OrderVendor->sum('payable_amount') - $total_delivery_fees;
+        $vendor_payouts    = VendorPayout::where('vendor_id', $id)->orderBy('id', 'desc');
 
         if ($user->is_superadmin == 0) {
             $vendor_payouts = $vendor_payouts->whereHas('vendor.permissionToUser', function ($query) use ($user) {
@@ -1328,7 +1326,7 @@ class VendorController extends BaseController
 
         $past_payout_value = $vendor_payouts;
 
-        $available_funds = $total_order_value - $total_admin_commissions - $total_promo_amount - $past_payout_value;
+        $available_funds = $total_order_value - $total_admin_commissions - $total_promo_amount - $past_payout_value + $total_discounted_amount;
         // $available_funds = number_format($available_funds, 2, '.', ',');
         $past_payout_value = decimal_format($past_payout_value, ',');
 
