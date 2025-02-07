@@ -217,6 +217,7 @@ return [
         App\Providers\LocalizationServiceProvider::class,
         // TelrGateway\TelrServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
+        \Tomshoo\Defer\DeferServiceProvider::class,
         // Barryvdh\DomPDF\ServiceProvider::class,  
 
     ],
