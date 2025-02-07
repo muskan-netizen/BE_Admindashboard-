@@ -3204,7 +3204,7 @@ class OrderController extends FrontController
                 // $this->sendSuccessEmail($request, $order);
                 // Send Email to Vendor
                 foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
-                    $this->sendSuccessEmail($request, $order, $vendor_id);
+                    defer(fn () =>  $this->sendSuccessEmail($request, $order, $vendor_id));
                 }
 
 
@@ -3287,7 +3287,7 @@ class OrderController extends FrontController
                         ])->pluck('user_id');
                         if ($request->payment_option_id == 1 || $order->is_postpay == 1 || $order->payment_status == 1) {
 
-                            $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+                            defer(fn () => $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail));
                         }
 
 
@@ -3295,7 +3295,7 @@ class OrderController extends FrontController
                         if (!empty($additionalPreferences->stock_notification_before) && $additionalPreferences->stock_notification_before == 1) {
                             $vendor_id = $this->CheckProductStockLimit($order->id, $additionalPreferences->stock_notification_qunatity);
                             if (!empty($vendor_id)) {
-                                $this->sendProductStockOutPushNotificationVendors($vendor_id, $vendor_order_detail);
+                                defer(fn () => $this->sendProductStockOutPushNotificationVendors($vendor_id, $vendor_order_detail));
                             }
                         }
                     }
@@ -3303,7 +3303,7 @@ class OrderController extends FrontController
 
                     $super_admin = User::where('is_superadmin', 1)->pluck('id');
                     if ($request->payment_option_id == 1 || $order->is_postpay == 1 || $order->payment_status == 1) {
-                        $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                        defer(fn () => $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail));
                     }
                 } else {
                     $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
@@ -3319,7 +3319,7 @@ class OrderController extends FrontController
                         $super_admin = $admins->all();
                     }
 
-                    $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                    defer(fn () => $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail));
 
                     // $user_admins = User::where(function ($query) {
                     // $query->where(['is_superadmin' => 1]);
@@ -3347,7 +3347,7 @@ class OrderController extends FrontController
             if (isset($blockchain_route) && ($blockchain_route->key_value == 1)) {
                 @$this->saveBlockchainOrderDetail($order_data);
             }
-            $this->sendSuccessSMS($request, $order);
+            defer(fn () => $this->sendSuccessSMS($request, $order));
             // $hub_key = @getAdditionalPreference(['is_marg_enable']);
 
             return $this->successResponse($order);

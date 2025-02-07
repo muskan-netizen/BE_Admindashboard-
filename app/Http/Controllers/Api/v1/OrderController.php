@@ -1193,10 +1193,10 @@ class OrderController extends BaseController
                     if (in_array($request->payment_option_id, $ex_gateways)) {
 
                         //Send Email to customer
-                        $res = $this->sendSuccessEmail($request, $order);
+                        defer(fn () => $this->sendSuccessEmail($request, $order));
                         //Send Email to Vendor
                         foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
-                            $this->sendSuccessEmail($request, $order, $vendor_id);
+                            defer(fn () => $this->sendSuccessEmail($request, $order, $vendor_id));
                         }
 
                         CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
@@ -1243,11 +1243,11 @@ class OrderController extends BaseController
                                     AutoRejectOrderCron::on('mysql')->create(['database_host' => $clientDetail->database_path, 'database_name' => $clientDetail->database_name, 'database_username' => $clientDetail->database_username, 'database_password' => $clientDetail->database_password, 'order_vendor_id' => $vendor_value->id, 'auto_reject_time' => Carbon::now()->addMinute($vendorDetail->auto_reject_time)]);
                                 }
 
-                                $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail, $code);
+                                defer(fn () => $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail, $code));
                             }
                             $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
                             $super_admin = User::where('is_superadmin', 1)->pluck('id');
-                            $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail, $code);
+                            defer(fn () => $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail, $code));
                         }else{
                             $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
 
@@ -1263,7 +1263,7 @@ class OrderController extends BaseController
                                 $super_admin = $admins->all();
                             }
 
-                            $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                            defer(fn () =>  $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail));
                         }
                         $this->sendSuccessSMS($request, $order);
                     }
