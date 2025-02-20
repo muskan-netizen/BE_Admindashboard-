@@ -299,6 +299,8 @@ class AuthController extends BaseController
      */
     public function signup(Request $signReq)
     {
+        logs()->debug('registration_via_phone', [$signReq->getClientIp(), $signReq->except('password'), DB::getDefaultConnection()]);
+
         $preferences = ClientPreference::first();
         $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
         $rules = [
