@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Front;
-use DB;
 use Auth;
 use URL;
 use Session;
@@ -34,6 +33,7 @@ use Log;
 use App\Http\Traits\ProductActionTrait;
 use App\Observers\OrderObserver;
 use App\Observers\UserObserver;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 class CustomerAuthController extends FrontController
 {
@@ -225,6 +225,8 @@ class CustomerAuthController extends FrontController
 
     /**     * Display register Form     */
     public function register(SignupRequest $req, $domain = ''){
+        logs()->debug('registration_via_web', [$req->getClientIp(), $req->except('password'), DB::getDefaultConnection()]);
+
         try {
             $phonenumber= str_replace('-', '', $req->phone_number);
             $req->phone_number = str_replace(' ', '', $phonenumber);
