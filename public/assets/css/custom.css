@@ -5056,9 +5056,16 @@ div#addRejectmodal {
     .content-page {
         margin-top: 70px;
     }
+    .sidebar-enable .left-side-menu .logo.logo-light.text-center {
+        display: none !important;
+    }
 }
 
 @media(max-width:767px) {
+    .sidebar-enable .left-side-menu .logo.logo-light.text-center {
+        display: none !important;
+    }
+    
     body.al_body_template_one section.section-b-space.ratio_asos.alProductCategories {
         padding-top: 8rem !important;
     }
@@ -5267,6 +5274,3 @@ height: 50px;
 }
 
 /*======================= new css add for p2p template on 1/12/2023===================== */
-.sidebar-enable .left-side-menu .logo.logo-light.text-center {
-	display: none;
-}
