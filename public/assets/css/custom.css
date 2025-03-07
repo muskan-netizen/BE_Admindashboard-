@@ -5267,3 +5267,6 @@ height: 50px;
 }
 
 /*======================= new css add for p2p template on 1/12/2023===================== */
+.sidebar-enable .left-side-menu .logo.logo-light.text-center {
+	display: none;
+}

@@ -5522,26 +5522,6 @@ body .inner_spacing .rating {
     content: "";
     filter: blur(10px)
 }
-
-@-webkit-keyframes gradient {
-    0% {
-        left: 0
-    }
-
-    a {
-        color: var(--theme-deafult)
-    }
-
-    input[type=radio],
-    input[type=checkbox] {
-        cursor: pointer !important
-    }
-
-    .slick-slider {
-        visibility: hidden
-    }
-}
-
 .dark .common-product-box,
 .dark .product-card-box {
     background-color: #232323
@@ -18424,7 +18404,7 @@ body .status_box label {
     .inner_spacing .border-product .product-icon #social-links ul li a {
         font-size: 20px;
     }
-}
+
 
 .al_body_template_two .footer-theme .sub-title .contact-list li {
     padding-left: 22px;
@@ -19009,4 +18989,8 @@ section#alTaxiBookingWrapper .address-form .pool_radio_controls.text-center labe
         height: 22px;
         line-height: 22px;
     }
+}
+
+.sidebar-enable .left-side-menu .logo.logo-light.text-center {
+	display: none !important;
 }
