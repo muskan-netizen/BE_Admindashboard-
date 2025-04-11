@@ -1206,7 +1206,7 @@ class OrderController extends BaseController
                         CartCoupon::where('cart_id', $cart->id)->delete();
                         // CartProduct::where('cart_id', $cart->id)->delete();
                         $cart_product_ids = $cart_products->pluck('id');
-                        CartProduct::query()->whereIn('id', $cart_product_ids)->delete();
+                        // CartProduct::query()->whereIn('id', $cart_product_ids)->delete();
                         CartProductPrescription::where('cart_id', $cart->id)->delete();
                         CartDeliveryFee::where('cart_id', $cart->id)->delete();
                         CartRentalProtection::where('cart_id', $cart->id)->delete();

@@ -370,9 +370,7 @@ class AuthController extends BaseController
             }
         }
         $client_timezone = Client::where('id', '>', 0)->value('timezone');
-
         $user = new User();
-
         foreach ($signReq->only('name', 'country_id', 'phone_number', 'dial_code') as $key => $value) {
             $user->{$key} = $value;
         }

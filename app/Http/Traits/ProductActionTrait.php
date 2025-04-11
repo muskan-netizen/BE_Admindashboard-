@@ -677,6 +677,8 @@ trait ProductActionTrait{
 
             foreach ($vendors as $key => $value) {
                 $vendor_ids[] = $value->id;
+                //get Promocode;
+                $value->vendor_promocode = Vendor::with('vendor_promo')->find($value->id)->vendor_promo??[];
                 // get or update rating
                 $value->vendorRating = number_format($value->rating, 1);
 
