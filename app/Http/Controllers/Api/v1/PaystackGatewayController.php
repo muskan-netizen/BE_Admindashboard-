@@ -78,6 +78,12 @@ class PaystackGatewayController extends BaseController
                 $meta_data['custom_fields']['subscription_id'] = $subscription_plan->id;
                 $rules['subscription_id'] = 'required';
             }
+            elseif($request->payment_form == 'pickup_delivery'){
+                $description = 'Pickup/Delivery Checkout';
+                $returnUrlParams = $returnUrlParams.'&user_id='.$user->id.'&order_number='.$request->order_number;
+                $meta_data['custom_fields']['order_number'] = $request->order_number;
+            }
+            
 
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
