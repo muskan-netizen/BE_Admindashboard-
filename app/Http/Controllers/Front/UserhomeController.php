@@ -1421,8 +1421,4 @@ class UserhomeController extends FrontController
          return response($jsonResponse, 200)
              ->header('Content-Type', 'application/json');
     }
-     public function landing(Request $request)
-     {
-         return view('default.landing');
-     }
 }
