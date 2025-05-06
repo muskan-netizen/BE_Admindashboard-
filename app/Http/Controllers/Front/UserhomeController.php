@@ -1397,7 +1397,7 @@ class UserhomeController extends FrontController
 
 
         $manifest = [
-            'name' => env('APP_NAME', 'royo'),
+            'name' => env('APP_NAME','royo'),
             'short_name' => 'ro2',
             'start_url' => '/',
             'background_color' => '#6777ef',
@@ -1421,4 +1421,8 @@ class UserhomeController extends FrontController
          return response($jsonResponse, 200)
              ->header('Content-Type', 'application/json');
     }
+     public function landing(Request $request)
+     {
+         return view('default.landing');
+     }
 }

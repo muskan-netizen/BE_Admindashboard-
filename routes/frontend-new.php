@@ -7,6 +7,11 @@ use App\Http\Controllers\MargController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoadieController;
 
+
+
+
+Route::get('/', 'Front\UserhomeController@landing')->name('home.landing');
+
 Route::post('ajaxGetScheduleDateDetails', 'Front\CartController@ajaxGetScheduleDateDetails')->name('ajaxGetScheduleDateDetails');
 Route::get('confirmation', 'Front\UserhomeController@confirmation')->name('confirmation');
 Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
@@ -26,6 +31,8 @@ Route::get('/debug-sentry', function () {
 	echo \Hash::make('dispatcher@765');
 	//throw new Exception('My first Sentry error!');
 });
+
+
 
 Route::group(['middleware' => ['domain']], function () {
 	//easypay test
@@ -445,59 +452,97 @@ Route::group(['middleware' => ['domain']], function () {
 	// Route::get('payment/dpo/success', 'Front\DpoController@successPage')->name('dpo.success');
 	// Route::get('payment/dpo/fail', 'Front\DpoController@failPage')->name('dpo.fail');
 
-	Route::get('user/login', [
-		'as' => 'customer.login',
-		'uses' => 'Front\CustomerAuthController@loginForm'
-	]);
-	Route::get('user/register', [
-		'as' => 'customer.register',
-		'uses' => 'Front\CustomerAuthController@registerForm'
-	]);
-	Route::get('user/forgotPassword', [
-		'as' => 'customer.forgotPassword',
-		'uses' => 'Front\ForgotPasswordController@getForgotPasswordForm'
-	]);
-	Route::get('user/resetPassword', [
-		'as' => 'customer.resetPassword',
-		'uses' => 'Front\CustomerAuthController@resetPasswordForm'
-	]);
-	Route::get('/autocomplete-search', 'Front\SearchController@postAutocompleteSearch')->name('autocomplete');
-	Route::get('/search-all/{keyword}', 'Front\SearchController@showSearchResults')->name('showSearchResults');
-	// Route::get('/', 'Front\UserhomeController@landing')->name('userHome');
-	Route::get('/', 'Front\UserhomeController@landing')->name('userHome');
+	Route::get('user/login', function() {
+		// return redirect()->route('home.landing');
+	})->name('customer.login');
 
-	// Route::get('/', 'Front\YachtController@yacht')->name('userHome');
-	Route::any('products-searchResults', 'Front\YachtController@productsSearchResult')->name('productSearch');
-	Route::get('/setSessionIndex', 'Front\UserhomeController@setSessionIndex')->name('setSessionIndex');
+	Route::get('user/register', function() {
+		return redirect()->route('home.landing');
+	})->name('customer.register');
 
-	Route::get('/updateLocation', 'Front\UserhomeController@setHyperlocalAddress')->name('updateLocation');
-	Route::get('/ondemandPricing', 'Front\UserhomeController@setondemandPricingSession')->name('updateLocation');
-	Route::get('/homeTemplateOne', 'Front\UserhomeController@indexTemplateOne')->name('indexTemplateOne');
-	//Route::get('page/driver-registration', 'Front\UserhomeController@driverSignup')->name('page/driver-registration');
-	Route::post('page/driverSignup', 'Front\OrderController@driverSignup')->name('page.driverSignup');
-	Route::get('driver-documents', 'Front\UserhomeController@driverDocuments')->name('driver-documents');
-	Route::get('page/{slug}', 'Front\UserhomeController@getExtraPage')->name('extrapage');
+	Route::get('user/forgotPassword', function() {
+		return redirect()->route('home.landing');
+	})->name('customer.forgotPassword');
 
-	Route::post('/homePageData', 'Front\UserhomeController@postHomePageData')->name('homePageData');
-	Route::post('/postHomePageDataSingle', 'Front\UserhomeController@postHomePageDataSingle')->name('postHomePageDataSingle');
-	Route::post('/postHomePageDataBanners', 'Front\UserhomeController@postHomePageDataBanners')->name('postHomePageDataBanners');
-	Route::post('/homePageDataNew', 'Front\UserhomeController@postHomePageDataNew')->name('homePageDataNew');
-	Route::post('/homePageDataCategoryMenu', 'Front\UserhomeController@homePageDataCategoryMenu')->name('homePageDataCategoryMenu');
-	Route::post('/theme', 'Front\UserhomeController@setTheme')->name('config.update');
-	Route::get('/getConfig', 'Front\UserhomeController@getConfig')->name('config.get');
-	Route::post('getClientPreferences', 'Front\UserhomeController@getClientPreferences')->name('getClientPreferences');
-	Route::post('validateEmail', 'Front\CustomerAuthController@validateEmail')->name('validateEmail');
-	Route::post('user/loginData', 'Front\CustomerAuthController@login')->name('customer.loginData');
-	Route::post('user/register', 'Front\CustomerAuthController@register')->name('customer.register');
-	Route::post('user/loginViaUsername', 'Front\CustomerAuthController@loginViaUsername')->name('customer.loginViaUsername');
-	Route::post('user/check-valid-email', 'Front\CustomerAuthController@checkValidEmail')->name('check-valid-email');
+	Route::get('user/resetPassword', function() {
+		return redirect()->route('home.landing');
+	})->name('customer.resetPassword');
 
-	Route::post('user/verifyPhoneLoginOtp', 'Front\CustomerAuthController@verifyPhoneLoginOtp')->name('customer.verifyPhoneLoginOtp');
-	Route::post('vendor/register', 'Front\CustomerAuthController@postVendorregister')->name('vendor.register');
-	Route::post('user/forgotPassword', 'Front\ForgotPasswordController@postForgotPassword')->name('customer.forgotPass');
-	Route::post('user/resetPassword', 'Front\CustomerAuthController@resetPassword')->name('customer.resetPass');
-	Route::get('reset-password/{token}', 'Front\ForgotPasswordController@getResetPasswordForm');
-	Route::post('reset-password', 'Front\ForgotPasswordController@postUpdateResetPassword')->name('reset-password');
+	Route::post('/homePageData', function() {
+		return redirect()->route('home.landing');
+	})->name('homePageData');
+
+	Route::post('/postHomePageDataSingle', function() {
+		return redirect()->route('home.landing');
+	})->name('postHomePageDataSingle');
+
+	Route::post('/postHomePageDataBanners', function() {
+		return redirect()->route('home.landing');
+	})->name('postHomePageDataBanners');
+
+	Route::post('/homePageDataNew', function() {
+		return redirect()->route('home.landing');
+	})->name('homePageDataNew');
+
+	Route::post('/homePageDataCategoryMenu', function() {
+		return redirect()->route('home.landing');
+	})->name('homePageDataCategoryMenu');
+
+	Route::post('/theme', function() {
+		return redirect()->route('home.landing');
+	})->name('config.update');
+
+	Route::get('/getConfig', function() {
+		return redirect()->route('home.landing');
+	})->name('config.get');
+
+	Route::post('getClientPreferences', function() {
+		return redirect()->route('home.landing');
+	})->name('getClientPreferences');
+
+	Route::post('validateEmail', function() {
+		return redirect()->route('home.landing');
+	})->name('validateEmail');
+
+	Route::post('user/loginData', function() {
+		return redirect()->route('home.landing');
+	})->name('customer.loginData');
+
+	Route::post('user/register', function() {
+		return redirect()->route('home.landing');
+	})->name('customer.register');
+
+	Route::post('user/loginViaUsername', function() {
+		return redirect()->route('home.landing');
+	})->name('customer.loginViaUsername');
+
+	Route::post('user/check-valid-email', function() {
+		return redirect()->route('home.landing');
+	})->name('check-valid-email');
+
+	Route::post('user/verifyPhoneLoginOtp', function() {
+		return redirect()->route('home.landing');
+	})->name('customer.verifyPhoneLoginOtp');
+
+	Route::post('vendor/register', function() {
+		return redirect()->route('home.landing');
+	})->name('vendor.register');
+
+	Route::post('user/forgotPassword', function() {
+		return redirect()->route('home.landing');
+	})->name('customer.forgotPass');
+
+	Route::post('user/resetPassword', function() {
+		return redirect()->route('home.landing');
+	})->name('customer.resetPass');
+
+	Route::get('reset-password/{token}', function() {
+		return redirect()->route('home.landing');
+	});
+
+	Route::post('reset-password', function() {
+		return redirect()->route('home.landing');
+	})->name('reset-password');
 
 	Route::post('primaryData', 'Front\UserhomeController@changePrimaryData')->name('changePrimaryData');
 	Route::post('paginateValue', 'Front\UserhomeController@changePaginate')->name('changePaginate');
