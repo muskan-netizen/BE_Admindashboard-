@@ -1325,7 +1325,6 @@ class VendorController extends BaseController
         $vendor_payouts = $vendor_payouts->where('status', 1)->sum('amount');
 
         $past_payout_value = $vendor_payouts;
-
         $available_funds = $total_order_value - $total_admin_commissions - $total_promo_amount - $past_payout_value + $total_discounted_amount;
         // $available_funds = number_format($available_funds, 2, '.', ',');
         $past_payout_value = decimal_format($past_payout_value, ',');
@@ -1377,6 +1376,7 @@ class VendorController extends BaseController
                     $query->where('user_id', $user->id);
                 });
             }
+            $total_discounted_amount = (clone $total_promo_amount)->where('coupon_paid_by', 1)->sum('discount_amount');
             $total_promo_amount = $total_promo_amount->where('coupon_paid_by', 0)->sum('discount_amount');
 
             $total_admin_commissions = OrderVendor::where('vendor_id', $id)->orderBy('id','desc');
@@ -1385,7 +1385,29 @@ class VendorController extends BaseController
                     $query->where('user_id', $user->id);
                 });
             }
-            $total_admin_commissions = $total_admin_commissions->sum(DB::raw('admin_commission_percentage_amount + admin_commission_fixed_amount'));
+
+            $orderStatistics     = Order::whereHas('vendors', fn ($q) => $q->where('vendor_id', $id)->where('order_status_option_id', '!=', 3))
+            ->selectRaw('SUM(total_service_fee) as total_service_fee')
+            ->selectRaw('SUM(taxable_amount) as total_taxable_amount')
+            ->first();
+
+            [   'total_service_fee'    => $total_service_fee,
+                'total_taxable_amount' => $total_taxable_amount,
+            ] = transform($orderStatistics, fn ($o) => $o->toArray(), fn () => [
+                'total_service_fee'    => 0,
+                'total_taxable_amount' => 0,
+            ]);
+
+            $total_other_taxes = Order::whereHas('vendors', fn ($v) => $v->where('vendor_id', $id))
+                ->select('total_other_taxes')
+                ->get()
+                ->map(static fn (Order $order) => $order->total_tax_casted);
+
+            foreach ($total_other_taxes as $tax) {
+                $total_taxable_amount += $tax->except(['product_tax_fee'])->values()->sum();
+            }
+
+            $total_admin_commissions = $total_admin_commissions->sum(DB::raw('admin_commission_percentage_amount + admin_commission_fixed_amount')) + $total_taxable_amount + $total_service_fee;
 
             $total_order_value = OrderVendor::where('vendor_id', $id)->orderBy('id','desc');
             if ($user->is_superadmin == 0) {
@@ -1404,7 +1426,7 @@ class VendorController extends BaseController
             $vendor_payouts = $vendor_payouts->sum('amount');
 
             $past_payout_value = $vendor_payouts;
-            $available_funds = $total_order_value - $total_admin_commissions - $total_promo_amount - $past_payout_value;
+            $available_funds = $total_order_value - $total_admin_commissions - $total_promo_amount - $past_payout_value + $total_discounted_amount;
 
             if($request->amount > $available_funds){
                 $toaster = $this->errorToaster('Error', __('Payout amount is greater than available funds'));
