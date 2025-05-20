@@ -13,7 +13,7 @@ use App\Http\Traits\{ApiResponser,ToasterResponser,PaymentTrait};
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OrderVendorListExport;
 use App\Http\Controllers\Client\{BaseController, StripeGatewayController, PagarmeController};
-use App\Models\{Order,Client, User, Vendor, OrderVendor, PaymentOption, PayoutOption, VendorConnectedAccount, VendorPayout, ClientCurrency};
+use App\Models\{Client, User, Vendor, OrderVendor, PaymentOption, PayoutOption, VendorConnectedAccount, VendorPayout, ClientCurrency};
 
 class VendorPayoutController extends BaseController{
     use ApiResponser,ToasterResponser,PaymentTrait;
@@ -311,7 +311,6 @@ class VendorPayoutController extends BaseController{
                     $query->where('user_id', $user->id);
                 });
             }
-            $total_discounted_amount = (clone $total_promo_amount)->where('coupon_paid_by', 1)->sum('discount_amount');
             $total_promo_amount = $total_promo_amount->where('coupon_paid_by', 0)->sum('discount_amount');
 
             $total_admin_commissions = OrderVendor::where('vendor_id', $vendor_id)->orderBy('id','desc');
@@ -339,7 +338,8 @@ class VendorPayoutController extends BaseController{
             $vendor_payouts = $vendor_payouts->where('status', 1)->sum('amount');
 
             $past_payout_value = $vendor_payouts;
-            $available_funds = $total_order_value - $total_admin_commissions - $total_promo_amount - $past_payout_value + $total_discounted_amount;
+            $available_funds = $total_order_value - $total_admin_commissions - $total_promo_amount - $past_payout_value;
+
             // Check if requested amount is valid
             if($request->amount > $available_funds){
                 $toaster = $this->errorToaster('Error', __('Payout amount is greater than vendor available funds'));
