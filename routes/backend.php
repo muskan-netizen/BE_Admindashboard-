@@ -200,6 +200,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('web-styling/updateHomePageStyle', 'Client\WebStylingController@updateHomePageStyle')->name('web.styling.updateHomePageStyle');
         Route::post('web-styling/update-contact-up', 'Client\WebStylingController@updateContactUs')->name('web.styling.update_contact_up');
         Route::post('web-styling/update-single-category-products', 'Client\WebStylingController@updateSingleCategoryProducts')->name('web.styling.update_single_category_products');
+
+        Route::post('web-styling/run-cron', 'Client\WebStylingController@runCron')->name('run.cron');
+
+
         Route::get('app-styling', 'Client\AppStylingController@index')->name('appStyling.index');
         Route::post('app-styling/updateFont', 'Client\AppStylingController@updateFont')->name('styling.updateFont');
         Route::post('app-styling/updateColor', 'Client\AppStylingController@updateColor')->name('styling.updateColor');
