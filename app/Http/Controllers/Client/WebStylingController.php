@@ -13,6 +13,7 @@ use DB,Log;
 use Session;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\HomePage\WebStylingTrait;
+use Illuminate\Support\Facades\Artisan;
 
 class WebStylingController extends BaseController{
     use WebStylingTrait;
@@ -718,4 +719,10 @@ class WebStylingController extends BaseController{
         
     //     return redirect()->back()->with('success', 'Category Updated successfully!');
     // }
+
+    public function runCron()
+    {
+        Artisan::call('set_default_dummy:data'); // This runs your command
+        return response()->json(['message' => 'Cron executed manually']);
+    }
 }

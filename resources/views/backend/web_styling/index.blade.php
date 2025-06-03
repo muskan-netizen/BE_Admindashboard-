@@ -246,6 +246,28 @@
                                 </li>
                             </ul>
                         </div>
+
+                        @if(Auth::user()->is_superadmin == 1 && in_array($clientContact->sub_domain, ['ace', 'grub']))
+                        
+                            <div class="card card-box h-100 p-0">
+                                <form method="POST" id="reset_default_db_from" action="{{route('run.cron')}}">
+                                @csrf
+                                @method('POST')
+                                    <div class="card-box h-100 mb-0">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <h4 class="header-title mb-0">{{ __('Reset to Default Database')}}</h4>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-md-12 mt-3">
+                                                <div class="form-group mb-0">
+                                                    <button class="btn btn-info btn-block" id="reset_default_db_btn" type="button"> {{ __("Reset") }} </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        @endif
                     </div>
 
                 </div>
@@ -818,6 +840,40 @@
     </script>
 <!-- end allow html -->
 <script>
+    $(document).ready(function() {
+         $('#reset_default_db_btn').click(function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: "{{__('Are you sure?')}}",
+                text:"{{__('This will Reset to default Database.')}}",
+                // icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+            }).then((result) => {
+                if(result.value)
+                {
+                    $.ajax({
+                        url: '{{ route("run.cron") }}',
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                            location.reload();
+                        },
+                        error: function(xhr) {
+                            $.NotificationApp.send("Error", 'Please try again after some time.', "top-right", "#5ba035", "error");
+                        }
+                    });
+                }
+                else
+                {
+                    return false;
+                }
+            });
+        });
+    });
 $(document).on('click','.edit_dynamic_page',function(){
         event.preventDefault();
         var id = $(this).data('row-id');
