@@ -6,7 +6,7 @@
 @if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'])
               
                 {{-- New Section  --}}
-
+@if(count($suggested_category_products) > 0)
     <section class="cd-products-comparison-table product_compare_design tab-pane show {{(count($rating_details)>0)?'':'active'}}" id="compare-product" role="tabpanel" aria-labelledby="compare-product-tab" >
                     <header>           
                         <div class="actions">
@@ -68,7 +68,7 @@
                 </section> <!-- .cd-products-comparison-table -->
 
                 {{-- End Section --}}
-
+@endif
     @endif
     
 @section('script-bottom-js')

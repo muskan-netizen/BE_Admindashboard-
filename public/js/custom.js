@@ -5167,6 +5167,12 @@ function submitAddtoCart(
         if (response.vendor.rental == 1) {
           location.href = "/viewcart";
         }
+        Swal.fire({
+            // title: "Warning!",
+            text: response.message,
+            icon: "success",
+            button: "OK",
+        });
       } else {
         Swal.fire({
           // title: "Warning!",
