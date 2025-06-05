@@ -852,6 +852,7 @@
             }).then((result) => {
                 if(result.value)
                 {
+                    $('#reset_default_db_btn').attr('disabled', 'disabled');
                     $.ajax({
                         url: '{{ route("run.cron") }}',
                         type: 'POST',
@@ -863,6 +864,7 @@
                             location.reload();
                         },
                         error: function(xhr) {
+                            $('#reset_default_db_btn').removeAttr('disabled');
                             $.NotificationApp.send("Error", 'Please try again after some time.', "top-right", "#5ba035", "error");
                         }
                     });

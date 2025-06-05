@@ -649,7 +649,7 @@
                                                                                 data-schedule_type="date"
                                                                                 data-vendor_id="{{ $product->vendor_id }}"
                                                                                 data-cart_product_id="{{ $product->cart_product_id }}"
-                                                                                value="{{ $vendor_product->scheduled_date_time != '' ? $vendor_product->scheduled_date_time : $product->delay_date }}"
+                                                                                value="{{ $product->scheduled_date_time != '' ? $product->scheduled_date_time : $product->delay_date }}"
                                                                                 min="{{ $product->delay_date != '0' ? $product->delay_date : '' }}">
                                                                             <select
                                                                                 class="form-control vendor_product_schedule_slot vendor_schedule_slot "
