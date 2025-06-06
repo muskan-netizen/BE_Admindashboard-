@@ -951,6 +951,62 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                 <img class="modal-content" id="img01">
         </div>
     </div> -->
+    <div class="modal fade" id="inquiry_form" tabindex="-1" aria-labelledby="inquiry_formLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-bottom">
+                    <h5 class="modal-title" id="inquiry_formLabel">{{__('Inquiry')}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @php
+                    $user = Auth::user();
+                    @endphp
+                    <form id="inquiry-form">
+                        <div class="row">
+                            <input type="hidden" name="vendor_id" value="" />
+                            <input type="hidden" name="product_id" value="" />
+                            <input type="hidden" name="variant_id" value="" />
+                            <div class="col-md-6 form-group">
+                                <label>{{__('Name')}}</label>
+                                <input class="form-control" name="name" id="name" value="{{$user ? $user->name : '' }}" type="text" placeholder="{{__('Name')}}">
+                                <span class="text-danger error-text nameError"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>{{__('Email')}}</label>
+                                <input class="form-control" name="email" id="email" value="{{$user ? $user->email : '' }}" type="text" placeholder="{{__('Email')}}">
+                                <span class="text-danger error-text emailError"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>{{__('Phone Number')}}</label>
+                                <input class="form-control" name="number1" id="number1" value="{{$user ? $user->phone_number : '' }}" type="text" placeholder="{{__('Phone Number')}}" style="display:inline-block;">
+                                <span class="text-danger error-text numberError"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>{{__('Company Name')}}</label>
+                                <input class="form-control" name="company_name" id="company_name" type="text" placeholder="{{__('Company Name')}}">
+                            </div>
+                            <div class="col-12 form-group">
+                                <label>{{__('Message')}}</label>
+                                <textarea class="form-control" name="message" id="message" cols="30" rows="8" placeholder="{{__('Message')}}"></textarea>
+                                <span class="text-danger error-texprapt messageError"></span>
+                            </div>
+                            <div class="col-12 form-group checkbox-input">
+                                <input type="checkbox" id="agree" name="agree" required>
+                                <label for="agree">{{__('I accept the')}} <a href="{{url('page/terms-conditions')}}" target="_blank">{{__('Terms And Conditions')}}</a> {{__('and have read the')}} <a href="{{url('page/privacy-policy')}}" target="_blank"> {{__('Privacy Policy')}}</a></label>
+                                <span class="d-block text-danger error-text agreeError"></span>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <button type="button" class="btn btn-solid w-100 submitInquiryForm">{{__('Submit')}}</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     @if($is_service_product_price_from_dispatch_forOnDemand ==1)
         @include('frontend.ondemand.productPriceModel');
@@ -967,6 +1023,50 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
     <script src="{{ asset('front-assets/js/rangeSlider.min.js') }}"></script>
     <script src="{{ asset('front-assets/js/my-sliders.js') }}"></script>
     <script>
+        $(document).ready(function(){
+            $(document).on('click', '.submitInquiryForm', function(e) {
+                e.preventDefault();
+                var prod_variant_id = $(this).data('variant_id');
+                var formData = new FormData(document.getElementById("inquiry-form"));
+                formData.append("variant_id", prod_variant_id);
+                var submit_url = "{{ route('inquiryMode.store') }}";
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    type: "post",
+                    headers: {
+                        Accept: "application/json"
+                    },
+                    url: submit_url,
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        $('#inquiry_form').modal('hide');
+                        Swal.fire({
+                            text: "Submitted Successfully",
+                            icon: "success",
+                            button: "OK",
+                        }).then((result) => {
+                            location.reload();
+                        });
+                    },
+                    error: function(response) {
+                        // console.log(response);
+                        $('.messageError').html(response.responseJSON.errors.message[0]);
+                        $('.agreeError').html(response.responseJSON.errors.agree[0]);
+                        $('.numberError').html(response.responseJSON.errors.number[0]);
+                        $('.emailError').html(response.responseJSON.errors.email[0]);
+                        $('.nameError').html(response.responseJSON.errors.name[0]);
+                    },
+                    complete: function() {}
+                });
+            });
+        });
+
         @if(!empty($vendor->banner))
             $(document).ready(function() {
                 $("body").addClass("homeHeader");
@@ -1227,6 +1327,19 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                         $('.vendor-products-wrapper').html(response.html);
                         $('.vendor-products-wrapper #header_cart_main_ul_ondemand').html(cart_html);
                         addReadMoreLink();
+                        $('.inquiry_mode').click(function(e){
+                            e.preventDefault();
+                            var product_vendor_id = $(this).data('product_vendor_id');
+                            var product_id = $(this).data('product_id');
+                            var prod_variant_id = $(this).data('variant_id');
+                            $('#inquiry_form input[name="vendor_id"]').val(product_vendor_id);
+                            $('#inquiry_form input[name="product_id"]').val(product_id);
+                            $('#inquiry_form input[name="variant_id"]').val(prod_variant_id);
+                            $('#inquiry_form #company_name').val('');
+                            $('#inquiry_form #message').val('');
+                            $('#inquiry_form').modal('show');
+                            
+                        });
                     }
                 }
             });

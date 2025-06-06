@@ -1014,7 +1014,7 @@
 
                         @if ($client_preference_detail->category_kyc_documents == 1)
                             @if (@$cart_details->category_kyc_count > 0)
-                                <div class=" col-3 {{ $cart_details->category_kyc_count }}"
+                                <div class=" col-12 {{ $cart_details->category_kyc_count }}"
                                     id="category_kyc_dev_{{ $cart_details->category_rendem_id }}">
                                     <input type="hidden" name="category_kyc_ids"
                                         value="{{ $cart_details->category_rendem_id }}">
@@ -1408,7 +1408,7 @@
                                         </div>
                                         <div class="tip_radio_controls">
                                             @if ($cart_details->total_payable_amount > 0)
-                                                {{-- <input type="radio" class="tip_radio" id="control_01"
+                                                 <input type="radio" class="tip_radio" id="control_01"
                                                     name="select"
                                                     value="{{ $additionalPreference['is_token_currency_enable'] ? getInToken($cart_details->tip_5_percent) : $cart_details->tip_5_percent }}"
                                                     @if ($client_preference_detail->auto_implement_5_percent_tip == 1) checked @endif>
@@ -1452,7 +1452,7 @@
                                                         @endif
                                                     </h5>
                                                     <p class="m-0">15%</p>
-                                                </label> --}}
+                                                </label> 
 
                                                 <input type="radio" class="tip_radio" id="custom_control"
                                                     name="select" value="custom">

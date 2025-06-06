@@ -27,7 +27,7 @@ class ProductInquiryController extends Controller
                 'message.required' => __('The message field is required.'),
             ]);
         $productEnquiry = ProductInquiry::create(['name' => $request->name, 'email' => $request->email, 'phone_number' => $request->phone_number, 'company_name' => $request->company_name, 'message' => $request->message, 'product_id' => $request->product_id, 'vendor_id' => $request->vendor_id, 'product_variant_id' => $request->variant_id]);
-            return $this->successResponse($productEnquiry);
+            return $this->successResponse($productEnquiry, 'Submitted Successfully!', 200);
         } catch (Exception $e) {
             return $this->errorResponse( __('Something Went Wrong !'),500);
 

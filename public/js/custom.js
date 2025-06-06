@@ -1539,7 +1539,7 @@ $(document).on("click", "#category_kycform_submit", function (e) {
   $(this).attr("disabled", true);
   var form = document.getElementById("category_kyc_form_in_cart");
   var data_uri = post_category_kyc_document;
-
+  var formData = new FormData(form);
   $.ajaxSetup({
     headers: {
       "X-CSRF-TOKEN": jQuery('meta[name="csrf-token"]').attr("content"),
@@ -8235,4 +8235,4 @@ $(".menu-slider2").slick({
   ],
 });
 
-AOS.init({ disable: "mobile" });
+// AOS.init({ disable: "mobile" });
