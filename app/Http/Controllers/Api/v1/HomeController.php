@@ -68,7 +68,7 @@ class HomeController extends BaseController
                         $vendorMode[] = $vendorData;
                     }
             }
-            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','add_to_cart_btn','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_particular_driver','is_enable_curb_side','is_enable_variant_set_v2','is_share_ride_users','is_recurring_booking','is_rental_weekly_monthly_price','is_enable_allergic_items','is_user_pre_signup','vendor_online_status','distance_matrix_app_status','fire_base_type']);
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','add_to_cart_btn','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_particular_driver','is_enable_curb_side','is_enable_variant_set_v2','is_share_ride_users','is_recurring_booking','is_rental_weekly_monthly_price','is_enable_allergic_items','is_user_pre_signup','vendor_online_status','distance_matrix_app_status','fire_base_type', 'is_map_search_perticular_country']);
 
             //mohit sir branch code updated by sohail farm meat
             $homeData['profile']->preferences->vendorMode = $vendorMode;
@@ -104,6 +104,7 @@ class HomeController extends BaseController
             // on demand service pricing
             $homeData['profile']->preferences->is_service_product_price_from_dispatch   = (int) $getAdditionalPreference['is_service_product_price_from_dispatch'];
             $homeData['profile']->preferences->is_service_price_selection               = (int) $getAdditionalPreference['is_service_price_selection'];
+            $homeData['profile']->preferences->is_map_search_perticular_country         = (int) $getAdditionalPreference['is_map_search_perticular_country'];
 
             if($homeData['profile']->preferences->is_one_push_book_enable == 1){
                 $homeData['profile']->preferences->pick_drop_instant_booking_vendor = Vendor::select('id', 'slug', 'name', 'is_vendor_instant_booking', 'status')
@@ -156,6 +157,10 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->aadhaar_number = $aadhaar_number;
             $homeData['profile']->preferences->upi_id = $upi_id;
             $homeData['profile']->preferences->is_hourly_pickup_rental = $clientPreferences->is_hourly_pickup_rental;
+            $homeData['profile']->preferences->map_on_search_screen = (int) $clientPreferences->map_on_search_screen;
+
+            $is_map_search_perticular_country = getMapConfigrationPreference();
+            $homeData['profile']->preferences->default_country = $is_map_search_perticular_country;
 
             if(!is_null($passbase))
             {

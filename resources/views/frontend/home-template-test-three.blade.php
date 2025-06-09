@@ -692,6 +692,40 @@
 					</div>
 				</section>
 			@endif
+
+		@elseif($homePageLabel->slug == 'nav_categories' && !empty($navCategories) && count($navCategories))	
+			<section class="p2p-categories">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12 text-center mb-4">
+							<h2>Categories</h2>
+						</div>
+					</div>
+					<div class="categories_slider" >
+						{{-- @dump($navCategories) --}}
+						@foreach($navCategories as $cate)
+							@if($cate['name'])
+								<div class="item">
+									<div class="cate-item text-center">
+										<a href="{{route('categoryDetail', $cate['slug'])}}">
+											<img
+												class="blur-up lazyload"
+												data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}"
+												data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}"
+												data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}"
+												alt=""
+												onmouseover='changeImage(this,1)'
+												onmouseout='changeImage(this,0)'
+											>
+											<h3>{{$cate['name']}}</h3>
+										</a>
+									</div>
+								</div>
+							@endif
+						@endforeach
+					</div>
+				</div>
+			</section>
 		@else
 			@if(!empty(@$homePageData[$homePageLabel->slug]) && @count(@$homePageData[$homePageLabel->slug]) != 0)
 				<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >

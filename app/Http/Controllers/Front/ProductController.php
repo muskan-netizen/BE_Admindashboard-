@@ -132,9 +132,9 @@ class ProductController extends FrontController{
         ->selectRaw('DATE_FORMAT(date_time, "%Y-%m-%d") as formatted_date')
         ->pluck('formatted_date'));
 
-        if($this->checkTemplateForAction(8)){
+        // if($this->checkTemplateForAction(8)){
             $this->RecentView($p_id);
-        }
+        // }
         $doller_compare = 1;
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         if($clientCurrency){

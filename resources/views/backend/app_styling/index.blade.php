@@ -294,7 +294,7 @@
                                             @if(!is_null($category->vendor)) ({{@$category->vendor->name}}) @endif
                                         </option>
                                         @endforeach
-
+                                    </select>
                                 </div>
                                 </div>
                                 </div>
@@ -372,6 +372,7 @@
 
 </form>
 </div>
+@include('backend.web_styling.city-section-model')
 @endsection
 
 @section('script')

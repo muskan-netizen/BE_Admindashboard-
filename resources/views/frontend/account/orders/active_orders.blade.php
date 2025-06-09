@@ -452,7 +452,7 @@
 
                                                                                 <div class="row">
                                                                                     <div class="col-12 d-flex align-items-center justifiy-content-end alListBtnGroups">
-                                                                                    @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))
+                                                                                    @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1) && $vendor->vendor->cancel_order_in_processing == 1)
                                                                                             <?php
                                                                                             if($clientPreference->business_type == 'laundry'){
                                                                                                 $pickup_cancelling_charges = $clientCurrency->currency->symbol.$vendor->vendor->pickup_cancelling_charges;

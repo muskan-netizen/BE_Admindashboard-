@@ -119,7 +119,7 @@
 </div>
 
 
-<div class="col-md-4">
+<div class="col-md-4 d-none">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="minimum_order_batch" class="mr-2 mb-0">{{ __('Minimum Order/Increment') }}<small
                 class="d-block pr-5">
@@ -167,7 +167,7 @@
         </div>
     </div>
 @endif
-<div class="col-md-4">
+<div class="col-md-4 d-none">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="max_safety_mod" class="mr-2 mb-0">{{ __('Max Safety') }}<small
                 class="d-block pr-5">{{ __('Enable to give max safety option to vendors.') }}</small></label>
@@ -540,7 +540,7 @@
     </div>
 </div>
 
-<div class="col-md-4">
+<div class="col-md-4 d-none">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_user_kyc_for_registration_switch"
             class="mr-2 mb-0">{{ __('Enable to save kyc details for user registration') }}<small
@@ -568,7 +568,7 @@
             name="is_cust_success_signup_email" id="is_cust_success_signup_email" />
     </div>
 </div>
-<div class="col-md-4">
+<div class="col-md-4 d-none">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_file_cart_instructions_switch" class="mr-2 mb-0">{{ __('Upload file In instructions') }}<small
                 class="d-block pr-5">{{ __("Enable to show price by role on edit's vendor screen.") }}</small></label>

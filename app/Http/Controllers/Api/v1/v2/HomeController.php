@@ -1218,8 +1218,8 @@ class HomeController extends BaseController
         $allowed_vendors = $this->getServiceAreaVendors($latitude, $longitude, $action);
         $products = Product::byProductCategoryServiceType($action)->with(['category.categoryDetail.translation' => function ($q) use ($langId) {
             $q->where('category_translations.language_id', $langId);
-        }, 'media', 'media.image','vendor', 'translation', 'variant',])->join('product_translations as pt', 'pt.product_id', 'products.id')
-            ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
+        }, 'media', 'media.image','vendor', 'translation', 'variant',])->join('vendors', 'vendors.id', 'products.vendor_id')->join('product_translations as pt', 'pt.product_id', 'products.id')
+            ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description', 'vendors.name as vendor_name', 'vendors.slug as vendor_slug','vendors.latitude','vendors.longitude','vendors.address','vendors.dial_code','vendors.phone_no')
             ->where('pt.language_id', $langId)
             ->whereHas('vendor', function ($query) use ($action) {
                 $query->where($action, 1);
@@ -1637,6 +1637,7 @@ class HomeController extends BaseController
             $top_rated_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'top_rated_products', $request->type, $featured_products_title,$p_dim, $getSubCatIds);
 
            // $ordered_products = $this->vendorProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $this->getLastProductOrdered(), 10);
+           $ordered_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $this->getLastProductOrdered(), 10);
 
             //pr($top_rated_products);
         //}
@@ -1693,9 +1694,9 @@ class HomeController extends BaseController
 
         /**  Get cities */
         if (in_array('cities', $enable_layout)) {   # if enable recent_orders section in
-            if($preferences->is_hyperlocal==1){
+            // if($preferences->is_hyperlocal==1){
                 $this->getCities_v2($language_id);
-            }
+            // }
         }
         /**  Get cities end */
 
@@ -1720,9 +1721,10 @@ class HomeController extends BaseController
                 'single_category_products'  => (!empty($single_category_products) && count($single_category_products) > 0)?$single_category_products:[],
                 'selected_products'  => (!empty($selected_products) && count($selected_products) > 0)?$selected_products:[],
                 'most_popular_products'  => (!empty($popular_products) && count($popular_products) > 0)?$popular_products:[],
-                //'recent_orders' => $activeOrders,
+                'recent_orders' => $activeOrders,
                 'banners' => $banners,
                 'additionalPreference' => $additionalPreference,
+                'ordered_products' => $ordered_products,
             ];
             return $data ;
     }
