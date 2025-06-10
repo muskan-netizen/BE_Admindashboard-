@@ -201,7 +201,7 @@ body a.btn.btn-solid.col-2.al-show-vendor-map-btn {height: 37px;padding: 0 !impo
 
         map = new google.maps.Map(document.getElementById('vendor-map'), {
             center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
-            zoom: 1
+            zoom: 4
         });
 
         var url = window.location.origin;

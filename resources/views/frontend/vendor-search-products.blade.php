@@ -201,7 +201,9 @@ $add_to_cart =  route('addToCart') ;
                                         @else
                                             @if (  (in_array($data->category_type_id,[12,8]))  || ($prod->has_inventory == 0 || ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1)))
                                                 @if(   $is_service_product_price_from_dispatch_forOnDemand ==1)
-                                                    <a class="btn btn-solid btn btn-solid view_on_demand_price"  id="add_button_href{{$data->id }}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
+                                                    <a class="btn btn-solid btn btn-solid view_on_demand_price"  id="add_button_href{{$data->id }}" data-variant_id= {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('view Price') }}</a>
+                                                @elseif($prod->inquiry_only == 1)
+                                                    <a href="#" data-product_vendor_id="{{$prod->vendor_id}}" data-product_id="{{$prod->id}}" data-variant_id="{{ $data->variant[0]->id }}" class="btn btn-solid inquiry_mode">{{ __('Inquire Now')}}</a>
                                                 @else 
                                                     {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
                                                     <a class="add-cart-btn {{$class}}"
@@ -262,7 +264,7 @@ $add_to_cart =  route('addToCart') ;
                                                     class="text-danger">{{ __('Out of stock') }}</span>
                                             @endif
                                         @endif
-                                        @if ($is_customizable)
+                                        @if ($is_customizable && $prod->inquiry_only == 0)
                                             <div class="customizable-text">
                                                 {{ __('customizable') }}
                                             </div>
@@ -283,7 +285,7 @@ $add_to_cart =  route('addToCart') ;
                                 {{-- <p class="mb-1 product_price">   {{__('Minimum Quantity') }} : {{ $prod->minimum_order_count }} </p>
                                 <p class="mb-1 product_price">   {{__('Batch') }} : {{ $prod->batch_count }} </p> --}}
                             @endif
-
+                            @if($prod->inquiry_only == 0)
                             <p class="mb-1 product_price">
                                 @if($is_service_product_price_from_dispatch_forOnDemand !=1) 
                                 {{-- price  not showing in vencor type in on demand and get price from dispatche--}}
@@ -302,6 +304,7 @@ $add_to_cart =  route('addToCart') ;
                                 @endif
 
                             </p>
+                            @endif
                             <div class="member_no d-block mb-0">
 
                                 <span>{!! strlen($prod->translation_description) > 140 ? substr($prod->translation_description, 0, 140) : $prod->translation_description !!}

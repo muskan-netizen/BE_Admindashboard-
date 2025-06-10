@@ -220,9 +220,9 @@ class ProductController extends BaseController
                 $product->is_rented = 1;
             }
 
-            if ($this->checkTemplateForAction(8)) {
+            // if ($this->checkTemplateForAction(8)) {
                 $this->RecentView($pid);
-            }
+            // }
             $productBookingsCount = ProductBooking::whereHas('products', function ($q) use ($product) {
                 $q->whereHas('product', function($q) use($product){
                     $q->where('vendor_id', $product->vendor_id);

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, ClientPreferenceAdditional, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty, RoleOld, User, Country, ClientCountries, VendorMargConfig};
+use App\Models\{Client, ClientPreference, ClientPreferenceAdditional, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty, RoleOld, User, Country, ClientCountries, VendorMargConfig, Product};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
@@ -540,6 +540,11 @@ class ClientPreferenceController extends BaseController{
             $preference->map_on_search_screen = ($request->has('map_on_search_screen') && $request->map_on_search_screen == 'on') ? 1 : 0;
             $preference->slots_with_service_area = ($request->has('slots_with_service_area') && $request->slots_with_service_area == 'on') ? 1 : 0;
             $preference->is_hourly_pickup_rental = ($request->has('is_hourly_pickup_rental_switch') && $request->is_hourly_pickup_rental_switch == 'on') ? 1 : 0;
+
+            if($request->input('enquire_mode') == null)
+            {
+                Product::where('inquiry_only', 1)->update(['inquiry_only' => 0]);
+            }
         }
 
 

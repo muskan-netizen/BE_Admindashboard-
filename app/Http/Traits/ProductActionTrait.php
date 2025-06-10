@@ -359,7 +359,7 @@ trait ProductActionTrait{
                 $product_ids = OrderProductRating::selectRaw('id, product_id, count(product_id) as total')->groupBy('product_id')->orderBy('total', 'DESC')->take(10)->get()->pluck('product_id')->toArray();
             } elseif($type == 'recent_viewed'){
                 $product_ids = $this->getRecentProductIds();
-            }elseif($type == 'all' || $type == 'is_new' || $type == 'is_featured'|| $type == 'on_sale' || $type = 'spotlight_deals'){
+            }elseif($type == 'all' || $type == 'is_new' || $type == 'is_featured'|| $type == 'on_sale' || $type == 'spotlight_deals'){
                 $completeWhere = ' ';
                 if($type != 'all'){
                     $completeWhere = ' AND `products`.`'.$type.'` = 1';
@@ -367,6 +367,10 @@ trait ProductActionTrait{
                 if($type = 'on_sale' || $type = 'spotlight_deals' ){
 
                     $completeWhere = "";
+                }
+                if($type == 'spotlight_deals' ){
+
+                    $completeWhere = ' AND `products`.`spotlight_deals` = 1';
                 }
                 $raw_query = "SELECT
                     `products`.`id`
@@ -422,7 +426,7 @@ trait ProductActionTrait{
             $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
             if($where!=='all' && $where!=='on_sale'){
 
-                    if($where =='single_category_products' || $where == 'selected_products' || $where == 'popular_products' || $where == 'top_rated_products' ||  $where == 'recent_viewed'){
+                    if($where =='single_category_products' || $where == 'selected_products' || $where == 'popular_products' || $where == 'top_rated_products' ||  $where == 'recent_viewed' || $where == 'spotlight_deals'){
                         $single_category_product_ids = $this->getProductsId($where);
 
                         if(count($single_category_product_ids) > 0){
@@ -639,7 +643,7 @@ trait ProductActionTrait{
 
             $mainQuery = "SELECT $selectQuery FROM `vendors` $joinQuery $whereQuery $whereInQuery";
 
-            $mainQuery .= " GROUP BY `vendors`.`id` ORDER BY `lineOfSightDistance` ASC";
+            $mainQuery .= " GROUP BY `vendors`.`id` "; //ORDER BY `lineOfSightDistance` ASC
 
             if ($vendor_title == "best_sellers") {
                 $mainQuery.= " ORDER BY `selling_count` DESC";
@@ -783,6 +787,7 @@ trait ProductActionTrait{
             return $filtered;
         }
         catch (\Exception $e) {
+            \Log::info($e);
             return [];
         }
     }
