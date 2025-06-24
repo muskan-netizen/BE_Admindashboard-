@@ -643,7 +643,7 @@ trait ProductActionTrait{
 
             $mainQuery = "SELECT $selectQuery FROM `vendors` $joinQuery $whereQuery $whereInQuery";
 
-            $mainQuery .= " GROUP BY `vendors`.`id` "; //ORDER BY `lineOfSightDistance` ASC
+            $mainQuery .= " GROUP BY `vendors`.`id` ORDER BY `lineOfSightDistance` ASC ";
 
             if ($vendor_title == "best_sellers") {
                 $mainQuery.= " ORDER BY `selling_count` DESC";
