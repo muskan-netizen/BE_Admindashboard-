@@ -610,6 +610,7 @@ trait ProductActionTrait{
                 `vendors`.`rating`,
                 `vendors`.`closed_store_order_scheduled`,
                 `vendors`.`delivery_fee_minimum`,
+                `vendors`.`delivery_fee_maximum`,
                 (
                     SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
                     FROM user_vendor_wishlists
