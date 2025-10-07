@@ -187,6 +187,7 @@ class ProductController extends BaseController
             if(!$product){
                 return response()->json(['error' => 'No record found.'], 404);
             }
+          
 
             // if(@$product->product_availability && @$product->OrderProduct){
 
@@ -215,19 +216,18 @@ class ProductController extends BaseController
 
             // }
 
-            $product->is_rented = 0;
-            if(@$product->OrderProduct[0]->end_date_time){
-                $product->is_rented = 1;
-            }
-
-            // if ($this->checkTemplateForAction(8)) {
-                $this->RecentView($pid);
+            // $product->is_rented = 0;
+            // if(@$product->OrderProduct[0]->end_date_time){
+            //     $product->is_rented = 1;
             // }
-            $productBookingsCount = ProductBooking::whereHas('products', function ($q) use ($product) {
-                $q->whereHas('product', function($q) use($product){
-                    $q->where('vendor_id', $product->vendor_id);
-                });
-            })->count();
+
+            // RecentView removed for performance optimization
+            // Product bookings count removed for performance optimization (order relations are heavy)
+            // $productBookingsCount = ProductBooking::whereHas('products', function ($q) use ($product) {
+            //     $q->whereHas('product', function($q) use($product){
+            //         $q->where('vendor_id', $product->vendor_id);
+            //     });
+            // })->count();
             $product->vendor->is_vendor_closed = 0;
             if($product->vendor->show_slot == 0){
                 if( ($product->vendor->slotDate->isEmpty()) && ($product->vendor->slot->isEmpty()) ){
@@ -316,11 +316,7 @@ class ProductController extends BaseController
             $product->product_media = $data_image;
             $product->share_link = getServerURL() . $product->vendor->slug . '/product/' . $product->url_slug;
 
-            $promoCodeController = new PromoCodeController();
-            $coupon_list = $promoCodeController->coupon_code_list($product->id, $product->vendor_id);
-
-
-            $response['coupon_list'] = $coupon_list;
+            // Coupon list removed for performance optimization
             if($product->is_long_term_service == 1){
                 $product_id = $product->LongTermProducts->product_id;
                 $url_slug   = $product->LongTermProducts->product->url_slug;
@@ -341,214 +337,134 @@ class ProductController extends BaseController
                     'data' => $response,
                 ]);
             }
-            // Product Attribute
-            $product_attr = [];
-            if( !empty($product->ProductAttribute) ) {
-                foreach( $product->ProductAttribute as $key => $value ) {
-                    if( !empty($value->attribute) && !empty($value->attribute->status) && $value->attribute->status == 1 ) {
-                        $product_attr[$key]['title'] = optional($value->attribute)->title ?? '';
-                        $product_attr[$key]['attribute_id'] = $value->attribute_id ?? '';
-                        $attribute = $value->attribute;
-                        $img = $attribute->icon ? $attribute->icon['proxy_url'] . '100/100' . $attribute->icon['image_path'] : '';
-                        $product_attr[$key]['icon'] = $img;
-                        
-                        if( !empty($value->attribute) && $value->attribute->type != 4 && $value->attribute->type != 6) {
-                            $product_attr[$key]['value'] = optional($value->attributeOption)->title ?? '';
-                        }
-                        else {
-                            $product_attr[$key]['value'] = $value['key_value'] ?? '';
-                        }
-                    }
-                }
-            }
-
-            $attr_id = '';
-            $attr_array = [];
-            foreach($product_attr as $pro_att_key => $pro_att_val) {
-
-                if( empty($attr_id) || ($pro_att_val['attribute_id'] != $attr_id) ) {
-                    $attr_id = $pro_att_val['attribute_id'];
-                    $attr_array[$pro_att_val['title']][$pro_att_key]['title'] = $pro_att_val['title'];
-                    $attr_array[$pro_att_val['title']][$pro_att_key]['attribute_id'] = $pro_att_val['attribute_id'];
-                    $attr_array[$pro_att_val['title']][$pro_att_key]['value'] = $pro_att_val['value'];
-                }
-                else {
-                    $attr_id = $pro_att_val['attribute_id'];
-                    $attr_array[$pro_att_val['title']][$pro_att_key]['title'] = $pro_att_val['title'];
-                    $attr_array[$pro_att_val['title']][$pro_att_key]['attribute_id'] = $pro_att_val['attribute_id'];
-                    $attr_array[$pro_att_val['title']][$pro_att_key]['value'] = $pro_att_val['value'];
-                }
-            }
+            // Product attributes removed for performance optimization
 
             $product->product_reviews = '';
             $product->product_reviews = OrderProductRating::with('userimage')->select('*','created_at as time_zone_created_at')->where(['product_id' => $product->id])->get();
-            $frequentlyBoughtProducts = Product::with(['media.image', 'vendor', 'translation', 'variant', 'productVariantByRoles'])->join('order_vendor_products', 'products.id', '=', 'order_vendor_products.product_id')->join('orders', 'order_vendor_products.order_id', '=', 'orders.id')->where('products.vendor_id', $product->vendor->id)->select('products.*')
-            ->groupBy('products.id')->orderByRaw('COUNT(products.id) DESC')->limit($limit)->get();
+            // Frequently bought products removed for performance optimization (order relations are heavy)
+            // $frequentlyBoughtProducts = Product::with(['media.image', 'vendor', 'translation', 'variant', 'productVariantByRoles'])->join('order_vendor_products', 'products.id', '=', 'order_vendor_products.product_id')->join('orders', 'order_vendor_products.order_id', '=', 'orders.id')->where('products.vendor_id', $product->vendor->id)->select('products.*')
+            // ->groupBy('products.id')->orderByRaw('COUNT(products.id) DESC')->limit($limit)->get();
 
-            $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = [];
-
-            $suggested_product = Product::with(['media.image','vendor', 'translation', 'variant', 'productVariantByRoles','categoryName']);
-            if( !empty($product->category->category_id) ) {
-                $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->groupBy('id')->orderby('id', 'desc')->limit(20)->get();
-            }
-
-
-            foreach($suggested_category_products as $r_product){
-                foreach ($r_product->variant as $key => $value) {
-                    if(isset($r_product->variant[$key])){
-                        $r_product->variant[$key]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : '1.00';
-                    }
-                }
-            }
-
-            if( !empty($product->brand_id) ) {
-                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
-                $suggested_brand_products = $suggested_product->where('brand_id', $product->brand_id)->orderby('id', 'desc')->limit(20)->get();
-            }
-
-
-                foreach($suggested_brand_products as $r_product){
-                foreach ($r_product->variant as $key => $value) {
-                    if(isset($r_product->variant[$key])){
-                    $r_product->variant[$key]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : '1.00';
-                    }
-                }
-            }
-
-            if( !empty($product->vendor_id) ) {
-                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant','categoryName','category.categoryDetail.translation'])->whereNotIn('id',[$product->id]);
-                $suggested_vendor_products = $suggested_product->where('vendor_id', $product->vendor_id)->orderby('id', 'desc')->limit(20)->get();
-            }
-
-
-                foreach($suggested_vendor_products as $r_product){
-                foreach ($r_product->variant as $key => $value) {
-                    if(isset($r_product->variant[$key])){
-                    $r_product->variant[$key]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : '1.00';
-                    }
-                }
-            }
+            // Suggested products removed for performance optimization
             
 
-            $detail = [
-            'Mileage',
-            'Engine',
-            'Transmission',
-            'BHP',
-            'Seats',
-            'Boot Space',
-            'Fuel Type'
-            ];
-            $additional = [];
-            $desc = [];
-            foreach ($product->ProductAttribute as $productAttribute) {
-                $attribute = $productAttribute->attribute;
-                $img = $attribute->icon['proxy_url'] . '100/100' . $attribute->icon['image_path'];
-                if ($productAttribute->attributeOption()->exists()) {
-                    $title = $productAttribute->attributeOption->title ?? $productAttribute->key_value;
-                    if(!in_array($productAttribute->key_name, $detail)){
-                        $additional[] = [
-                            'title' => $productAttribute->key_name,
-                            'value' => $title,
-                            'img' => $img
-                        ];
-                    }
-                    $desc[$productAttribute->key_name]['title'] = $title;
-                    $desc[$productAttribute->key_name]['img'] = $img;
-                }
-            }
-            $accordianData = [];
-            $desc = array_search('Specification', $additional);
-            $accordianData[] = [
-                'title' => 'Specification',
-                'value' => $desc['Specification']['title'] ?? ''
-            ];
-            $accordianData[] = [
-                'title' => 'Cancellation',
-                'value' => $product->returnable ? "Cancellable" : "Non-Cancelable"
-            ];
-            $accordianData[] = [
-                'title' => 'Commercial Owner',
-                'value' => $desc['Commercial Owner']['title'] ?? ''
-            ];
-            $accordianData[] = [
-                'title' => 'Security Amount',
-                'value' => $product->security_amount ? \Session::get('currencySymbol').$product->security_amount. ' need to be paid as security amount' : 'No Security Amount'
-            ];
-            $accordianData[] = [
-                'title' => 'Captain Info',
-                'value' => [
-                    'name' => $product->captain_name,
-                    'description' => $product->captain_description,
-                    'profile' => $product->captain_profile
-                ]
-            ];
-            if ($getAdditionalPreference['product_measurment'] == 1) {
-                if ($product->has_variant == 1) {
-                    $groupedData = [];
-                    foreach ($product->measurements as $measurement) {
-                        $filteredVariants = $measurement->productVariants->filter(function ($variant) use ($measurement) {
-                            return $variant->id == $measurement->pivot->product_variant_id;
-                        });
+            // $detail = [
+            // 'Mileage',
+            // 'Engine',
+            // 'Transmission',
+            // 'BHP',
+            // 'Seats',
+            // 'Boot Space',
+            // 'Fuel Type'
+            // ];
+            // $additional = [];
+            // $desc = [];
+            // foreach ($product->ProductAttribute as $productAttribute) {
+            //     $attribute = $productAttribute->attribute;
+            //     $img = $attribute->icon['proxy_url'] . '100/100' . $attribute->icon['image_path'];
+            //     if ($productAttribute->attributeOption()->exists()) {
+            //         $title = $productAttribute->attributeOption->title ?? $productAttribute->key_value;
+            //         if(!in_array($productAttribute->key_name, $detail)){
+            //             $additional[] = [
+            //                 'title' => $productAttribute->key_name,
+            //                 'value' => $title,
+            //                 'img' => $img
+            //             ];
+            //         }
+            //         $desc[$productAttribute->key_name]['title'] = $title;
+            //         $desc[$productAttribute->key_name]['img'] = $img;
+            //     }
+            // }
+            // $accordianData = [];
+            // $desc = array_search('Specification', $additional);
+            // $accordianData[] = [
+            //     'title' => 'Specification',
+            //     'value' => $desc['Specification']['title'] ?? ''
+            // ];
+            // $accordianData[] = [
+            //     'title' => 'Cancellation',
+            //     'value' => $product->returnable ? "Cancellable" : "Non-Cancelable"
+            // ];
+            // $accordianData[] = [
+            //     'title' => 'Commercial Owner',
+            //     'value' => $desc['Commercial Owner']['title'] ?? ''
+            // ];
+            // $accordianData[] = [
+            //     'title' => 'Security Amount',
+            //     'value' => $product->security_amount ? \Session::get('currencySymbol').$product->security_amount. ' need to be paid as security amount' : 'No Security Amount'
+            // ];
+            // $accordianData[] = [
+            //     'title' => 'Captain Info',
+            //     'value' => [
+            //         'name' => $product->captain_name,
+            //         'description' => $product->captain_description,
+            //         'profile' => $product->captain_profile
+            //     ]
+            // ];
+            // if ($getAdditionalPreference['product_measurment'] == 1) {
+            //     if ($product->has_variant == 1) {
+            //         $groupedData = [];
+            //         foreach ($product->measurements as $measurement) {
+            //             $filteredVariants = $measurement->productVariants->filter(function ($variant) use ($measurement) {
+            //                 return $variant->id == $measurement->pivot->product_variant_id;
+            //             });
             
-                        foreach ($filteredVariants as $variant) {
-                            $parts = explode('-', $variant->title);
-                            $letter = end($parts);
+            //             foreach ($filteredVariants as $variant) {
+            //                 $parts = explode('-', $variant->title);
+            //                 $letter = end($parts);
             
-                            $productVariantId = $measurement->pivot->product_variant_id;
-                            if (!isset($groupedData[$productVariantId])) {
-                                $groupedData[$productVariantId] = [
-                                    'variant_id' => $productVariantId,
-                                    'title' => $letter,
-                                    'data' => []
-                                ];
-                            }
+            //                 $productVariantId = $measurement->pivot->product_variant_id;
+            //                 if (!isset($groupedData[$productVariantId])) {
+            //                     $groupedData[$productVariantId] = [
+            //                         'variant_id' => $productVariantId,
+            //                         'title' => $letter,
+            //                         'data' => []
+            //                     ];
+            //                 }
             
-                            $groupedData[$productVariantId]['data'][] = [
-                                'measurement_key' => $measurement->key,
-                                'measurement_key_id' => $measurement->id,
-                                'key_value' => $measurement->pivot->key_value,
-                                'product_variant_id' => $productVariantId,
-                                'product_variant_title' => $letter,
-                                'metric'=>'cm'
-                            ];
-                        }
-                    }
-                    unset($product->measurements);
-                    $product->measurements = array_values($groupedData);
-                } else {
-                    $groupedData = [];
-                    foreach ($product->measurements as $measurement) {
-                        $groupedData[] = [
-                            'measurement_key' => $measurement->key,
-                            'measurement_key_id' => $measurement->id,
-                            'key_value' => $measurement->pivot->key_value,
-                            'product_id' => $measurement->pivot->product_id,
-                            'metric'=>'cm'
-                        ];
-                    }
-                    unset($product->measurements);
-                    $product->measurements = $groupedData;
-                }
-            }
+            //                 $groupedData[$productVariantId]['data'][] = [
+            //                     'measurement_key' => $measurement->key,
+            //                     'measurement_key_id' => $measurement->id,
+            //                     'key_value' => $measurement->pivot->key_value,
+            //                     'product_variant_id' => $productVariantId,
+            //                     'product_variant_title' => $letter,
+            //                     'metric'=>'cm'
+            //                 ];
+            //             }
+            //         }
+            //         unset($product->measurements);
+            //         $product->measurements = array_values($groupedData);
+            //     } else {
+            //         $groupedData = [];
+            //         foreach ($product->measurements as $measurement) {
+            //             $groupedData[] = [
+            //                 'measurement_key' => $measurement->key,
+            //                 'measurement_key_id' => $measurement->id,
+            //                 'key_value' => $measurement->pivot->key_value,
+            //                 'product_id' => $measurement->pivot->product_id,
+            //                 'metric'=>'cm'
+            //             ];
+            //         }
+            //         unset($product->measurements);
+            //         $product->measurements = $groupedData;
+            //     }
+            // }
             
             
             
-            $response['suggested_category_products'] =  $suggested_category_products;
-            $response['suggested_brand_products'] =  $suggested_brand_products;
-            $response['suggested_vendor_products'] =  $suggested_vendor_products;
+            // Suggested products removed from response
 
-
+                
             
             $response['products'] = $product;
-            $response['frequently_bought'] = $frequentlyBoughtProducts;
+            // $response['frequently_bought'] = $frequentlyBoughtProducts;
             $response['relatedProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related, $request->service);
             $response['upSellProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'upSell', $product->upSell, $request->service);
             $response['crossProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'cross', $product->crossSell, $request->service);
-            $response['product_attribute'] = $product_attr;
-            $response['additional_features'] = $additional;
-            $response['productBookingsCount'] = $productBookingsCount;
-            $response['accordianData'] = $accordianData;
+            // Product attributes removed from response
+            // $response['additional_features'] = $additional;
+            // $response['productBookingsCount'] = $productBookingsCount;
+            // $response['accordianData'] = $accordianData;
             // $response['product_variant'] = ProductVariant::select('id', 'sku', 'product_id', 'title', 'quantity','price','markup_price','cost_price','barcode','tax_category_id')->where('product_id',$pid)->get();
             /* group by in query return data only for key - 0 so using 0 */
             $is_return_days = 0;

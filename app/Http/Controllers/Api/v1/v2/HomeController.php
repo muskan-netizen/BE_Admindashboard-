@@ -278,6 +278,8 @@ class HomeController extends BaseController
                 $homePageData = $this->postHomePageData($request,$additionalPreference);
             }
 
+          
+
             if($type == 'p2p')
             {
 
@@ -346,6 +348,7 @@ class HomeController extends BaseController
             $homeData = ['homePageLabels' => $home_page_labels, 'reqData' => $request->all(), 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude, 'enable_layout' => $enable_layout,'image_prefix' => $image_const_arr];
             $homeData['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
             $homeData['mobile_banners'] = $mobile_banners??[];
+          
             //$homeData['banners'] = $banners??[];
             $homeData['banner_image'] = $banners??[];
             //$homeData['categories'] = $categories;
@@ -1707,6 +1710,7 @@ class HomeController extends BaseController
                 'vendor_ids'=>$vendor_ids,
                 'brands' => $brands,
                 'vendors' => $vendors,
+                'recent_vendors' => $vendors,
                 'new_products' => $new_products,
                 'top_rated'       => $top_rated_products ?? '',
                 'recently_viewed' => $recently_viewed,
@@ -1715,7 +1719,7 @@ class HomeController extends BaseController
                 'on_sale' => $on_sale_products,
                 'cities' => $this->cities,
                 'long_term_service' => $long_term_service_products,
-                'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:[],
+                'trending_vendors' => (!empty($vendors) && count($vendors) > 0)?$vendors:[],
                 'best_sellers'     => (!empty($mostSellingVendors) && count($mostSellingVendors) > 0)?$mostSellingVendors:[],
                 'spotlight_deals'  => (!empty($spot_light_products) && count($spot_light_products) > 0)?$spot_light_products:[],
                 'single_category_products'  => (!empty($single_category_products) && count($single_category_products) > 0)?$single_category_products:[],

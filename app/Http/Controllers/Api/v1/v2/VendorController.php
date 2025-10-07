@@ -2211,6 +2211,7 @@ class VendorController extends BaseController{
             $product_category_ids = $product_category_ids->isNotEmpty() ? $product_category_ids->toArray() : [];
 
             if($vendor->vendor_templete_id == 5){
+                
                 $vendor_categories = Category::select('categories.id','categories.type_id', 'types.title as redirect_to')->join('types', 'types.id', 'categories.type_id')->whereHas('vendorCategory',function ($q)use($vid){
                     $q->where('vendor_id',$vid)->where('status', 1);
                 })->whereHas('data',function ($q)use($vid){
@@ -2226,7 +2227,7 @@ class VendorController extends BaseController{
                         },
                        'media.image',
                         'translation' => function($q) use($langId){
-                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id','body_html as translation_description')->where('language_id', $langId)->orderBy('updated_at','desc');
+                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id','body_html as translation_description')->where('language_id', $langId)->orderBy('updated_at','desc')->groupBy('language_id','product_id');
                         },
                         'variant' => function($q) use($langId, $multipli){
                             $q->select('id','sku', 'product_id', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price',DB::raw("'$multipli' as multiplier"),)->orderBy('quantity', 'desc');
@@ -2255,6 +2256,7 @@ class VendorController extends BaseController{
                 });
                 $listData =  array_values($vendor_categories->toArray());
             }else{
+                
                 $vendorCategories = VendorCategory::select(\DB::raw("group_concat(`category_translations`.`name`) as categoriesList"))
                 ->join('category_translations', 'category_translations.category_id', '=', 'vendor_categories.category_id')
                 ->where('vendor_id', $vendor->id)->where('status', 1)->where('category_translations.language_id',$langId)->groupBy('vendor_categories.vendor_id')->first();

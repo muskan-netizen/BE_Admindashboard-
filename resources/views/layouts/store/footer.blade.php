@@ -227,20 +227,27 @@ $is_map_search_perticular_country = getMapConfigrationPreference();
 @endif
 <!-- /**socket_accept end */ -->
 
+@if(isset($analytics['gtag_id']))
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id={{$analytics['gtag_id'] ?? ''}}"></script>
+@endif 
 @if (isset($set_template)  && $set_template->template_id == 6)
 <script async src="{{asset('frontend/template_six/homepage/spa_slider_custom.js')}}"></script>
 @endif
 <script type="text/javascript">
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-5LPF1QP3Y3');
+// window.dataLayer = window.dataLayer || [];
+// function gtag(){dataLayer.push(arguments);}
+// gtag('js', new Date());
+// gtag('config', 'G-5LPF1QP3Y3');
 
 @if(isset($analytics['gtag_id']))
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
     gtag('config', "{{$analytics['gtag_id'] ?? ''}}");
-@endif
+@endif 
+
 
 @if(!isset($_COOKIE['show-subscription-plan']) && ($showSubscriptionPlanPopUp == 1) && (Route::current()->getName() != 'userHome'))
     $(document).ready(function() {
