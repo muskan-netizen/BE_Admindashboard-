@@ -442,8 +442,10 @@ if (Session::has('toaster')) {
 
 @yield('script-bottom')
 {{-- <script  src="{{asset('assets/js/chat/chatNotifications.js')}}"></script> --}}
+@if(isset($analytics['gtag_id']))
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id={{$analytics['gtag_id'] ?? ''}}"></script>
+@endif
 <script>
 @if(isset($analytics['gtag_id']))
 window.dataLayer = window.dataLayer || [];
@@ -451,8 +453,9 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 
 // gtag('config', 'G-5LPF1QP3Y3');
-gtag('config', "{{$analytics['gtag_id'] ?? ''}}");
-@endif 
+@if(isset($analytics['gtag_id']))
+    gtag('config', "{{$analytics['gtag_id'] ?? ''}}");
+@endif   
 
 $("#change_password").on("hidden.bs.modal", function(){
     $('.pwd-msg').html("");

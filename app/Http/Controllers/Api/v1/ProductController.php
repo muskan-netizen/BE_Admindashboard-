@@ -136,7 +136,7 @@ class ProductController extends BaseController
                         //     $v->select('id', 'sku', 'product_id', 'title', 'quantity','price','markup_price','cost_price','barcode','tax_category_id')
                         //     ->groupBy('product_id'); // return first variant
                         // },
-
+    
                         'variant.media.pimage.image', 'vendor', 'media.image', 'related', 'upSell', 'crossSell', 'reviews.user' => function($rev) {
                             $rev->select('users.id', 'users.name', 'users.email', 'users.image');
                         }, 'reviews.reviewFiles',
@@ -169,7 +169,7 @@ class ProductController extends BaseController
                             $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
                             $q2->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
                         },
-
+    
                     ]);
                     $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price','product_measurment']);
                     if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
@@ -179,28 +179,28 @@ class ProductController extends BaseController
                         }]);
                     }
                     $product = $product->select('id', 'sku', 'url_slug', 'description', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'minimum_order_count', 'batch_count', 'minimum_duration', 'minimum_duration_min', 'additional_increments', 'additional_increments_min', 'buffer_time_duration', 'buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service', 'service_duration', 'is_show_dispatcher_agent', 'is_slot_from_dispatch', 'tags', 'mode_of_service', 'is_recurring_booking', 'latitude', 'longitude', 'address', 'calories', 'inquiry_only', 'security_amount', 'captain_name', 'captain_profile', 'captain_description');
-
-
+    
+    
                     $product = $product->where('id', $pid)
                         ->first();
-
+    
             if(!$product){
                 return response()->json(['error' => 'No record found.'], 404);
             }
           
-
+    
             // if(@$product->product_availability && @$product->OrderProduct){
-
+    
             //     foreach($product->OrderProduct as $OrderProducts){
             //         // dd($OrderProducts);
             //         $dates = [];
             //         if(@$OrderProducts->start_date_time && @$OrderProducts->end_date_time){
             //             $period = CarbonPeriod::create(date('Y-m-d',strtotime($OrderProducts->start_date_time)), date('Y-m-d',strtotime($OrderProducts->end_date_time)));
-
+    
             //             foreach ($period as $date) {
             //                 $dates[] =  $date->format('Y-m-d');
             //             }
-
+    
             //             if(@$dates){
             //                 foreach($product->product_availability as $product_availability){
             //                     foreach($dates as $date){
@@ -208,19 +208,19 @@ class ProductController extends BaseController
             //                             $product_availability->not_available = 1;
             //                         }
             //                     }
-
+    
             //                 }
             //             }
             //     }
             // }
-
+    
             // }
-
+    
             // $product->is_rented = 0;
             // if(@$product->OrderProduct[0]->end_date_time){
             //     $product->is_rented = 1;
             // }
-
+    
             // RecentView removed for performance optimization
             // Product bookings count removed for performance optimization (order relations are heavy)
             // $productBookingsCount = ProductBooking::whereHas('products', function ($q) use ($product) {
@@ -246,7 +246,7 @@ class ProductController extends BaseController
             $allReviews = array_column($product->vendor->products()->with('reviews')->get()->toArray(),'reviews');
             $rating = array_sum(array_column($allReviews,'rating'));
             $product->vendor_rating = $rating; 
-
+    
             $slotsDate = 0;
             if($product->vendor->is_vendor_closed){
                 $slotsDate = findSlot('',$product->vendor->id,'');
@@ -256,8 +256,8 @@ class ProductController extends BaseController
                 $product->delaySlot  = 0;
                 $product->vendor->closed_store_order_scheduled = 0;
             }
-
-
+    
+    
             $product->is_wishlist = @$product->inwishlist ? 1 : 0;
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
             foreach ($product->variant as $key => $value) {
@@ -312,16 +312,16 @@ class ProductController extends BaseController
                     }
                 }
             }
-
+    
             $product->product_media = $data_image;
             $product->share_link = getServerURL() . $product->vendor->slug . '/product/' . $product->url_slug;
-
+    
             // Coupon list removed for performance optimization
             if($product->is_long_term_service == 1){
                 $product_id = $product->LongTermProducts->product_id;
                 $url_slug   = $product->LongTermProducts->product->url_slug;
                 $vendor_slug   = $product->vendor->slug;
-
+    
                 $LongTermProducts                    = $this->getProduct($product->LongTermProducts->product_id,$vendor_slug,$url_slug,$user,$langId);
                 $LongTermProducts->long_term_product = $product->LongTermProducts;
                 $addon =  $product->LongTermProducts->addons->pluck('option_id','addon_id')->toArray() ?? [];
@@ -329,7 +329,7 @@ class ProductController extends BaseController
                     $product->ServicePeriods = $product->ServicePeriod->pluck('service_period')->toArray();
                 }
                 $LongTermProducts->period =config('constants.Period');
-
+    
                 $LongTermProducts->product_addon     =  $addon;
                 $product->longTermServiceProduct     = $LongTermProducts;
                 $response['products'] = $product;
@@ -338,16 +338,16 @@ class ProductController extends BaseController
                 ]);
             }
             // Product attributes removed for performance optimization
-
+    
             $product->product_reviews = '';
             $product->product_reviews = OrderProductRating::with('userimage')->select('*','created_at as time_zone_created_at')->where(['product_id' => $product->id])->get();
             // Frequently bought products removed for performance optimization (order relations are heavy)
             // $frequentlyBoughtProducts = Product::with(['media.image', 'vendor', 'translation', 'variant', 'productVariantByRoles'])->join('order_vendor_products', 'products.id', '=', 'order_vendor_products.product_id')->join('orders', 'order_vendor_products.order_id', '=', 'orders.id')->where('products.vendor_id', $product->vendor->id)->select('products.*')
             // ->groupBy('products.id')->orderByRaw('COUNT(products.id) DESC')->limit($limit)->get();
-
+    
             // Suggested products removed for performance optimization
             
-
+    
             // $detail = [
             // 'Mileage',
             // 'Engine',
@@ -454,6 +454,12 @@ class ProductController extends BaseController
             
             // Suggested products removed from response
 
+            $suggested_product = Product::with(['media.image','vendor', 'translation', 'variant', 'productVariantByRoles','categoryName']);
+            if( !empty($product->category->category_id) ) {
+                $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->groupBy('id')->orderby('id', 'desc')->limit(20)->get();
+            }
+            $response['suggested_category_products'] =  $suggested_category_products;
+    
                 
             
             $response['products'] = $product;
@@ -486,8 +492,8 @@ class ProductController extends BaseController
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
-
-
+    
+    
     }
 
     public function checkProductAvailibility(Request $request)
