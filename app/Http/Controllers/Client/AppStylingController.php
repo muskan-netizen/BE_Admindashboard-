@@ -74,7 +74,15 @@ class AppStylingController extends BaseController
             case "food_grocery_ecommerce":    # if business type is taxi
             $homepage_style = AppStyling::where('name', 'Home Page Style')->first();
             if ($homepage_style) {
-                $homepage_style_options = $AppStylingOption->where('image','!=', 'home_six.png')->where('app_styling_id', $homepage_style->id)->get();
+                $homepage_style_options = $AppStylingOption->where('image','=', 'home_seven.png')->where('app_styling_id', $homepage_style->id)->get();
+            }
+            $home_page_labels = HomePageLabel::whereNotin('slug',['pickup_delivery'])->with('translations')->orderBy('order_by');
+            $cab_booking_layouts = CabBookingLayout::whereNotin('slug',['pickup_delivery'])->with('translations');
+            break;
+            case "grocery_ecommerce":    # if business type is taxi
+            $homepage_style = AppStyling::where('name', 'Home Page Style')->first();
+            if ($homepage_style) {
+                $homepage_style_options = $AppStylingOption->where('image','=', 'home_four.png')->where('app_styling_id', $homepage_style->id)->get();
             }
             $home_page_labels = HomePageLabel::whereNotin('slug',['pickup_delivery'])->with('translations')->orderBy('order_by');
             $cab_booking_layouts = CabBookingLayout::whereNotin('slug',['pickup_delivery'])->with('translations');

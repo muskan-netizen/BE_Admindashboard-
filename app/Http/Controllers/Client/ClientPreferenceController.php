@@ -1198,6 +1198,9 @@ class ClientPreferenceController extends BaseController{
             case 'food_grocery_ecommerce':
                 $this->resetDeliveryConfiguration("delivery_check");
                 break;
+            case 'grocery_ecommerce':
+                $this->resetDeliveryConfiguration("delivery_check");
+                break;
 
             case 'home_service':
                 $this->resetOnDemandConfiguration("on_demand_check");

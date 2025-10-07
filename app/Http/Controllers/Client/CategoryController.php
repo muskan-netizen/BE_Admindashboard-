@@ -204,6 +204,9 @@ class CategoryController extends BaseController
             case "food_grocery_ecommerce":
             $type =Type::whereNotIn('title',['Pickup/Delivery','On Demand Service','Pickup/Parent','laundry'])->orderBY('sequence', 'ASC')->get();
             break;
+            case "grocery_ecommerce":
+            $type =Type::whereNotIn('title',['Pickup/Delivery','On Demand Service','Pickup/Parent','laundry'])->orderBY('sequence', 'ASC')->get();
+            break;
             case "laundry":
             $type =Type::whereNotIn('title',['Pickup/Delivery','Pickup/Parent','On Demand Service'])->orderBY('sequence', 'ASC')->get();
             break;

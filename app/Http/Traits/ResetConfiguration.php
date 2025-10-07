@@ -188,7 +188,7 @@ trait ResetConfiguration
                     }
                     break;
                 case 'is_tracking_url':
-                    if (in_array($client_preference->business_type, ['taxi', 'emart', 'super_app', 'rental', 'food_grocery_ecommerce', 'home_service'])) {
+                    if (in_array($client_preference->business_type, ['taxi', 'emart', 'super_app', 'rental', 'food_grocery_ecommerce','grocery_ecommerce', 'home_service'])) {
                         $preferenceValue = 1;
                     }
                     break;
@@ -199,12 +199,12 @@ trait ResetConfiguration
                     break;
 
                 case 'is_tracking_sms_url':
-                    if (in_array($client_preference->business_type, ['taxi', 'emart', 'super_app', 'rental', 'food_grocery_ecommerce'])) {
+                    if (in_array($client_preference->business_type, ['taxi', 'emart', 'super_app', 'rental', 'food_grocery_ecommerce','grocery_ecommerce'])) {
                         $preferenceValue = 1;
                     }
                     break;
                 case 'is_place_order_delivery_zero':
-                    if (in_array($client_preference->business_type, ['taxi', 'emart', 'super_app', 'rental', 'food_grocery_ecommerce'])) {
+                    if (in_array($client_preference->business_type, ['taxi', 'emart', 'super_app', 'rental', 'food_grocery_ecommerce','grocery_ecommerce'])) {
                         $preferenceValue = 1;
                     }
                     break;

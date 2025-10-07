@@ -1707,6 +1707,9 @@ if (!function_exists('getCategoryTypes')) {
             case "food_grocery_ecommerce":
                 $typeArray =['delivery','dinein','takeaway'];
             break;
+            case "grocery_ecommerce":
+                $typeArray =['delivery','dinein','takeaway'];
+            break;
             case "home_service":
                 $typeArray =['on_demand','appointment'];
             break;
@@ -1745,6 +1748,9 @@ if (!function_exists('getCategoryTypesServices')) {
                 $typeArray =['pick_drop_service'];
             break;
             case "food_grocery_ecommerce":
+                $typeArray =['products_service'];
+            break;
+            case "grocery_ecommerce":
                 $typeArray =['products_service'];
             break;
             case "home_service":
