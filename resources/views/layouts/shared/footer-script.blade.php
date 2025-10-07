@@ -450,6 +450,7 @@ if (Session::has('toaster')) {
 @if(isset($analytics['gtag_id']))
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
+@endif
 gtag('js', new Date());
 
 // gtag('config', 'G-5LPF1QP3Y3');
