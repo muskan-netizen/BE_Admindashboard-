@@ -69,10 +69,8 @@ class ClientMigrateDataBase extends Command
         DB::reconnect($connectionName);
 
         $currentDatabase = DB::connection()->getDatabaseName();
-        \Log::info("✅ Parent DB connection successful. Connected to: {$currentDatabase}");
         $this->info("✅ Parent DB connection successful. Connected to: {$currentDatabase}");
     } catch (\Exception $e) {
-        \Log::error("❌ Parent DB connection failed: " . $e->getMessage());
         $this->error("❌ Parent DB connection failed. Please check your .env settings.");
         return;
     }
@@ -83,13 +81,12 @@ class ClientMigrateDataBase extends Command
         ->where('status', 1)
         ->get();
 
-    \Log::info("Clients fetched: " . count($clients));
     $this->info("Clients fetched: " . count($clients));
 
     // 🔹 STEP 4: Loop through each client and migrate their DB
     foreach ($clients as $client) {
         $database_name = 'royo_' . $client->database_name;
-        $this->info("🚀 Migrating database: {$database_name}");
+      
 
         $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?";
         $db = DB::connection($connectionName)->select($query, [$database_name]);
