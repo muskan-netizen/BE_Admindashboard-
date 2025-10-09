@@ -39,14 +39,30 @@ class ClientMigrateDataBase extends Command
      *
      * @return int
      */
-    public function handle(){
+    public function handle()
+    {
+        try {
+            // ✅ Check if default DB connection works
+            DB::connection()->getPdo();
+            \Log::info("✅ Database connection successful: " . env('DB_DATABASE'));
+            $this->info("✅ Database connection successful!");
+        } catch (\Exception $e) {
+            \Log::error("❌ Database connection failed: " . $e->getMessage());
+            $this->error("❌ Database connection failed. Please check your .env settings.");
+            return; // stop further execution
+        }
+    
+        // ✅ Fetch clients
         $clients = Client::get();
-        \Log::info("clients: ".json_encode($clients));
+        \Log::info("Clients fetched: " . json_encode($clients));
+    
         foreach ($clients as $key => $client) {
             $database_name = 'royo_' . $client->database_name;
-            $this->info("migrate database start: {$database_name}!");
-            $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME =  ?";
+            $this->info("🚀 Migrating database: {$database_name}");
+    
+            $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?";
             $db = DB::select($query, [$database_name]);
+    
             if ($db) {
                 $default = [
                     'prefix' => '',
@@ -62,14 +78,18 @@ class ClientMigrateDataBase extends Command
                     'collation' => 'utf8mb4_unicode_ci',
                     'driver' => env('DB_CONNECTION', 'mysql'),
                 ];
+    
+                // ✅ Set and migrate
                 Config::set("database.connections.$database_name", $default);
                 Artisan::call('migrate', ['--database' => $database_name]);
+    
                 DB::disconnect($database_name);
-                $this->info("migrate database end: {$database_name}!");
-            }else{
+                $this->info("✅ Migration completed: {$database_name}");
+            } else {
                 DB::disconnect($database_name);
-                $this->info("migrate database end: {$database_name}!");
+                $this->warn("⚠️ Database not found: {$database_name}");
             }
         }
     }
+    
 }
