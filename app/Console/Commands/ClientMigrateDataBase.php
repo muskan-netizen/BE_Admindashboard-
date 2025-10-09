@@ -53,7 +53,7 @@ class ClientMigrateDataBase extends Command
         }
     
         // ✅ Fetch clients
-        $clients = Client::get();
+        $clients = Client::where('status', 1)->get();
         \Log::info("Clients fetched: " . json_encode($clients));
     
         foreach ($clients as $key => $client) {
