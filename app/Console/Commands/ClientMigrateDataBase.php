@@ -54,7 +54,8 @@ class ClientMigrateDataBase extends Command
     
         // ✅ Fetch clients
         $clients = Client::where('status', 1)->get();
-        \Log::info("Clients fetched: " . json_encode($clients));
+        \Log::info("Clients fetched: " . count($clients));
+        \Log::info("Clients: " . $clients);
     
         foreach ($clients as $key => $client) {
             $database_name = 'royo_' . $client->database_name;
