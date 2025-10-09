@@ -82,7 +82,8 @@ class ClientController extends Controller{
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {   
+    { 
+        
         $client = new Client();
         $validation  = Validator::make($request->all(), $client->rules());
         if ($validation->fails()) {
