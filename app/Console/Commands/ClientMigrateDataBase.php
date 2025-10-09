@@ -41,9 +41,11 @@ class ClientMigrateDataBase extends Command
      */
     public function handle()
     {
+        DB::disconnect();
         try {
             // ✅ Check if default DB connection works
-            DB::connection()->getPdo();
+            DB::purge();       // clears any cached connection configuration
+            DB::reconnect(); 
             $currentDatabase = DB::connection()->getDatabaseName();
 
             // ✅ Log success with the actual connected DB name
