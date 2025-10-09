@@ -43,9 +43,15 @@ class ClientMigrateDataBase extends Command
     {
         DB::disconnect();
         try {
-            // ✅ Check if default DB connection works
-            DB::purge();       // clears any cached connection configuration
-            DB::reconnect(); 
+            $connectionName = env('DB_CONNECTION', 'mysql'); // e.g., 'mysql'
+            $databaseName = env('DB_DATABASE', 'royoorders'); // fallback to 'royoorders' if not set
+    
+            // 🔹 Step 3: Update connection config dynamically
+            Config::set("database.connections.$connectionName.database", $databaseName);
+    
+            // 🔹 Step 4: Purge old connection cache and reconnect fresh
+            DB::purge($connectionName);
+            DB::reconnect($connectionName);
             $currentDatabase = DB::connection()->getDatabaseName();
 
             // ✅ Log success with the actual connected DB name
