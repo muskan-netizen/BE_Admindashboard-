@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\UserRegistrationDocuments;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{UserVendorWishlist,User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption, ShowSubscriptionPlanOnSignup, ClientCountries};
+use App\Models\{UserVendorWishlist,User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption, ShowSubscriptionPlanOnSignup, ClientCountries, VendorType};
 use DateTime;
 use DateInterval;
 use DateTimeZone;
@@ -49,28 +49,47 @@ class HomeController extends BaseController
                 $key = $app_styling['key'];
                 $homeData['profile']->preferences->$key = __($app_styling['value']);
             }
+            // Get vendor types from VendorType table ordered by order_by field
+            $vendorTypes = VendorType::where('status', 1)->orderBy('order_by', 'asc')->get();
             $vendorMode = [];
-            foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
-                $clientVendorTypes = $vendor_typ_key.'_check';
-
-                $nomenclature =  $vendor_typ_key.'_nomenclature';
-                $vendorData = [];
-                    if($preferences->preferences->$clientVendorTypes == 1){
-                        $vendorData['name'] = getNomenclatureName($vendor_typ_value, true);
-                        $iconFiledName = config('constants.VendorTypesIcon.'.$vendor_typ_key);
-                        $vendorData["icon"] = $clientPreferences->$iconFiledName ? $clientPreferences->$iconFiledName : asset('images/al_custom3.png');
-                        //$vendorData["name"] = $clientVendorTypes;
-                        //$client_preference_detail->$iconFiledName['proxy_url'].'36/26'.$client_preference_detail-> $iconFiledName['image_path']
-                        //$vendorData["name"] = $clientVendorTypes;
+            
+            foreach($vendorTypes as $vendorType) {
+                // Find corresponding config key for this vendor type
+                $vendor_typ_key = null;
+                foreach(config('constants.VendorTypes') as $config_key => $config_value) {
+                    if($config_value === $vendorType->title) {
+                        $vendor_typ_key = $config_key;
+                        break;
+                    }
+                }
+                
+                if($vendor_typ_key) {
+                    $clientVendorTypes = $vendor_typ_key.'_check';
+                    
+                    // Check if this vendor type is enabled in client preferences
+                    if($preferences->preferences->$clientVendorTypes == 1) {
+                        $vendorData = [];
+                        $vendorData['name'] = getNomenclatureName($vendorType->title, true);
+                        
+                        // Use VendorType image if available, fallback to client preferences
+                        if($vendorType->image) {
+                            $vendorData["icon"] = asset($vendorType->image);
+                        } else {
+                            $iconFiledName = config('constants.VendorTypesIcon.'.$vendor_typ_key);
+                            $vendorData["icon"] = $clientPreferences->$iconFiledName ? $clientPreferences->$iconFiledName : asset('images/al_custom3.png');
+                        }
+                        
                         $vendorData["type"] = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key;
-
-
+                        $vendorData["order_by"] = $vendorType->order_by;
+                        
                         $vendorMode[] = $vendorData;
                     }
+                }
             }
             $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','add_to_cart_btn','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_particular_driver','is_enable_curb_side','is_enable_variant_set_v2','is_share_ride_users','is_recurring_booking','is_rental_weekly_monthly_price','is_enable_allergic_items','is_user_pre_signup','vendor_online_status','distance_matrix_app_status','fire_base_type', 'is_map_search_perticular_country']);
 
             //mohit sir branch code updated by sohail farm meat
+        
             $homeData['profile']->preferences->vendorMode = $vendorMode;
 
             $homeData['profile']->preferences->is_cab_pooling = (int) $getAdditionalPreference['is_cab_pooling'];

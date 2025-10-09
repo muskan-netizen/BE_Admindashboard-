@@ -90,7 +90,8 @@ class AppStylingController extends BaseController
             default:
             $homepage_style = AppStyling::where('name', 'Home Page Style')->first();
             if ($homepage_style) {
-                $homepage_style_options = $AppStylingOption->where('app_styling_id', $homepage_style->id)->get();
+             
+                $homepage_style_options = $AppStylingOption->whereIn('image',['home_six.png','home_ten.png','home_seven.png'])->where('app_styling_id', $homepage_style->id)->get();
             }
             $home_page_labels = HomePageLabel::with('translations')->orderBy('order_by');
             $cab_booking_layouts = CabBookingLayout::with('translations');

@@ -1705,10 +1705,10 @@ if (!function_exists('getCategoryTypes')) {
                 $typeArray =['pick_drop'];
             break;
             case "food_grocery_ecommerce":
-                $typeArray =['delivery','dinein','takeaway'];
+                $typeArray =['delivery'];
             break;
             case "grocery_ecommerce":
-                $typeArray =['delivery','dinein','takeaway'];
+                $typeArray =['grocery'];
             break;
             case "home_service":
                 $typeArray =['on_demand','appointment'];
@@ -1726,7 +1726,7 @@ if (!function_exists('getCategoryTypes')) {
                 $typeArray = ['delivery'];
                 break;
             case "super_app":
-                $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment', 'p2p','car_rental' ];
+                $typeArray = ['delivery', 'pick_drop' ,'grocery'];
                 break;
             default:
             $typeArray =['delivery','dinein','takeaway','pick_drop','on_demand','appointment'];

@@ -1,8 +1,95 @@
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Customize'])
 @section('css')
 <link href="https://itsjavi.com/fontawesome-iconpicker/dist/css/fontawesome-iconpicker.min.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css">
 <style>
 .select2-multiple {visibility: hidden !important;}
+
+/* Vendor Type Sortable Styles */
+.vendor-type-item {
+    transition: all 0.3s ease;
+}
+
+.vendor-type-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.vendor-type-item .card {
+    border: 2px solid #e3e6f0;
+    transition: border-color 0.3s ease;
+}
+
+.vendor-type-item:hover .card {
+    border-color: #43bee1;
+}
+
+.sortable-placeholder {
+    height: 90px;
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 0.375rem;
+    margin-bottom: 0.5rem;
+}
+
+.ui-sortable-helper {
+    transform: rotate(2deg);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.drag-handle {
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.drag-handle:hover {
+    background-color: rgba(67, 190, 225, 0.1);
+}
+
+.drag-handle:hover .mdi-drag-horizontal {
+    color: #43bee1 !important;
+}
+
+.vendor-type-item.dragging {
+    transform: rotate(2deg);
+    z-index: 1000;
+}
+
+/* Dropify customization for vendor types */
+.vendor-type-item .dropify-wrapper {
+    height: 80px;
+    min-height: 80px;
+}
+
+.vendor-type-item .dropify-message {
+    font-size: 11px;
+    padding: 10px;
+}
+
+.vendor-type-item .dropify-preview {
+    padding: 5px;
+}
+
+.vendor-type-item .dropify-render img {
+    max-height: 60px;
+    width: auto;
+}
+
+.vendor-type-item .dropify-infos {
+    font-size: 10px;
+}
+
+.vendor-type-item .dropify-infos-inner {
+    margin: 5px 0;
+}
+
+.vendor-type-item .dropify-filename {
+    font-size: 10px;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 </style>
 @endsection
 
@@ -266,7 +353,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                 $typeArray = getCategoryTypes();
 
             @endphp
-            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="send_to" id="send_to" value="customize">
                 <input type="hidden" name="verify_vendor_type" id="verify_vendor_type" value="1">
@@ -276,17 +363,70 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
 
-                    <div class="row align-items-start">
-                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
-
+                    <div class="row align-items-start" id="vendor-types-sortable">
+                        @php
+                            // Create array of vendor types with their order_by values for sorting
+                            $sortedVendorTypes = [];
+                            foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value) {
+                                $vendorTypeRecord = $vendorTypes->where('title', $vendor_typ_value)->first();
+                                $sortedVendorTypes[] = [
+                                    'key' => $vendor_typ_key,
+                                    'value' => $vendor_typ_value,
+                                    'order_by' => $vendorTypeRecord ? $vendorTypeRecord->order_by : 999, // Default high number for unordered items
+                                    'record' => $vendorTypeRecord
+                                ];
+                            }
+                            
+                            // Sort by order_by value
+                            usort($sortedVendorTypes, function($a, $b) {
+                                return $a['order_by'] <=> $b['order_by'];
+                            });
+                        @endphp
+                        
+                        @foreach($sortedVendorTypes as $vendorTypeData)
                             @php
+                                $vendor_typ_key = $vendorTypeData['key'];
+                                $vendor_typ_value = $vendorTypeData['value'];
+                                $vendorTypeRecord = $vendorTypeData['record'];
+                                
                                 $VendorTypesName = $vendor_typ_key.'_check';
+                                $VendorTypesIcon = $vendor_typ_key.'icon';
                             @endphp
                             @if(in_array($vendor_typ_key, $typeArray))
-                                <div class="col-md-12">
-                                    <div class="form-group d-flex justify-content-between">
-                                        <label for="{{$VendorTypesName}}" class="mr-3 mb-0 ">{{getDynamicTypeName($vendor_typ_value)}}</label>
-                                        <input type="checkbox" data-plugin="switchery" name="{{$VendorTypesName}}" id="{{$VendorTypesName}}" class="form-control vendorTypeChange" data-color="#43bee1" @if((isset($preference) && $preference->$VendorTypesName == '1')) checked='checked' @endif>
+                                <div class="col-md-12 vendor-type-item mb-2" data-vendor-type="{{$vendor_typ_key}}" data-order="{{ $vendorTypeRecord ? $vendorTypeRecord->order_by : 0 }}">
+                                    <div class="card border">
+                                        <div class="card-body p-2">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <div class="drag-handle mr-2" style="cursor: move; padding: 5px;">
+                                                    <i class="mdi mdi-drag-horizontal text-primary" style="font-size: 18px;"></i>
+                                                </div>
+                                                <div class="form-group d-flex justify-content-between align-items-center mb-0 flex-grow-1">
+                                                    <label for="{{$VendorTypesName}}" class="mr-3 mb-0 font-weight-bold">{{getDynamicTypeName($vendor_typ_value)}}</label>
+                                                    <input type="checkbox" data-plugin="switchery" name="{{$VendorTypesName}}" id="{{$VendorTypesName}}" class="form-control vendorTypeChange" data-color="#43bee1" @if((isset($preference) && $preference->$VendorTypesName == '1')) checked='checked' @endif>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label class="control-label">{{ __('Upload Icon') }}</label>
+                                                    @php
+                                                        // Use VendorType image if available, fallback to preference
+                                                        $iconValue = '';
+                                                        if ($vendorTypeRecord && $vendorTypeRecord->image) {
+                                                            $iconValue = asset($vendorTypeRecord->image);
+                                                        } elseif (isset($preference) && is_object($preference)) {
+                                                            $iconProperty = $vendor_typ_key . 'icon';
+                                                            if (property_exists($preference, $iconProperty) && !empty($preference->$iconProperty)) {
+                                                                $iconValue = asset($preference->$iconProperty);
+                                                            }
+                                                        }
+                                                    @endphp
+                                                    <input type="file" accept="image/*" data-plugins="dropify" name="{{$VendorTypesIcon}}" class="dropify" data-default-file="{{ $iconValue }}" />
+                                                    <small class="text-muted" style="font-size: 10px;">{{ __('64x64px recommended') }}</small>
+                                                    <!-- Hidden field to store order position from VendorType table -->
+                                                    <input type="hidden" name="{{$vendor_typ_key}}_order" class="vendor-order-input" value="{{ $vendorTypeRecord ? $vendorTypeRecord->order_by : 0 }}">
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             @endif
@@ -3141,6 +3281,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
 <script src="{{asset('assets/js/jscolor.js')}}"></script>
 <script src="{{ asset('assets\js\backend\backend_common.js') }}"></script>
 <script src="https://itsjavi.com/fontawesome-iconpicker/dist/js/fontawesome-iconpicker.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <script type="text/javascript">
 
 $(document).ready(function(){
@@ -3162,6 +3303,63 @@ $(document).ready(function(){
             $('#same_day_delivery_for_schedule_div').show();
             $('#same_day_orders_for_rescheduing_div').show();
         }
+    });
+
+    // Initialize sortable for vendor types
+    function initializeVendorTypeSortable() {
+        if ($("#vendor-types-sortable").length > 0 && typeof $.fn.sortable !== 'undefined') {
+            // Initialize sortable (items are already sorted server-side)
+            $("#vendor-types-sortable").sortable({
+                items: ".vendor-type-item",
+                handle: ".drag-handle",
+                placeholder: "sortable-placeholder",
+                tolerance: "pointer",
+                cursor: "move",
+                opacity: 0.8,
+                axis: "y",
+                containment: "parent",
+                update: function(event, ui) {
+                    updateVendorTypeOrder();
+                },
+                start: function(event, ui) {
+                    ui.placeholder.height(ui.item.outerHeight());
+                    ui.helper.addClass('dragging');
+                },
+                stop: function(event, ui) {
+                    ui.item.removeClass('dragging');
+                }
+            });
+            updateVendorTypeOrder(); // Set initial order
+        } else {
+            // Retry after a short delay if sortable is not loaded yet
+            setTimeout(initializeVendorTypeSortable, 100);
+        }
+    }
+
+    // Function to update order numbers based on position
+    function updateVendorTypeOrder() {
+        $("#vendor-types-sortable .vendor-type-item").each(function(index) {
+            var vendorType = $(this).data('vendor-type');
+            $(this).find('.vendor-order-input').val(index + 1);
+        });
+    }
+
+    // Initialize sortable
+    initializeVendorTypeSortable();
+
+    // Initialize dropify for file uploads
+    $('.dropify').dropify({
+        messages: {
+            'default': '{{ __("Click or drag icon") }}',
+            'replace': '{{ __("Click to replace") }}',
+            'remove':  '{{ __("Remove") }}',
+            'error':   '{{ __("Error occurred") }}'
+        },
+        height: 80,
+        showRemove: true,
+        showLoader: true,
+        showErrors: true,
+        errorsPosition: 'overlay'
     });
 });
 

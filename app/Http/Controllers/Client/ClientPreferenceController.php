@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, ClientPreferenceAdditional, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty, RoleOld, User, Country, ClientCountries, VendorMargConfig, Product};
+use App\Models\{Client, ClientPreference, ClientPreferenceAdditional, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty, RoleOld, User, Country, ClientCountries, VendorMargConfig, Product, VendorType};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
@@ -17,7 +17,8 @@ use App\Http\Traits\ValidatorTrait;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB as FacadesDB;
 use Illuminate\Support\Facades\Redis;
-use Session;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 
 class ClientPreferenceController extends BaseController{
     use \App\Http\Traits\ClientPreferenceManager;
@@ -78,6 +79,9 @@ class ClientPreferenceController extends BaseController{
 
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role','is_phone_signup', 'token_currency', 'is_token_currency_enable', 'hubspot_access_token', 'is_hubspot_enable', 'gtag_id', 'fpixel_id','is_long_term_service', 'is_free_delivery_by_roles', 'is_cab_pooling', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'add_to_cart_btn', 'chat_button', 'call_button', 'seller_sold_title','saller_platform_logo','is_tracking_url','is_tracking_sms_url', 'is_tax_price_inclusive', 'is_postpay_enable', 'is_order_edit_enable', 'order_edit_before_hours','is_gift_card', 'is_place_order_delivery_zero', 'is_cust_success_signup_email','is_influencer_refer_and_earn','is_bid_enable','advance_booking_amount','advance_booking_amount_percentage','update_order_product_price', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds',  'is_corporate_user', 'is_user_kyc_for_registration','is_service_product_price_from_dispatch','is_recurring_booking','is_file_cart_instructions','is_admin_vendor_rating', 'square_enable_status', 'square_credentials','is_show_vendor_on_subcription','is_enable_compare_product','is_service_price_selection','is_particular_driver', 'pickup_notification_before', 'pickup_notification_before_hours','pickup_notification_before2', 'pickup_notification_before2_hours','is_enable_curb_side','is_map_search_perticular_country','marg_access_token','marg_date_time', 'is_marg_enable', 'marg_company_code', 'marg_decrypt_key','stock_notification_before','stock_notification_qunatity','marg_company_url','is_share_ride_users','is_cache_enable_for_home','cache_reset_time_for_home','cache_radius_for_home','is_enable_allergic_items','is_enable_google_analytics','header_script','footer_script','is_vendor_marg_configuration','marg_cron_schedular_time','is_role_and_permission_enable','is_taxjar_enable','taxjar_testmode','taxjar_api_token','is_lumen_enabled','lumen_domain_url','lumen_access_token','is_rental_weekly_monthly_price','blockchain_route_formation','blockchain_api_domain','blockchain_address_id','is_car_rental_enable', 'is_gofrugal_enable','gofrugal_enable_status','gofrugal_credentials','is_sms_complete_order','is_sms_cancel_order','is_sms_booked_ride','is_hourly_pickup_rental','is_product_measurement_in_cm_kg','enable_pwa','is_freelance_on_homepage','vendor_online_status','distance_matrix_app_status', 'cart_cms_page_status','document_report','fcm_vendor_project_id','product_measurment']);
 
+        // Get vendor types ordered by order_by field
+        $vendorTypes = VendorType::ordered()->get();
+
         $client_detail = Client::first();
         return view('backend/setting/config')->with([
                     'tags' => $tags,
@@ -97,7 +101,8 @@ class ClientPreferenceController extends BaseController{
                     'productDeliveryFeeByRole'=> $productDeliveryFeeByRole,
                     'accounting'=> $accounting,
                     'getAdditionalPreference'=> $getAdditionalPreference,
-                    'client_detail' => $client_detail
+                    'client_detail' => $client_detail,
+                    'vendorTypes' => $vendorTypes
                 ]);
     }
 
@@ -177,7 +182,11 @@ class ClientPreferenceController extends BaseController{
         $roles = [];
 
         $roles = RoleOld::where('status',1)->get();
-        return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee','verify_options','accounting','staticDropoff','laundry_teams','roles','countries', 'primaryCountry', 'cli_countries', 'include_gift_nomenclature', 'control_panel_nomenclature'));
+        
+        // Get vendor types ordered by order_by field
+        $vendorTypes = VendorType::ordered()->get();
+        
+        return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee','verify_options','accounting','staticDropoff','laundry_teams','roles','countries', 'primaryCountry', 'cli_countries', 'include_gift_nomenclature', 'control_panel_nomenclature', 'vendorTypes'));
     }
 
     public function referandearnUpdate(Request $request, $code){
@@ -294,7 +303,7 @@ class ClientPreferenceController extends BaseController{
         return true;
     }
     public function update(Request $request, $code){
-
+        
      
         $cp = new ClientPreference();
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
@@ -969,6 +978,10 @@ class ClientPreferenceController extends BaseController{
       
         }
 
+        // Handle Vendor Type data saving
+        if($request->has('verify_vendor_type') && $request->verify_vendor_type == '1') {
+            $this->handleVendorTypeData($request);
+        }
 
         if($request->has('send_to') && $request->send_to == 'customize' ){
             return redirect()->route('configure.customize')->with('success', 'Client customizations updated successfully!');
@@ -1052,7 +1065,7 @@ class ClientPreferenceController extends BaseController{
                    return redirect()->back()->withInput()->withErrors(new \Illuminate\Support\MessageBag(['custom_domain' => 'Domain name "' . $request->custom_domain . '" is not available. Please select a different domain']));
                } else {
                    Client::on('god')->where('code',$id)->update(['custom_domain' => $request->custom_domain]);
-                    $dbname = DB::connection()->getDatabaseName();
+                    $dbname = FacadesDB::connection()->getDatabaseName();
                    if ($dbname != env('DB_DATABASE')) {
                        Client::where('id', '!=', 0)->update(['custom_domain' => $request->custom_domain]);
                    }
@@ -1231,5 +1244,67 @@ class ClientPreferenceController extends BaseController{
 
         return redirect()->back()->with('success', 'Configuration resetted successfully!');
 
+    }
+
+    /**
+     * Handle vendor type data saving including images and order
+     */
+    private function handleVendorTypeData(Request $request)
+    {
+        try {
+            foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value) {
+                $vendor_typ_name = $vendor_typ_key . "_check";
+                $vendor_typ_icon = $vendor_typ_key . "icon";
+                $vendor_typ_order = $vendor_typ_key . "_order";
+                
+                // Check if this vendor type is enabled
+                if($request->has($vendor_typ_name) && $request->$vendor_typ_name == 'on') {
+                    // Get or create vendor type record
+                    $vendorType = VendorType::firstOrCreate(
+                        ['title' => $vendor_typ_value],
+                        [
+                            'title' => $vendor_typ_value,
+                            'status' => 1,
+                            'order_by' => $request->has($vendor_typ_order) ? (int)$request->$vendor_typ_order : 0
+                        ]
+                    );
+
+                    // Update order_by if it exists in request
+                    if($request->has($vendor_typ_order)) {
+                        $vendorType->order_by = (int)$request->$vendor_typ_order;
+                    }
+
+                    // Handle image upload
+                   
+                    if($request->hasFile($vendor_typ_icon)) {
+                      
+                        // Delete old image if exists
+                        if($vendorType->image && Storage::disk('s3')->exists($vendorType->image)) {
+                            Storage::disk('s3')->delete($vendorType->image);
+                        }
+
+                        // Upload new image to S3 using existing pattern
+                        $uploadedPath = Storage::disk('s3')->put('prods', $request->file($vendor_typ_icon), 'public');
+                       
+                        if($uploadedPath) {
+                            $vendorType->image = $uploadedPath;
+                        }
+                    }
+
+                    // Update status to active
+                    $vendorType->status = 1;
+                    $vendorType->save();
+                } else {
+                    // If vendor type is disabled, set status to 0
+                    $vendorType = VendorType::where('title', $vendor_typ_value)->first();
+                    if($vendorType) {
+                        $vendorType->status = 0;
+                        $vendorType->save();
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('Error handling vendor type data: ' . $e->getMessage());
+        }
     }
 }

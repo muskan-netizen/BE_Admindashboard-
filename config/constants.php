@@ -24,7 +24,8 @@ return [
     'laundry'      => 'Laundry',            // Laundry related products are mentioned in this flow.
     'appointment'  => 'Appointment',        // appointment related products are mentioned in this flow.
     'p2p'          => 'P2P',
-    'car_rental'   => 'Car-Rental'
+    'car_rental'   => 'Car-Rental',
+    'grocery'      => 'Grocery'
  
   ],
   // VendorTypes database
@@ -42,7 +43,9 @@ return [
     'laundry'      => 'laundryicon',            // Laundry related products are mentioned in this flow.
     'appointment'  => 'appointmenticon',        // appointment related products are mentioned in this flow.
     'p2p'          => 'p2picon',
-    'car_rental'   => 'car_rentalicon'
+    'car_rental'   => 'car_rentalicon',
+    'grocery'      => 'groceryicon'
+
 
   ],
   /**  
@@ -68,6 +71,7 @@ return [
     'appointment'  => '8',  
     'p2p'  => '9',
     'car_rental' => '10',
+    'grocery' => '11'
   ],
   'Period' =>[
     'days'     => 'Daily',
