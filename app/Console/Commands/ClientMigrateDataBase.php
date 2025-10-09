@@ -40,68 +40,90 @@ class ClientMigrateDataBase extends Command
      * @return int
      */
     public function handle()
-    {
-        DB::disconnect();
-        try {
-            $connectionName = env('DB_CONNECTION', 'mysql'); // e.g., 'mysql'
-            $databaseName = env('DB_DATABASE', 'royoorders'); // fallback to 'royoorders' if not set
-    
-            // 🔹 Step 3: Update connection config dynamically
-            Config::set("database.connections.$connectionName.database", $databaseName);
-    
-            // 🔹 Step 4: Purge old connection cache and reconnect fresh
-            DB::purge($connectionName);
-            DB::reconnect($connectionName);
-            $currentDatabase = DB::connection()->getDatabaseName();
+{
+    // 🔹 STEP 1: Disconnect any existing DB connections
+    DB::disconnect();
 
-            // ✅ Log success with the actual connected DB name
-            \Log::info("✅ Database connection successful. Connected to: {$currentDatabase}");
-            $this->info("✅ Database connection successful. Connected to: {$currentDatabase}");
-        } catch (\Exception $e) {
-            \Log::error("❌ Database connection failed: " . $e->getMessage());
-            $this->error("❌ Database connection failed. Please check your .env settings.");
-            return; // stop further execution
-        }
-    
-        // ✅ Fetch clients
-        $clients = Client::where('status', 1)->get();
-        \Log::info("Clients fetched: " . count($clients));
-        \Log::info("Clients: " . $clients);
-    
-        foreach ($clients as $key => $client) {
-            $database_name = 'royo_' . $client->database_name;
-            $this->info("🚀 Migrating database: {$database_name}");
-    
-            $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?";
-            $db = DB::select($query, [$database_name]);
-    
-            if ($db) {
-                $default = [
-                    'prefix' => '',
-                    'engine' => null,
-                    'strict' => false,
-                    'charset' => 'utf8mb4',
-                    'host' => env('DB_HOST'),
-                    'port' => env('DB_PORT'),
-                    'prefix_indexes' => true,
-                    'database' => $database_name,
-                    'username' => env('DB_USERNAME'),
-                    'password' => env('DB_PASSWORD'),
-                    'collation' => 'utf8mb4_unicode_ci',
-                    'driver' => env('DB_CONNECTION', 'mysql'),
-                ];
-    
-                // ✅ Set and migrate
-                Config::set("database.connections.$database_name", $default);
-                Artisan::call('migrate', ['--database' => $database_name]);
-    
-                DB::disconnect($database_name);
-                $this->info("✅ Migration completed: {$database_name}");
-            } else {
-                DB::disconnect($database_name);
-                $this->warn("⚠️ Database not found: {$database_name}");
-            }
+    try {
+        // 🔹 STEP 2: Connect freshly using .env credentials (Parent DB)
+        $connectionName = env('DB_CONNECTION', 'mysql');
+        $databaseName   = env('DB_DATABASE', 'royoorders');
+
+        $parentConnection = [
+            'driver'         => $connectionName,
+            'host'           => env('DB_HOST'),
+            'port'           => env('DB_PORT'),
+            'database'       => $databaseName,
+            'username'       => env('DB_USERNAME'),
+            'password'       => env('DB_PASSWORD'),
+            'charset'        => 'utf8mb4',
+            'collation'      => 'utf8mb4_unicode_ci',
+            'prefix'         => '',
+            'prefix_indexes' => true,
+            'strict'         => false,
+            'engine'         => null,
+        ];
+
+        Config::set("database.connections.$connectionName", $parentConnection);
+        DB::purge($connectionName);
+        DB::reconnect($connectionName);
+
+        $currentDatabase = DB::connection()->getDatabaseName();
+        \Log::info("✅ Parent DB connection successful. Connected to: {$currentDatabase}");
+        $this->info("✅ Parent DB connection successful. Connected to: {$currentDatabase}");
+    } catch (\Exception $e) {
+        \Log::error("❌ Parent DB connection failed: " . $e->getMessage());
+        $this->error("❌ Parent DB connection failed. Please check your .env settings.");
+        return;
+    }
+
+    // 🔹 STEP 3: Fetch clients from parent DB
+    $clients = (new Client)
+        ->setConnection($connectionName)
+        ->where('status', 1)
+        ->get();
+
+    \Log::info("Clients fetched: " . count($clients));
+    $this->info("Clients fetched: " . count($clients));
+
+    // 🔹 STEP 4: Loop through each client and migrate their DB
+    foreach ($clients as $client) {
+        $database_name = 'royo_' . $client->database_name;
+        $this->info("🚀 Migrating database: {$database_name}");
+
+        $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?";
+        $db = DB::connection($connectionName)->select($query, [$database_name]);
+
+        if ($db) {
+            $childConnection = [
+                'driver'         => env('DB_CONNECTION', 'mysql'),
+                'host'           => env('DB_HOST'),
+                'port'           => env('DB_PORT'),
+                'database'       => $database_name,
+                'username'       => $client->database_username ?? env('DB_USERNAME'),
+                'password'       => $client->database_password ?? env('DB_PASSWORD'),
+                'charset'        => 'utf8mb4',
+                'collation'      => 'utf8mb4_unicode_ci',
+                'prefix'         => '',
+                'prefix_indexes' => true,
+                'strict'         => false,
+                'engine'         => null,
+            ];
+
+            Config::set("database.connections.$database_name", $childConnection);
+            DB::purge($database_name);
+            DB::reconnect($database_name);
+
+            Artisan::call('migrate', ['--database' => $database_name]);
+
+            DB::disconnect($database_name);
+            $this->info("✅ Migration completed: {$database_name}");
+        } else {
+            DB::disconnect($database_name);
+            $this->warn("⚠️ Database not found: {$database_name}");
         }
     }
+}
+
     
 }
