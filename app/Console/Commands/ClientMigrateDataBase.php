@@ -44,8 +44,11 @@ class ClientMigrateDataBase extends Command
         try {
             // ✅ Check if default DB connection works
             DB::connection()->getPdo();
-            \Log::info("✅ Database connection successful: " . env('DB_DATABASE'));
-            $this->info("✅ Database connection successful!");
+            $currentDatabase = DB::connection()->getDatabaseName();
+
+            // ✅ Log success with the actual connected DB name
+            \Log::info("✅ Database connection successful. Connected to: {$currentDatabase}");
+            $this->info("✅ Database connection successful. Connected to: {$currentDatabase}");
         } catch (\Exception $e) {
             \Log::error("❌ Database connection failed: " . $e->getMessage());
             $this->error("❌ Database connection failed. Please check your .env settings.");
