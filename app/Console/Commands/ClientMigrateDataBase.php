@@ -41,6 +41,7 @@ class ClientMigrateDataBase extends Command
      */
     public function handle(){
         $clients = Client::get();
+        \Log::info("clients: ".json_encode($clients));
         foreach ($clients as $key => $client) {
             $database_name = 'royo_' . $client->database_name;
             $this->info("migrate database start: {$database_name}!");
