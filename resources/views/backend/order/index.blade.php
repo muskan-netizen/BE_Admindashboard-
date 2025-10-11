@@ -254,7 +254,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
           <div class="spinner-order-loader">
             <div class="nb-spinner-order"></div>
-    </div>
+        </div>
         <div class="tab-pane fade past-order show active position-relative h-100" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab">
             <div id="pending_orders_row" class="row">
                 {!! $OrderFilterData['html'] !!}
@@ -505,11 +505,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
         $(document).on("input", "#search_via_keyword", function(e) {
             $('#order_list_order').show();
-            var rel = $("#top-tab li a.active").data('rel');
-            var url = "{{ route('orders.filter') }}";
-            var search_keyword = $(this).val();
+                var rel = $("#top-tab li a.active").data('rel');
+                var url = "{{ route('orders.filter') }}";
+                var search_keyword = $(this).val();
             // $(".tab-pane").html('');
-            init(rel, url, search_keyword, false);
+                init(rel, url, search_keyword, false);
         })
 
 
@@ -698,7 +698,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                             }else{
                                                 var next_status = "{{ __('Out For Delivery') }}";
                                             }
-                                        }else{
+                                        }else{ 
                                             var next_status = "{{ __('Delivered') }}";
                                         }
                                         that.prop("disabled",false);
@@ -716,7 +716,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                                             $(full_div).slideUp(1000, function() {
                                                 $(this).remove();
-                                            });
+                                            }); 
                                         }
 
                                         } else {
@@ -732,7 +732,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                                         }
                                         that.prop("disabled",false);
-                                    }
+                                    } 
                                     if (status_option_id == 2){
                                         that.prop("disabled",false);
                                     	getOrderCount("pending-orders","active-orders");

@@ -17,11 +17,13 @@ use Illuminate\Support\Facades\Redis;
 use Session;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
-use App\Models\{AddonOption, AddonOptionTranslation, AddonSet, AddonSetTranslation, OrderVendorProduct, Banner, MobileBanner, Brand, BrandCategory, BrandTranslation, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Category, CategoryHistory, CategoryTranslation, Celebrity, CsvProductImport, CsvVendorImport, LoyaltyCard, Order, OrderProductAddon, OrderProductPrescription, OrderProductRating, OrderProductRatingFile, OrderReturnRequest, OrderReturnRequestFile, OrderTax, OrderVendor, Payment, PaymentOption, Product, ProductAddon, ProductCategory, ProductCelebrity, ProductCrossSell, ProductImage, ProductInquiry, ProductRelated, ProductTranslation, ProductUpSell, ProductVariant, ProductVariantImage, ProductVariantSet, Promocode, PromoCodeDetail, PromocodeRestriction, ServiceArea, SlotDay, SocialMedia, Transaction, User, UserAddress, UserDevice, UserLoyaltyPoint, UserPermissions, UserRefferal, UserVendor, UserWishlist, Variant, VariantCategory, VariantOption, VariantOptionTranslation, VariantTranslation, Vendor, VendorCategory, VendorMedia, VendorOrderStatus, VendorSlot, VendorSlotDate, Wallet,CabBookingLayout,CabBookingLayoutCategory,CabBookingLayoutTranslation,AppStyling,AppStylingOption,Tag,TagTranslation,ProductTag};
+use App\Models\{AddonOption, AddonOptionTranslation, AddonSet, AddonSetTranslation, OrderVendorProduct, Banner, MobileBanner, Brand, BrandCategory, BrandTranslation, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Category, CategoryHistory, CategoryTranslation, Celebrity, CsvProductImport, CsvVendorImport, LoyaltyCard, Order, OrderProductAddon, OrderProductPrescription, OrderProductRating, OrderProductRatingFile, OrderReturnRequest, OrderReturnRequestFile, OrderTax, OrderVendor, Payment, PaymentOption, Product, ProductAddon, ProductCategory, ProductCelebrity, ProductCrossSell, ProductImage, ProductInquiry, ProductRelated, ProductTranslation, ProductUpSell, ProductVariant, ProductVariantImage, ProductVariantSet, Promocode, PromoCodeDetail, PromocodeRestriction, ServiceArea, SlotDay, SocialMedia, Transaction, User, UserAddress, UserDevice, UserLoyaltyPoint, UserPermissions, UserRefferal, UserVendor, UserWishlist, Variant, VariantCategory, VariantOption, VariantOptionTranslation, VariantTranslation, Vendor, VendorCategory, VendorMedia, VendorOrderStatus, VendorSlot, VendorSlotDate, Wallet,CabBookingLayout,CabBookingLayoutCategory,CabBookingLayoutTranslation,AppStyling,AppStylingOption,Tag,TagTranslation,ProductTag,Country,Timezone};
 use Exception;
 use \Spatie\DbDumper\Databases\MySql;
 use App\Http\Traits\BillingPlanManager;
 use App\Http\Traits\GlobalFunction;
+use Carbon\Carbon;
+use App\Http\Traits\OnBoardProcessJobTrait;
 
 class ClientController extends Controller{
     use ApiResponser,GlobalFunction;
@@ -48,10 +50,24 @@ class ClientController extends Controller{
     public function create()
     {
         $languages = Language::where('id', '>', '0')->get();
-        $business_types = BusinessType::get();
+        $currencies = Currency::where('id', '>', '0')->get();
+        $countries = Country::get();
+        $tzlist = \DateTimeZone::listIdentifiers(\DateTimeZone::ALL);
+        $tzlist = Timezone::whereIn('timezone', $tzlist)->get();
+        $mapapikey = env('MAP_API_KEY');
+        $business_types = BusinessType::get()->keyBy('slug');
+       
         $ChatSocketUrl = GlobalFunction::socketDropDown();
         $client_types = BillingPlanManager::gettClientTypeList();
-        return view('godpanel/client-form')->with(['languages' => $languages, 'business_types' => $business_types, 'client_types' => $client_types,'ChatSocketUrl'=> $ChatSocketUrl]);
+        $formData = [
+            'primaryCurrency' => 63,
+            'country' => 99,           
+            'defaultLocation' => 'Chandigarh, Punjab, India',
+            'defaultLatitude' => '30.733315',
+            'defaultLongitude' => '76.779419',        
+            'timezone' => 'Asia/Kolkata',
+        ];
+        return view('godpanel/client-form')->with(['languages' => $languages, 'business_types' => $business_types, 'client_types' => $client_types,'ChatSocketUrl'=> $ChatSocketUrl,'formData' => $formData,'currencies' => $currencies,'countries' => $countries,'tzlist' => $tzlist,'mapapikey' => $mapapikey]);
     }
 
     /**
@@ -82,8 +98,121 @@ class ClientController extends Controller{
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    { 
+    {
+       
+        $rules = array(
+            'name' => 'required|string|max:150',
+            'phone' => 'required|min:7|max:14',
+            'email' => 'required|email',
+            'default_location_name' => 'required',
+
+            'businessname' => 'required|string',
+            'domainname' => 'required|string|max:20|not_in:dev,onboard,onboarding,god,kafka',
+        );
+
+        $validation  = Validator::make($request->all(), $rules)->validate();
+
+        /********** STEP 1 *****************/
+
+        $phone_value = $request->input('phone');
+        $dialCode = $request->input('dialCode');
+        $emailvalue = $request->input('email');
+        $phone_value = preg_replace('/\D+/', '', $phone_value);
+        $otp = mt_rand(1000, 9999);
+        $timestamp = Carbon::now();
+
+        $name = $request->input('name');
+        $countryid = $request->input('country');
+        $timezone = $request->input('timezone');
+        $onboardingid = $request->input('onboardingid');
+
+        $fullPhone = '+' . $dialCode . $phone_value;
+
+
+        $locationcountry = $request->input('locationcountry');
+        $schemaName = env('DB_DATABASE');
+
+        $default_location_name = $request->input('default_location_name');
+        $default_latitude = $request->input('default_latitude');
+        $default_longitude = $request->input('default_longitude');
+
+        /********** STEP 2 *****************/
+
+
+        $businessname = $request->input('businessname');
+        $domainname = $request->input('domainname');
+        $primary_language = $request->input('primary_language');
+        $primary_currency = $request->input('primary_currency');
+        $languages = $request->input('languages');
+        $currency = $request->input('currency');
+        $onboardingid = $request->input('onboardingid');
+        $sell_prompt = $request->input('sell_prompt');
+
+         /********** STEP 3 *****************/
+
+        $is_hyperlocal = 0;
+        $business_type = $request->input('business_type'); //'vc_ecommerce';
+        $fetch_data = 5;
+
+        //$onboardingid = DB::table('dummy_onboard_data')->insertGetId($updateData);
+        $onboardingid = DB::connection('god')->table('dummy_onboard_data')
+            ->insertGetId([
+                'phone_number' => $phone_value,
+                'dial_code' => $dialCode,
+                'otp_code' => $otp,
+                'email' => $emailvalue ? $emailvalue : 'test@test.com',
+                'created_at' => $timestamp,
+                'country' => $countryid ?? null,
+                'timezone' => $timezone,
+                'name' => $name ? $name : 'test',
+
+                'businessname' => $businessname,
+                'domainname' => $domainname,
+                'primary_language' => $primary_language,
+                'primary_currency' => $primary_currency,
+                'languages' => isset($languages) ? implode(',', $languages) : '',
+                'currency' => isset($currency) ? implode(',', $currency) : '',
+                'sell_prompt' => $sell_prompt,
+                'status'    => 0,
+                'business_type' => $business_type,
+                'vendor_type' => 1,
+                'is_hyperlocal' => $is_hyperlocal,
+
+                'default_location_name' => $default_location_name,
+                'default_latitude' => $default_latitude, //$is_hyperlocal == 0 ? '0.000000000000' : $default_latitude,
+                'default_longitude' => $default_longitude, //$is_hyperlocal == 0 ? '0.000000000000' : $default_longitude,
+                'fetch_data'  => $fetch_data,
+                'primarycolor' => $request->primarycolor,
+                'secondarycolor' => $request->secondarycolor,
+                'web_color' => $request->primarycolor,
+            ]);
         
+        $custom_user_id = '';
+
+        $dummy_onboard_data = DB::connection('god')->table('dummy_onboard_data')->where('id', $onboardingid)->first();
+
+        OnBoardProcessJobTrait::updateDatabaseMigration($dummy_onboard_data, $custom_user_id);
+
+        $fetch_data = 5;
+        $business_type = '';
+        \App\Jobs\FetchAIDataJob::dispatch($fetch_data, $onboardingid, $sell_prompt, $business_type, $businessname)->onQueue('fetchai');
+
+        $dummy_onboard_data = DB::connection('god')->table('dummy_onboard_data')->where('id', $onboardingid)->first();
+        $fdata = @$dummy_onboard_data->fulldata != "{}" ? json_decode(@$dummy_onboard_data->fulldata, true) : '';
+
+        if (@$dummy_onboard_data->client_id != '' && $fdata != '' && $dummy_onboard_data->fulldata != NULL && is_array($fdata) && $dummy_onboard_data->fetch_data != 1) {
+            \App\Jobs\OnBoardingDataProcessJob::dispatch($dummy_onboard_data);
+        }
+        $url = route('client.index');
+        $data['msg'] =  __("You have created website https://$domainname.codestudio.ai .! Please wait for 5 min to ready you website");
+        $data['link'] = "https://$domainname.codestudio.ai";
+        session()->put('aidata', $data);
+        return response()->json(array('success' => true, 'message' => 'Update successfully', 'url' => $url));
+
+
+
+
+
         $client = new Client();
         $validation  = Validator::make($request->all(), $client->rules());
         if ($validation->fails()) {
@@ -91,21 +220,23 @@ class ClientController extends Controller{
         }
         DB::beginTransaction();
         try {
-        $data = $this->saveClient($request, $client, 'false');
-        if(!$data){
-            return redirect()->back()->withErrors(['error' => "Something went wrong."]);
-        }
-        $business_type = $request->business_type??null;
-        $client_type = $request->client_type??null;
-        $update = DB::table('clients')->where('id',$data->id)->update(['business_type' => $business_type, 'client_type' => $client_type]);
-        $database_name = preg_replace('/\s+/', '', $request->database_name);
-        Cache::set($database_name, $data);
-        $languId = ($request->has('primary_language')) ? $request->primary_language : 1;
-        DB::commit();
-        $this->dispatchNow(new ProcessClientDataBase($data->id, $languId,$business_type));
-        return redirect()->route('client.index')->with('success', 'Client Added successfully!');
+            $data = $this->saveClient($request, $client, 'false');
+            if (!$data) {
+                return redirect()->back()->withErrors(['error' => "Something went wrong."]);
+            }
+            $business_type  = $request->business_type ?? null;
+            $client_type    = $request->client_type ?? null;
+            $update         = DB::table('clients')->where('id', $data->id)
+                ->update(['business_type' => $business_type, 'client_type' => $client_type]);
+
+            $database_name  = preg_replace('/\s+/', '', $request->database_name);
+            Cache::set($database_name, $data);
+            $languId = ($request->has('primary_language')) ? $request->primary_language : 1;
+            DB::commit();
+            $this->dispatchNow(new ProcessClientDataBase($data->id, $languId, $business_type));
+            return redirect()->route('client.index')->with('success', 'Client Added successfully!');
         } catch (\Exception $e) {
-            DB::rollback();
+            //DB::rollback();
             return redirect()->route('client.index')->with('error', $e->getMessage());
         }
     }
