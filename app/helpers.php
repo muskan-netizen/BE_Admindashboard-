@@ -1710,6 +1710,9 @@ if (!function_exists('getCategoryTypes')) {
             case "grocery_ecommerce":
                 $typeArray =['grocery'];
             break;
+            case "ecommerce":
+                $typeArray =['ecommerce'];
+            break;
             case "home_service":
                 $typeArray =['on_demand','appointment'];
             break;
@@ -1726,7 +1729,7 @@ if (!function_exists('getCategoryTypes')) {
                 $typeArray = ['delivery'];
                 break;
             case "super_app":
-                $typeArray = ['delivery', 'pick_drop' ,'grocery'];
+                $typeArray = ['delivery', 'pick_drop' ,'grocery','ecommerce'];
                 break;
             default:
             $typeArray =['delivery','dinein','takeaway','pick_drop','on_demand','appointment'];
@@ -1751,6 +1754,9 @@ if (!function_exists('getCategoryTypesServices')) {
                 $typeArray =['products_service'];
             break;
             case "grocery_ecommerce":
+                $typeArray =['products_service'];
+            break;
+            case "ecommerce":
                 $typeArray =['products_service'];
             break;
             case "home_service":

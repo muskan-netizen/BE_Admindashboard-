@@ -25,7 +25,8 @@ return [
     'appointment'  => 'Appointment',        // appointment related products are mentioned in this flow.
     'p2p'          => 'P2P',
     'car_rental'   => 'Car-Rental',
-    'grocery'      => 'Grocery'
+    'grocery'      => 'Grocery',
+    'ecommerce'    => 'Ecommerce'
  
   ],
   // VendorTypes database
@@ -44,7 +45,8 @@ return [
     'appointment'  => 'appointmenticon',        // appointment related products are mentioned in this flow.
     'p2p'          => 'p2picon',
     'car_rental'   => 'car_rentalicon',
-    'grocery'      => 'groceryicon'
+    'grocery'      => 'groceryicon',
+    'ecommerce'    => 'ecommerceicon'
 
 
   ],
@@ -71,7 +73,8 @@ return [
     'appointment'  => '8',  
     'p2p'  => '9',
     'car_rental' => '10',
-    'grocery' => '11'
+    'grocery' => '11',
+    'ecommerce' => '12'
   ],
   'Period' =>[
     'days'     => 'Daily',
