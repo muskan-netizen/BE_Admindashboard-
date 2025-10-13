@@ -475,24 +475,27 @@ class ClientPreferenceController extends BaseController{
             ]);
 
         }
+    
         if($request->has('verify_vendor_type') && $request->verify_vendor_type == '1')
         {
             $roles = [
-                'dinein_check'   => 'required_without_all:takeaway_check,delivery_check,rental_check,pick_drop_check,on_demand_check,laundry_check,appointment_check,p2p_check,grocery_check','ecommerce_check',
-                'takeaway_check' => 'required_without_all:dinein_check,delivery_check,rental_check,pick_drop_check,on_demand_check,laundry_check,appointment_check,p2p_check,grocery_check','ecommerce_check',  
-                'delivery_check' => 'required_without_all:dinein_check,takeaway_check,rental_check,pick_drop_check,on_demand_check,laundry_check,appointment_check,p2p_check,grocery_check','ecommerce_check',
-                'rental_check'   => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,laundry_check,appointment_check,p2p_check,grocery_check','ecommerce_check',
-                'pick_drop_check'=> 'required_without_all:dinein_check,takeaway_check,delivery_check,rental_check,on_demand_check,laundry_check,appointment_check,p2p_check,grocery_check','ecommerce_check',
-                'on_demand_check'=> 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,rental_check,laundry_check,appointment_check,p2p_check,grocery_check','ecommerce_check',
-                'laundry_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,rental_check,appointment_check,p2p_check,grocery_check','ecommerce_check',
-                'appointment_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,laundry_check,rental_check,p2p_check,grocery_check','ecommerce_check',
-                'grocery_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,laundry_check,rental_check,appointment_check,p2p_check','ecommerce_check',
-                'p2p_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,rental_check,pick_drop_check,on_demand_check,laundry_check,appointment_check,grocery_check','ecommerce_check',
-                'ecommerce_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,rental_check,pick_drop_check,on_demand_check,laundry_check,appointment_check,grocery_check'
+                'dinein_check'   => 'required_without_all:takeaway_check,delivery_check,rental_check,pick_drop_check,on_demand_check,laundry_check,appointment_check,p2p_check,grocery_check,ecommerce_check',
+                'takeaway_check' => 'required_without_all:dinein_check,delivery_check,rental_check,pick_drop_check,on_demand_check,laundry_check,appointment_check,p2p_check,grocery_check,ecommerce_check',  
+                'delivery_check' => 'required_without_all:dinein_check,takeaway_check,rental_check,pick_drop_check,on_demand_check,laundry_check,appointment_check,p2p_check,grocery_check,ecommerce_check',
+                'rental_check'   => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,laundry_check,appointment_check,p2p_check,grocery_check,ecommerce_check',
+                'pick_drop_check'=> 'required_without_all:dinein_check,takeaway_check,delivery_check,rental_check,on_demand_check,laundry_check,appointment_check,p2p_check,grocery_check,ecommerce_check',
+                'on_demand_check'=> 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,rental_check,laundry_check,appointment_check,p2p_check,grocery_check,ecommerce_check',
+                'laundry_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,rental_check,appointment_check,p2p_check,grocery_check,ecommerce_check',
+                'appointment_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,laundry_check,rental_check,p2p_check,grocery_check,ecommerce_check',
+                'grocery_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,laundry_check,rental_check,appointment_check,p2p_check,ecommerce_check',
+                'p2p_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,rental_check,pick_drop_check,on_demand_check,laundry_check,appointment_check,grocery_check,ecommerce_check',
+                'ecommerce_check'   => 'required_without_all:dinein_check,takeaway_check,delivery_check,rental_check,pick_drop_check,on_demand_check,laundry_check,appointment_check,p2p_check,grocery_check',
 
             ];
             // atleast one is required
+           
             $validator = Validator::make($request->all(), $roles);
+          
             if ($validator->fails()) {
                 return redirect()->route('configure.customize')->with('error', __('Atleast one vendor type will be active'));
             }
