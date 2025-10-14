@@ -1619,6 +1619,8 @@ if (!function_exists('getServiceTypesCategory')) {
                 'delivery'     => ['products_service'],
                 'dine_in'      => ['products_service'],
                 'takeaway'     => ['products_service'],
+                'grocery'      => ['products_service'],
+                'ecommerce'    => ['products_service'],
                 'rental'       => ['rental_service'],
                 'pick_drop'    => ['pick_drop_service'],
                 'on_demand'    => ['on_demand_service'],
@@ -1636,7 +1638,7 @@ if (!function_exists('getServiceTypesCategory')) {
                 $alltypes['p2p'] = ['p2p', 'rental_service'];
             }
 
-            if ($vendorType == 'delivery' || $vendorType == 'dine_in' || $vendorType == 'takeaway' || $vendorType == 'rental' || $vendorType == 'pick_drop' || $vendorType == 'on_demand' || $vendorType == 'laundry' || $vendorType == 'appointment' || $vendorType == 'p2p' || $vendorType == 'car_rental') {
+            if ($vendorType == 'delivery' || $vendorType == 'dine_in' || $vendorType == 'takeaway' || $vendorType == 'rental' || $vendorType == 'pick_drop' || $vendorType == 'on_demand' || $vendorType == 'laundry' || $vendorType == 'appointment' || $vendorType == 'p2p' || $vendorType == 'car_rental' || $vendorType == 'grocery' || $vendorType == 'ecommerce') {
                 $service_types = $alltypes[$vendorType];
             }
 
