@@ -1619,6 +1619,8 @@ if (!function_exists('getServiceTypesCategory')) {
                 'delivery'     => ['products_service'],
                 'dine_in'      => ['products_service'],
                 'takeaway'     => ['products_service'],
+                'grocery'      => ['products_service'],
+                'ecommerce'    => ['products_service'],
                 'rental'       => ['rental_service'],
                 'grocery'      => ['products_service'],
                 'ecommerce'    => ['products_service'],
