@@ -19,6 +19,8 @@ use App\Http\Traits\{OrderTrait, ProductActionTrait, VendorTrait, RedisCacheTrai
 use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference, Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, HomeProduct, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption, UserAddress};
 use Illuminate\Support\Facades\Redis;
 use GuzzleHttp\Client as GClient;
+use Exception;
+use Illuminate\Support\Facades\Config;
 
 /**
  * HomeController
@@ -176,23 +178,39 @@ class HomeController extends BaseController
                 }
             }
 
-            if($clientPreferences->is_hyperlocal == 1) {
-
-                $this->loc_key = $this->loc_key.":hyperlocal:".$type.":".$clientPreferences->client_code;
-                $cacheKey = $this->loc_key.":{$latitude}:{$longitude}";
-
-                $find_key = $this->isPointInRadius($latitude, $longitude, $this->radius, $this->loc_key);
-
-
-            } else {
-                $this->loc_key = $this->loc_key.':'.$type.':'.$clientPreferences->client_code;
-                $cacheKey = $this->loc_key;
-                $cachedResult = Redis::get($this->loc_key);
-                //$cachedResult['cacheKey'] = $cacheKey??'';
-                if ($cachedResult) {
-                    $find_key['data'] = json_decode($cachedResult);
-                }
-
+            // Truncate latitude and longitude to 2 decimal places for grid-based caching
+            // This creates a grid system where coordinates like 73.23456,28.3456 become 73.23,28.34
+            // Provides ~1.1km accuracy and better cache hit rates than radius-based approach
+            $truncatedLat = number_format((float)$latitude, 2, '.', '');
+            $truncatedLng = number_format((float)$longitude, 2, '.', '');
+            
+            // Create comprehensive cache key including request parameters
+            // This ensures that different request combinations get separate cache entries
+            $requestParams = [
+                'type' => $type,
+                'latitude' => $truncatedLat,
+                'longitude' => $truncatedLng,
+                'language' => $langId,
+                'currency' => $currency_id,
+                'open_close_vendor' => $this->venderFilterOpenClose,
+                'best_vendor' => $this->venderFilterbest,
+                'action' => $request->action ?? null,
+                'rating' => $request->rating ?? null,
+                'nearest_vendor' => $request->nearest_vendor ?? null,
+                'momo' => $request->momo ?? null
+            ];
+            
+            // Create cache key hash from request parameters for unique identification
+            $requestHash = md5(serialize($requestParams));
+            
+            // Use truncated coordinates for both hyperlocal and non-hyperlocal caching
+            $this->loc_key = $this->loc_key.':'.$type.':'.$clientPreferences->client_code;
+            $cacheKey = $this->loc_key.":{$truncatedLat}:{$truncatedLng}:{$requestHash}";
+            
+            // Try to get cached data
+            $cachedResult = Redis::get($cacheKey);
+            if ($cachedResult) {
+                $find_key['data'] = json_decode($cachedResult, true);
             }
 
             if ($this->additionalPreference['is_cache_enable_for_home'] == 1 && @$find_key['data']) {
@@ -353,29 +371,14 @@ class HomeController extends BaseController
             $homeData['banner_image'] = $banners??[];
             //$homeData['categories'] = $categories;
             $homeData['cacheKey'] = $cacheKey??'';
-            $locations = [
-                [
-                    'latitude' => $latitude,
-                    'longitude' => $longitude,
-                    'key' => $cacheKey,
-                    //'data' => json_encode($homeData)
-                ]
-            ];
-
              $get_preference = $this->checkIfLastMileOn();
             if(!empty($get_preference) && @$additionalPreference['is_freelance_on_homepage']==1){
                 $homeData['freelance_details'] = $this->getAllAgentDetailFromDispatcher($get_preference);
             }
-            //pr($cacheKey);
-            // return $this->successResponse($homeData);
-
-            if($clientPreferences->is_hyperlocal == 1) {
-                $this->storeLocations($locations,$homeData,$this->loc_key);
-
-            } else {
-                Redis::set($this->loc_key, json_encode($homeData));
-                Redis::expire($this->loc_key, $this->cache_minutes);
-            }
+            
+            // Store cache data using truncated coordinates (simplified approach)
+            Redis::set($cacheKey, json_encode($homeData));
+            Redis::expire($cacheKey, $this->cache_minutes);
         }
 
             return $this->successResponse($homeData);
@@ -1768,4 +1771,164 @@ class HomeController extends BaseController
             return [];
         }
     }
+
+    /**
+     * Get vendors by category and subcategory with service area filtering
+     * 
+     * @param Request $request
+     * @return array
+     */
+    public function getVendorsByCategory(Request $request)
+    {
+        try {
+            $latitude = $request->latitude ?? Session::get('latitude');
+            $longitude = $request->longitude ?? Session::get('longitude');
+          
+            $category_id = $request->category_id;
+            $type = $request->type ?? 'delivery';
+            
+            $preferences = ClientPreference::first();
+            
+            // Set default coordinates if not provided
+            if (empty($latitude) && empty($longitude) && $preferences) {
+                $latitude = $preferences->Default_latitude;
+                $longitude = $preferences->Default_longitude;
+            }
+            
+            if (@$category_id === 'all') {
+                // Get subcategories where parent_id != 1 (using your query structure)
+                $subcategories = Category::with('translation_one', 'type')
+                    ->where('id', '>', '1')
+                    ->where('is_core', 1)
+                    ->where('parent_id', '!=', 1) // Changed from parent_id = 1 to parent_id != 1
+                    ->orderBy('position', 'asc')
+                    ->where('deleted_at', NULL)
+                    ->where('status', 1)
+                    ->get(['id', 'slug', 'parent_id', 'icon', 'image']);
+                   
+            }
+            
+            else {
+                // Get subcategories where parent_id = category_id
+                $categoryId = $request->category_id ?? null;
+                if (!$categoryId) {
+                    return $this->errorResponse('Category ID is required when category_type is not "all"', 400);
+                }
+                
+                
+                $subcategories = Category::with('translation_one', 'type')
+                    ->where('id', '>', '1')
+                    ->where('is_core', 1)
+                    ->where('parent_id', $categoryId) // Get subcategories of the provided category_id
+                    ->orderBy('position', 'asc')
+                    ->where('deleted_at', NULL)
+                    ->where('status', 1)
+                    ->get(['id', 'slug', 'parent_id', 'icon', 'image']);
+            }
+                
+                // Get subcategory IDs for vendor filtering
+                if($request->has('subcategory_id')){
+                    $subcategoryIds = [$request->subcategory_id];
+                }else{
+                    $subcategoryIds = $subcategories->pluck('id')->toArray();
+                }
+
+                
+              
+               
+                // Build vendor query
+                $vendorQuery = Vendor::select('id', 'name', 'slug', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_pre_time', 'order_min_amount', 'show_slot')
+                    ->where('status', 1)
+                    ->where($type, 1)
+                    ->whereHas('getAllCategory', function ($query) use ($subcategoryIds) {
+                        $query->whereIn('category_id', $subcategoryIds)
+                            ->where('status', 1);
+                    });
+                   
+                
+                // Check service area only if hyperlocal is enabled
+                if ($preferences && $preferences->is_hyperlocal == 1) {
+                
+                    $serviceAreaVendorIds = $this->getServiceAreaVendors($latitude, $longitude, $type);
+                    if (!empty($serviceAreaVendorIds)) {
+                        $vendorQuery->whereIn('id', $serviceAreaVendorIds);
+                    }
+                }
+                // Get vendors with relationships
+                $vendors = $vendorQuery->with([
+                    'getAllCategory.category.translation_one',
+                    'slot.day', 
+                    'slotDate'
+                ])->get();
+                
+                // Format vendor data
+                $formattedVendors = [];
+                foreach ($vendors as $vendor) {
+                    // Get vendor categories list
+                    $categoriesList = '';
+                    $vendorCategories = $vendor->getAllCategory->where('status', 1);
+                    
+                    foreach ($vendorCategories as $key => $vendorCategory) {
+                        if ($vendorCategory->category && $vendorCategory->category->translation_one) {
+                            $categoriesList .= $vendorCategory->category->translation_one->name;
+                            if ($key != $vendorCategories->count() - 1) {
+                                $categoriesList .= ', ';
+                            }
+                        }
+                    }
+                    
+                    // Check if vendor is closed
+                    $isVendorClosed = 0;
+                    if ($vendor->show_slot == 0) {
+                        if ($vendor->slotDate->isEmpty() && $vendor->slot->isEmpty()) {
+                            $isVendorClosed = 1;
+                        } else {
+                            if ($vendor->slotDate->isNotEmpty()) {
+                                $vendor->opening_time = date('g:i A', strtotime($vendor->slotDate->first()->start_time));
+                                $vendor->closing_time = date('g:i A', strtotime($vendor->slotDate->first()->end_time));
+                            } elseif ($vendor->slot->isNotEmpty()) {
+                                $vendor->opening_time = date('g:i A', strtotime($vendor->slot->first()->start_time));
+                                $vendor->closing_time = date('g:i A', strtotime($vendor->slot->first()->end_time));
+                            }
+                        }
+                    }
+                    
+                    $formattedVendors[] = [
+                        'id' => $vendor->id,
+                        'name' => $vendor->name,
+                        'slug' => $vendor->slug,
+                        'logo' => $vendor->logo,
+                        'banner' => $vendor->banner,
+                        'address' => $vendor->address,
+                        'latitude' => $vendor->latitude,
+                        'longitude' => $vendor->longitude,
+                        'order_pre_time' => $vendor->order_pre_time,
+                        'order_min_amount' => $vendor->order_min_amount,
+                        'categories_list' => $categoriesList,
+                        'is_vendor_closed' => $isVendorClosed,
+                        'opening_time' => $vendor->opening_time ?? null,
+                        'closing_time' => $vendor->closing_time ?? null,
+                        'vendor_rating' => $this->getVendorRating($vendor->id)
+                    ];
+                }
+                
+                $responseData = [
+                    'subcategories' => $subcategories->toArray(),
+                    'vendors' => $formattedVendors,
+                    'total_subcategories' => count($subcategories),
+                    'total_vendors' => count($formattedVendors)
+                ];
+                
+                return $this->successResponse($responseData);
+            
+            
+            // Handle other category types if needed
+            return $this->successResponse(['message' => 'Category type not implemented yet']);
+            
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    
 }

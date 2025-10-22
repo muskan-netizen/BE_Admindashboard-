@@ -52,24 +52,30 @@ class HomeController extends BaseController
             // Get vendor types from VendorType table ordered by order_by field
             $vendorTypes = VendorType::where('status', 1)->orderBy('order_by', 'asc')->get();
             $vendorMode = [];
+           
             
             foreach($vendorTypes as $vendorType) {
                 // Find corresponding config key for this vendor type
                 $vendor_typ_key = null;
+                
                 foreach(config('constants.VendorTypes') as $config_key => $config_value) {
-                    if($config_value === $vendorType->title) {
+                                
+                         if($config_value === $vendorType->title) {
                         $vendor_typ_key = $config_key;
                         break;
                     }
                 }
                 
+                
                 if($vendor_typ_key) {
                     $clientVendorTypes = $vendor_typ_key.'_check';
+                    
                     
                     // Check if this vendor type is enabled in client preferences
                     if($preferences->preferences->$clientVendorTypes == 1) {
                         $vendorData = [];
                         $vendorData['name'] = getNomenclatureName($vendorType->title, true);
+                       
                         
                         // Use VendorType image if available, fallback to client preferences
                         if($vendorType->image) {
@@ -190,7 +196,8 @@ class HomeController extends BaseController
                 $homeData['profile']->preferences->passbase_check = 0;
             }
 
-            $homeData['parent_category'] = Category::with('translation_one','type')->where('id', '>', '1')->where('is_core', 1)->where('parent_id', 1)->where('is_visible', 1)->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1)->pluck('id', 'slug')->toArray();
+            $homeData['parent_category'] = Category::with('translation_one','type')->where('id', '>', '1')->where('is_core', 1)->where('parent_id', 1)->where('is_visible', 1)->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1)->select('id', 'slug')->get();
+           
 
             $homeData['countries'] = ClientCountries::with('country')->where('is_active', 1)->orderBy('is_primary', 'desc')->get()->map(function ($item) {
                 return [

@@ -2209,6 +2209,7 @@ class VendorController extends BaseController{
 
             $product_category_ids =  Product::byProductCategoryServiceType($type)->where('vendor_id', $vid)->pluck('category_id');
             $product_category_ids = $product_category_ids->isNotEmpty() ? $product_category_ids->toArray() : [];
+            
 
             if($vendor->vendor_templete_id == 5){
                 
@@ -2260,6 +2261,14 @@ class VendorController extends BaseController{
                 $vendorCategories = VendorCategory::select(\DB::raw("group_concat(`category_translations`.`name`) as categoriesList"))
                 ->join('category_translations', 'category_translations.category_id', '=', 'vendor_categories.category_id')
                 ->where('vendor_id', $vendor->id)->where('status', 1)->where('category_translations.language_id',$langId)->groupBy('vendor_categories.vendor_id')->first();
+                $vendorCategoriesData = VendorCategory::join('categories', 'categories.id', '=', 'vendor_categories.category_id')
+                ->join('category_translations', 'category_translations.category_id', '=', 'vendor_categories.category_id')
+                ->where('vendor_categories.vendor_id', $vendor->id)
+                ->where('vendor_categories.status', 1)
+                ->where('category_translations.language_id', $langId)
+                ->where('categories.parent_id', '!=', 1)
+                ->get();
+            
                 $categoriesList = !empty($vendorCategories)?$vendorCategories->categoriesList:$categoriesList;
                 $cat_id = $request->category_id;
                 $products = Product::byProductCategoryServiceType($type)->with([
@@ -2307,6 +2316,8 @@ class VendorController extends BaseController{
                 }
             }
             $vendor->categoriesList = $categoriesList;
+            $vendor->vendor_categories = $vendorCategoriesData;
+            
             $response['vendor'] = $vendor;
             $response['products'] = ($vendor->vendor_templete_id != 5) ? $products : [];
             $response['categories'] = ($vendor->vendor_templete_id == 5) ? $listData : [];

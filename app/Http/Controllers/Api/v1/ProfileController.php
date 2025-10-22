@@ -127,7 +127,7 @@ class ProfileController extends BaseController
         $paginate = $request->has('limit') ? $request->limit : 12;
         $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
         $user_wish_details = UserWishlist::with([
-            'product.category.categoryDetail',
+            'product.category.categoryDetail','product.inwishlist',
             'product.category.categoryDetail.translation' => function ($q) use ($language_id) {
                 $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')->where('category_translations.language_id', $language_id);
             },
