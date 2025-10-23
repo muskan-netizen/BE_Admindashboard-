@@ -182,7 +182,7 @@ class ProfileController extends BaseController
             $exist->delete();
             return response()->json([
                 'data' => $product->id,
-                'message' => __('Product has been removed from wishlist.')
+                'message' => __('Product has been removed from Wishlist.')
             ]);
         }
         $wishlist = new UserWishlist();
@@ -192,7 +192,7 @@ class ProfileController extends BaseController
         $wishlist->save();
         return response()->json([
             'data' => $product->id,
-            'message' => __('Product has been added in wishlist.')
+            'message' => __('Product has been added in Wishlist.')
         ]);
     }
 
@@ -529,7 +529,7 @@ class ProfileController extends BaseController
             $vendor->delete();
             return response()->json([
                 'success' => 200,
-                'message' => __('Vendor has been removed from wishlist.')
+                'message' => __('Vendor has been removed from Wishlist.')
             ]);
         }
 
@@ -540,7 +540,7 @@ class ProfileController extends BaseController
 
         return response()->json([
             'success' => 200,
-            'message' => __('Vendor has been added in wishlist.')
+            'message' => __('Vendor has been added in Wishlist.')
         ]);
     }
 
@@ -567,7 +567,7 @@ class ProfileController extends BaseController
         if(count($vendors)){
             return response()->json([
                 'success' => 200,
-                'message' => __('List for all wishlist vendors.'),
+                'message' => __('List for all Wishlist vendors.'),
                 'data' => $vendors
             ]);
         }
