@@ -10,7 +10,7 @@ class Category extends Model
 {
   use SoftDeletes;
 
-    protected $fillable = ['slug','icon','icon_two', 'image', 'is_visible', 'status', 'position', 'is_core', 'can_add_products', 'parent_id', 'vendor_id', 'client_code', 'display_mode', 'type_id','warning_page_id', 'template_type_id', 'warning_page_design','is_p2p'];
+    protected $fillable = ['slug','icon','icon_two', 'image', 'is_visible', 'status', 'position', 'is_core', 'can_add_products', 'parent_id', 'vendor_id', 'client_code', 'display_mode', 'type_id','warning_page_id', 'template_type_id', 'warning_page_design','is_p2p','luxury_option_id'];
     public $timestamps = true;
 
     public function translation(){

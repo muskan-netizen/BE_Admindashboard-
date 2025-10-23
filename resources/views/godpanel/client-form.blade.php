@@ -128,11 +128,11 @@
                                 <div class="form-group">
                                     <label class="form-label">{{ __('Name') }}</label>
                                     <div class="position-relative"  id="nameInput">
-                                        <input type="text" class="form-control" name="name" id="name"
+                                    <input type="text" class="form-control" name="name" id="name"
                                             value="{{isset($client_data->name) ? $client_data->name : ''}}" placeholder="{{ __('Enter Your Name') }}" required>
                                         <span class="invalid-feedback" role="alert">
                                             <span></span>
-                                        </span>
+                                    </span>
                                     </div>
                                 </div>
                             </div>
@@ -157,10 +157,10 @@
                                         </div>
                                         <span class="invalid-feedback" role="alert">
                                             <span></span>
-                                        </span>
-                                    </div>
+                                    </span>
                                 </div>
                             </div>
+                                        </div>
                             <div class="col-md-3 col-6">
                                 <div class="form-group" id="phone_valueInput">
                                     <label class="form-label">{{ __('Phone No.') }}</label>
@@ -201,9 +201,9 @@
                                                         value="{{isset($client_data->businessname) ? $client_data->businessname : ''}}" placeholder="{{ __('Enter Business Name') }}">
                                                     <span class="invalid-feedback" role="alert">
                                                         <span></span>
-                                                    </span>
-                                                </div>
-                                            </div>
+                                    </span>
+                                </div>
+                            </div>
                                             <div class="col-md-{{isset($client_data->id) ? '3' : '6'}}">
                                                     <div class="form-group" id="domainnameInput">
                                                         <label class="form-label">{{ __('Domain Name') }}</label>
@@ -216,12 +216,12 @@
                                                             </div>
                                                             <span class="invalid-feedback" role="alert">
                                                                 <span></span>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                            </div>
+                                    </span>
+                                </div>
+                            </div>
+                                </div>
                                             <div class="col-md-{{isset($client_data->id) ? '3' : '6'}}">
-                                                <div class="form-group">
+                                <div class="form-group">
                                                     <label class="form-label">{{ __('Language') }}</label>
                                                     <div class="select">
                                                         <select class="Language-selector form-control" id="primary_language"
@@ -232,11 +232,11 @@
                                                                     {{ $lang->name }} </option>
                                                             @endforeach                                          
                                                         </select>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        </div>
+                                      </div>
+                                </div>
                                             <div class="col-md-{{isset($client_data->id) ? '3' : '6'}}">
-                                                <div class="form-group">
+                                <div class="form-group">
                                                     <label class="form-label">{{ __('Currency') }}</label>
                                                     <div class="select">
                                                         <select class="currency-selector form-control" id="primary_currency"
@@ -249,17 +249,17 @@
                                                                     {{ $currency->iso_code . ' ' . $currency->symbol }} </option>
                                                             @endforeach
                                                         </select>
-                                                    </div>
-                                                </div>  
+                                </div>
+                            </div>
                                             </div>
                                             <div class="col-md-{{isset($client_data->id) ? '3' : '6'}}">
                                                 <label for="languages" class="control-label">{{ __('Client Type') }}</label>
-                                                <select class="form-control" id="client_type" name="client_type">
-                                                    @foreach($client_types as $key => $value)
-                                                        <option value="{{$key}}">{{$value}}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
+                                <select class="form-control" id="client_type" name="client_type">
+                                    @foreach($client_types as $key => $value)
+                                        <option value="{{$key}}">{{$value}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                                             <div class="col-md-{{isset($client_data->id) ? '3' : '6'}}">
                                                 <label for="languages" class="control-label">{{ __('Business Type') }}</label>
                                                 <select class="form-control" id="business_type" name="business_type" >
@@ -267,8 +267,8 @@
                                                         <option value="{{$key}}"
                                                         {{ isset($client_data->business_type) && $client_data->business_type == $key ? 'selected' : '' }}>    
                                                         {{$business->title}} </option>
-                                                    @endforeach
-                                                </select>
+                                    @endforeach
+                                </select>
                                             </div>
                                         </div>
                                     </div>
@@ -334,13 +334,13 @@
                                         <option value="{{ $tz->timezone }}"
                                             @if ($formData['timezone'] == $tz->timezone) selected @endif>{{ $tz->timezone }}
                                             {{ $tz->diff_from_gtm }}</option>
-                                    @endforeach
+                                        @endforeach
                                 </select>
                                 <span class="invalid-feedback" role="alert">
                                     <span></span>
                                 </span>
                             </div>
-                        </div>
+                            </div>
                         </div>
                         
                         <div class="form-group">

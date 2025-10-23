@@ -358,6 +358,7 @@ class CategoryController extends BaseController
                 return 'bad type';
             }
             $cate->type_id = $request->type_id;
+            $cate->luxury_option_id = $request->luxury_option_id;
             $cate->display_mode = $request->display_mode;
             $cate->warning_page_id = $request->warning_page_id;
             $cate->template_type_id = $request->template_type_id;

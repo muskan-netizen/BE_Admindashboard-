@@ -29,6 +29,27 @@
                     </span>
                 </div>
             </div>
+          
+                <div class="col-md-3">
+                    <div class="form-group">
+                        {!! Form::label('title', __('Vendor Type'),['class' => 'control-label']) !!}
+                        <select class="form-control" name="luxury_option_id" id="luxury_option_id">
+                            <option value="">{{ __('Select Vendor Type') }}</option>
+                            @php
+                                $vendorTypes = getVendorTypesByBusinessType();
+                            @endphp
+                            @foreach($vendorTypes as $vendorType)
+                                <option value="{{ $vendorType['luxury_option_id'] }}" {{ (isset($category->luxury_option_id) && $category->luxury_option_id == $vendorType['luxury_option_id']) ? 'selected' : '' }}>
+                                    {{ $vendorType['name'] }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <span class="invalid-feedback" role="alert">
+                            <strong></strong>
+                        </span>
+                    </div>
+                </div>
+          
             <div class="col-md-3">
                 <div class="form-group">
                     {!! Form::label('title', __('Visible In Menus'),['class' => 'control-label']) !!}
@@ -193,6 +214,7 @@
                                 </div>
                             </div>
                         </div>
+                        
                         <div style="{{($category->type_id != 1) ? 'display:none;' : ''}}" class="border-bottom cat-banners pt-1">
                             <label>{{ __("Banners") }}</label>
                             <div class="row w-100 cat-banner-apnd">

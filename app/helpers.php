@@ -2515,3 +2515,40 @@ if (!function_exists('mastercardGateway')) {
         return $test_url;
     }
 }
+
+if (!function_exists('getVendorTypesByBusinessType')) {
+    /**
+     * Get vendor types with names and luxury option IDs based on business type
+     * 
+     * @param string $businessType
+     * @return array
+     */
+    function getVendorTypesByBusinessType($businessType = null) {
+        // Get business type from client preferences if not provided
+        if (!$businessType) {
+            $client_preference = ClientPreference::select('business_type')->first();
+            $businessType = $client_preference->business_type ?? 'default';
+        }
+
+        // Get vendor types from getCategoryTypes() function
+        $vendorTypes = getCategoryTypes();
+        
+        $result = [];
+        
+        foreach ($vendorTypes as $type) {
+            // Get name from constants
+            $name = config('constants.VendorTypes')[$type] ?? ucfirst(str_replace('_', ' ', $type));
+            
+            // Get luxury option ID from constants
+            $luxuryOptionId = config('constants.VendorTypesLuxuryOptions')[$type] ?? null;
+            
+            $result[] = [
+                'type' => $type,
+                'name' => $name,
+                'luxury_option_id' => $luxuryOptionId
+            ];
+        }
+        
+        return $result;
+    }
+}

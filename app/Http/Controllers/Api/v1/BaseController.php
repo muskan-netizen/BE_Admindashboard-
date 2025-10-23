@@ -323,8 +323,16 @@ class BaseController extends Controller{
     }
 
     public function categoryNav($lang_id, $vends=null,$type = 'delivery', $request = []) {
-
+          
         $categoryTypes = getServiceTypesCategory($type);
+
+        // map vendor type to luxury_option_id from constants and filter categories
+        $vendorTypeKey = $type;
+        if ($vendorTypeKey === 'dine_in') {
+            $vendorTypeKey = 'dinein';
+        }
+        $luxuryOptionId = config('constants.VendorTypesLuxuryOptions')[$vendorTypeKey] ?? null;
+      
 
         // pr($categoryTypes);
         $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
@@ -348,6 +356,9 @@ class BaseController extends Controller{
                     //     $categories->whereIn('categories.type_id',[10] );
                     // }else{
                         $categories->whereIn('categories.type_id',$categoryTypes );
+                        if (!is_null($luxuryOptionId)) {
+                            $categories->where('categories.luxury_option_id', $luxuryOptionId);
+                        }
                     // }
 
                 $categories =  $categories->distinct('categories.slug');
