@@ -26,7 +26,9 @@ class LuxuryOptionsSeeder extends Seeder
                                 array('id' => '7','title' => 'laundry'),
                                 array('id' => '8','title' => 'appointment'),
                                 array('id' => '9','title' => 'p2p'),
-                                array('id' => '10','title' => 'car_rental')
+                                array('id' => '10','title' => 'car_rental'),
+                                array('id' => '11','title' => 'grocery'),
+                                array('id' => '12','title' => 'ecommerce'),
                             );
           // LuxuryOption::truncate();
       
