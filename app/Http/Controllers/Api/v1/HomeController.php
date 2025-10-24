@@ -79,7 +79,7 @@ class HomeController extends BaseController
                         
                         // Use VendorType image if available, fallback to client preferences
                         if($vendorType->image) {
-                            $vendorData["icon"] = $vendorType->image['proxy_url'].'1900/500'.$vendorType->image['image_path'];
+                            $vendorData["icon"] = $vendorType->image;
                         } else {
                             $iconFiledName = config('constants.VendorTypesIcon.'.$vendor_typ_key);
                             $vendorData["icon"] = $clientPreferences->$iconFiledName ? $clientPreferences->$iconFiledName : asset('images/al_custom3.png');
