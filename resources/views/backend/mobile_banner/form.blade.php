@@ -93,6 +93,25 @@
                     </span>
                 </div>
             </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('title', __('Vendor Type'),['class' => 'control-label']) !!}
+                    <select class="form-control" name="luxury_option_id" id="luxury_option_id">
+                        <option value="">{{ __('Select Vendor Type') }}</option>
+                        @php
+                            $vendorTypes = getVendorTypesByBusinessType();
+                        @endphp
+                        @foreach($vendorTypes as $vendorType)
+                            <option value="{{ $vendorType['luxury_option_id'] }}" {{ (isset($banner->luxury_option_id) && $banner->luxury_option_id == $vendorType['luxury_option_id']) ? 'selected' : '' }}>
+                                {{ $vendorType['name'] }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <span class="invalid-feedback" role="alert">
+                        <strong></strong>
+                    </span>
+                </div>
+            </div>
         </div>
         <div class="row category_vendor" style="{{(empty($banner->link)) ? 'display: none;' : ''}}">
             <div class="col-md-6 category_list" style="{{($banner->link == 'category') ? '' : 'display: none;'}}">

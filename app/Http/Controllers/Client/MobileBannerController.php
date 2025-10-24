@@ -198,6 +198,7 @@ class MobileBannerController extends BaseController
         $banner->validity_on = ($request->has('validity_on') && $request->validity_on == 'on') ? 1 : 0;
         $banner->name = $request->name;
         $banner->start_date_time = $request->start_date_time;
+        $banner->luxury_option_id = $request->luxury_option_id;
         $banner->end_date_time = $request->end_date_time;
 
         if ($update == 'false') {

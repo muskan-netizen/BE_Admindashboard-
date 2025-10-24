@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MobileBanner extends Model
 {
-    protected $fillable = ['name', 'link', 'image', 'validity_on', 'sorting', 'status', 'start_date_time', 'end_date_time', 'redirect_category_id', 'redirect_vendor_id', 'link_url' ];
+    protected $fillable = ['name', 'link', 'image', 'validity_on', 'sorting', 'status', 'start_date_time', 'end_date_time', 'redirect_category_id', 'redirect_vendor_id', 'link_url' , 'luxury_option_id'];
 
     public function getImageAttribute($value)
     {

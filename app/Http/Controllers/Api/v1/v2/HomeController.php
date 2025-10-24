@@ -218,13 +218,13 @@ class HomeController extends BaseController
                 $homeData = $find_key['data'];
             } else {
 
-
+                $luxuryOptionId = config('constants.VendorTypesLuxuryOptions')[$type] ?? null;
             $mobile_banners = MobileBanner::with(['category','category.type', 'vendor'])->where('status', 1)->where('validity_on', 1)
-                ->where(function ($q) {
-                    $q->whereNull('start_date_time')->orWhere(function ($q2) {
+                ->where(function ($q) use ($luxuryOptionId) {
+                    $q->whereNull('start_date_time')->orWhere(function ($q2) use ($luxuryOptionId) {
                         $q2->whereDate('start_date_time', '<=', Carbon::now())
                             ->whereDate('end_date_time', '>=', Carbon::now());
-                    });
+                    })->where('luxury_option_id', $luxuryOptionId);
                 });
             if (isset($clientPreferences->is_service_area_for_banners) && ($clientPreferences->is_service_area_for_banners == 1) && ($clientPreferences->is_hyperlocal == 1)) {
                 if (!empty($latitude) && !empty($longitude)) {
