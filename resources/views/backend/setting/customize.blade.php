@@ -412,11 +412,11 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                                         // Use VendorType image if available, fallback to preference
                                                         $iconValue = '';
                                                         if ($vendorTypeRecord && $vendorTypeRecord->image) {
-                                                            $iconValue = asset($vendorTypeRecord->image);
+                                                            $iconValue = $vendorTypeRecord->image['proxy_url'].'1900/500'.$vendorTypeRecord->image['image_path'];
                                                         } elseif (isset($preference) && is_object($preference)) {
                                                             $iconProperty = $vendor_typ_key . 'icon';
                                                             if (property_exists($preference, $iconProperty) && !empty($preference->$iconProperty)) {
-                                                                $iconValue = asset($preference->$iconProperty);
+                                                                $iconValue = $preference->$iconProperty['proxy_url'].'1900/500'.$preference->$iconProperty['image_path'];
                                                             }
                                                         }
                                                     @endphp

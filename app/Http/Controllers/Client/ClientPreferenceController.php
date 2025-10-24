@@ -1256,6 +1256,7 @@ class ClientPreferenceController extends BaseController{
      */
     private function handleVendorTypeData(Request $request)
     {
+       
         try {
             foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value) {
                 $vendor_typ_name = $vendor_typ_key . "_check";
@@ -1279,22 +1280,14 @@ class ClientPreferenceController extends BaseController{
                         $vendorType->order_by = (int)$request->$vendor_typ_order;
                     }
 
-                    // Handle image upload
-                   
-                    if($request->hasFile($vendor_typ_icon)) {
+                  
                       
-                        // Delete old image if exists
-                        if($vendorType->image && Storage::disk('s3')->exists($vendorType->image)) {
-                            Storage::disk('s3')->delete($vendorType->image);
-                        }
-
-                        // Upload new image to S3 using existing pattern
-                        $uploadedPath = Storage::disk('s3')->put('prods', $request->file($vendor_typ_icon), 'public');
-                       
-                        if($uploadedPath) {
-                            $vendorType->image = $uploadedPath;
-                        }
-                    }
+                        $file = $request->file($vendor_typ_icon);
+                     
+                        $vendorType->image = Storage::disk('s3')->put('/prods', $file, 'public');
+                     
+                   
+                    
 
                     // Update status to active
                     $vendorType->status = 1;
