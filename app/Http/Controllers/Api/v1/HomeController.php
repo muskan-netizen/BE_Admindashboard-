@@ -592,14 +592,15 @@ class HomeController extends BaseController
             $isVendorArea = 0;
 
             // Start Mobile Banners
+            $luxuryOptionId = config('constants.VendorTypesLuxuryOptions')[$type] ?? null;
             $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id', 'link_url')
             ->where('status', 1)->where('validity_on', 1)
             ->with(['category:id,type_id', 'category.type', 'vendor'])
-            ->where(function ($q) {
-                $q->whereNull('start_date_time')->orWhere(function ($q2) {
+            ->where(function ($q) use ($luxuryOptionId) {
+                $q->whereNull('start_date_time')->orWhere(function ($q2) use ($luxuryOptionId) {
                     $q2->whereDate('start_date_time', '<=', Carbon::now())
                         ->whereDate('end_date_time', '>=', Carbon::now());
-                });
+                })->where('luxury_option_id', $luxuryOptionId);
             });
 
             if(isset($preferences->is_service_area_for_banners) && ($preferences->is_service_area_for_banners == 1) && ($preferences->is_hyperlocal == 1)){
