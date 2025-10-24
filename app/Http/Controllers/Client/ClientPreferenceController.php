@@ -1281,10 +1281,11 @@ class ClientPreferenceController extends BaseController{
                     }
 
                   
-                      
+                    if ($request->hasFile('image')) {    /* upload logo file */
                         $file = $request->file($vendor_typ_icon);
                      
                         $vendorType->image = Storage::disk('s3')->put('/prods', $file, 'public');
+                    }
                      
                    
                     
