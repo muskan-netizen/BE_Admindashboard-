@@ -525,7 +525,7 @@ class OrderController extends BaseController
 
                                 }
                             }
-                            if ($action == 'delivery' || $action == 'on_demand') {
+                            if ($action == 'delivery' || $action == 'on_demand' || $action == 'grocery' || $action == 'ecommerce') {
                                 $deliver_fee_data = CartDeliveryFee::where('cart_id',$vendor_cart_product->cart_id)->where('vendor_id',$vendor_cart_product->vendor_id)->first();
                                 if ((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1) || isset($deliver_fee_data)) {
                                     $order_vendor->shipping_delivery_type = $deliver_fee_data->shipping_delivery_type??'D';
