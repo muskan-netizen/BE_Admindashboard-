@@ -12,6 +12,7 @@ class VendorType extends Model
     protected $fillable = [
         'title',
         'image',
+        'active_image',
         'status',
         'order_by'
     ];
@@ -25,7 +26,31 @@ class VendorType extends Model
 
     public function getImageAttribute($value)
     {
-        \Log::info($value);
+        
+      $values = array();
+      $img = 'default/default_image.png';
+      
+      // Handle both string and array inputs
+      if(!empty($value)){
+        if(is_array($value)) {
+          // If it's an array, extract the path from the array
+          $img = $value['image_path'] ?? $value['path'] ?? $value;
+        } else {
+          $img = $value;
+        }
+      }
+      
+      $ex = checkImageExtension($img);
+      $values['proxy_url'] = \Config::get('app.IMG_URL1');
+      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+      $values['image_fit'] = \Config::get('app.FIT_URl');
+
+      return $values;
+    }
+
+    public function getActiveImageAttribute($value)
+    {
+        
       $values = array();
       $img = 'default/default_image.png';
       

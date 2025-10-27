@@ -393,6 +393,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                 $VendorTypesIcon = $vendor_typ_key.'icon';
                             @endphp
                             @if(in_array($vendor_typ_key, $typeArray))
+                           
                                 <div class="col-md-12 vendor-type-item mb-2" data-vendor-type="{{$vendor_typ_key}}" data-order="{{ $vendorTypeRecord ? $vendorTypeRecord->order_by : 0 }}">
                                     <div class="card border">
                                         <div class="card-body p-2">
@@ -421,7 +422,24 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                                         }
                                                     @endphp
                                                     <input type="file" accept="image/*" data-plugins="dropify" name="{{$VendorTypesIcon}}" class="dropify" data-default-file="{{ $iconValue }}" />
+                                                   
+                                                    
+                                                    <label class="control-label mt-3">{{ __('Upload Active Icon') }}</label>
+                                                    @php
+                                                        // Use VendorType active_image if available, fallback to preference
+                                                        $activeIconValue = '';
+                                                        if ($vendorTypeRecord && $vendorTypeRecord->active_image) {
+                                                            $activeIconValue = $vendorTypeRecord->active_image['proxy_url'].'1900/500'.$vendorTypeRecord->active_image['image_path'];
+                                                        } elseif (isset($preference) && is_object($preference)) {
+                                                            $activeIconProperty = $vendor_typ_key . 'active_icon';
+                                                            if (property_exists($preference, $activeIconProperty) && !empty($preference->$activeIconProperty)) {
+                                                                $activeIconValue = $preference->$activeIconProperty['proxy_url'].'1900/500'.$preference->$activeIconProperty['image_path'];
+                                                            }
+                                                        }
+                                                    @endphp
+                                                    <input type="file" accept="image/*" data-plugins="dropify" name="{{$vendor_typ_key}}active_icon" class="dropify" data-default-file="{{ $activeIconValue }}" />
                                                     <small class="text-muted" style="font-size: 10px;">{{ __('64x64px recommended') }}</small>
+                                                    
                                                     <!-- Hidden field to store order position from VendorType table -->
                                                     <input type="hidden" name="{{$vendor_typ_key}}_order" class="vendor-order-input" value="{{ $vendorTypeRecord ? $vendorTypeRecord->order_by : 0 }}">
                                                 </div>

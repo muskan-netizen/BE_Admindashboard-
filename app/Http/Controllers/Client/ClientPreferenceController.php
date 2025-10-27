@@ -1261,6 +1261,7 @@ class ClientPreferenceController extends BaseController{
             foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value) {
                 $vendor_typ_name = $vendor_typ_key . "_check";
                 $vendor_typ_icon = $vendor_typ_key . "icon";
+                $vendor_typ_active_icon = $vendor_typ_key . "active_icon";
                 $vendor_typ_order = $vendor_typ_key . "_order";
                 
                 // Check if this vendor type is enabled
@@ -1283,9 +1284,14 @@ class ClientPreferenceController extends BaseController{
                   
                     if ($request->hasFile($vendor_typ_icon)) {    /* upload logo file */
                         $file = $request->file($vendor_typ_icon);
-                     
                         $vendorType->image = Storage::disk('s3')->put('/prods', $file, 'public');
                     }
+                    
+                    if($request->hasFile($vendor_typ_active_icon)) {
+                        $file = $request->file($vendor_typ_active_icon);
+                        $vendorType->active_image = Storage::disk('s3')->put('/prods', $file, 'public');
+                    }
+                   
                      
                    
                     

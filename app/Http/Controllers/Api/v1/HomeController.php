@@ -84,7 +84,13 @@ class HomeController extends BaseController
                             $iconFiledName = config('constants.VendorTypesIcon.'.$vendor_typ_key);
                             $vendorData["icon"] = $clientPreferences->$iconFiledName ? $clientPreferences->$iconFiledName : asset('images/al_custom3.png');
                         }
-                        
+
+                        if($vendorType->active_image) {
+                            $vendorData["active_icon"] = $vendorType->active_image;
+                        } else {
+                            $activeIconFiledName = config('constants.VendorTypesActiveIcon.'.$vendor_typ_key);
+                            $vendorData["active_icon"] = $clientPreferences->$activeIconFiledName ? $clientPreferences->$activeIconFiledName : asset('images/al_custom3.png');
+                        }
                         $vendorData["type"] = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key;
                         $vendorData["order_by"] = $vendorType->order_by;
                         
