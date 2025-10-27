@@ -413,11 +413,11 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                                         // Use VendorType image if available, fallback to preference
                                                         $iconValue = '';
                                                         if ($vendorTypeRecord && $vendorTypeRecord->image) {
-                                                            $iconValue = $vendorTypeRecord->image['proxy_url'].'1900/500'.$vendorTypeRecord->image['image_path'];
+                                                            $iconValue = $vendorTypeRecord->image['proxy_url'].'1024/512'.$vendorTypeRecord->image['image_path'];
                                                         } elseif (isset($preference) && is_object($preference)) {
                                                             $iconProperty = $vendor_typ_key . 'icon';
                                                             if (property_exists($preference, $iconProperty) && !empty($preference->$iconProperty)) {
-                                                                $iconValue = $preference->$iconProperty['proxy_url'].'1900/500'.$preference->$iconProperty['image_path'];
+                                                                $iconValue = $preference->$iconProperty['proxy_url'].'1024/512'.$preference->$iconProperty['image_path'];
                                                             }
                                                         }
                                                     @endphp
@@ -429,11 +429,11 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                                         // Use VendorType active_image if available, fallback to preference
                                                         $activeIconValue = '';
                                                         if ($vendorTypeRecord && $vendorTypeRecord->active_image) {
-                                                            $activeIconValue = $vendorTypeRecord->active_image['proxy_url'].'1900/500'.$vendorTypeRecord->active_image['image_path'];
+                                                            $activeIconValue = $vendorTypeRecord->active_image['proxy_url'].'1024/512'.$vendorTypeRecord->active_image['image_path'];
                                                         } elseif (isset($preference) && is_object($preference)) {
                                                             $activeIconProperty = $vendor_typ_key . 'active_icon';
                                                             if (property_exists($preference, $activeIconProperty) && !empty($preference->$activeIconProperty)) {
-                                                                $activeIconValue = $preference->$activeIconProperty['proxy_url'].'1900/500'.$preference->$activeIconProperty['image_path'];
+                                                                $activeIconValue = $preference->$activeIconProperty['proxy_url'].'1024/512'.$preference->$activeIconProperty['image_path'];
                                                             }
                                                         }
                                                     @endphp
