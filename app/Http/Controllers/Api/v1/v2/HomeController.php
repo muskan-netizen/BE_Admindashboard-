@@ -1941,6 +1941,7 @@ class HomeController extends BaseController
     {
         // try {
             // Validate required parameters
+            \Log::info('getFoodData request', $request->all());
             $validator = \Validator::make($request->all(), [
                 'lat' => 'required|numeric',
                 'lng' => 'required|numeric',
