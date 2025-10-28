@@ -2025,7 +2025,7 @@ class HomeController extends BaseController
             case 'vendor':
                 return $this->fetchVendors($lat, $lng, $categoryId);
             case 'product':
-                return $this->fetchProducts($vendorId);
+                return $this->fetchProducts($vendorId,$categoryId);
             default:
                 return [];
         }
@@ -2125,10 +2125,11 @@ class HomeController extends BaseController
     /**
      * Fetch products for a specific vendor
      */
-    private function fetchProducts($vendorId)
+    private function fetchProducts($vendorId,$categoryId = null)
     {
         $products = Product::select('id', 'sku','title', 'url_slug', 'vendor_id','category_id')
             ->where('vendor_id', $vendorId)
+            ->where('category_id', $categoryId)
             ->where('is_live', 1)
             ->with(['variants' => function($query) {
                 $query->select('id', 'product_id', 'sku', 'title', 'price', 'status')
