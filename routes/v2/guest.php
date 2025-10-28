@@ -29,6 +29,9 @@ Route::group(['prefix' => 'v1/v2', 'middleware' => ['ApiLocalization']], functio
         Route::post('homePageDataV2', 'Api\v1\v2\HomeController@postHomePageDataV2');
         Route::post('get/subcategory/vendor', 'Api\v1\v2\HomeController@getSubcategoryVendor');
         Route::post('vendors/by-category', 'Api\v1\v2\HomeController@getVendorsByCategory');
+        
+        // Backend AI Logic Agent for efficient food data retrieval
+        Route::post('food-data', 'Api\v1\v2\HomeController@getFoodData');   
 
 
         // new cart route

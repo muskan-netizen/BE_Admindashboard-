@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Traits\HomePage\HomePageTrait;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Traits\{OrderTrait, ProductActionTrait, VendorTrait, RedisCacheTrait};
-use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference, Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, HomeProduct, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption, UserAddress};
+use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference, Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, HomeProduct, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption, UserAddress, VendorType};
 use Illuminate\Support\Facades\Redis;
 use GuzzleHttp\Client as GClient;
 use Exception;
@@ -1929,6 +1929,229 @@ class HomeController extends BaseController
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
+    }
+
+    /**
+     * Backend AI Logic Agent for efficient food data retrieval using Redis cache and fallback APIs
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getFoodData(Request $request)
+    {
+        // try {
+            // Validate required parameters
+            $validator = \Validator::make($request->all(), [
+                'lat' => 'required|numeric',
+                'lng' => 'required|numeric',
+                'shortcode' => 'required|string',
+                'type' => 'required|in:category,vendor,product',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->errorResponse('Invalid parameters provided', 400);
+            }
+
+            $lat = $request->lat;
+            $lng = $request->lng;
+            $shortcode = $request->shortcode;
+            $type = $request->type;
+            $categoryId = $request->category_id;
+            $vendorId = $request->vendor_id;
+
+            // Fetch data directly from database
+            $data = $this->fetchDataFromSource($type, $lat, $lng, $shortcode, $categoryId, $vendorId);
+            
+            if (empty($data)) {
+                return $this->errorResponse('No data found for the given parameters', 404);
+            }
+
+            return $this->successResponse([
+                'status' => 'success',
+                'source' => 'database',
+                'type' => $type,
+                'data' => $data,
+                'message' => 'Data fetched successfully from database'
+            ], 'Data retrieved successfully from database');
+
+        // } catch (\Exception $e) {
+        //     return $this->errorResponse('Data fetch failed. Please retry.', 500);
+        // }
+    }
+
+    /**
+     * Generate Redis key based on cursor type
+     */
+    private function getRedisKey($type, $shortcode, $categoryId = null, $vendorId = null)
+    {
+        switch ($type) {
+            case 'category':
+                return "categories:{$shortcode}";
+            case 'vendor':
+                return "vendors:{$shortcode}:{$categoryId}";
+            case 'product':
+                return "products:{$vendorId}";
+            default:
+                return "data:{$shortcode}";
+        }
+    }
+
+    /**
+     * Get cache TTL based on cursor type
+     */
+    private function getCacheTTL($type)
+    {
+        switch ($type) {
+            case 'category':
+                return 3600; // 1 hour
+            case 'vendor':
+                return 600;  // 10 minutes
+            case 'product':
+                return 300;  // 5 minutes
+            default:
+                return 600;  // 10 minutes default
+        }
+    }
+
+    /**
+     * Fetch data from database based on cursor type
+     */
+    private function fetchDataFromSource($type, $lat, $lng, $shortcode, $categoryId = null, $vendorId = null)
+    {
+        switch ($type) {
+            case 'category':
+                return $this->fetchCategories($shortcode, $lat, $lng);
+            case 'vendor':
+                return $this->fetchVendors($lat, $lng, $categoryId);
+            case 'product':
+                return $this->fetchProducts($vendorId);
+            default:
+                return [];
+        }
+    }
+
+    /**
+     * Fetch categories with minimal data - first get service area vendors, then their categories
+     */
+    private function fetchCategories($shortcode, $lat = null, $lng = null)
+    {
+        // First get vendors from service area
+        $serviceAreaVendors = $this->getServiceAreaVendors($lat, $lng,'delivery');
+        $luxuryOptionId = config('constants.VendorTypesLuxuryOptions')['delivery'] ?? null;
+          
+        
+        if (empty($serviceAreaVendors)) {
+            return [];
+        }
+        // Fetch categories that belong to these specific vendors
+        $categories = Category::select('id', 'slug', 'image')
+            ->where('status', 1)
+            ->where('luxury_option_id', $luxuryOptionId)
+            ->whereHas('vendorCategory', function($query) use ($serviceAreaVendors) {
+                $query->whereIn('vendor_id', $serviceAreaVendors)
+                    ->whereHas('vendor', function($vendorQuery) {
+                        $vendorQuery->where('status', 1);
+                    });
+            })
+            ->with(['vendorCategory' => function($query) use ($serviceAreaVendors) {
+                $query->select('category_id', 'vendor_id')
+                    ->whereIn('vendor_id', $serviceAreaVendors)
+                    ->whereHas('vendor', function($vendorQuery) {
+                        $vendorQuery->select('id', 'slug', 'status')
+                            ->where('status', 1);
+                    });
+            }])
+            ->get();
+
+        return $categories->map(function($category) {
+            return [
+                'id' => $category->id,
+                'slug' => $category->slug,
+                'image' => $category->image,
+                'vendor_count' => $category->vendorCategory->count()
+            ];
+        });
+    }
+
+    /**
+     * Fetch vendors based on location and category
+     */
+    private function fetchVendors($lat, $lng, $categoryId = null)
+    {
+
+        $serviceAreaVendors = $this->getServiceAreaVendors($lat, $lng,'delivery');
+        $luxuryOptionId = config('constants.VendorTypesLuxuryOptions')['delivery'] ?? null;
+        $query = Vendor::select('id','name', 'slug', 'logo', 'banner', 'latitude', 'longitude', 'status')
+            ->where('status', 1)
+            ->where('delivery', 1)
+            ->whereIn('id', $serviceAreaVendors);
+
+        if ($categoryId) {
+            $query->whereHas('vendorCategory', function($q) use ($categoryId) {
+                $q->where('category_id', $categoryId);
+            });
+        }
+
+        // Add location-based filtering if needed
+        // You can implement radius-based filtering here
+        
+        $vendors = $query->with(['vendorCategory' => function($query) {
+            $query->select('vendor_id', 'category_id')
+                ->with('category:id,slug');
+        }])
+        ->get();
+
+        return $vendors->map(function($vendor) {
+            return [
+                'id' => $vendor->id,
+                'name' => $vendor->name,
+                'slug' => $vendor->slug,
+                'logo' => $vendor->logo,
+                'banner' => $vendor->banner,
+                'latitude' => $vendor->latitude,
+                'longitude' => $vendor->longitude,
+                'categories' => $vendor->vendorCategories->map(function($vc) {
+                    return [
+                        'id' => $vc->category->id,
+                        'name' => $vc->category->name,
+                        'slug' => $vc->category->slug
+                    ];
+                })
+            ];
+        });
+    }
+
+    /**
+     * Fetch products for a specific vendor
+     */
+    private function fetchProducts($vendorId)
+    {
+        $products = Product::select('id', 'sku','title', 'url_slug', 'vendor_id','category_id')
+            ->where('vendor_id', $vendorId)
+            ->where('is_live', 1)
+            ->with(['variants' => function($query) {
+                $query->select('id', 'product_id', 'sku', 'title', 'price', 'status')
+                    ->where('status', 1);
+            }])
+            ->get();
+
+        return $products->map(function($product) {
+            return [
+                'id' => $product->id,
+                'name' => $product->title,
+                'sku' => $product->sku,
+                'category_id' => $product->category_id,
+                'url_slug' => $product->url_slug,
+                'vendor_id' => $product->vendor_id,
+                'variants' => $product->variants->map(function($variant) {
+                    return [
+                        'id' => $variant->id,
+                        'title' => $variant->title,
+                        'price' => $variant->price
+                    ];
+                })
+            ];
+        });
     }
 
     

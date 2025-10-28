@@ -46,6 +46,7 @@ class VerifyCsrfToken extends Middleware
         'cybersource/process-payment',
         'success-orangepay',
         'success/pesapal',
+        'food-data',
         'payment/hitpay/webhook'
     ];
 }

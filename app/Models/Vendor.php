@@ -153,6 +153,9 @@ class Vendor extends Model implements Auditable{
   public function getAllCategory(){
     return $this->hasMany('App\Models\VendorCategory');
   }
+  public function vendorCategory(){
+    return $this->hasMany('App\Models\VendorCategory','vendor_id','id');
+  }
   public function getCustomCategory(){
     return $this->hasMany('App\Models\Category','vendor_id','id');
   }
