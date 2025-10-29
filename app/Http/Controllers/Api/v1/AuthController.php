@@ -22,7 +22,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Front\CustomerAuthController;
 use App\Http\Requests\{LoginRequest, SignupRequest};
 use App\Http\Controllers\Client\VendorController;
-use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, PermissionsOld, UserPermissions, Type, Category, SubscriptionInvoicesUser, VendorCategory,UserAddress,UserPaymentCards,UserAllergicItem};
+use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, PermissionsOld, UserPermissions, Type, Category, SubscriptionInvoicesUser, VendorCategory,UserAddress,UserPaymentCards,UserAllergicItem, UserDummyData};
 use Log;
 use App\Http\Traits\CustomerSignupSuccessEmailTrait;
 use App\Http\Traits\InfluencerTrait;
@@ -1192,16 +1192,16 @@ class AuthController extends BaseController
                 $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
                // pr($user->toArray());
                 if (!$user) {
-                    if(session()->get("locale") == "ar"){
-                        return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك'), 404);
-                    }
-                    return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404);
-                 /*   $registerUser = $this->registerViaPhone($request)->getData();
-                    if ($registerUser->status == 'Success') {
-                        $user = $registerUser->data;
+                    // if(session()->get("locale") == "ar"){
+                    //     return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك'), 404);
+                    // }
+                    // return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404);
+                $registerUser = $this->registerViaPhone($request)->getData();
+                 if ($registerUser->status == 'Success') {
+                     $user = $registerUser->data;
                     } else {
-                        return $this->errorResponse(__('Invalid data'), 404);
-                    }*/
+                         return $this->errorResponse(__('Invalid data'), 404);
+                 }
                 } else {
                     $user->phone_token = $phoneCode;
                     $user->phone_token_valid_till = $sendTime;
@@ -1438,7 +1438,9 @@ class AuthController extends BaseController
             $user->type = 1;
             $user->status = 1;
             $user->role_id = 1;
-            $user->name = 'RO'.substr($req->phone_number, -6);
+            // pick name and image from user_dummy_data
+            $dummy = UserDummyData::inRandomOrder()->first();
+            $user->name = $dummy->name ?? ('RO'.substr($req->phone_number, -6));
             $user->email = $email; //$req->email;
             $user->is_email_verified = 0;
             $user->is_phone_verified = 0;
@@ -1449,6 +1451,9 @@ class AuthController extends BaseController
             $user->phone_number = $req->phone_number;
             $user->phone_token_valid_till = $req->sendTime;
             $user->timezone = $client_timezone;
+            if (!empty($dummy) && !empty($dummy->image)) {
+                $user->image = $dummy->image;
+            }
             // $user->email_token_valid_till = $sendTime;
             // $user->password = Hash::make($req->password);
             $user->save();

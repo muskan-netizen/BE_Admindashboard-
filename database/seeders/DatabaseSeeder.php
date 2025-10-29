@@ -52,6 +52,7 @@ class DatabaseSeeder extends Seeder
               MainRoleSeeder::class,
               MainPermissionSeeder::class,
               ShippingOptionSeeder::class
+              ,UserDummyDataSeeder::class
           ]);
         // $this->call(UsersTableSeeder::class);
        // $this->call(AppStylingOptionsTableSeeder::class);
