@@ -15,16 +15,18 @@ class UserDummyDataSeeder extends Seeder
     public function run()
     {
         $items = [
-            ['name' => 'Yash Chauhan', 'image' => 'prods/nhehtcZPaid6d2JuP3JWv8c6DMWX1KQMKxCo2veS.png'],
-            ['name' => 'Anshul Garg', 'image' => 'prods/SsdhTAt99tYTsCR1xdGheKZUAbhElw8KnUJEA463.png'],
-            ['name' => 'Harsh Sharma', 'image' => 'prods/tANJABWO8G6f9uljvYTKc3KxT9F1QTcx5yVZD5th.png'],
-            ['name' => 'Priya Verma', 'image' => 'prods/6yX3IjkJAXFUdUDYSFcJ0xKw5XqkNzKNQtGmheKS.jpg'],
-            ['name' => 'Rohan Mehta', 'image' => 'prods/nhehtcZPaid6d2JuP3JWv8c6DMWX1KQMKxCo2veS.png'],
-            ['name' => 'Neha Kapoor', 'image' => 'prods/6yX3IjkJAXFUdUDYSFcJ0xKw5XqkNzKNQtGmheKS.jpg'],
-            ['name' => 'Aarav Singh', 'image' => 'prods/nhehtcZPaid6d2JuP3JWv8c6DMWX1KQMKxCo2veS.png'],
-            ['name' => 'Kavya Joshi', 'image' => 'prods/6yX3IjkJAXFUdUDYSFcJ0xKw5XqkNzKNQtGmheKS.jpg'],
-            ['name' => 'Mohit Bansal', 'image' => 'prods/nhehtcZPaid6d2JuP3JWv8c6DMWX1KQMKxCo2veS.png'],
-            ['name' => 'Isha Malhotra', 'image' => 'prods/6yX3IjkJAXFUdUDYSFcJ0xKw5XqkNzKNQtGmheKS.jpg'],
+            [
+                ['name' => 'RedFox', 'image' => 'prods/nhehtcZPaid6d2JuP3JWv8c6DMWX1KQMKxCo2veS.png'],
+                ['name' => 'BlueTiger', 'image' => 'prods/SsdhTAt99tYTsCR1xdGheKZUAbhElw8KnUJEA463.png'],
+                ['name' => 'SilverWolf', 'image' => 'prods/tANJABWO8G6f9uljvYTKc3KxT9F1QTcx5yVZD5th.png'],
+                ['name' => 'GoldenEagle', 'image' => 'prods/6yX3IjkJAXFUdUDYSFcJ0xKw5XqkNzKNQtGmheKS.jpg'],
+                ['name' => 'ShadowBear', 'image' => 'prods/nhehtcZPaid6d2JuP3JWv8c6DMWX1KQMKxCo2veS.png'],
+                ['name' => 'CrystalFox', 'image' => 'prods/6yX3IjkJAXFUdUDYSFcJ0xKw5XqkNzKNQtGmheKS.jpg'],
+                ['name' => 'ThunderLion', 'image' => 'prods/nhehtcZPaid6d2JuP3JWv8c6DMWX1KQMKxCo2veS.png'],
+                ['name' => 'AuroraWolf', 'image' => 'prods/6yX3IjkJAXFUdUDYSFcJ0xKw5XqkNzKNQtGmheKS.jpg'],
+                ['name' => 'FrostDragon', 'image' => 'prods/nhehtcZPaid6d2JuP3JWv8c6DMWX1KQMKxCo2veS.png'],
+                ['name' => 'StarPhoenix', 'image' => 'prods/6yX3IjkJAXFUdUDYSFcJ0xKw5XqkNzKNQtGmheKS.jpg'],
+            ],
         ];
 
         foreach ($items as $item) {
