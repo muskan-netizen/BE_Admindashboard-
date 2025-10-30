@@ -1946,7 +1946,7 @@ class HomeController extends BaseController
                 'lat' => 'required|numeric',
                 'lng' => 'required|numeric',
                 'shortcode' => 'required|string',
-                'type' => 'required|in:category,vendor,product',
+                'type' => 'required|in:category,vendor,product,similar_products',
             ]);
 
             if ($validator->fails()) {
@@ -2026,6 +2026,8 @@ class HomeController extends BaseController
                 return $this->fetchVendors($lat, $lng, $categoryId);
             case 'product':
                 return $this->fetchProducts($vendorId,$categoryId);
+            case 'similar_products':
+                return $this->fetchSimilarProducts($vendorId,$categoryId);
             default:
                 return [];
         }
@@ -2150,6 +2152,41 @@ class HomeController extends BaseController
                         'id' => $variant->id,
                         'title' => $variant->title,
                         'price' => $variant->price
+                    ];
+                })
+            ];
+        });
+    }
+
+    /**
+     * Fetch similar products for the same vendor but from different categories
+     */
+    private function fetchSimilarProducts($vendorId, $categoryId)
+    {
+        $products = Product::select('id', 'sku', 'title', 'url_slug', 'vendor_id', 'category_id')
+            ->where('vendor_id', $vendorId)
+            ->where('is_live', 1)
+            ->where('category_id', '!=', $categoryId)
+            ->with(['variants' => function ($query) {
+                $query->select('id', 'product_id', 'sku', 'title', 'price', 'status')
+                    ->where('status', 1);
+            }])
+            ->limit(20)
+            ->get();
+
+        return $products->map(function ($product) {
+            return [
+                'id' => $product->id,
+                'name' => $product->title,
+                'sku' => $product->sku,
+                'category_id' => $product->category_id,
+                'url_slug' => $product->url_slug,
+                'vendor_id' => $product->vendor_id,
+                'variants' => $product->variants->map(function ($variant) {
+                    return [
+                        'id' => $variant->id,
+                        'title' => $variant->title,
+                        'price' => $variant->price,
                     ];
                 })
             ];
