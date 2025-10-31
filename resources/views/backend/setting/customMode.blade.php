@@ -933,3 +933,17 @@
             name="product_measurment" id="product_measurment" />
     </div>
 </div>
+
+<div class="col-md-4">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="ai_ordering_switch" class="mr-2 mb-0">{{ __('AI Ordering') }}<small
+                class="d-block pr-5">{{ __('Enable AI-powered conversational ordering with smart product recommendations.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="ai_ordering"
+                id="ai_ordering_switch" class="form-control checkbox_change"
+                data-className="ai_ordering" data-color="#43bee1"
+                @if (getAdditionalPreference(['ai_ordering'])['ai_ordering']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (getAdditionalPreference(['ai_ordering'])['ai_ordering'] == 1) value="1" @else value="0" @endif
+            name="ai_ordering" id="ai_ordering" />
+    </div>
+</div>
