@@ -2114,13 +2114,7 @@ class HomeController extends BaseController
                 'banner' => $vendor->banner,
                 'latitude' => $vendor->latitude,
                 'longitude' => $vendor->longitude,
-                'categories' => $vendor->vendorCategories->map(function($vc) {
-                    return [
-                        'id' => $vc->category->id,
-                        'name' => $vc->category->name,
-                        'slug' => $vc->category->slug
-                    ];
-                })
+               
             ];
         });
     }
