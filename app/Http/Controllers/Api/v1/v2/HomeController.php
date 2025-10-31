@@ -1952,6 +1952,7 @@ class HomeController extends BaseController
             if ($validator->fails()) {
                 return $this->errorResponse('Invalid parameters provided', 400);
             }
+            
 
             $lat = $request->lat;
             $lng = $request->lng;
@@ -2133,13 +2134,23 @@ class HomeController extends BaseController
             ->where('vendor_id', $vendorId)
             ->where('category_id', $categoryId)
             ->where('is_live', 1)
-            ->with(['variants' => function($query) {
-                $query->select('id', 'product_id', 'sku', 'title', 'price', 'status')
-                    ->where('status', 1);
-            }])
+            ->with([
+                'variants' => function($query) {
+                    $query->select('id', 'product_id', 'sku', 'title', 'price', 'status')
+                        ->where('status', 1);
+                },
+                'media.image'
+            ])
             ->get();
 
         return $products->map(function($product) {
+            // Get product image
+            $imageUrl = null;
+            if ($product->media->isNotEmpty() && $product->media->first()->image) {
+                $image = $product->media->first()->image->path;
+                $imageUrl = $image['proxy_url'] . '300/300' . $image['image_path'];
+            }
+
             return [
                 'id' => $product->id,
                 'name' => $product->title,
@@ -2147,6 +2158,7 @@ class HomeController extends BaseController
                 'category_id' => $product->category_id,
                 'url_slug' => $product->url_slug,
                 'vendor_id' => $product->vendor_id,
+                'image' => $imageUrl,
                 'variants' => $product->variants->map(function($variant) {
                     return [
                         'id' => $variant->id,
@@ -2167,14 +2179,24 @@ class HomeController extends BaseController
             ->where('vendor_id', $vendorId)
             ->where('is_live', 1)
             ->where('category_id', '!=', $categoryId)
-            ->with(['variants' => function ($query) {
-                $query->select('id', 'product_id', 'sku', 'title', 'price', 'status')
-                    ->where('status', 1);
-            }])
+            ->with([
+                'variants' => function ($query) {
+                    $query->select('id', 'product_id', 'sku', 'title', 'price', 'status')
+                        ->where('status', 1);
+                },
+                'media.image'
+            ])
             ->limit(20)
             ->get();
 
         return $products->map(function ($product) {
+            // Get product image
+            $imageUrl = null;
+            if ($product->media->isNotEmpty() && $product->media->first()->image) {
+                $image = $product->media->first()->image->path;
+                $imageUrl = $image['proxy_url'] . '300/300' . $image['image_path'];
+            }
+
             return [
                 'id' => $product->id,
                 'name' => $product->title,
@@ -2182,6 +2204,7 @@ class HomeController extends BaseController
                 'category_id' => $product->category_id,
                 'url_slug' => $product->url_slug,
                 'vendor_id' => $product->vendor_id,
+                'image' => $imageUrl,
                 'variants' => $product->variants->map(function ($variant) {
                     return [
                         'id' => $variant->id,
