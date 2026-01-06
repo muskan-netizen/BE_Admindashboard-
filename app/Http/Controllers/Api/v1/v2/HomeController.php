@@ -1564,8 +1564,14 @@ class HomeController extends BaseController
             $preferences->rating = $request->rating;
         }
 
-        if(count($vendor_ids) > 0){
-            $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids,null,$this->venderFilterOpenClose,$this->venderFilterbest,$request->nearest_vendor);
+        if (in_array('vendors', $enable_layout)) {  # if enable vendors section in
+            if(count($vendor_ids) > 0){
+                $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids,null,$this->venderFilterOpenClose,$this->venderFilterbest,$request->nearest_vendor);
+            } else {
+                $vendors = [];
+            }
+        } else {
+            $vendors = [];
         }
 
         $trendingVendors = [];

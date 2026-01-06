@@ -615,27 +615,33 @@ trait HomePageTrait
         }
 
          
-        if(count($vendor_ids) > 0){
-            $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids,null,$this->venderFilterOpenClose,$this->venderFilterbest);
-            $preferences = ClientPreference::first();
-            $getCartController = new CartController();
-            foreach($vendors as $k => $vendorData){
-                if($preferences->static_delivey_fee != 1){
-                    $deliver_response_array = $getCartController->getDeliveryFeeDispatcher($vendorData->id, $dispatcher_tags='');
-                    // lineeeeeeeeeeeeeeeee
-                
-                if (!empty($deliver_response_array[0])){
-                    $totalRoute = '1';
-                    $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format(($deliver_response_array[0]['delivery_fee']*$totalRoute), 2, '.', ''):'0.00';
-                    $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
-                    $vendorData->delivery_fee = $deliver_charge;
-                    $vendorData->delivery_time = $delivery_duration;
+        if (in_array('vendors', $enable_layout)) {  # if enable vendors section in
+            if(count($vendor_ids) > 0){
+                $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids,null,$this->venderFilterOpenClose,$this->venderFilterbest);
+                $preferences = ClientPreference::first();
+                $getCartController = new CartController();
+                foreach($vendors as $k => $vendorData){
+                    if($preferences->static_delivey_fee != 1){
+                        $deliver_response_array = $getCartController->getDeliveryFeeDispatcher($vendorData->id, $dispatcher_tags='');
+                        // lineeeeeeeeeeeeeeeee
+                    
+                    if (!empty($deliver_response_array[0])){
+                        $totalRoute = '1';
+                        $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format(($deliver_response_array[0]['delivery_fee']*$totalRoute), 2, '.', ''):'0.00';
+                        $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
+                        $vendorData->delivery_fee = $deliver_charge;
+                        $vendorData->delivery_time = $delivery_duration;
+                    }
+                    }elseif($preferences->static_delivey_fee == 1 ){
+                        $vendorData->delivery_fee = 0.00;
+                        $vendorData->delivery_time = 00.00;
+                    } 
                 }
-                }elseif($preferences->static_delivey_fee == 1 ){
-                    $vendorData->delivery_fee = 0.00;
-                    $vendorData->delivery_time = 00.00;
-                } 
+            } else {
+                $vendors = [];
             }
+        } else {
+            $vendors = [];
         }
         
         $trendingVendors = [];
