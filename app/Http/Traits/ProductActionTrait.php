@@ -656,10 +656,10 @@ trait ProductActionTrait{
                                             * sin(radians(`vendors`.`latitude`))),2
                                             ) AS `lineOfSightDistance`";
 
-                $joinQuery  = " LEFT JOIN `vendor_categories` ON `vendor_categories`.`vendor_id`= `vendors`.`id` ";
+                $joinQuery  = " LEFT JOIN `vendor_categories` ON `vendor_categories`.`vendor_id`= `vendors`.`id` AND `vendor_categories`.`status` = 1 ";
                 $joinQuery .= " LEFT JOIN `categories` ON `categories`.`id`= `vendor_categories`.`category_id` ";
                 $joinQuery .= " LEFT JOIN `category_translations` ON `category_translations`.`category_id`= `categories`.`id` AND `category_translations`.`language_id` = $language_id ";
-                $whereQuery  = " where `vendors`.`status` = 1 AND `vendor_categories`.`status` = 1";
+                $whereQuery  = " where `vendors`.`status` = 1";
 
             $whereInQuery = '';
 
@@ -697,6 +697,14 @@ trait ProductActionTrait{
             //}
 
             $vendors = DB::select( DB::raw($mainQuery),['user_id' => Auth::id()]);
+            
+            // Debug logging - remove after fixing
+            \Log::info('getVendorForHomePage Result', [
+                'vendor_ids_input' => $vendor_ids,
+                'vendors_returned_count' => count($vendors),
+                'query' => $mainQuery,
+                'has_vendors' => !empty($vendors)
+            ]);
 
             $vendor_ids = [];
             $user = Auth::user();
