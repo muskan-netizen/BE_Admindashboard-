@@ -34,6 +34,6 @@ io.on('connection', (socket) => {
         console.log(socket.handshake.query.user_id+' user disconnected');
     });
 })
-server.listen(sourceFile.socket_port, () => {
+server.listen(sourceFile.socket_port, () => { 
     console.log('Server is running');
 })
