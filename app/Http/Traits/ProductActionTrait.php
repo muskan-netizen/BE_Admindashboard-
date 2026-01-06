@@ -20,6 +20,11 @@ trait ProductActionTrait{
     {
         try
         {
+            // Validate and set default type if empty
+            if (empty($type) || !in_array($type, ['delivery', 'pickup', 'dine_in', 'takeaway'])) {
+                $type = 'delivery';
+            }
+            
             $vendors = Vendor::vendorOnline()->select('id')->where('status', 1)->where($type, 1);
             
             // Debug: Check counts at each filter stage

@@ -585,7 +585,10 @@ trait HomePageTrait
         $selected_products_title = $titles['selected_products_title'] ?? null;
         $trending_vendors_title = $titles['trending_vendors_title'] ?? null;
 
-        $vendor_ids = $this->getRandomVendorIdsForHomePage($preferences, $request->type, $preferences['is_admin_vendor_rating'], $latitude, $longitude,@$request->momo);
+        // Ensure type has a default value
+        $type = $request->has('type') && !empty($request->type) ? $request->type : 'delivery';
+        
+        $vendor_ids = $this->getRandomVendorIdsForHomePage($preferences, $type, $preferences['is_admin_vendor_rating'], $latitude, $longitude,@$request->momo);
         
         // Debug logging - remove after fixing
         \Log::info('Vendor Debug Info', [
@@ -593,7 +596,7 @@ trait HomePageTrait
             'vendors_in_layout' => in_array('vendors', $enable_layout),
             'vendor_ids_count' => count($vendor_ids),
             'vendor_ids' => $vendor_ids,
-            'request_type' => $request->type,
+            'request_type' => $type,
             'latitude' => $latitude,
             'longitude' => $longitude,
             'is_hyperlocal' => $preferences['is_hyperlocal'] ?? null,
@@ -608,7 +611,7 @@ trait HomePageTrait
         }
 
         Session::forget('vendorType');
-        Session::put('vendorType', $request->type);
+        Session::put('vendorType', $type);
       
         if ($preferences) {
             // check vendor Subscription0
@@ -630,7 +633,7 @@ trait HomePageTrait
          
         if (in_array('vendors', $enable_layout)) {  # if enable vendors section in
             if(count($vendor_ids) > 0){
-                $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids,null,$this->venderFilterOpenClose,$this->venderFilterbest);
+                $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $timezone, $additionalPreference['is_admin_vendor_rating'], $type, $language_id, $latitude, $longitude, $vendor_ids,null,$this->venderFilterOpenClose,$this->venderFilterbest);
                 $preferences = ClientPreference::first();
                 $getCartController = new CartController();
                 foreach($vendors as $k => $vendorData){
@@ -667,7 +670,7 @@ trait HomePageTrait
             ->where('end_date', '>=', $now)
             ->pluck('vendor_id')->toArray();
             if(count($trending_vendors) > 0){
-                $trendingVendors = $this->getVendorForHomePage($preferences, "trending_vendors", $timezone, 0, $request->type, $language_id, $latitude, $longitude, $trending_vendors);
+                $trendingVendors = $this->getVendorForHomePage($preferences, "trending_vendors", $timezone, 0, $type, $language_id, $latitude, $longitude, $trending_vendors);
             }
         } 
         
@@ -680,7 +683,7 @@ trait HomePageTrait
         $mostSellingVendors = []; //best_sellers
         if (in_array('best_sellers', $enable_layout)) {
             if(count($vendor_ids) > 0){
-                $dataMo = $this->getVendorForHomePage($preferences, "best_sellers", $timezone, 0, $request->type, $language_id, $latitude, $longitude, $vendor_ids);
+                $dataMo = $this->getVendorForHomePage($preferences, "best_sellers", $timezone, 0, $type, $language_id, $latitude, $longitude, $vendor_ids);
                 if(sizeof($dataMo)){
                     $mostSellingVendors = $dataMo;
                 }
@@ -689,41 +692,41 @@ trait HomePageTrait
         //pr($mostSellingVendors);
         $on_sale_product_details =$on_sale_products = [];
         if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in 
-            $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', 'on_sale', $request->type,$on_sale_title, $p_dim, $getSubCatIds);
+            $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', 'on_sale', $type,$on_sale_title, $p_dim, $getSubCatIds);
         }
         $new_product_details =$new_products = [];
         if (in_array('new_products', $enable_layout)) {  # if enable new_products section in 
-            $new_products = $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type,$new_products_title,$p_dim, $getSubCatIds);
+            $new_products = $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $type,$new_products_title,$p_dim, $getSubCatIds);
         }
         $feature_product_details = $feature_products = [];
       
         if (in_array('featured_products', $enable_layout)) {  # if enable featured_products section in
-            $feature_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type, $featured_products_title,$p_dim, $getSubCatIds);
+            $feature_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $type, $featured_products_title,$p_dim, $getSubCatIds);
         } 
         
         $top_rated_products = '';
          //get long term service 
         $long_term_service_products =[];
         if( in_array('long_term_service', $enable_layout) && @$additionalPreference['is_long_term_service'] == 1 && count($vendor_ids) > 0){ # if enable long_term_service section in 
-            $long_term_service_products = $this->longTermServiceProducts($vendor_ids, $additionalPreference, $language_id, $currency_id,'', $request->type,$p_dim);
+            $long_term_service_products = $this->longTermServiceProducts($vendor_ids, $additionalPreference, $language_id, $currency_id,'', $type,$p_dim);
         }
         //pr($set_template->template_id);
         //if($set_template->template_id ==10){
-            $recently_viewed = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'recent_viewed', $request->type, $featured_products_title,$p_dim, $getSubCatIds);
+            $recently_viewed = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'recent_viewed', $type, $featured_products_title,$p_dim, $getSubCatIds);
             //$spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get spotlight product i.e. max discounted products
-            $spot_light_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'spotlight_deals', $request->type, $featured_products_title,$p_dim, $getSubCatIds);
+            $spot_light_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'spotlight_deals', $type, $featured_products_title,$p_dim, $getSubCatIds);
             // pr($spot_light_products);
             //$single_category_product_ids = $this->getSingleCategoryProducts(); // get single selected category's products
-            $single_category_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'single_category_products', $request->type, $featured_products_title,$p_dim, $getSubCatIds);
+            $single_category_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'single_category_products', $type, $featured_products_title,$p_dim, $getSubCatIds);
             // dd($single_category_products);
             //$selected_product_ids = $this->getSelectedProducts(); // get single selected category's products
-            $selected_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'selected_products', $request->type, $featured_products_title,$p_dim, $getSubCatIds);
+            $selected_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'selected_products', $type, $featured_products_title,$p_dim, $getSubCatIds);
 
             //$popular_product_ids = $this->getMostPopularProducts();  // get selected products to display 
-            $popular_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'popular_products', $request->type, $featured_products_title,$p_dim, $getSubCatIds);
+            $popular_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'popular_products', $type, $featured_products_title,$p_dim, $getSubCatIds);
 
             //$top_rated_products_ids = $this->getTopRatedProducts();  // get selected products to display 
-            $top_rated_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'top_rated_products', $request->type, $featured_products_title,$p_dim, $getSubCatIds);
+            $top_rated_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'top_rated_products', $type, $featured_products_title,$p_dim, $getSubCatIds);
 
            // $ordered_products = $this->vendorProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $this->getLastProductOrdered(), 10);
 
