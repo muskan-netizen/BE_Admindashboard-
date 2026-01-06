@@ -586,6 +586,19 @@ trait HomePageTrait
         $trending_vendors_title = $titles['trending_vendors_title'] ?? null;
 
         $vendor_ids = $this->getRandomVendorIdsForHomePage($preferences, $request->type, $preferences['is_admin_vendor_rating'], $latitude, $longitude,@$request->momo);
+        
+        // Debug logging - remove after fixing
+        \Log::info('Vendor Debug Info', [
+            'enable_layout' => $enable_layout,
+            'vendors_in_layout' => in_array('vendors', $enable_layout),
+            'vendor_ids_count' => count($vendor_ids),
+            'vendor_ids' => $vendor_ids,
+            'request_type' => $request->type,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            'is_hyperlocal' => $preferences['is_hyperlocal'] ?? null,
+        ]);
+        
         $home_page_labels = HomePageLabel::with('translations')->get();
         if (in_array('brands', $enable_layout)) {     # if enable brands section in
              

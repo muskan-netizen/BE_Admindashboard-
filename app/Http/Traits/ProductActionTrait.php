@@ -21,21 +21,46 @@ trait ProductActionTrait{
         try
         {
             $vendors = Vendor::vendorOnline()->select('id')->where('status', 1)->where($type, 1);
+            
+            // Debug: Check counts at each filter stage
+            $count_after_online = $vendors->count();
+            
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                     $point = new Point($longitude, $latitude);
                     $vendors->whereHas('serviceArea', function ($query) use ($point) {
                         $query->whereRaw("ST_Contains(service_areas.polygon, ST_GeomFromText(?))", [$point->toWKT()]);
                     });
             }
+            
+            $count_after_hyperlocal = $vendors->count();
 
             if($is_admin_vendor_rating == 1){
                 $vendors = $vendors->orderBy('admin_rating', 'DESC');
             }else{
                 $vendors = $vendors->inRandomOrder();
             }
-            return $vendors->pluck('id')->toArray();
+            
+            $vendor_ids = $vendors->pluck('id')->toArray();
+            
+            // Debug logging - remove after fixing
+            \Log::info('getRandomVendorIdsForHomePage Debug', [
+                'type' => $type,
+                'count_after_online_status' => $count_after_online,
+                'count_after_hyperlocal' => $count_after_hyperlocal,
+                'final_vendor_ids_count' => count($vendor_ids),
+                'is_hyperlocal' => $preferences->is_hyperlocal ?? 0,
+                'has_lat_lng' => !empty($latitude) && !empty($longitude),
+                'exception' => null
+            ]);
+            
+            return $vendor_ids;
         }
         catch (\Exception $e) {
+            \Log::error('getRandomVendorIdsForHomePage Exception', [
+                'message' => $e->getMessage(),
+                'type' => $type,
+                'trace' => $e->getTraceAsString()
+            ]);
             return [];
         }
     }
