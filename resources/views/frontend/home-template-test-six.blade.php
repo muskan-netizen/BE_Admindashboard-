@@ -212,6 +212,38 @@
       </div>
    </section>
 
+<div id="videoContainer" class="pb-2">
+  <section class="position-relative overflow-hidden w-100" 
+           style="height:50vh; min-height:300px;">
+    <iframe
+      id="videoFrame"
+      class="position-absolute top-50 start-50 translate-middle"
+      width="100%"
+      height="100%"
+      src=""
+      title="Video"
+      frameborder="0"
+      allow="autoplay; fullscreen"
+      allowfullscreen> 
+    </iframe>
+  </section>
+</div>
+
+<div class="pb-2">
+<section class="position-relative overflow-hidden w-100"
+         style="height:50vh; min-height:300px;">
+
+  <!-- Background Image -->
+  <img src="ourprocess.png"
+       class="w-100 h-100 object-fit-cover"
+       alt="Our Process">
+  <!-- Top Title -->
+  <div class="position-absolute top-0 start-0 w-100 text-center text-white py-4">
+    <h2 class="fw-bold m-0">Our Process</h2>
+  </div>
+
+</section>
+</div>
 
 
    <!-- <section class="alSixMainMenu p-0">
@@ -621,6 +653,7 @@
    	</div>
    	<% }); %>
 </script><!-- vendors_template end -->
+
 <!-- banner_template start -->
 <script type="text/template" id="banner_template" >
    <% _.each(brands, function(brand, k){%>
@@ -730,6 +763,19 @@
    %>
 </script><!-- cities cities end -->
 <!-- footer code in layouts.store/footercontent-template-two -->
+ <script>
+  const iframe = document.getElementById("videoFrame");
+  const container = document.getElementById("videoContainer");
+
+  const originalSrc = iframe.getAttribute("src");
+
+  if (!originalSrc || originalSrc.trim() === "") {
+    container.style.display = "none";
+  }
+</script>
+
+
+
 @endsection
 @section('home-page')
  {{-- <script type="text/javascript" src="{{asset('front-assets/js/homepage-six.js')}}"></script> --}}

@@ -1,0 +1,22 @@
+[90m= [39m[34;4mDoctrine\DBAL\Driver\PDOConnection[39;24m {#532
+    [34minTransaction[39m: [36mfalse[39m,
+    [34mattributes[39m: {
+      [34mCASE[39m: [36mNATURAL[39m,
+      [34mERRMODE[39m: [36mEXCEPTION[39m,
+      [34mAUTOCOMMIT[39m: [35m1[39m,
+      [34mPERSISTENT[39m: [36mfalse[39m,
+      [34mDRIVER_NAME[39m: "[32mmysql[39m",
+      [34mSERVER_INFO[39m: "[32mUptime: 351483  Threads: 4  Questions: 3093122  Slow queries: 0  Opens: 3663  Flush tables: 3  Open tables: 3184  Queries per second avg: 8.800[39m",
+      [34mORACLE_NULLS[39m: [36mNATURAL[39m,
+      [34mCLIENT_VERSION[39m: "[32mmysqlnd 7.4.33[39m",
+      [34mSERVER_VERSION[39m: "[32m8.4.5[39m",
+      [34mSTATEMENT_CLASS[39m: [
+        "[32mDoctrine\DBAL\Driver\PDO\Statement[39m",
+        [],
+      ],
+      [34mEMULATE_PREPARES[39m: [35m0[39m,
+      [34mCONNECTION_STATUS[39m: "[32mrestocare-db-cluster.c96qqw046h2l.ap-south-1.rds.amazonaws.com via TCP/IP[39m",
+      [34mDEFAULT_FETCH_MODE[39m: [36mBOTH[39m,
+    },
+  }
+

@@ -14,6 +14,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Contracts\Role;
+use Laravel\Sanctum\HasApiTokens;
+
 
 class User extends Authenticatable implements Wallet, WalletFloat, Auditable
 {
@@ -23,6 +25,7 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     use HasWalletFloat;
     use SoftDeletes;
     use HasRoles;
+    use HasApiTokens;
     /**
      * The attributes that are mass assignable.
      *

@@ -23,7 +23,7 @@ Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], funct
         Route::post('register', 'Api\v1\AuthController@signup');
         Route::post('resetPassword', 'Api\v1\AuthController@resetPassword');
         Route::post('forgotPassword', 'Api\v1\AuthController@forgotPassword');
-        Route::post('vendor-login', 'Api\v1\AuthController@vendorlogin');
+        Route::post('vendor-login', 'Api\v1\c@vendorlogin');
 
     });
 });

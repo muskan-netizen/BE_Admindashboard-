@@ -49,8 +49,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                 </div>
 
                 <div class="row mt-4">
-
-                    <div class="col-md-8">
+                        <div class="col-md-8">
                         @if((app('request')->input('step') == '1' || empty(app('request')->input('step'))) && app('request')->input('addons') != 1)
 
                          <!-- Start Main Nav -->
@@ -72,14 +71,14 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
 
                         @endif
 
-                        <div class="card-box ">
+                        <div class="card-box">
                                      <!-- static html -->
 
                                 @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
                                      @if(!empty($category->childs) && count($category->childs) > 0)
 
                                     <!-- Start Conent Wrapper -->
-                                    <div id='main-wrapper'  class="@if(app('request')->input('addons') == 1) d-none @endif">
+                                    <div id='main-wrapper '  class="@if(app('request')->input('addons') == 1) d-none @endif">
                                                 @foreach ($category->childs as $key => $childs)
                                                
                                                 @if( in_array($childs->type_id , [8,12]))
@@ -250,15 +249,16 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                                 @foreach($listData as $key => $data)
 
                                                 {{-- new product design  --}}
-                                                <div class="row classes_wrapper no-gutters align-items-center" href="#">
-                                                    <div class="col-md-9 col-sm-8 pr-md-2">
+                                                <div class="row classes_wrapper no-gutters align-items-center" >
+
+                                                    <div class="col-md-9 col-sm-8 pr-md-2" onclick="handleServiceClick()">
                                                         <h5 class="mb-1"><b>{!! $data->translation_title !!}</b></h5>
                                                         <span class="mb-1 font-weight-bold">{!! $data->vendor->name !!}</span>
                                                         <div class="productDetails pr-2">
                                                             <p class="mb-1">{!! $data->translation_description !!}</p>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-3 col-sm-4 mb-3">
+                                                    <div class="col-md-3 col-sm-4 mb-3" onclick="handleServiceClick()">
                                                         <?php $imagePath = $imagePath2 = '';
                                                             $mediaCount = count($data->media);
                                                             for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
@@ -612,14 +612,10 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                 </div>
 
                             @endif
-
                         </div>
-
-
-
-
                     </div>
-
+                    
+                    <!-- Cart Section -->
                     <div class="col-md-4 side-card">
                         <div class="card-box">
                             <div class="product-order">
@@ -798,16 +794,763 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                             @endif
                         </div>
                     </div>
+                    </div>
                 </div>
-
-
             </div>
         </div>
     </div>
+
+
+{{-- Add this modal at the end of your section, before the closing </section> tag --}}
+<!-- Product Detail Modal -->
+
+<!-- <div class="modal fade" id="productDetailModal" tabindex="-1" role="dialog" aria-labelledby="productDetailModalLabel" aria-hidden="true">
+    
+    <div>
+
+    </div>
+    <div>
+
+    </div>
+</div> -->
+<div class="modal fade" id="productDetailModal" tabindex="-1" role="dialog" aria-labelledby="productDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productDetailModalLabel">Service Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <!-- Product Image Section -->
+                        <div class="col-md-6 mb-4">
+                            <div id="productCarousel" class="carousel slide" data-ride="carousel">
+                                <div class="carousel-inner" id="modalCarouselInner">
+                                    <!-- Images will be loaded here dynamically -->
+                                </div>
+                                <a class="carousel-control-prev" href="#productCarousel" role="button" data-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#productCarousel" role="button" data-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Product Details Section -->
+                        <div class="col-md-6">
+                            <h4 id="modalProductTitle" class="mb-3"></h4>
+                            <p id="modalProductVendor" class="text-muted mb-3"></p>
+                           
+                            
+                            <!-- Pricing Section -->
+                            <div class="price-section mb-4">
+                                <h5 id="modalProductPrice" class="text-primary mb-2"></h5>
+                                <p id="modalProductDuration" class="text-muted"></p>
+                            </div>
+                            
+                            <!-- Add to Cart Button -->
+                            <div id="modalProductButtons" class="mt-4">
+                                <!-- Buttons will be loaded here dynamically -->
+                            </div>
+                             <div id="modalProductDescription" class="mb-4"></div>
+                            <!-- Additional Information -->
+                            <div class="additional-info mt-4 pt-4 border-top">
+                                <h6 class="mb-3">Service Information:</h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="fa fa-check text-success mr-2"></i> Professional Service</li>
+                                    <li class="mb-2"><i class="fa fa-check text-success mr-2"></i> Verified Professionals</li>
+                                    <li class="mb-2"><i class="fa fa-check text-success mr-2"></i> Quality Guaranteed</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <a href="#" id="modalBookNowBtn" class="btn btn-primary">Book Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Custom Modal Styles */
+#productDetailModal .modal-lg {
+    max-width: 900px;
+}
+#productDetailModal .carousel-inner {
+    border-radius: 8px;
+    overflow: hidden;
+}
+#productDetailModal .carousel-item img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+#productDetailModal .price-section {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+}
+#productDetailModal .additional-info {
+    font-size: 14px;
+}
+#productDetailModal .modal-footer {
+    border-top: 1px solid #dee2e6;
+}
+.product-clickable {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.product-clickable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+</style>
+
+@section('custom-js')
+<script src="{{ asset('js/onDemand/GetDispatcherPrice.js') }}"></script>
+<script src="{{ asset('js/onDemand/AgentSlot.js') }}"></script>
+
+<script>
+// Define decimal_format function if it doesn't exist
+if (typeof decimal_format === 'undefined') {
+    function decimal_format(number, decimals = 2, decimal_separator = '.', thousands_separator = ',') {
+        number = parseFloat(number) || 0;
+        const fixed = number.toFixed(decimals);
+        const parts = fixed.split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousands_separator);
+        return parts.join(decimal_separator);
+    }
+}
+
+// Function to extract price from text
+function extractPriceFromText(text) {
+    if (!text) return 0;
+    
+    // Remove currency symbol and commas, then parse
+    text = text.replace(/[^\d.-]/g, '');
+    const price = parseFloat(text);
+    return isNaN(price) ? 0 : price;
+}
+
+// Function to extract duration from text
+function extractDurationFromText(text) {
+    if (!text) return 0;
+    const match = text.match(/(\d+)\s*min/);
+    return match ? parseInt(match[1]) : 0;
+}
+
+function handleServiceClick(event) {
+    // Get the clicked product row
+    const productRow = $(event.currentTarget).closest('.classes_wrapper');
+    if (!productRow.length) return;
+    
+    // Extract product data from the row
+    extractProductDataFromRow(productRow);
+}
+
+function extractProductDataFromRow($productRow) {
+    try {
+        console.log('Extracting data from row:', $productRow);
+        
+        // Extract title
+        const title = $productRow.find('h5 b').first().text().trim() || 
+                     $productRow.find('h5').first().text().trim() || 
+                     'Service';
+        
+        console.log('Title:', title);
+        
+        // Extract vendor name
+        let vendorName = 'Service Provider';
+        const vendorElement = $productRow.find('.font-weight-bold');
+        if (vendorElement.length) {
+            vendorName = vendorElement.text().trim();
+        }
+        console.log('Vendor:', vendorName);
+        
+        // Extract description
+        let description = 'No description available';
+        const descriptionElement = $productRow.find('.productDetails p');
+        if (descriptionElement.length) {
+            description = descriptionElement.html() || descriptionElement.text() || 'No description available';
+        }
+        console.log('Description:', description);
+        
+        // Extract price - look in multiple places
+        let variant_price = 0;
+        
+        // First try to get price from h5 in the productBookingBtns section
+        const priceElement = $productRow.find('.productBookingBtns h5');
+        if (priceElement.length) {
+            const priceText = priceElement.text();
+            console.log('Price text found:', priceText);
+            variant_price = extractPriceFromText(priceText);
+        }
+        
+        // If not found, check other h5 elements
+        if (!variant_price) {
+            $productRow.find('h5').each(function() {
+                const text = $(this).text();
+                const price = extractPriceFromText(text);
+                if (price && price > variant_price) {
+                    variant_price = price;
+                }
+            });
+        }
+        
+        console.log('Price extracted:', variant_price);
+        
+        // Extract duration
+        let minimum_duration_min = 0;
+        const durationSpan = $productRow.find('.alProductViewPriceMin');
+        if (durationSpan.length) {
+            minimum_duration_min = extractDurationFromText(durationSpan.text());
+        }
+        console.log('Duration:', minimum_duration_min);
+        
+        // Extract product ID and other attributes from buttons
+        let productId = '';
+        let variantId = '';
+        let vendorId = '';
+        let isRecurring = 0;
+        let isPriceFromDispatch = 0;
+        let inquiryOnly = 0;
+        
+        // Try to get from add button
+        const addButton = $productRow.find('.add_on_demand, .view_on_demand_price, .btn-solid');
+        if (addButton.length) {
+            productId = addButton.data('product_id') || 
+                       addButton.attr('id')?.replace('add_button_href', '')?.replace('added_button_href', '') || '';
+            variantId = addButton.data('variant_id') || '';
+            vendorId = addButton.data('vendor_id') || '';
+            
+            console.log('Button data:', {productId, variantId, vendorId});
+            
+            // Check button type
+            if (addButton.hasClass('add_on_demand_btn')) {
+                isRecurring = 1;
+            }
+            if (addButton.hasClass('view_on_demand_price')) {
+                isPriceFromDispatch = 1;
+            }
+            
+            // Check for inquiry button
+            const inquiryButton = $productRow.find('a[href*="inquiry"]');
+            if (inquiryButton.length) {
+                inquiryOnly = 1;
+            }
+        }
+        
+        // Extract images
+        const media = [];
+        const imageElements = $productRow.find('.class_img img');
+        imageElements.each(function() {
+            const src = $(this).attr('src');
+            if (src && src.trim() !== '') {
+                media.push({
+                    image: {
+                        path: {
+                            proxy_url: '',
+                            image_path: src
+                        }
+                    }
+                });
+            }
+        });
+        
+        console.log('Images found:', media.length);
+        
+        // If no images found, add a placeholder
+        if (media.length === 0) {
+            media.push({
+                image: {
+                    path: {
+                        proxy_url: '',
+                        image_path: 'https://via.placeholder.com/600x400?text=No+Image+Available'
+                    }
+                }
+            });
+        }
+        
+        // Get vendor slug from button href
+        let vendorSlug = '';
+        let urlSlug = '';
+        const bookButton = $productRow.find('.add_on_demand_btn');
+        if (bookButton.length && bookButton.attr('href')) {
+            const href = bookButton.attr('href');
+            const pathParts = href.split('/').filter(p => p);
+            if (pathParts.length >= 2) {
+                vendorSlug = pathParts[pathParts.length - 2];
+                urlSlug = pathParts[pathParts.length - 1];
+            }
+        }
+        
+        // Prepare product data object
+        const productData = {
+            id: productId || 'temp_' + Date.now(),
+            title: title,
+            vendor: {
+                name: vendorName,
+                slug: vendorSlug
+            },
+            description: description,
+            variant_price: variant_price,
+            variant_multiplier: 1,
+            currencySymbol: '{{ Session::get("currencySymbol") }}',
+            minimum_duration_min: minimum_duration_min,
+            is_recurring_booking: isRecurring,
+            url_slug: urlSlug,
+            media: media,
+            variant_id: variantId,
+            vendor_id: vendorId,
+            is_service_product_price_from_dispatch_forOnDemand: isPriceFromDispatch,
+            inquiry_only: inquiryOnly
+        };
+        
+        console.log('Final product data:', productData);
+        populateModal(productData);
+        $('#productDetailModal').modal('show');
+        
+    } catch (error) {
+        console.error('Error extracting product data:', error);
+        showError('Error loading product details. Please try again.');
+        $('#productDetailModal').modal('show');
+    }
+}
+
+function populateModal(product) {
+    try {
+        console.log('Populating modal with:', product);
+        
+        // Set title
+        $('#modalProductTitle').text(product.title || 'Service');
+        
+        // Set vendor
+        $('#modalProductVendor').text('By ' + (product.vendor?.name || 'Service Provider'));
+        
+        // Set description
+        if (product.description && product.description !== 'No description available') {
+            // Clean HTML and ensure proper formatting
+            let cleanDescription = product.description
+                .replace(/<br\s*\/?>/gi, '<br>')
+                .replace(/<p><\/p>/gi, '')
+                .trim();
+            
+            if (cleanDescription === '' || cleanDescription === '<p></p>') {
+                cleanDescription = '<p class="text-muted">No detailed description available.</p>';
+            }
+            
+            $('#modalProductDescription').html(cleanDescription);
+        } else {
+            $('#modalProductDescription').html('<p class="text-muted">No detailed description available.</p>');
+        }
+        
+        // Set price
+        if (product.variant_price && product.variant_price > 0) {
+            const price = product.variant_price * (product.variant_multiplier || 1);
+            const formattedPrice = decimal_format(price);
+            $('#modalProductPrice').html(`<span class="h4">${product.currencySymbol || '₹'}${formattedPrice}</span>`);
+        } else if (product.is_service_product_price_from_dispatch_forOnDemand == 1) {
+            $('#modalProductPrice').html('<span class="h4">Price on Dispatch</span>');
+        } else {
+            $('#modalProductPrice').html('<span class="h4">Contact for Price</span>');
+        }
+        
+        // Set duration
+        if (product.minimum_duration_min && product.minimum_duration_min > 0) {
+            $('#modalProductDuration').text('Minimum duration: ' + product.minimum_duration_min + ' minutes');
+        } else {
+            $('#modalProductDuration').text('Flexible duration');
+        }
+        
+        // Load images
+        loadProductImages(product.media || []);
+        
+        // Set up buttons
+        setupModalButtons(product);
+        
+        // Set book now button
+        const bookBtn = $('#modalBookNowBtn');
+        if (product.id && product.vendor_id) {
+            let bookUrl = 'javascript:void(0)';
+            let btnClass = 'add_on_demand';
+            let btnText = 'Book Now';
+            
+            if (product.is_recurring_booking == 1 && product.vendor?.slug && product.url_slug) {
+                bookUrl = '/product/' + product.vendor.slug + '/' + product.url_slug;
+                btnClass = 'add_on_demand_btn';
+                btnText = 'View Details';
+            }
+            
+            if (product.is_service_product_price_from_dispatch_forOnDemand == 1) {
+                btnClass = 'view_on_demand_price';
+                btnText = 'View Price';
+            }
+            
+            if (product.inquiry_only == 1) {
+                btnText = 'Inquiry Only';
+                bookUrl = 'javascript:void(0)';
+            }
+            
+            bookBtn
+                .attr('href', bookUrl)
+                .attr('data-product_id', product.id)
+                .attr('data-variant_id', product.variant_id || '')
+                .attr('data-vendor_id', product.vendor_id || '')
+                .attr('data-add_to_cart_url', '{{ $add_to_cart }}')
+                .removeClass('add_on_demand add_on_demand_btn view_on_demand_price btn-primary btn-secondary')
+                .addClass(btnClass + ' btn-primary')
+                .text(btnText);
+                
+            // Add click handler for non-redirecting buttons
+            if (bookUrl === 'javascript:void(0)' && product.inquiry_only != 1 && product.is_service_product_price_from_dispatch_forOnDemand != 1) {
+                bookBtn.off('click').on('click', function(e) {
+                    e.preventDefault();
+                    addToCartFromModal(this);
+                });
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error populating modal:', error);
+        showError('Error displaying product details. Please try again.');
+    }
+}
+
+function loadProductImages(mediaArray) {
+    const carouselInner = $('#modalCarouselInner');
+    carouselInner.empty();
+    
+    if (mediaArray && mediaArray.length > 0) {
+        let hasValidImages = false;
+        
+        mediaArray.forEach((media, index) => {
+            let imageUrl = '';
+            
+            // Handle different media object structures
+            if (media.image?.path?.proxy_url && media.image.path.image_path) {
+                imageUrl = media.image.path.proxy_url + media.image.path.image_path;
+            } else if (media.image?.path?.image_path) {
+                imageUrl = media.image.path.image_path;
+            } else if (media.image_path) {
+                imageUrl = media.image_path;
+            } else if (media.url) {
+                imageUrl = media.url;
+            } else if (typeof media === 'string') {
+                imageUrl = media;
+            }
+            
+            console.log('Processing image:', imageUrl);
+            
+            // If we have a valid image URL
+            if (imageUrl && imageUrl.trim() !== '') {
+                const itemClass = hasValidImages ? 'carousel-item' : 'carousel-item active';
+                const imgHtml = `
+                    <div class="${itemClass}">
+                        <img class="d-block w-100" src="${imageUrl}" alt="Product Image" 
+                             onerror="this.onerror=null; this.src='https://via.placeholder.com/600x400?text=Image+Not+Available'">
+                    </div>
+                `;
+                carouselInner.append(imgHtml);
+                hasValidImages = true;
+            }
+        });
+        
+        if (hasValidImages) {
+            // Show carousel controls if multiple images
+            const itemsCount = $('.carousel-item', carouselInner).length;
+            if (itemsCount > 1) {
+                $('.carousel-control-prev, .carousel-control-next').show();
+            } else {
+                $('.carousel-control-prev, .carousel-control-next').hide();
+            }
+        } else {
+            // Show placeholder if no valid images
+            showPlaceholderImage();
+        }
+    } else {
+        // Show placeholder if no images
+        showPlaceholderImage();
+    }
+    
+    function showPlaceholderImage() {
+        carouselInner.html(`
+            <div class="carousel-item active">
+                <img class="d-block w-100" src="https://via.placeholder.com/600x400?text=No+Image+Available" alt="No Image Available">
+            </div>
+        `);
+        $('.carousel-control-prev, .carousel-control-next').hide();
+    }
+}
+
+function setupModalButtons(product) {
+    const buttonsContainer = $('#modalProductButtons');
+    buttonsContainer.empty();
+    
+    // Only show buttons if not inquiry only
+    if (product.inquiry_only != 1) {
+        let buttonHtml = '';
+        const addToCartUrl = '{{ $add_to_cart }}';
+        
+        if (product.is_service_product_price_from_dispatch_forOnDemand == 1) {
+            buttonHtml = `
+                <button class="btn btn-primary btn-lg btn-block view_on_demand_price"
+                        data-variant_id="${product.variant_id || ''}"
+                        data-add_to_cart_url="${addToCartUrl}"
+                        data-vendor_id="${product.vendor_id || ''}"
+                        data-product_id="${product.id}">
+                    View Price
+                </button>
+            `;
+        } else {
+            const redirectUrl = product.is_recurring_booking == 1 && product.vendor?.slug && product.url_slug
+                ? '/product/' + product.vendor.slug + '/' + product.url_slug
+                : 'javascript:void(0)';
+                
+            const buttonClass = product.is_recurring_booking == 1 
+                ? 'btn-primary add_on_demand_btn' 
+                : 'btn-primary add_on_demand';
+            
+            const onClickHandler = product.is_recurring_booking == 1 
+                ? `window.location.href='${redirectUrl}'`
+                : 'addToCartFromModal(this)';
+            
+            buttonHtml = `
+                <button class="btn btn-lg btn-block ${buttonClass}"
+                        data-variant_id="${product.variant_id || ''}"
+                        data-add_to_cart_url="${addToCartUrl}"
+                        data-vendor_id="${product.vendor_id || ''}"
+                        data-product_id="${product.id}"
+                        onclick="${onClickHandler}">
+                    ${product.is_recurring_booking == 1 ? 'View Details' : 'Add to Cart'} <i class="fa fa-plus ml-2"></i>
+                </button>
+            `;
+        }
+        
+        buttonsContainer.html(buttonHtml);
+    } else {
+        buttonsContainer.html(`
+            <div class="alert alert-info">
+                <i class="fa fa-info-circle mr-2"></i>
+                This service requires an inquiry. Please contact us for more details.
+            </div>
+        `);
+    }
+}
+
+function addToCartFromModal(button) {
+    const $button = $(button);
+    const productId = $button.data('product_id');
+    const variantId = $button.data('variant_id');
+    const vendorId = $button.data('vendor_id');
+    const addToCartUrl = $button.data('add_to_cart_url');
+    
+    if (!productId || !vendorId) {
+        showToast('Missing product information. Please try again.', 'error');
+        return;
+    }
+    
+    // Show loading state
+    $button.prop('disabled', true).html('<i class="fa fa-spinner fa-spin mr-2"></i> Adding...');
+    
+    // Add to cart logic here (same as your existing add to cart)
+    $.ajax({
+        url: addToCartUrl,
+        type: 'POST',
+        data: {
+            product_id: productId,
+            variant_id: variantId || '',
+            vendor_id: vendorId,
+            quantity: 1,
+            _token: '{{ csrf_token() }}'
+        },
+        success: function(response) {
+            console.log('Add to cart response:', response);
+            if (response.success) {
+                showToast('Product added to cart successfully!', 'success');
+                
+                // Update cart UI if function exists
+                if (typeof updateCartUI === 'function') {
+                    updateCartUI();
+                }
+                
+                // Close modal after delay
+                setTimeout(function() {
+                    $('#productDetailModal').modal('hide');
+                    $button.prop('disabled', false).html('Add to Cart <i class="fa fa-plus ml-2"></i>');
+                }, 1500);
+            } else {
+                showToast(response.message || 'Failed to add product to cart', 'error');
+                $button.prop('disabled', false).html('Add to Cart <i class="fa fa-plus ml-2"></i>');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', xhr.responseText);
+            showToast('Error adding product to cart. Please try again.', 'error');
+            $button.prop('disabled', false).html('Add to Cart <i class="fa fa-plus ml-2"></i>');
+        }
+    });
+}
+
+function showToast(message, type = 'success') {
+    // Remove existing toasts
+    $('.toast-alert').remove();
+    
+    // Create toast element
+    const bgColor = type === 'success' ? '#28a745' : '#dc3545';
+    const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+    
+    const toast = $(`
+        <div class="toast-alert">
+            <i class="fa ${icon} mr-2"></i>
+            ${message}
+        </div>
+    `);
+    
+    $('body').append(toast);
+    
+    // Style the toast
+    toast.css({
+        'position': 'fixed',
+        'top': '20px',
+        'right': '20px',
+        'background': bgColor,
+        'color': 'white',
+        'padding': '15px 20px',
+        'border-radius': '5px',
+        'z-index': '99999',
+        'box-shadow': '0 4px 12px rgba(0,0,0,0.15)',
+        'animation': 'slideInRight 0.3s ease',
+        'font-size': '14px',
+        'max-width': '300px'
+    });
+    
+    // Auto remove after 3 seconds
+    setTimeout(function() {
+        toast.animate({opacity: 0, right: '-100px'}, 300, function() {
+            toast.remove();
+        });
+    }, 3000);
+}
+
+function showError(message) {
+    const errorDiv = $(`
+        <div class="alert alert-danger">
+            <i class="fa fa-exclamation-triangle mr-2"></i>
+            ${message}
+        </div>
+    `);
+    
+    $('#modalProductDescription').html(errorDiv);
+}
+
+// Add CSS for animation
+$(document).ready(function() {
+    // Add animation styles
+    if (!$('#modal-styles').length) {
+        const style = document.createElement('style');
+        style.id = 'modal-styles';
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            .toast-alert {
+                animation: slideInRight 0.3s ease;
+            }
+            
+            .product-clickable {
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                cursor: pointer;
+            }
+            
+            .product-clickable:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Make product rows clickable
+    $('.classes_wrapper').addClass('product-clickable').on('click', function(e) {
+        // Don't trigger if clicking on buttons, links, or specific elements
+        const $target = $(e.target);
+        const isClickableElement = $target.is('a, button, .add_on_demand, .view_on_demand_price, .btn, .btn-solid, .number, .minus, .plus, .input-number, .qty-minus-ondemand, .qty-plus-ondemand, i') ||
+                                  $target.closest('a, button, .add_on_demand, .view_on_demand_price, .btn, .btn-solid, .number, .minus, .plus, .input-number, .qty-minus-ondemand, .qty-plus-ondemand').length;
+        
+        if (!isClickableElement) {
+            e.preventDefault();
+            e.stopPropagation();
+            extractProductDataFromRow($(this));
+        }
+    });
+    
+    // Handle modal buttons
+    $(document).on('click', '#modalBookNowBtn.add_on_demand', function(e) {
+        e.preventDefault();
+        addToCartFromModal(this);
+    });
+    
+    // Handle view price button in modal
+    $(document).on('click', '#modalBookNowBtn.view_on_demand_price', function(e) {
+        e.preventDefault();
+        // Trigger your existing view price functionality
+        const $button = $(this);
+        const productId = $button.data('product_id');
+        
+        // Find and click the original view price button
+        const originalButton = $(`.view_on_demand_price[data-product_id="${productId}"]`);
+        if (originalButton.length) {
+            originalButton.click();
+        }
+        
+        $('#productDetailModal').modal('hide');
+    });
+    
+    // Initialize carousel
+    $('#productCarousel').carousel();
+    
+    // Debug: Log all product rows
+    console.log('Found product rows:', $('.classes_wrapper').length);
+    $('.classes_wrapper').each(function(index) {
+        console.log('Row', index, ':', {
+            title: $(this).find('h5 b').text(),
+            price: $(this).find('.productBookingBtns h5').text(),
+            button: $(this).find('.add_on_demand, .view_on_demand_price').attr('id')
+        });
+    });
+});
+</script>
+@endsection
+
+
+
 </section>
 @include('frontend.ondemand.productPriceModel')
 @section('custom-js')
 
 <script src="{{ asset('js/onDemand/GetDispatcherPrice.js') }}"></script>
 <script src="{{ asset('js/onDemand/AgentSlot.js') }}"></script>
+
+<!-- <script>
+    function handleServiceClick() {
+    window.location.href = 'https://www.google.com';
+}
+</script> -->
 @endsection

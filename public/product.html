@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product API Test</title>
+</head>
+<body>
+
+<h2>Product API Response</h2>
+<pre id="result">Loading...</pre>
+
+<script>
+fetch("https://restocare.in/api/v1/product/567", {
+    method: "GET",
+    headers: {
+        "Accept": "application/json",
+        "code": "c8fbba",
+        "language": "1",
+        "currency": "63",
+        "timezone": "Asia/Kolkata",
+        "systemuser": "3f7ba66cb4653ee1"
+    }
+})
+.then(async response => {
+    const text = await response.text();
+    try {
+        return JSON.parse(text);
+    } catch (e) {
+        throw new Error("Server returned non-JSON:\n" + text);
+    }
+})
+.then(data => {
+    document.getElementById("result").textContent =
+        JSON.stringify(data, null, 2);
+})
+.catch(error => {
+    document.getElementById("result").textContent =
+        "Error:\n" + error.message;
+});
+</script>
+
+</body>
+</html>
