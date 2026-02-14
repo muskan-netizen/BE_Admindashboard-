@@ -236,8 +236,8 @@ $applocale = session()->get('applocale');
                            <a href="tel: {{$clientData ? ($clientData->contact_phone_number ?? $clientData->phone_number) : ''}}"><span>{{$clientData ?  ($clientData->contact_phone_number ?? $clientData->phone_number) : ''}}</span></a>
                         </li>
                         <li class="pl-0">
-                           <i class="fa fa-envelope"></i>
-                           <a href="mailto: {{$clientData ? ($clientData->contact_email ??$clientData->email) : ''}}" style="text-transform:none"><span>{{$clientData ? ($clientData->contact_email ??$clientData->email) : ''}}</span></a>
+                           <i class="fa fa-envelope"></i>style="text-transform:none"
+                           <a href="mailto: {{$clientData ? ($clientData->contact_email ??$clientData->email) : ''}}" ><span>{{$clientData ? ($clientData->contact_email ??$clientData->email) : ''}}</span></a>
                         </li>
                      </ul>
                   </div>
@@ -375,6 +375,7 @@ $applocale = session()->get('applocale');
    </section>
    <div class="sub-footer">
       <div class="container">
+         <p style="text-align:center">Restocare is a brand operated by Restroedge Private Limited.</p>
          <div class="row">
             <div class="col-12 text-center">
                <div class="footer-end">

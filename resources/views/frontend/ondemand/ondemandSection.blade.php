@@ -249,7 +249,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                                 @foreach($listData as $key => $data)
 
                                                 {{-- new product design  --}}
-                                                <div class="row classes_wrapper no-gutters align-items-center bg-primary" >
+                                                <div class="row classes_wrapper no-gutters align-items-center" >
 
                                                     <div class="col-md-9 col-sm-8 pr-md-2" onclick="handleServiceClick()">
                                                         <h5 class="mb-1"><b>{!! $data->translation_title !!}</b></h5>
@@ -959,14 +959,9 @@ function handleServiceClick(event) {
 
 function extractProductDataFromRow($productRow) {
     try {
-        console.log('Extracting data from row:', $productRow);
-        
-        // Extract title
         const title = $productRow.find('h5 b').first().text().trim() || 
                      $productRow.find('h5').first().text().trim() || 
                      'Service';
-        
-        console.log('Title:', title);
         
         // Extract vendor name
         let vendorName = 'Service Provider';
@@ -974,8 +969,6 @@ function extractProductDataFromRow($productRow) {
         if (vendorElement.length) {
             vendorName = vendorElement.text().trim();
         }
-        console.log('Vendor:', vendorName);
-        
         // Extract description
         let description = 'No description available';
         const descriptionElement = $productRow.find('.productDetails p');
@@ -1006,15 +999,12 @@ function extractProductDataFromRow($productRow) {
             });
         }
         
-        console.log('Price extracted:', variant_price);
-        
         // Extract duration
         let minimum_duration_min = 0;
         const durationSpan = $productRow.find('.alProductViewPriceMin');
         if (durationSpan.length) {
             minimum_duration_min = extractDurationFromText(durationSpan.text());
         }
-        console.log('Duration:', minimum_duration_min);
         
         // Extract product ID and other attributes from buttons
         let productId = '';
@@ -1031,9 +1021,7 @@ function extractProductDataFromRow($productRow) {
                        addButton.attr('id')?.replace('add_button_href', '')?.replace('added_button_href', '') || '';
             variantId = addButton.data('variant_id') || '';
             vendorId = addButton.data('vendor_id') || '';
-            
-            console.log('Button data:', {productId, variantId, vendorId});
-            
+        
             // Check button type
             if (addButton.hasClass('add_on_demand_btn')) {
                 isRecurring = 1;
@@ -1065,9 +1053,7 @@ function extractProductDataFromRow($productRow) {
                 });
             }
         });
-        
-        console.log('Images found:', media.length);
-        
+
         // If no images found, add a placeholder
         if (media.length === 0) {
             media.push({
@@ -1114,13 +1100,11 @@ function extractProductDataFromRow($productRow) {
             is_service_product_price_from_dispatch_forOnDemand: isPriceFromDispatch,
             inquiry_only: inquiryOnly
         };
-        
-        console.log('Final product data:', productData);
+
         populateModal(productData);
         $('#productDetailModal').modal('show');
         
     } catch (error) {
-        console.error('Error extracting product data:', error);
         showError('Error loading product details. Please try again.');
         $('#productDetailModal').modal('show');
     }
@@ -1128,8 +1112,6 @@ function extractProductDataFromRow($productRow) {
 
 function populateModal(product) {
     try {
-        console.log('Populating modal with:', product);
-        
         // Set title
         $('#modalProductTitle').text(product.title || 'Service');
         
@@ -1137,21 +1119,53 @@ function populateModal(product) {
         $('#modalProductVendor').text('By ' + (product.vendor?.name || 'Service Provider'));
         
         // Set description
-        if (product.description && product.description !== 'No description available') {
-            // Clean HTML and ensure proper formatting
-            let cleanDescription = product.description
-                .replace(/<br\s*\/?>/gi, '<br>')
-                .replace(/<p><\/p>/gi, '')
-                .trim();
-            
-            if (cleanDescription === '' || cleanDescription === '<p></p>') {
-                cleanDescription = '<p class="text-muted">No detailed description available.</p>';
-            }
-            
-            $('#modalProductDescription').html(cleanDescription);
-        } else {
-            $('#modalProductDescription').html('<p class="text-muted">No detailed description available.</p>');
-        }
+        function formatContent(text) {
+    return text
+        // Convert numbered points into headings
+        .replace(/(\d+\.\s[^\n]+)/g, "<h5 class='mt-3 font-weight-bold'>$1</h5>")
+
+        // Convert section titles into main headings
+        .replace(
+            /(Our Process|Top Technicians|RCCOVER Promise|Professional Service – Quality You Can Trust|What’s Included|Why Choose Us)/g,
+            "<h4 class='mt-4 mb-3 font-weight-bold'>$1</h4>"
+        )
+
+        // Convert tab points into list items
+        .replace(/\t(.+)/g, "<li>$1</li>")
+
+        // Wrap list items inside <ul>
+        .replace(/(<li>.*<\/li>)/gs, "<ul class='pl-3'>$1</ul>")
+
+        // Replace double line breaks with spacing
+        .replace(/\n{2,}/g, "<br><br>")
+
+        .trim();
+}
+
+
+// 🔥 Your Existing Modal Code (Updated)
+if (product.description && product.description !== 'No description available') {
+
+    let cleanDescription = product.description
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<p><\/p>/gi, '')
+        .trim();
+
+    if (cleanDescription === '' || cleanDescription === '<p></p>') {
+        $('#modalProductDescription').html(
+            '<p class="text-muted">No detailed description available.</p>'
+        );
+    } else {
+        let formattedHTML = formatContent(cleanDescription);
+        $('#modalProductDescription').html(formattedHTML);
+    }
+
+} else {
+    $('#modalProductDescription').html(
+        '<p class="text-muted">No detailed description available.</p>'
+    );
+}
+
         
         // Set price
         if (product.variant_price && product.variant_price > 0) {
