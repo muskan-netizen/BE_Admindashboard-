@@ -129,11 +129,11 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
    </div>
 </section>
 <!-- alSpaMenuCard end -->
-<div class="top-header  al_custom_head">
+<div class="top-header al_custom_head" style="width:100vw">
    <!-- site-topbar -->
 
-   <nav class="navbar navbar-expand-lg fixed-top px-0">
-      <div class="container-fluid ">
+   <nav class="navbar navbar-expand-lg fixed-top px-0" style="width:100vw">
+      <div class="container-fluid"> 
          <div class="col-12 px-3">
             <div class="row d-flex align-items-center justify-content-between">
                <!-- leftHead start -->

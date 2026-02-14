@@ -249,7 +249,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                                 @foreach($listData as $key => $data)
 
                                                 {{-- new product design  --}}
-                                                <div class="row classes_wrapper no-gutters align-items-center" >
+                                                <div class="row classes_wrapper no-gutters align-items-center bg-primary" >
 
                                                     <div class="col-md-9 col-sm-8 pr-md-2" onclick="handleServiceClick()">
                                                         <h5 class="mb-1"><b>{!! $data->translation_title !!}</b></h5>
