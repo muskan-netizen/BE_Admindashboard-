@@ -297,11 +297,30 @@ class AuthController extends BaseController
      * User registraiotn
      * @return [status, email, need_email_verify, need_phone_verify]
      */
+
+            // **************************************prem**********************
+//      $existingUser = User::where('phone_number', $signReq->phone_number)
+//     ->where('dial_code', $signReq->dial_code)
+//     ->first();
+
+// if ($existingUser) {
+//     return response()->json([
+//         'error' => 'hello error'
+//     ], 422);
+// }
+
+  // **************************************prem**********************
+
+
     public function signup(Request $signReq)
     {
+        // dd('inside controller');
         logs()->debug('registration_via_phone', [$signReq->getClientIp(), $signReq->except('password'), DB::getDefaultConnection()]);
 
+
         $preferences = ClientPreference::first();
+
+         // **************************************prem**********************
         $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
         $rules = [
             'dial_code'   => 'required|string',
@@ -316,7 +335,8 @@ class AuthController extends BaseController
             $rules['email'] = 'required|email|unique:users';
         }
         if($preferences->verify_phone == 1){
-            $rules['phone_number'] = 'required|string|min:7|max:15|unique:users';
+            // $rules['phone_number'] = 'required|string|min:7|max:15|unique:users';
+             $rules['phone_number'] = 'required|string|min:7|max:15'; //***********prem******************
         }
         if($signReq->has('has_address') && $signReq->has_address ==1 ){
             $rules['address_type']  = 'required';
@@ -363,12 +383,14 @@ class AuthController extends BaseController
             }
         }
 
-        if(!empty($signReq->email)){
-            $userEmailCheck = User::where(['email' => $signReq->email])->first();
-            if($userEmailCheck){
-                return response()->json(['error' => 'The email has already been taken.' ], 422);
-            }
-        }
+        // if(!empty($signReq->email)){
+        //     $userEmailCheck = User::where(['email' => $signReq->email])->first();
+        //     if($userEmailCheck){
+        //         return response()->json(['error' => 'The email has already been taken.' ], 422);
+        //     }
+        // }
+    
+
         $client_timezone = Client::where('id', '>', 0)->value('timezone');
         $user = new User();
         foreach ($signReq->only('name', 'country_id', 'phone_number', 'dial_code') as $key => $value) {
@@ -712,6 +734,158 @@ class AuthController extends BaseController
         }
     }
 
+
+    // *****************************************************************prem*********************************************************
+    // public function signup(Request $signReq)
+    // {
+    //      $existingUser = User::where('phone_number', $signReq->phone_number)->where('dial_code', $signReq->dial_code)->first();
+
+    //         if ($existingUser) {
+    //              return response()->json(['error' => 'hello error' ], 422);
+    //             }
+    // }
+
+    // *****************************************************************prem*********************************************************
+
+
+//     public function signup(Request $signReq)
+// {
+//     logs()->debug('registration_via_phone', [
+//         $signReq->getClientIp(),
+//         $signReq->except('password'),
+//         DB::getDefaultConnection()
+//     ]);
+
+//     $preferences = ClientPreference::first();
+//     $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
+
+//     $rules = [
+//         'dial_code'     => 'required|string',
+//         'device_type'   => 'required|string',
+//         'device_token'  => 'required|string',
+//         'country_code'  => 'required|string',
+//         'name'          => 'required|string|min:3|max:50',
+//         'password'      => 'required|string|min:6|max:50',
+//         'refferal_code' => 'nullable|exists:user_refferals,refferal_code',
+//     ];
+
+//     if ($preferences->verify_email == 1) {
+//         $rules['email'] = 'required|email';
+//     }
+
+// if ($preferences->verify_phone == 1) {
+//     $rules['phone_number'] = [
+//         'required',
+//         'string',
+//         'min:7',
+//         'max:15',
+//         Rule::unique('users')
+//             ->where(function ($query) use ($signReq) {
+//                 return $query->where('is_phone_verified', 1)
+//                              ->where('dial_code', $signReq->dial_code);
+//             }),
+//     ];
+// }
+
+//     $validator = Validator::make($signReq->all(), $rules);
+
+//     if ($validator->fails()) {
+//         return response()->json([
+//             'error' => $validator->errors()->first()
+//         ], 422);
+//     }
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | HANDLE EXISTING PHONE NUMBER PROPERLY
+//     |--------------------------------------------------------------------------
+//     */
+
+
+//     $existingUser = User::where('phone_number', $signReq->phone_number)
+//     ->where('dial_code', $signReq->dial_code)
+//     ->first();
+//     /*
+//     |--------------------------------------------------------------------------
+//     | CREATE OR REUSE USER
+//     |--------------------------------------------------------------------------
+//     */
+
+//     $client_timezone = Client::where('id', '>', 0)->value('timezone');
+//     $country_detail = Country::where('code', $signReq->country_code)->first();
+
+//     // Reuse existing unverified user OR create new
+//     $user = $existingUser ?? new User();
+
+//     $phoneCode = getUserToken($preferences)['otp'];
+//     $emailCode = getUserToken($preferences)['otp'];
+//     $sendTime  = Carbon::now()->addMinutes(10)->toDateTimeString();
+
+//     $user->name = $signReq->name;
+//     $user->dial_code = $signReq->dial_code;
+//     $user->phone_number = $signReq->phone_number;
+//     $user->country_id = $country_detail->id ?? null;
+//     $user->password = Hash::make($signReq->password);
+//     $user->type = 1;
+//     $user->status = 1;
+//     $user->role_id = 1;
+//     $user->email = $signReq->email ?? '';
+//     $user->timezone = $client_timezone;
+
+//     // Reset verification flags
+//     $user->is_phone_verified = 0;
+//     $user->is_email_verified = 0;
+
+//     // Generate fresh OTP
+//     $user->phone_token = $phoneCode;
+//     $user->email_token = $emailCode;
+//     $user->phone_token_valid_till = $sendTime;
+//     $user->email_token_valid_till = $sendTime;
+
+//     $user->save();
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | GENERATE JWT TOKEN
+//     |--------------------------------------------------------------------------
+//     */
+
+//     $token1 = new Token;
+//     $token = $token1->make([
+//         'key'       => 'royoorders-jwt',
+//         'issuer'    => 'royoorders.com',
+//         'expiry'    => strtotime('+1 month'),
+//         'issuedAt'  => time(),
+//         'algorithm' => 'HS256',
+//     ])->get();
+
+//     $token1->setClaim('user_id', $user->id);
+//     $user->auth_token = $token;
+//     $user->save();
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | RESPONSE
+//     |--------------------------------------------------------------------------
+//     */
+
+//     $response = [
+//         'status' => 'Success',
+//         'id' => $user->id,
+//         'name' => $user->name,
+//         'email' => $user->email,
+//         'dial_code' => $user->dial_code,
+//         'phone_number' => $user->phone_number,
+//         'auth_token' => $token,
+//         'verify_details' => [
+//             'is_email_verified' => 0,
+//             'is_phone_verified' => 0
+//         ]
+//     ];
+
+//     return response()->json(['data' => $response]);
+// }
+
     /**
      * Display a listing of the resource.
      *
@@ -1024,6 +1198,12 @@ class AuthController extends BaseController
     public function proceedToPhoneLogin($req, $domain = '')
     {
         $user = User::where('phone_number', $req->phone_number)->where('dial_code', $req->dialCode)->where('status', 1)->first();
+        // ******************************************
+        if (!$user) {
+                $errors['error'] = __('Your phone number is not registered');
+                return response()->json($errors, 422);
+            }
+            // ******************************************
         if ($user) {
             Auth::login($user);
             $prefer = ClientPreference::select('theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
@@ -1189,24 +1369,42 @@ class AuthController extends BaseController
                 $phoneCode =  getUserToken($prefer)['otp'];
                 $sendTime = Carbon::now()->addMinutes(10)->toDateTimeString();
                 $request->request->add(['is_phone' => 1, 'phone_number' => $phone_number, 'phoneCode' => $phoneCode, 'sendTime' => $sendTime, 'codeSent' => 0]);
-                $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
-               // pr($user->toArray());
-                if (!$user) {
-                    // if(session()->get("locale") == "ar"){
-                    //     return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك'), 404);
-                    // }
-                    // return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404);
-                $registerUser = $this->registerViaPhone($request)->getData();
-                 if ($registerUser->status == 'Success') {
-                     $user = $registerUser->data;
-                    } else {
-                         return $this->errorResponse(__('Invalid data'), 404);
-                 }
-                } else {
+
+                // ***************************************************************************************************************
+                
+            //     $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
+            //    // pr($user->toArray());
+            //     if (!$user) {
+            //         // if(session()->get("locale") == "ar"){
+            //         //     return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك'), 404);
+            //         // }
+            //         // return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404);
+                    
+            //     $registerUser = $this->registerViaPhone($request)->getData();
+            //      if ($registerUser->status == 'Success') {
+            //          $user = $registerUser->data;
+            //         } else {
+            //              return $this->errorResponse(__('Invalid data'), 404);
+            //      }
+            //     } else {
+            //         $user->phone_token = $phoneCode;
+            //         $user->phone_token_valid_till = $sendTime;
+            //         $user->save();
+            //     }
+                                $user = User::where('dial_code', $dialCode)
+            ->where('phone_number', $phone_number)
+            ->where('status', 1)
+            ->first();
+
+            if (!$user) {
+                 return $this->errorResponse(__('Account does not exist. Please sign up first.'), 404);
+                    }
+
+                    // If user exists → generate OTP
                     $user->phone_token = $phoneCode;
                     $user->phone_token_valid_till = $sendTime;
                     $user->save();
-                }
+             // ***************************************************************************************************************
 
                 if ($dialCode == "971") {
                     $to = '+' . $dialCode . "0" . $phone_number;

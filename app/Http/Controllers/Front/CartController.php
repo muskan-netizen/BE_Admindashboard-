@@ -300,7 +300,6 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
-
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         $vendor = Vendor::find($request->vendor_id);
@@ -340,6 +339,28 @@ class CartController extends FrontController
                     $sel->groupBy('product_id');
                 }
             ])->find($request->product_id);
+
+ // **********************************************
+$CHEF_CATEGORY_ID = 68;
+
+$isChefProduct = optional(optional($productDetail->category)->categoryDetail)->id == $CHEF_CATEGORY_ID;
+
+if ($isChefProduct) {
+
+    $existingChefInCart = CartProduct::where('cart_id', $cart_detail->id)
+        ->whereHas('product.category.categoryDetail', function ($q) use ($CHEF_CATEGORY_ID) {
+            $q->where('id', $CHEF_CATEGORY_ID);
+        })
+        ->exists();
+
+    if ($existingChefInCart) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Only one chef can be added at a time.'
+        ], 400);
+    }
+}
+// **********************************************
 
             //items already ordered in case order is being edit in cart
             $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity)) ? $already_added_product_in_cart->order_quantity : 0;

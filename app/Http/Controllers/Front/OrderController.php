@@ -1808,6 +1808,7 @@ class OrderController extends FrontController
             # if payment type cash on delivery or payment status is 'Paid'
             if (($response->data->payment_option_id == 1 || ($response->data->payment_option_id != 1 && $response->data->is_postpay == 1)) || (($response->data->payment_option_id != 1) && ($response->data->payment_status == 1))) {
                 # if vendor selected auto accept
+                \Log::info('Auto Accept Order Check for Order ID: ' . $response->data->id);
                 $autoaccept = $this->autoAcceptOrderIfOn($response->data->id);
             }
 
@@ -3558,6 +3559,7 @@ class OrderController extends FrontController
     # if vendor selected auto accepted order
     public function autoAcceptOrderIfOn($order_id)
     {
+        \Log::info('Auto Accept Order Cron is working fine');
         $order_vendors = OrderVendor::where('order_id', $order_id)->whereHas('vendor', function ($q) {
             $q->where('auto_accept_order', 1);
         })
@@ -3775,6 +3777,7 @@ class OrderController extends FrontController
 
     public function checkIfanyProductLastMileon($request)
     {
+        \Log::info('checkIfanyProductLastMileon function is working fine');
         $order_dispatchs = 2;
         $AdditionalPreference = getAdditionalPreference(['is_place_order_delivery_zero']);
         $is_place_order_delivery_zero =  $AdditionalPreference['is_place_order_delivery_zero'];

@@ -802,24 +802,23 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
 
 
 {{-- Add this modal at the end of your section, before the closing </section> tag --}}
+
+
 <!-- Product Detail Modal -->
-
-<!-- <div class="modal fade" id="productDetailModal" tabindex="-1" role="dialog" aria-labelledby="productDetailModalLabel" aria-hidden="true">
-    
-    <div>
-
-    </div>
-    <div>
-
-    </div>
-</div> -->
 <div class="modal fade" id="productDetailModal" tabindex="-1" role="dialog" aria-labelledby="productDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="productDetailModalLabel">Service Details</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+            <div class="modal-header d-flex align-items-center justify-content-between border-bottom pb-1">
+                <h5 class="modal-title font-weight-bold text-black mb-0" id="productDetailModalLabel">
+                    Service Details
+                </h5>
+                <button type="button"
+                        class="btn btn-danger rounded-circle d-flex align-items-center justify-content-center"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                        style="width: 40px; height: 40px;">
+
+                    <span class="fs-4 text-white">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -831,14 +830,6 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                 <div class="carousel-inner" id="modalCarouselInner">
                                     <!-- Images will be loaded here dynamically -->
                                 </div>
-                                <a class="carousel-control-prev" href="#productCarousel" role="button" data-slide="prev">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="sr-only">Previous</span>
-                                </a>
-                                <a class="carousel-control-next" href="#productCarousel" role="button" data-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="sr-only">Next</span>
-                                </a>
                             </div>
                         </div>
                         
@@ -846,7 +837,6 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                         <div class="col-md-6">
                             <h4 id="modalProductTitle" class="mb-3"></h4>
                             <p id="modalProductVendor" class="text-muted mb-3"></p>
-                           
                             
                             <!-- Pricing Section -->
                             <div class="price-section mb-4">
@@ -858,23 +848,25 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                             <div id="modalProductButtons" class="mt-4">
                                 <!-- Buttons will be loaded here dynamically -->
                             </div>
-                             <div id="modalProductDescription" class="mb-4"></div>
-                            <!-- Additional Information -->
-                            <div class="additional-info mt-4 pt-4 border-top">
-                                <h6 class="mb-3">Service Information:</h6>
-                                <ul class="list-unstyled">
-                                    <li class="mb-2"><i class="fa fa-check text-success mr-2"></i> Professional Service</li>
-                                    <li class="mb-2"><i class="fa fa-check text-success mr-2"></i> Verified Professionals</li>
-                                    <li class="mb-2"><i class="fa fa-check text-success mr-2"></i> Quality Guaranteed</li>
-                                </ul>
-                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <!-- Description will be loaded here dynamically -->
+                       <h5 class="w-100 font-weight-bold border-bottom pb-1">
+                            Description
+                        </h5>
+                        <div id="modalProductDescription" class="mb-4"></div>
+                        <!-- Additional Information -->
+                        <div class="additional-info mt-4 pt-4 border-top">
+                            <h6 class="mb-3">Service Information:</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="fa fa-check text-success mr-2"></i> Professional Service</li>
+                                <li class="mb-2"><i class="fa fa-check text-success mr-2"></i> Verified Professionals</li>
+                                <li class="mb-2"><i class="fa fa-check text-success mr-2"></i> Quality Guaranteed</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <a href="#" id="modalBookNowBtn" class="btn btn-primary">Book Now</a>
             </div>
         </div>
     </div>
@@ -920,6 +912,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
 <script src="{{ asset('js/onDemand/AgentSlot.js') }}"></script>
 
 <script>
+
 // Define decimal_format function if it doesn't exist
 if (typeof decimal_format === 'undefined') {
     function decimal_format(number, decimals = 2, decimal_separator = '.', thousands_separator = ',') {
@@ -948,6 +941,35 @@ function extractDurationFromText(text) {
     return match ? parseInt(match[1]) : 0;
 }
 
+// Formate Description
+function formatContent(text) {
+    return text
+        // Convert numbered points into compact headings
+        .replace(
+            /(\d+\.\s[^\n]+)/g,
+            "<h5 class='font-weight-bold mb-0'>$1</h5>"
+        )
+
+        // Convert section titles into main headings (controlled spacing)
+        .replace(
+            /(Our Process|Top Technicians|RCCOVER Promise|Professional Service – Quality You Can Trust|What’s Included|Why Choose Us)/g,
+            "<h4 class='font-weight-bold mb-1'>$1</h4>"
+        )
+
+        // Convert tab points into list items
+        .replace(/\t(.+)/g, "<li>$1</li>")
+
+        // Wrap list items inside <ul> once
+        .replace(/(<li>.*?<\/li>)/gs, "<ul class='pl-3 mb-2'>$1</ul>")
+
+        // Replace multiple line breaks with single <br>
+        .replace(/\n{2,}/g, "<br>")
+
+        .trim();
+}
+
+
+
 function handleServiceClick(event) {
     // Get the clicked product row
     const productRow = $(event.currentTarget).closest('.classes_wrapper');
@@ -959,31 +981,23 @@ function handleServiceClick(event) {
 
 function extractProductDataFromRow($productRow) {
     try {
-        console.log('Extracting data from row:', $productRow);
-        
         // Extract title
         const title = $productRow.find('h5 b').first().text().trim() || 
                      $productRow.find('h5').first().text().trim() || 
                      'Service';
-        
-        console.log('Title:', title);
-        
         // Extract vendor name
         let vendorName = 'Service Provider';
         const vendorElement = $productRow.find('.font-weight-bold');
         if (vendorElement.length) {
             vendorName = vendorElement.text().trim();
         }
-        console.log('Vendor:', vendorName);
-        
+
         // Extract description
         let description = 'No description available';
         const descriptionElement = $productRow.find('.productDetails p');
         if (descriptionElement.length) {
             description = descriptionElement.html() || descriptionElement.text() || 'No description available';
         }
-        console.log('Description:', description);
-        
         // Extract price - look in multiple places
         let variant_price = 0;
         
@@ -991,7 +1005,6 @@ function extractProductDataFromRow($productRow) {
         const priceElement = $productRow.find('.productBookingBtns h5');
         if (priceElement.length) {
             const priceText = priceElement.text();
-            console.log('Price text found:', priceText);
             variant_price = extractPriceFromText(priceText);
         }
         
@@ -1005,17 +1018,13 @@ function extractProductDataFromRow($productRow) {
                 }
             });
         }
-        
-        console.log('Price extracted:', variant_price);
-        
+
         // Extract duration
         let minimum_duration_min = 0;
         const durationSpan = $productRow.find('.alProductViewPriceMin');
         if (durationSpan.length) {
             minimum_duration_min = extractDurationFromText(durationSpan.text());
         }
-        console.log('Duration:', minimum_duration_min);
-        
         // Extract product ID and other attributes from buttons
         let productId = '';
         let variantId = '';
@@ -1031,9 +1040,7 @@ function extractProductDataFromRow($productRow) {
                        addButton.attr('id')?.replace('add_button_href', '')?.replace('added_button_href', '') || '';
             variantId = addButton.data('variant_id') || '';
             vendorId = addButton.data('vendor_id') || '';
-            
-            console.log('Button data:', {productId, variantId, vendorId});
-            
+
             // Check button type
             if (addButton.hasClass('add_on_demand_btn')) {
                 isRecurring = 1;
@@ -1065,9 +1072,6 @@ function extractProductDataFromRow($productRow) {
                 });
             }
         });
-        
-        console.log('Images found:', media.length);
-        
         // If no images found, add a placeholder
         if (media.length === 0) {
             media.push({
@@ -1114,13 +1118,10 @@ function extractProductDataFromRow($productRow) {
             is_service_product_price_from_dispatch_forOnDemand: isPriceFromDispatch,
             inquiry_only: inquiryOnly
         };
-        
-        console.log('Final product data:', productData);
         populateModal(productData);
         $('#productDetailModal').modal('show');
         
     } catch (error) {
-        console.error('Error extracting product data:', error);
         showError('Error loading product details. Please try again.');
         $('#productDetailModal').modal('show');
     }
@@ -1128,8 +1129,6 @@ function extractProductDataFromRow($productRow) {
 
 function populateModal(product) {
     try {
-        console.log('Populating modal with:', product);
-        
         // Set title
         $('#modalProductTitle').text(product.title || 'Service');
         
@@ -1138,20 +1137,26 @@ function populateModal(product) {
         
         // Set description
         if (product.description && product.description !== 'No description available') {
-            // Clean HTML and ensure proper formatting
-            let cleanDescription = product.description
-                .replace(/<br\s*\/?>/gi, '<br>')
-                .replace(/<p><\/p>/gi, '')
-                .trim();
-            
-            if (cleanDescription === '' || cleanDescription === '<p></p>') {
-                cleanDescription = '<p class="text-muted">No detailed description available.</p>';
-            }
-            
-            $('#modalProductDescription').html(cleanDescription);
-        } else {
-            $('#modalProductDescription').html('<p class="text-muted">No detailed description available.</p>');
-        }
+
+    let cleanDescription = product.description
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<p><\/p>/gi, '')
+        .trim();
+
+    if (cleanDescription === '' || cleanDescription === '<p></p>') {
+        $('#modalProductDescription').html(
+            '<p class="text-muted">No detailed description available.</p>'
+        );
+    } else {
+        let formattedHTML = formatContent(cleanDescription);
+        $('#modalProductDescription').html(formattedHTML);
+    }
+
+} else {
+    $('#modalProductDescription').html(
+        '<p class="text-muted">No detailed description available.</p>'
+    );
+}
         
         // Set price
         if (product.variant_price && product.variant_price > 0) {
@@ -1220,7 +1225,7 @@ function populateModal(product) {
         }
         
     } catch (error) {
-        console.error('Error populating modal:', error);
+        // console.error('Error populating modal:', error);
         showError('Error displaying product details. Please try again.');
     }
 }
@@ -1248,7 +1253,7 @@ function loadProductImages(mediaArray) {
                 imageUrl = media;
             }
             
-            console.log('Processing image:', imageUrl);
+            // console.log('Processing image:', imageUrl);
             
             // If we have a valid image URL
             if (imageUrl && imageUrl.trim() !== '') {
@@ -1373,7 +1378,6 @@ function addToCartFromModal(button) {
             _token: '{{ csrf_token() }}'
         },
         success: function(response) {
-            console.log('Add to cart response:', response);
             if (response.success) {
                 showToast('Product added to cart successfully!', 'success');
                 
@@ -1393,7 +1397,7 @@ function addToCartFromModal(button) {
             }
         },
         error: function(xhr, status, error) {
-            console.error('AJAX Error:', xhr.responseText);
+            // console.error('AJAX Error:', xhr.responseText);
             showToast('Error adding product to cart. Please try again.', 'error');
             $button.prop('disabled', false).html('Add to Cart <i class="fa fa-plus ml-2"></i>');
         }
@@ -1403,10 +1407,9 @@ function addToCartFromModal(button) {
 function showToast(message, type = 'success') {
     // Remove existing toasts
     $('.toast-alert').remove();
-    
     // Create toast element
-    const bgColor = type === 'success' ? '#28a745' : '#dc3545';
-    const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+    const bgColor = type === 'success' ?  '#dc3545' : '#28a745';
+    const icon = type === 'success' ? 'fa-exclamation-circle' : 'fa-check-circle';
     
     const toast = $(`
         <div class="toast-alert">
@@ -1527,13 +1530,13 @@ $(document).ready(function() {
     $('#productCarousel').carousel();
     
     // Debug: Log all product rows
-    console.log('Found product rows:', $('.classes_wrapper').length);
+    // console.log('Found product rows:', $('.classes_wrapper').length);
     $('.classes_wrapper').each(function(index) {
-        console.log('Row', index, ':', {
-            title: $(this).find('h5 b').text(),
-            price: $(this).find('.productBookingBtns h5').text(),
-            button: $(this).find('.add_on_demand, .view_on_demand_price').attr('id')
-        });
+        // console.log('Row', index, ':', {
+        //     title: $(this).find('h5 b').text(),
+        //     price: $(this).find('.productBookingBtns h5').text(),
+        //     button: $(this).find('.add_on_demand, .view_on_demand_price').attr('id')
+        // });
     });
 });
 </script>

@@ -33,14 +33,14 @@ $(function () {
     header_height
   );
 
-  jQuery(window).scroll(function () {
-    var scroll = jQuery(window).scrollTop();
-    if (scroll <= 100) {
-      jQuery(".site-header").removeClass("fixed-bar");
-    } else {
-      jQuery(".site-header").addClass("fixed-bar");
-    }
-  });
+  // jQuery(window).scroll(function () {
+  //   var scroll = jQuery(window).scrollTop();
+  //   if (scroll <= 100) {
+  //     jQuery(".site-header").removeClass("fixed-bar");
+  //   } else {
+  //     jQuery(".site-header").addClass("fixed-bar");
+  //   }
+  // });
 
   jQuery(".scrollspy-menu a").on("click", function () {
     jQuery("html, body").animate({

@@ -24,7 +24,54 @@ class UserController extends FrontController{
      *
      * @return \Illuminate\Http\Response
      */
-    public function verifyAccount(Request $request, $domain = ''){
+    // public function verifyAccount(Request $request, $domain = ''){
+    //     $langId = Session::get('customerLanguage');
+    //     $curId = Session::get('customerCurrency');
+    //     $user = User::where('id', Auth::user()->id)->first();
+    //     $preference = ClientPreference::select('verify_email', 'verify_phone','third_party_accounting','sms_credentials')->where('id', '>', 0)->first();
+    //     $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
+    //     if(Session::has('user_type')){
+    //         Session::forget('user_type');
+    //         $cart = Cart::latest()->limit(1)->get();
+    //         if(empty($cart[0]->user_id)){
+    //             $cart_detail = Cart::updateOrCreate(['id' => $cart[0]->id], ['user_id'=>Auth::user()->id]);
+    //             return redirect()->route('showCart');
+    //         }
+    //     }
+    //     if($passbase_check && is_null($user->passbase_verification))
+    //     {
+    //         return redirect()->route('passbase.page');
+    //     }elseif ($preference->verify_email == 0 && $preference->verify_phone == 0) {
+    //         //$this->sendCustomerSignupSuccessEmail($user);
+    //         return redirect()->route('userHome');
+    //     }elseif (Auth::user()->is_email_verified == 1 && Auth::user()->is_phone_verified == 1) {
+    //        // $this->sendCustomerSignupSuccessEmail($user);
+    //         return redirect()->route('userHome');
+    //     }elseif ($preference->verify_email == 1 && $preference->verify_phone == 0) {
+    //        // $this->sendCustomerSignupSuccessEmail($user);
+    //         if (Auth::user()->is_email_verified == 1) {
+    //             return redirect()->route('userHome');
+    //         }
+    //     } elseif ($preference->verify_email == 0 && $preference->verify_phone == 1) {
+    //         if (Auth::user()->is_phone_verified == 1) {
+    //            // $this->sendCustomerSignupSuccessEmail($user);
+    //             return redirect()->route('userHome');
+    //         }
+    //     }
+    //     $navCategories = $this->categoryNav($langId);
+    //     $set_template = WebStylingOption::where('web_styling_id',1)->where('is_selected',1)->first();
+    //     if($set_template->template_id == 4)
+    //     {
+    //         $verify_page = "template_four.account.verifyaccount";
+    //     }else{
+    //         $verify_page = "account.verifyaccountnew";
+    //     }
+    //     $staticOtpEnable = !empty(getUserToken($preference)['status'] == false)?true:false;
+    //     return view('frontend.'.$verify_page)->with(['preference' => $preference, 'navCategories' => $navCategories, 'user' => $user,'staticOtpEnable'=>$staticOtpEnable]);
+    // }
+
+
+     public function verifyAccount(Request $request, $domain = ''){
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $user = User::where('id', Auth::user()->id)->first();
@@ -69,6 +116,7 @@ class UserController extends FrontController{
         $staticOtpEnable = !empty(getUserToken($preference)['status'] == false)?true:false;
         return view('frontend.'.$verify_page)->with(['preference' => $preference, 'navCategories' => $navCategories, 'user' => $user,'staticOtpEnable'=>$staticOtpEnable]);
     }
+
 
     /**
      * Display a listing of the resource.

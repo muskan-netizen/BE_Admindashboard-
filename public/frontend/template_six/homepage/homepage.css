@@ -1206,7 +1206,7 @@
 
 
     section.home-slider-wrapper {
-        margin-bottom: 40px;
+        margin-bottom: 10px;
     }
     /*-------------dark theme css---------------*/
     .al_body_template_six .progress-order {
@@ -1461,7 +1461,7 @@ padding: 0px;
         body.al_body_template_six .al_searchType .form-control{width:50%;}
         body.al_body_template_six .alFindSec{width:50%;}
         body.al_body_template_six .alFindSec button.btn i {padding-left: 10px;}
-        .al_body_template_six section {padding: 30px 0px;}
+        .al_body_template_six section {padding: 10px 0px;}
         body.al_body_template_six  .vendors section{padding-top: 0!important;}
     }
 
@@ -1475,5 +1475,6 @@ padding: 0px;
     overflow: hidden;
 }
 .space-slider-homeric {
-    padding: 0 60px;
+    padding: 0 10px;
+    background: #000;
 }

@@ -29,7 +29,6 @@ use App\Http\Controllers\Client\ProductFaqController;
 use App\Http\Controllers\Client\EstimationController;
 use App\Http\Controllers\Client\RazorpayGatwayController;
 use App\Http\Controllers\Client\StaticDropoffController;
-
 use App\Http\Controllers\Client\GiftCard\GiftcardController;
 use App\Http\Controllers\Client\RentalProtectionController;
 

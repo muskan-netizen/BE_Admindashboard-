@@ -216,7 +216,7 @@ body.al_body_template_six.homeHeader {
 .homeHeader .site-header {
     background: linear-gradient(180deg, #0C0C0C 0%, rgba(0, 0, 0, 0) 100%);
     width: 100%;
-    height: 90px;
+    height: 72px;
     box-shadow: none;
 }
 
@@ -230,7 +230,7 @@ body.al_body_template_six.homeHeader {
     background: #fff;
     opacity: 1;
     box-shadow: 0 1px 7px rgba(62, 62, 76, .2);
-    height: 90px;
+    height: 72px;
 }
 
 li.add_post a span svg {
@@ -244,7 +244,7 @@ li.add_post a span {
 
 .homeHeader .site-header .rightHead ul li a svg path,
 .homeHeader .site-header .rightHead ul li a svg {
-    fill: #fff;
+    fill:black;
 }
 
 .site-header.fixed-bar .rightHead ul li a svg path,

@@ -18,6 +18,7 @@
     "doctrine/dbal": "^2.13",
     "fideloper/proxy": "^4.4",
     "firebase/php-jwt": "^6.0",
+    "grimzy/laravel-mysql-spatial": "^5.0",
     "guzzlehttp/guzzle": "^6.5",
     "intervention/image": "^2.7",
     "jackiedo/timezonelist": "*",
@@ -51,7 +52,7 @@
     "stripe/stripe-php": "^7.100",
     "tomshoo/defer": "*",
     "twilio/sdk": "^6.13",
-    "vonage/client": "2.3.*",
+    "vonage/client": "^2.3",
     "webpatser/laravel-uuid": "^4.0",
     "yadahan/laravel-authentication-log": "^1.8",
     "yajra/laravel-datatables-oracle": "^9.18"

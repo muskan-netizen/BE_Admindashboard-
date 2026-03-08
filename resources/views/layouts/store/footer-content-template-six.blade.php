@@ -30,7 +30,7 @@ $applocale = session()->get('applocale');
                <div class="footer-contant alQRcodeBox">
                   <div class="store-btn col-12 d-flex align-items-center justify-content-between">
                      @if($client_preference_detail->show_qr_on_footer)
-                     <ul class="row w-100">
+                     <ul class="d-flex flex-wrap w-100">
                         <li class="col-6 text-center">
                            <div class="al_QRcode col-12">
                               {!! QrCode::size(60)->generate($client_preference_detail->ios_link??'#') !!} <br>
@@ -221,6 +221,7 @@ $applocale = session()->get('applocale');
             {{-- Contact Us details --}}
             @if($client_preference_detail->show_contact_us == 1)
             <div class="col-lg-3 col-md-6">
+               <!-- <button id="btn_ghost">ghost</button> -->
                <div class="sub-title">
                   <div class="footer-title mt-0">
                      <h4 class="mt-0">{{ __('Contact Us') }}</h4>
@@ -237,7 +238,7 @@ $applocale = session()->get('applocale');
                         </li>
                         <li class="pl-0">
                            <i class="fa fa-envelope"></i>
-                           <a href="mailto: {{$clientData ? ($clientData->contact_email ??$clientData->email) : ''}}" style="text-transform:none"><span>{{$clientData ? ($clientData->contact_email ??$clientData->email) : ''}}</span></a>
+                           <a href="mailto:{{$clientData ? ($clientData->contact_email ??$clientData->email): ''}}" style="text-transform:none"><span>{{$clientData ? ($clientData->contact_email ??$clientData->email) : ''}}</span></a>
                         </li>
                      </ul>
                   </div>
@@ -264,10 +265,11 @@ $applocale = session()->get('applocale');
                      </div>
                      @endif
                      @if(count($social_media_details))
-                     <div class="footer-title mt-0">
+                     <div class = "d-flex flex-wrap keep-in-touch-component-aman">
+                           <div class="footer-title mt-0">
                         <h4 class="mt-0">{{ __('Keep In Touch') }}</h4>
                      </div>
-                     <ul class="social-links d-flex">
+                     <ul class="social-links d-flex social-icons-container-aman">
                         @foreach($social_media_details as $social_media_detail)
                         <li class="d-block">
                            <a href="{{http_check($social_media_detail->url)}}" target="_blank">
@@ -277,6 +279,7 @@ $applocale = session()->get('applocale');
                         </li>
                         @endforeach
                      </ul>
+                     </div>
                      @endif
                   </div>
                </div>
@@ -375,6 +378,7 @@ $applocale = session()->get('applocale');
    </section>
    <div class="sub-footer">
       <div class="container">
+         <p style="text-align:center">Restocare is a brand operated by Restroedge Private Limited.</p>
          <div class="row">
             <div class="col-12 text-center">
                <div class="footer-end">
@@ -445,8 +449,27 @@ $applocale = session()->get('applocale');
    </div>
 </div>
 
-<div class="alSwitch">
-   <div id="dark_mode_switch" data-mode="false" class="time-circle">
+
+<style>
+   .keep-in-touch-component-aman{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+   }
+   .social-icons-container-aman{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+   }
+</style>
+
+
+<!-- ********************* theme mode prem -->
+<!-- <div class="alSwitch bg-primary">
+   <div id="dark_mode_switch" data-mode="false" class="time-circle bg-primary">
    <div class="sun"></div>
    <div class="moon">
       <div></div>
@@ -464,6 +487,7 @@ $applocale = session()->get('applocale');
    </div>
    <div class="water"></div>
    </div>
-</div>
+</div> -->
 
+<!-- ********************* theme mode prem -->
 
