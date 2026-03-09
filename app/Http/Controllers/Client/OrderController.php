@@ -2299,7 +2299,8 @@ class OrderController extends BaseController
             $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
-
+            $vendorProduct=OrderVendorProduct::where('order_id',$order->id)->first();
+            $tags = isset($vendorProduct->product)?$vendorProduct->product->tags:'';
             $unique = Auth::user()->code;
             $team_tag = $unique . "_" . $vendor;
 
@@ -2352,6 +2353,7 @@ class OrderController extends BaseController
                 'cash_to_be_collected' => $payable_amount ?? 0.00,
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
+                'order_agent_tag' => $tags,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'is_restricted' => $order_vendor->is_restricted,
@@ -2432,6 +2434,8 @@ class OrderController extends BaseController
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address')->first();
             $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
+            $vendorProduct=OrderVendorProduct::where('order_id',$order->id)->first();
+            $tags = isset($vendorProduct->product)?$vendorProduct->product->tags:'';
             $tasks = array();
             $meta_data = '';
             $rtype = 'P';
@@ -2527,6 +2531,7 @@ class OrderController extends BaseController
                 'schedule_time' => $schedule_time ?? null,
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
+                'order_agent_tag' => $tags,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'request_type' => $rtype ?? 'P',

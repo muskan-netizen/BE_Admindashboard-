@@ -195,6 +195,7 @@ class RecurringBooking extends Command
                                 'order_number' => $order->order_number,
                                 'barcode' => '',
                                 'order_team_tag' => $team_tag,
+                                'order_agent_tag' => $product->tags ?? '',
                                 'call_back_url' => $call_back_url ?? null,
                                 'task' => $tasks,
                                 'is_restricted' => $orderVendorDetails->is_restricted,

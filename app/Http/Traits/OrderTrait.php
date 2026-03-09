@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Traits\{ValidatorTrait, ApiResponser, SquareInventoryManager,smsManager};
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
-use App\Models\{CaregoryKycDoc, Order, ProductVariant, OrderVendor, VendorOrderCancelReturnPayment, ClientPreference, ProductBooking, User, UserAddress, Vendor, OrderProduct, OrderProductDispatchRoute, VendorOrderProductDispatcherStatus, Product, OrderLongTermServices, VendorOrderStatus, VendorOrderDispatcherStatus, OrderLongTermServiceSchedule, UserDevice, SmsTemplate, Cart, ClientCurrency, LuxuryOption, CartProduct, CartAddon, CartCoupon, OrderProductPrescription, CartProductPrescription, UserVendor, VendorOrderProductStatus,NotificationTemplate,EmailTemplate,OrderLocations};
+use App\Models\{CaregoryKycDoc,OrderVendorProduct, Order, ProductVariant, OrderVendor, VendorOrderCancelReturnPayment, ClientPreference, ProductBooking, User, UserAddress, Vendor, OrderProduct, OrderProductDispatchRoute, VendorOrderProductDispatcherStatus, Product, OrderLongTermServices, VendorOrderStatus, VendorOrderDispatcherStatus, OrderLongTermServiceSchedule, UserDevice, SmsTemplate, Cart, ClientCurrency, LuxuryOption, CartProduct, CartAddon, CartCoupon, OrderProductPrescription, CartProductPrescription, UserVendor, VendorOrderProductStatus,NotificationTemplate,EmailTemplate,OrderLocations};
 use Illuminate\Support\Facades\Redirect;
 
 trait OrderTrait
@@ -425,7 +425,8 @@ trait OrderTrait
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address','order_pre_time')->first();
 
             $order_vendor = OrderVendor::with(['products.product.categoryName', 'products.order_product_status'])->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
-
+            $vendorProduct=OrderVendorProduct::where('order_id',$order->id)->first();
+            $tags = isset($vendorProduct->product)?$vendorProduct->product->tags:'';
             foreach( $order_vendor->products as $product){
 
                 if( $product->dispatcher_status_option_id < 2){
@@ -555,6 +556,7 @@ trait OrderTrait
                                 'cash_to_be_collected' => $payable_amount ?? 0.00,
                                 'barcode' => '',
                                 'order_team_tag' => $team_tag,
+                                'order_agent_tag' => $tags,
                                 'call_back_url' => $call_back_url ?? null,
                                 'task' => $tasks,
                                 'is_restricted' => $order_vendor->is_restricted,
@@ -904,7 +906,8 @@ trait OrderTrait
             $order_vendor = OrderVendor::with('products.product', 'products.LongTermService.schedule')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
             $product = $order_vendor->products->first();
             $schedules = $order_vendor->products->first()->LongTermService->schedule;
-
+            $vendorProduct=OrderVendorProduct::where('order_id',$order->id)->first();
+            $tags = isset($vendorProduct->product)?$vendorProduct->product->tags:'';
 
             $allocation_type = 'a';
             $agent = '';
@@ -982,6 +985,7 @@ trait OrderTrait
                 'cash_to_be_collected' => $payable_amount ?? 0.00,
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
+                'order_agent_tag' => $tags,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'is_restricted' => $order_vendor->is_restricted,
@@ -1544,6 +1548,7 @@ trait OrderTrait
                          'cash_to_be_collected' => $payable_amount ?? 0.00,
                          'barcode' => '',
                          'order_team_tag' => $team_tag,
+                         'order_agent_tag' => $tags,
                          'call_back_url' => $call_back_url ?? null,
                          'task' => $tasks,
                          'is_restricted' => $is_restricted,

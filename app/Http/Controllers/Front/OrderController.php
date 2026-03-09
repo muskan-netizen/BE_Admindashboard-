@@ -4076,7 +4076,8 @@ class OrderController extends FrontController
 
             $unique = Auth::user()->code;
             $team_tag = $unique . "_" . $vendor;
-
+            $vendorProduct=OrderVendorProduct::where('order_id',$order->id)->first();
+            $tags = isset($vendorProduct->product)?$vendorProduct->product->tags:'';
             $tasks[] = array(
                 'task_type_id' => 1,
                 'latitude' => $vendor_details->latitude ?? '',
@@ -4125,6 +4126,7 @@ class OrderController extends FrontController
                 'cash_to_be_collected' => $payable_amount ?? 0.00,
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
+                'order_agent_tag' => $tags,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'is_restricted' => $order_vendor->is_restricted,
@@ -4205,6 +4207,8 @@ class OrderController extends FrontController
                 'order_id' => $order->id,
                 'vendor_id' => $vendor
             ])->first();
+            $vendorProduct=OrderVendorProduct::where('order_id',$order->id)->first();
+            $tags = isset($vendorProduct->product)?$vendorProduct->product->tags:'';
             $tasks = array();
             $meta_data = '';
             $rtype = 'P';
@@ -4306,6 +4310,7 @@ class OrderController extends FrontController
                 'schedule_time' => $schedule_time ?? null,
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
+                'order_agent_tag' => $tags,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'request_type' => $rtype,
