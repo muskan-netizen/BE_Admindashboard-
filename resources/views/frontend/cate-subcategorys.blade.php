@@ -24,7 +24,7 @@
                     @include('frontend.vendor-category-topbar-banner')   
 
 
-                        <div class="top-banner-content small-section">
+                        <div class="top-banner-content small-section bg-primary">
                             <h4>{{ $category->translation_name }}</h4>
                         </div>
                     </div>
@@ -151,7 +151,7 @@
                     </div>
                     @endif
                 </div>
-                <div class="collection-content col-lg-9 outter-fillter-data">
+                <div class="collection-content col-lg-9 outter-fillter-data" style="width: 100%;">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">

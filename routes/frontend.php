@@ -449,10 +449,12 @@ Route::group(['middleware' => ['domain']], function () {
 		'as' => 'customer.login',
 		'uses' => 'Front\CustomerAuthController@loginForm'
 	]);
+
 	Route::get('user/register', [
 		'as' => 'customer.register',
 		'uses' => 'Front\CustomerAuthController@registerForm'
 	]);
+	Route::get('delete-account', 'Front\ProfileController@deleteAccountPage')->name('delete.account.page');
 	Route::get('user/forgotPassword', [
 		'as' => 'customer.forgotPassword',
 		'uses' => 'Front\ForgotPasswordController@getForgotPasswordForm'
@@ -515,6 +517,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('add/product/prescription', 'Front\CartController@uploadPrescription')->name('cart.uploadPrescription');
 	Route::post('cart/schedule/update', 'Front\CartController@updateSchedule')->name('cart.updateSchedule');
 	Route::post('cart/productfaq/update', 'Front\CartController@updateCartProductFaq')->name('cart.productfaq');
+	Route::post('validate-provider', 'Api\v1\OrderController@validateProvider')->name('validate.provider');
 	Route::post('cart/schedule/slots', 'Front\CartController@checkScheduleSlots')->name('cart.check_schedule_slots');
 
 	Route::post('cart/pickup/schedule/slots', 'Front\CartController@checkPickupScheduleSlots')->name('cart.check_pickup_schedule_slots'); // Added by Ovi
@@ -647,6 +650,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::get('user/deleteAddress/{id}', 'Front\AddressController@delete')->name('deleteAddress');
 	Route::post('user/updateAccount', 'Front\ProfileController@updateAccount')->name('user.updateAccount');
 	Route::post('user/updateTimezone', 'Front\ProfileController@updateTimezone')->name('user.updateTimezone');
+	Route::post('user/delete-account', 'Front\ProfileController@deleteAccount')->name('user.deleteAccount');
 	Route::get('user/editAccount', 'Front\ProfileController@editAccount')->name('user.editAccount');
 	Route::get('user/sendRefferal', 'Front\ProfileController@showRefferal')->name('user.sendRefferal');
 	Route::get('wishlist/remove/{sku}', 'Front\WishlistController@removeWishlist')->name('removeWishlist');

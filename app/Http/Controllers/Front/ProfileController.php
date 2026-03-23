@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\UserDevice;
@@ -96,6 +97,17 @@ class ProfileController extends FrontController
             'class' => 'styled form-control',
         ]);
         return view('frontend.account.profile')->with(['user' => $user, 'navCategories' => $navCategories, 'userAddresses'=>$user_addresses, 'userRefferal' => $refferal_code,'timezone_list' => $timezone_list]);
+    }
+
+    public function deleteAccountPage(Request $request, $domain = ''){
+        $langId = Session::get('customerLanguage');
+        $navCategories = $this->categoryNav($langId);
+        $client = Client::select('name', 'email', 'phone_number')->first();
+
+        return view('frontend.account.delete-account')->with([
+            'navCategories' => $navCategories,
+            'client' => $client,
+        ]);
     }
 
     /**
@@ -246,6 +258,44 @@ class ProfileController extends FrontController
             }
         }
         return redirect()->route('user.profile')->with('success', __('Your Password has been changed successfully'));
+    }
+
+    public function deleteAccount(Request $request, $domain = ''){
+        $user = User::where('id', Auth::id())->first();
+
+        if (!$user) {
+            return redirect()->route('customer.login');
+        }
+
+        try {
+            DB::transaction(function () use ($user) {
+                UserDevice::where('user_id', $user->id)->delete();
+
+                $user->email = null;
+                $user->phone_number = null;
+                $user->dial_code = null;
+                $user->description = null;
+                $user->image = null;
+                $user->auth_token = null;
+                $user->remember_token = null;
+                $user->system_id = null;
+                $user->status = 3;
+                $user->save();
+
+                $user->delete();
+            });
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors([
+                'error' => __('Unable to delete your account right now. Please try again.'),
+            ]);
+        }
+
+        Auth::logout();
+        Session::forget('current_fcm_token');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('customer.login')->with('success', __('Your account has been deleted successfully.'));
     }
 
     public function save_fcm(Request $request){

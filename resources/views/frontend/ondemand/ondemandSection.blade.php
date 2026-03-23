@@ -881,11 +881,28 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
     border-radius: 8px;
     overflow: hidden;
 }
-#productDetailModal .carousel-item img {
+/* #productDetailModal .carousel-item img {
     width: 100%;
-    height: 300px;
-    object-fit: cover;
+    height: 100%;
+    object-fit: contain;
+} */
+
+#productDetailModal .carousel-item {
+    width: 100%;
+    height: 400px; /* control UI height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f5f5f5;
+    overflow: hidden;
 }
+
+#productDetailModal .carousel-item img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
 #productDetailModal .price-section {
     background: #f8f9fa;
     padding: 15px;

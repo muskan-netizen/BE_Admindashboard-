@@ -1236,6 +1236,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_orangepay_url =  "{{ route('orangepay.initiate.payment') }}";
     var payment_cybersource_url =  "{{ route('cybersource.initiate.payment') }}";
     var mastercard_create_session_url = "{{route('payment.mastercard.createSession')}}";
+    var validate_provider_url = "{{ route('validate.provider') }}";
 
     @if(!empty($client_preference_detail->is_postpay_enable))
         var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";
@@ -1934,6 +1935,70 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         var rel = $(this).data('rel');
         // $('#plus_icon_'+rel).hide();
         readURL(this, '#upload_logo_preview_'+rel);
+    });
+
+    $(document).on('click', '#validate_provider_btn', function() {
+        var providerId = $.trim($('#provider_id_input').val());
+        var $message = $('#provider_validate_message');
+        var $btn = $(this);
+
+        $('#is_provider_validated').val(0);
+        $('#validated_provider_id').val('');
+        $message.removeClass('text-success text-danger').text('');
+
+        if (providerId === '') {
+            $message.addClass('text-danger').text("{{ __('Provider ID is required.') }}");
+            return;
+        }
+
+        $btn.attr('disabled', true);
+
+        $.ajax({
+            type: 'POST',
+            url: validate_provider_url,
+            dataType: 'json',
+            data: {
+                provider_id: providerId
+            },
+            success: function(response) {
+                if (response && response.success) {
+                    $('#is_provider_validated').val(1);
+                    $('#validated_provider_id').val(providerId);
+                    $('#selected_provider_text').text(providerId);
+                    $('#selected_provider_chip').show();
+                    $('.provider-validate-input-wrap').hide();
+                    $message.addClass('text-success').text(response.message || "{{ __('Provider validated successfully.') }}");
+                } else {
+                    $message.addClass('text-danger').text((response && response.message) ? response.message : "{{ __('Unable to validate provider.') }}");
+                }
+            },
+            error: function(xhr) {
+                var msg = "{{ __('Service Provider not found') }}";
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                }
+                $message.addClass('text-danger').text(msg);
+            },
+            complete: function() {
+                $btn.attr('disabled', false);
+            }
+        });
+    });
+
+    $(document).on('input', '#provider_id_input', function() {
+        $('#is_provider_validated').val(0);
+        $('#validated_provider_id').val('');
+        $('#provider_validate_message').removeClass('text-success text-danger').text('');
+    });
+
+    $(document).on('click', '#remove_selected_provider', function() {
+        $('#is_provider_validated').val(0);
+        $('#validated_provider_id').val('');
+        $('#selected_provider_text').text('');
+        $('#provider_id_input').val('');
+        $('#selected_provider_chip').hide();
+        $('.provider-validate-input-wrap').show();
+        $('#provider_validate_message').removeClass('text-success text-danger').text('');
     });
 
 

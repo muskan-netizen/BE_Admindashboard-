@@ -10,6 +10,7 @@ Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], funct
         Route::post('sendToken', 'Api\v1\AuthController@sendToken');
         Route::post('verifyAccount', 'Api\v1\AuthController@verifyToken');
         Route::get('deleteUser', 'Api\v1\AuthController@deleteUser');
+        Route::post('delete-account', 'Api\v1\AuthController@deleteUser');
 
 
 
@@ -67,6 +68,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('get-blockchain-address', 'Api\v1\BlockchainController@getBlockchainAddress');
         Route::get('get-hourly-base-price', 'Api\v1\CategoryController@getHourlyBasePrice');
+        Route::post('validate-provider', 'Api\v1\OrderController@validateProvider');
 
 
         Route::get('profile', 'Api\v1\ProfileController@profile');

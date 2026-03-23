@@ -96,8 +96,14 @@ $getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_cur
                 <li class="{{ (request()->is('user/giftCard')) ? 'active' : '' }}"><a href="{{route('giftCard.index')}}">{{ __('Gift Card') }}</a></li>
             @endif
             <li class="{{ (request()->is('user/changePassword')) ? 'active' : '' }}"><a href="{{route('user.changePassword')}}">{{ __('Change Password') }}</a></li>
+            <li class="last">
+                <a href="javascript:void(0)" onclick='event.preventDefault(); if (confirm(@json(__("Are you sure you want to delete your account? This action cannot be undone.")))) { document.getElementById("delete-account-form").submit(); }'>{{ __('Delete Account') }}</a>
+            </li>
             <li class="last {{ (request()->is('user/logout')) ? 'active' : '' }}"><a href="{{route('user.logout')}}">{{ __('Log Out') }}</a></li>
             <li class="last {{ (request()->is('user/refer-earn')) ? 'active' : '' }}"><a href="{{route('refer-earn.index')}}">{{ __('Refer & Earn') }}</a></li>
         </ul>
     </div>
+    <form id="delete-account-form" action="{{ route('user.deleteAccount') }}" method="POST" style="display:none;">
+        @csrf
+    </form>
 </div>

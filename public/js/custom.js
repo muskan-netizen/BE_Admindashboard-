@@ -2972,6 +2972,7 @@ window.placeOrder = function placeOrder(
     var schedule_dropoff_slot = null;
   }
   var is_gift = $("#is_gift:checked").val() ?? 0;
+  var provider_id = $("#validated_provider_id").val() ?? "";
   var total_fixed_fee_amount =
     $("input[name='total_fixed_fee_amount']").val() ?? 0;
 
@@ -2999,6 +3000,8 @@ window.placeOrder = function placeOrder(
       schedule_dt: schedule_dt,
       is_gift: is_gift,
       delivery_type: delivery_type,
+      provider_id: provider_id,
+      driver_id: provider_id,
       slot: slot,
       total_fixed_fee_amount: total_fixed_fee_amount,
       other_taxes_string: other_taxes_string,
@@ -3050,6 +3053,7 @@ window.placeOrderBeforePayment = function placeOrderBeforePayment(
   var slot = $("#slot").val();
   var other_taxes_string = $("#other_taxes_string").val();
   var is_gift = $("#is_gift:checked").val() ?? 0;
+  var provider_id = $("#validated_provider_id").val() ?? "";
   // place_order_url=domain+/user/
   if (task_type == "schedule" && schedule_dt == "") {
     $("#proceed_to_pay_modal").modal("hide");
@@ -3075,6 +3079,8 @@ window.placeOrderBeforePayment = function placeOrderBeforePayment(
       task_type: task_type,
       schedule_dt: schedule_dt,
       is_gift: is_gift,
+      provider_id: provider_id,
+      driver_id: provider_id,
       slot: slot,
       other_taxes_string: other_taxes_string,
     },

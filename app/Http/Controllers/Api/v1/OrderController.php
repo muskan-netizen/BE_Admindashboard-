@@ -91,6 +91,7 @@ class OrderController extends BaseController
     {
 
        try {
+        \Log::info('postPlaceOrder request', $request->all());
             $action = ($request->has('type')) ? $request->type : 'delivery';
 
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
@@ -392,6 +393,7 @@ class OrderController extends BaseController
                         $order_vendor->status = 0;
                         $order_vendor->user_id = $user->id;
                         $order_vendor->order_id = $order->id;
+                        $order_vendor->driver_id = $request->driver_id ?? null;
                         $order_vendor->vendor_id = $vendor_id;
                         $order_vendor->subscription_invoices_vendor_id = $vendor_subcription_lnvoices_id;
                         $order_vendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
@@ -995,6 +997,7 @@ class OrderController extends BaseController
 
                         $order_vendor->is_restricted = $is_restricted;
                         $order_vendor->bid_discount = $bid_vendor_discount??0;
+                        $order_vendor->driver_id = $request->driver_id ?? null;
                         $Order_bid_discount += $bid_vendor_discount??0;
                         $vendor_info = Vendor::where('id', $vendor_id)->first();
                         if ($vendor_info) {
@@ -1722,12 +1725,13 @@ class OrderController extends BaseController
                 }
             }
 
-            $vendorProduct=OrderVendorProduct::where('order_id',$order->id)->first();
-            $tags = isset($vendorProduct->product)?$vendorProduct->product->tags:'';
+            // Ensure team and agent tags are always non-null so Guzzle doesn't drop them
+            $vendorProduct = OrderVendorProduct::where('order_id', $order->id)->first();
+            $tags = (isset($vendorProduct->product) && !is_null($vendorProduct->product->tags))
+                ? $vendorProduct->product->tags
+                : '';
 
-            $team_tag = null;
-            if (!empty($dispatch_domain->last_mile_team))
-                $team_tag = $dispatch_domain->last_mile_team;
+            $team_tag = !empty($dispatch_domain->last_mile_team) ? $dispatch_domain->last_mile_team : '';
 
                 if (isset($order->scheduled_date_time) && !empty($order->scheduled_date_time)) {
                     $task_type = 'schedule';
@@ -1791,6 +1795,7 @@ class OrderController extends BaseController
                 'is_restricted' => $order_vendor->is_restricted,
                 'vendor_id' => $vendor_details->id,
                 'order_vendor_id' => $order_vendor->id,
+                'driver_unique_id' => $order_vendor->driver_id ?? null,
                 'dbname' => $client->database_name,
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
@@ -5395,6 +5400,44 @@ class OrderController extends BaseController
             'message' => 'PDF generated successfully',
             'download_link' => $downloadLink,
         ]);
+    }
+    public function validateProvider(Request $request)
+    {
+        try {
+            $dispatch_domain = $this->getDispatchOnDemandDomain();
+            
+            $client = new \GuzzleHttp\Client([
+                'headers' => [
+                    'personaltoken' => $dispatch_domain->dispacher_home_other_service_key,
+                    'shortcode'     => $dispatch_domain->dispacher_home_other_service_key_code,
+                    'Content-Type'  => 'application/json',
+                ],
+            ]);
+
+            $url = rtrim($dispatch_domain->dispacher_home_other_service_key_url, '/');
+           
+            // Use JSON payload instead of form_params since header is JSON
+            $res = $client->post("{$url}/api/validate-service_provider", [
+                'json' => $request->all(),
+                'timeout' => 10, // optional: to avoid long wait on failure
+            ]);
+
+            $response = json_decode($res->getBody()->getContents(), true);
+            
+            return response()->json([
+                'success' => true,
+                'message' => $response['message'],
+                'code'    => $response['code'],
+            ], 200);
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Service Provider not found',
+                'code'    => 404,
+            ], 404);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 500);
+        }
     }
 
 }

@@ -1269,6 +1269,8 @@ if ($isChefProduct) {
                                         $deliveryDuration = $deliveries[0]['duration'];
                                         $code = $deliveries[0]['code'];
                                     }
+                                    // Keep UI delivery fee field in sync with payable calculation
+                                    $delivery_fee_charges = $deliveryCharges;
                                 }
 
                                 if (isset($deliveryCharges) && !empty($deliveryCharges)) {

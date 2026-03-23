@@ -13,6 +13,11 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
         <div class="row align-items-center h-100" id="login-section">
             <div class="col-lg-6 mb-lg-0 mb-3 text-center pb-sm-0 {{(@$getAdditionalPreference['is_phone_signup'] == 1) ? 'offset-lg-3' : 'border-right' }}">
                 <h3 class="mb-2">{{ __('Login To Your Account') }}</h3>
+                @if (\Session::has('success'))
+                    <div class="alert alert-success text-left">
+                        <span>{!! \Session::get('success') !!}</span>
+                    </div>
+                @endif
                 @if(session('preferences'))
                 @if(@session('preferences')->fb_login == 1 || @session('preferences')->twitter_login == 1 || @session('preferences')->google_login == 1 || @session('preferences')->apple_login == 1)
                 <ul class="social-links d-flex align-items-center mx-auto mb-4 mt-3">

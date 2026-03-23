@@ -33,6 +33,11 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                     </div>
                     <div class="col-sm-6 px-xl-5 px-3 LogoInArea">
                         <h3 class="mb-2 text-center">{{ __('Login') }}</h3>
+                        @if (\Session::has('success'))
+                            <div class="alert alert-success text-left">
+                                <span>{!! \Session::get('success') !!}</span>
+                            </div>
+                        @endif
                         <form id="login-form-new" class="arabic-language" action="" class="pl-2">
                             @csrf
                                 <input type="hidden" name="device_type" value="web">

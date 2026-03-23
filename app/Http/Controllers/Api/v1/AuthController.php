@@ -27,8 +27,10 @@ use Log;
 use App\Http\Traits\CustomerSignupSuccessEmailTrait;
 use App\Http\Traits\InfluencerTrait;
 
+
 class AuthController extends BaseController
 {
+
     use ApiResponser, InfluencerTrait;
     use CustomerSignupSuccessEmailTrait;
     /**
@@ -56,6 +58,7 @@ class AuthController extends BaseController
      */
     public function login(LoginRequest $loginReq)
     {
+
         $phoneCheck = 0;
         $errors = array();
         if(!is_numeric($loginReq->email)){
@@ -1970,25 +1973,40 @@ class AuthController extends BaseController
                 if(!$user){
                     return response()->json(['massage' => __('User not found!')], 200);
                 }
-                User::where('id', $user->id)->update([
-                    // 'email' => $user->email.'_'.$user->id."_D",
-                    // 'phone_number' => $user->phone_number.'_'.$user->id."_D",
-                    'auth_token' =>'',
-                    'system_id' =>'',
-                    'remember_token' => '',
-                    'facebook_auth_id' => '',
-                    'twitter_auth_id' => '',
-                    'google_auth_id' => '',
-                    'apple_auth_id' => '',
-                    'status' => 3
-                    ]);
+                $header = $request->header();
 
-                //$user->delete();
+                if (!empty($header['authorization'][0])) {
+                    $blockToken = new BlockedToken();
+                    $blockToken->token = $header['authorization'][0];
+                    $blockToken->expired = '1';
+                    $blockToken->save();
+
+                    UserDevice::where('access_token', $header['authorization'][0])->delete();
+                }
+
+                UserDevice::where('user_id', $user->id)->delete();
+
+                $user->email = null;
+                $user->phone_number = null;
+                $user->dial_code = null;
+                $user->description = null;
+                $user->image = null;
+                $user->auth_token = '';
+                $user->system_id = '';
+                $user->remember_token = '';
+                $user->facebook_auth_id = '';
+                $user->twitter_auth_id = '';
+                $user->google_auth_id = '';
+                $user->apple_auth_id = '';
+                $user->status = 3;
+                $user->save();
+
+                $user->delete();
                 DB::commit(); //Commit transaction after all the operations
                 return response()->json(['massage' => __('User Deleted Successfully')], 200);
                 //code...
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['massage' => __('Something went wrong!')], 400);
 

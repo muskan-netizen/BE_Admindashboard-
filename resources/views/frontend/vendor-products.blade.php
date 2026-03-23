@@ -8,6 +8,18 @@
 .vendor-page-copy .name_location a.copy-board {padding: 0px 6px;border-radius: 4px;border: 1px dotted#938a8a;background-color: #f8f1f8;}.vendor-page-copy .name_location a.copy-board img {width: 12px;}
 .vendor-page-copy .name_location a.copy-board span {font-size: 13px;}
 </style>
+
+<style>
+    .vendorxyz{
+        width: 100%;
+    }
+
+    @media (min-width: 992px) {
+        .vendorxyz{
+            max-width: 100%;
+    }
+}
+</style>
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
 @section('content')
@@ -199,7 +211,7 @@ $currentPage = $_GET['page']??1;
                     @endif
                     <!-- side-bar banner end here -->
                 </div>
-                <div class="collection-content col-lg-9 outter-fillter-data">
+                <div class="collection-content col-lg-9 outter-fillter-data vendorxyz">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
@@ -283,7 +295,7 @@ $currentPage = $_GET['page']??1;
                                                     <div class="col-md-3 col-6 col-grid-box mt-4">
                                                         <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank" class="common-product-box scale-effect mt-0">
                                                             <div class="img-outer-box position-relative">
-                                                                <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
+                                                                <img class="img-fluid blur-up lazyload imgxyz" data-src="{{$data->image_url}}" alt="">
                                                                 <div class="pref-timing">
                                                                     <!--<span>5-10 min</span>-->
                                                                 </div>

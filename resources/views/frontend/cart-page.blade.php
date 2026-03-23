@@ -1182,6 +1182,34 @@
                         </div>
 
 
+                        <div class="col-12 mt-3">
+                            <div class="row">
+                                <div class="col-12">
+                                    <span class="pb-1 d-block">{{ __('Validate Provider') }}</span>
+                                </div>
+                                <div class="col-8 pr-1 provider-validate-input-wrap">
+                                    <input class="form-control" type="text" id="provider_id_input"
+                                        placeholder="{{ __('Enter Provider ID') }}" name="provider_id_input">
+                                </div>
+                                <div class="col-4 pl-1 provider-validate-input-wrap">
+                                    <button type="button" class="btn btn-solid w-100" id="validate_provider_btn">
+                                        {{ __('Validate') }}
+                                    </button>
+                                </div>
+                            </div>
+                            <input type="hidden" id="is_provider_validated" value="0">
+                            <input type="hidden" id="validated_provider_id" value="">
+                            <div id="selected_provider_chip" class="mt-2" style="display:none;">
+                                <span class="badge badge-pill badge-secondary px-3 py-2">
+                                    <span id="selected_provider_text"></span>
+                                    <a href="javascript:void(0);" id="remove_selected_provider" class="text-danger ml-2" aria-label="remove selected provider">
+                                        <i class="fa fa-times"></i>
+                                    </a>
+                                </span>
+                            </div>
+                            <div id="provider_validate_message" class="mt-2 small"></div>
+                        </div>
+
                         <div class="col-lg-12 mt-3 cart-price">
 
                             {{-- @if ($cart_details->sub_total > 0) --}}

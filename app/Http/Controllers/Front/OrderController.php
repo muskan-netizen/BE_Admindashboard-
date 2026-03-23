@@ -2190,6 +2190,7 @@ class OrderController extends FrontController
                 $OrderVendor->status = 0;
                 $OrderVendor->user_id = $user->id;
                 $OrderVendor->order_id = $order->id;
+                $OrderVendor->driver_id = $request->driver_id ?? $request->provider_id ?? null;
                 $OrderVendor->vendor_id = $vendor_id;
                 $OrderVendor->subscription_invoices_vendor_id = $vendor_subcription_lnvoices_id;
                 $OrderVendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
@@ -2910,6 +2911,7 @@ class OrderController extends FrontController
                 $total_subscription_discount = $total_subscription_discount + $subs_discount_admin + $subs_discount_vendor;
                 $OrderVendor->is_restricted = $is_restricted;
                 $OrderVendor->bid_discount = $bid_vendor_discount ?? 0;
+                $OrderVendor->driver_id = $request->driver_id ?? $request->provider_id ?? null;
                 $Order_bid_discount += $bid_vendor_discount ?? 0;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
@@ -3598,11 +3600,30 @@ class OrderController extends FrontController
                 $vendor_order_status->save();
 
                 if ($request->status_option_id == 2) {
+                    \Log::info("autoAcceptOrderIfOn - Processing status 2 for Order ID: " . $request->order_id, [
+                        'vendor_id' => $request->vendor_id,
+                        'shipping_delivery_type' => $request->shipping_delivery_type ?? 'NOT_SET'
+                    ]);
+                    
                     if ($request->shipping_delivery_type == 'D') {
+                        \Log::info("autoAcceptOrderIfOn - Calling checkIfanyProductLastMileon for Order ID: " . $request->order_id);
                         $order_dispatch = $this->checkIfanyProductLastMileon($request);
+                        \Log::info("autoAcceptOrderIfOn - checkIfanyProductLastMileon Result for Order ID: " . $request->order_id, [
+                            'order_dispatch_result' => $order_dispatch
+                        ]);
+                        
                         if ($order_dispatch && $order_dispatch == 1) {
                             $stats = $this->insertInVendorOrderDispatchStatus($request);
                         }
+                        
+                        // Log OrderVendor dispatch_traking_url after task creation
+                        $orderVendorAfterDispatch = OrderVendor::where('order_id', $request->order_id)
+                            ->where('vendor_id', $request->vendor_id)
+                            ->first();
+                        \Log::info("autoAcceptOrderIfOn - OrderVendor after dispatch for Order ID: " . $request->order_id, [
+                            'dispatch_traking_url' => $orderVendorAfterDispatch->dispatch_traking_url ?? 'NULL',
+                            'web_hook_code' => $orderVendorAfterDispatch->web_hook_code ?? 'NULL'
+                        ]);
                     } elseif ($request->shipping_delivery_type == 'L') {
                         // Create Shipping place order request for Lalamove
                         $order_lalamove = $this->placeOrderRequestlalamove($request);
@@ -3617,6 +3638,10 @@ class OrderController extends FrontController
                         $order_ship = $this->placeOrderRequestAhoy($request);
                     } elseif ($request->shipping_delivery_type == 'D4') {
                         $order_ship = $this->placeOrderRequestD4B($request);
+                    } else {
+                        \Log::info("autoAcceptOrderIfOn - No dispatch triggered for Order ID: " . $request->order_id, [
+                            'shipping_delivery_type' => $request->shipping_delivery_type ?? 'NOT_SET'
+                        ]);
                     }
                 }
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update([
@@ -3632,6 +3657,10 @@ class OrderController extends FrontController
                 ])['is_tracking_url'] == 1) {
                     $this->sendTrackingUrlSMS($orderData, $request->order_id);
                 }
+            } else {
+                \Log::info("autoAcceptOrderIfOn - Vendor order status already exists for Order ID: " . $request->order_id, [
+                    'vendor_id' => $request->vendor_id
+                ]);
             }
         }
     }
@@ -3777,7 +3806,9 @@ class OrderController extends FrontController
 
     public function checkIfanyProductLastMileon($request)
     {
-        \Log::info('checkIfanyProductLastMileon function is working fine');
+        \Log::info('checkIfanyProductLastMileon - Starting for Order ID: ' . $request->order_id, [
+            'vendor_id' => $request->vendor_id
+        ]);
         $order_dispatchs = 2;
         $AdditionalPreference = getAdditionalPreference(['is_place_order_delivery_zero']);
         $is_place_order_delivery_zero =  $AdditionalPreference['is_place_order_delivery_zero'];
@@ -3785,7 +3816,16 @@ class OrderController extends FrontController
 
         $luxury_option_id      = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
         $is_restricted = $checkdeliveryFeeAdded->is_restricted;
+        
+        \Log::info('checkIfanyProductLastMileon - Order Details for Order ID: ' . $request->order_id, [
+            'luxury_option_id' => $luxury_option_id,
+            'is_restricted' => $is_restricted,
+            'delivery_fee' => $checkdeliveryFeeAdded->delivery_fee ?? 'NULL',
+            'is_place_order_delivery_zero' => $is_place_order_delivery_zero
+        ]);
+        
         if ($luxury_option_id == 6) { // only for on_demand type
+            \Log::info('checkIfanyProductLastMileon - On Demand type detected for Order ID: ' . $request->order_id);
 
             $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
 
@@ -3802,6 +3842,7 @@ class OrderController extends FrontController
                     if (($prod->is_price_buy_driver == 1)  && ($prod->product->category->categoryDetail->type_id == 8)) {
 
                         $dispatch_domain['rejectable_order'] = 1;
+                        \Log::info('checkIfanyProductLastMileon - Calling placeRequestToDispatchSingleProduct (rejectable) for Order ID: ' . $request->order_id);
 
                         $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
                         if ($order_dispatchs && $order_dispatchs == 1) {
@@ -3814,7 +3855,7 @@ class OrderController extends FrontController
 
                         if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false && $OnDemand == 0  && $checkdeliveryFeeAdded->delivery_fee > 0) {
 
-
+                            \Log::info('checkIfanyProductLastMileon - Calling placeRequestToDispatchSingleProduct for Order ID: ' . $request->order_id);
                             $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
                             if ($order_dispatchs && $order_dispatchs == 1) {
                                 $OnDemand = 1;
@@ -3825,18 +3866,34 @@ class OrderController extends FrontController
 
                     }
                 }
+            } else {
+                \Log::info('checkIfanyProductLastMileon - On Demand dispatch domain not configured for Order ID: ' . $request->order_id);
             }
         }
 
         $dispatch_domain = $this->getDispatchDomain();
+        \Log::info('checkIfanyProductLastMileon - Dispatch Domain Check for Order ID: ' . $request->order_id, [
+            'dispatch_domain_exists' => ($dispatch_domain && $dispatch_domain != false) ? 'YES' : 'NO',
+            'delivery_fee' => $checkdeliveryFeeAdded->delivery_fee ?? 'NULL',
+            'will_dispatch' => ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) ? 'YES' : 'NO'
+        ]);
+        
         if ($dispatch_domain && $dispatch_domain != false) {
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
+                \Log::info('checkIfanyProductLastMileon - Calling placeRequestToDispatch for Order ID: ' . $request->order_id);
                 $order_dispatchs = $this->placeRequestToDispatch($request->order_id, $request->vendor_id, $dispatch_domain);
+                \Log::info('checkIfanyProductLastMileon - placeRequestToDispatch Result for Order ID: ' . $request->order_id, [
+                    'result' => $order_dispatchs
+                ]);
+            } else {
+                \Log::info('checkIfanyProductLastMileon - Skipping dispatch due to delivery_fee condition for Order ID: ' . $request->order_id);
             }
 
             if ($order_dispatchs && $order_dispatchs == 1) {
                 return 1;
             }
+        } else {
+            \Log::info('checkIfanyProductLastMileon - Dispatch domain not configured for Order ID: ' . $request->order_id);
         }
 
 
@@ -3928,12 +3985,12 @@ class OrderController extends FrontController
                 }
             }
 
-            $team_tag = null;
-            if (!empty($dispatch_domain->last_mile_team)) {
-                $team_tag = $dispatch_domain->last_mile_team;
-            }
-            $vendorProduct=OrderVendorProduct::where('order_id',$order->id)->first();
-            $tags = isset($vendorProduct->product)?$vendorProduct->product->tags:'';
+            // Ensure team and agent tags are always sent (never null) so they reach dispatcher
+            $team_tag = !empty($dispatch_domain->last_mile_team) ? $dispatch_domain->last_mile_team : '';
+            $vendorProduct = OrderVendorProduct::where('order_id', $order->id)->first();
+            $tags = (isset($vendorProduct->product) && !is_null($vendorProduct->product->tags))
+                ? $vendorProduct->product->tags
+                : '';
 
             if (isset($order->scheduled_date_time) && !empty($order->scheduled_date_time)) {
                 $task_type = 'schedule';
@@ -4019,12 +4076,27 @@ class OrderController extends FrontController
             ]);
 
             $url = $dispatch_domain->delivery_service_key_url;
+            \Log::info("placeRequestToDispatch - Request URL: " . $url . '/api/task/create');
+            \Log::info("placeRequestToDispatch - Request Data for Order ID: " . $order->id, $postdata);
+            
             $res = $client->post($url . '/api/task/create', [
                 'form_params' => ($postdata)
             ]);
             $response = json_decode($res->getBody(), true);
+            \Log::info("placeRequestToDispatch - Response for Order ID: " . $order->id, [
+                'response' => $response,
+                'task_id' => $response['task_id'] ?? 'NOT_SET',
+                'dispatch_traking_url' => $response['dispatch_traking_url'] ?? 'NOT_SET'
+            ]);
+            
             if ($response && $response['task_id'] > 0) {
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
+                \Log::info("placeRequestToDispatch - Updating OrderVendor for Order ID: " . $order->id . ", Vendor ID: " . $vendor, [
+                    'web_hook_code' => $dynamic,
+                    'dispatch_traking_url' => $dispatch_traking_url,
+                    'dispatch_traking_url_empty' => empty($dispatch_traking_url) ? 'YES' : 'NO'
+                ]);
+                
                 $up_web_hook_code = OrderVendor::where([
                     'order_id' => $order->id,
                     'vendor_id' => $vendor
@@ -4032,15 +4104,22 @@ class OrderController extends FrontController
                     'web_hook_code' => $dynamic,
                     'dispatch_traking_url' => $dispatch_traking_url
                 ]);
+                
+                \Log::info("placeRequestToDispatch - OrderVendor Update Result for Order ID: " . $order->id, [
+                    'rows_affected' => $up_web_hook_code
+                ]);
                 return 1;
             }
+            \Log::warning("placeRequestToDispatch - Task creation failed or task_id not set for Order ID: " . $order->id, [
+                'response' => $response
+            ]);
             return 2;
         } catch (\Exception $e) {
-            return 2;
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
+            \Log::error("placeRequestToDispatch - Exception for Order ID: " . $order->id, [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
+            return 2;
         }
     }
 
@@ -4153,12 +4232,27 @@ class OrderController extends FrontController
             ]);
 
             $url = $dispatch_domain->dispacher_home_other_service_key_url;
+            \Log::info("placeRequestToDispatchOnDemand - Request URL: " . $url . '/api/task/create');
+            \Log::info("placeRequestToDispatchOnDemand - Request Data for Order ID: " . $order->id, $postdata);
+            
             $res = $client->post($url . '/api/task/create', [
                 'form_params' => ($postdata)
             ]);
             $response = json_decode($res->getBody(), true);
+            \Log::info("placeRequestToDispatchOnDemand - Response for Order ID: " . $order->id, [
+                'response' => $response,
+                'task_id' => $response['task_id'] ?? 'NOT_SET',
+                'dispatch_traking_url' => $response['dispatch_traking_url'] ?? 'NOT_SET'
+            ]);
+            
             if ($response && $response['task_id'] > 0) {
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
+                \Log::info("placeRequestToDispatchOnDemand - Updating OrderVendor for Order ID: " . $order->id . ", Vendor ID: " . $vendor, [
+                    'web_hook_code' => $dynamic,
+                    'dispatch_traking_url' => $dispatch_traking_url,
+                    'dispatch_traking_url_empty' => empty($dispatch_traking_url) ? 'YES' : 'NO'
+                ]);
+                
                 $up_web_hook_code = OrderVendor::where([
                     'order_id' => $order->id,
                     'vendor_id' => $vendor
@@ -4166,16 +4260,22 @@ class OrderController extends FrontController
                     'web_hook_code' => $dynamic,
                     'dispatch_traking_url' => $dispatch_traking_url
                 ]);
-
+                
+                \Log::info("placeRequestToDispatchOnDemand - OrderVendor Update Result for Order ID: " . $order->id, [
+                    'rows_affected' => $up_web_hook_code
+                ]);
                 return 1;
             }
+            \Log::warning("placeRequestToDispatchOnDemand - Task creation failed or task_id not set for Order ID: " . $order->id, [
+                'response' => $response
+            ]);
             return 2;
         } catch (\Exception $e) {
-            return 2;
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
+            \Log::error("placeRequestToDispatchOnDemand - Exception for Order ID: " . $order->id, [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
+            return 2;
         }
     }
 
@@ -4338,13 +4438,27 @@ class OrderController extends FrontController
             ]);
 
             $url = $dispatch_domain->laundry_service_key_url;
+            \Log::info("placeRequestToDispatchLaundry - Request URL: " . $url . '/api/task/create');
+            \Log::info("placeRequestToDispatchLaundry - Request Data for Order ID: " . $order->id, $postdata);
+            
             $res = $client->post($url . '/api/task/create', [
                 'form_params' => ($postdata)
             ]);
             $response = json_decode($res->getBody(), true);
-
+            \Log::info("placeRequestToDispatchLaundry - Response for Order ID: " . $order->id, [
+                'response' => $response,
+                'task_id' => $response['task_id'] ?? 'NOT_SET',
+                'dispatch_traking_url' => $response['dispatch_traking_url'] ?? 'NOT_SET'
+            ]);
+            
             if ($response && $response['task_id'] > 0) {
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
+                \Log::info("placeRequestToDispatchLaundry - Updating OrderVendor for Order ID: " . $order->id . ", Vendor ID: " . $vendor, [
+                    'web_hook_code' => $dynamic,
+                    'dispatch_traking_url' => $dispatch_traking_url,
+                    'dispatch_traking_url_empty' => empty($dispatch_traking_url) ? 'YES' : 'NO'
+                ]);
+                
                 $up_web_hook_code = OrderVendor::where([
                     'order_id' => $order->id,
                     'vendor_id' => $vendor
@@ -4352,16 +4466,22 @@ class OrderController extends FrontController
                     'web_hook_code' => $dynamic,
                     'dispatch_traking_url' => $dispatch_traking_url
                 ]);
-
+                
+                \Log::info("placeRequestToDispatchLaundry - OrderVendor Update Result for Order ID: " . $order->id, [
+                    'rows_affected' => $up_web_hook_code
+                ]);
                 return 1;
             }
+            \Log::warning("placeRequestToDispatchLaundry - Task creation failed or task_id not set for Order ID: " . $order->id, [
+                'response' => $response
+            ]);
             return 2;
         } catch (\Exception $e) {
-            return 2;
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
+            \Log::error("placeRequestToDispatchLaundry - Exception for Order ID: " . $order->id, [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
+            return 2;
         }
     }
 

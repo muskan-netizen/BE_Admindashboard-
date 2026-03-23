@@ -14,6 +14,47 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 
 <style>
 
+/* Mobile First (default) */
+.header-xyz{
+    padding: 0;
+    max-height: 60px;
+    min-height: 30px;
+}
+
+.logo-xyz{
+    height: 40px;
+    width: 40px;
+}
+
+/* Tablet & Laptop */
+@media (min-width: 768px){
+    .header-xyz{
+        padding: 10px;
+        max-height: 60px;
+        min-height: 30px;
+    }
+
+    .logo-xyz{
+        max-height: 60px;
+        height: auto;
+        width: auto;
+    }
+}
+
+/* Large Display */
+@media (min-width: 1200px){
+    .header-xyz{
+        height: auto;
+        padding: 10px;
+    }
+
+    .logo-xyz{
+        max-height: 60px;
+        height: auto;
+        width: auto;
+    }
+}
+
 </style>
 
 <!-- alSpaMenuCard start -->
@@ -135,8 +176,8 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 <!-- alSpaMenuCard end -->
 <div class="top-header ">
                <!-- site-topbar -->
-   <nav class="navbar navbar-expand-lg fixed-top px-0 py-0"
-   style="background:rgb(255, 255, 255); max-height: 60px; min-height: 30px;"
+   <nav class="navbar navbar-expand-lg fixed-top header-xyz"
+   style="background:rgb(255, 255, 255);"
    >
       <div class="container-fluid ">
          <div class="col-12 px-3">
@@ -146,7 +187,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                   <!-- logo start -->
                   <div class=" d-flex align-items-center justify-content-between" style = "display: flex !important; justify-content: center !important; align-items: center !important;">
                      <a class="navbar-brand position-relative d-flex align-items-center justify-content-between" href="{{ route('userHome') }}" style = "display: flex !important; justify-content: center !important; align-items: center !important;">
-                     <img class=" alspalogo lightLogo" style="width:80%; height:auto; max-height: 60px" alt="" src="{{$urlImg}}"/>
+                     <img class=" alspalogo lightLogo logo-xyz" alt="" src="{{$urlImg}}"/>
                      </a>
                   </div>
                   <!-- logo end -->

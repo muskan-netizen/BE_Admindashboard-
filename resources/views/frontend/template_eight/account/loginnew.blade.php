@@ -28,6 +28,11 @@ $signUpImage = $preferences->signup_image ?? null;
             </div>
             <div class="col-lg-6 pl-3 mb-lg-0 mb-3 text-center pb-sm-0 border-right">
                 <h3 class="mb-2">{{ __('Login To Your Account') }}</h3>
+                @if (\Session::has('success'))
+                    <div class="alert alert-success text-left">
+                        <span>{!! \Session::get('success') !!}</span>
+                    </div>
+                @endif
 
                 <div class="row mt-3 arabic-language">
                     <div class="col-xl-12 text-left">

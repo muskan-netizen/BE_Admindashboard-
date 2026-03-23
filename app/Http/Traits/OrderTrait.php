@@ -569,6 +569,7 @@ trait OrderTrait
                                 'agent'     => $agent,
                                 'task_type_id' =>$task_type_id, //  for add agent booking in case of appointment
                                 'service_time' =>  $service_time,
+                                'driver_unique_id' => $order_vendor->driver_id ?? null,
                                 'is_assign_warehouse' => $is_assign_warehouse,
                                 'rejectable_order' =>  $rejectable_order,
                                 'category_name' =>  $category_name,
@@ -601,6 +602,12 @@ trait OrderTrait
                                 ['form_params' => ($postdata)]
                             );
                             $response = json_decode($res->getBody(), true);
+                            \Log::info("placeRequestToDispatchSingleProduct - Response for Order ID: " . $order->id, [
+                                'response' => $response,
+                                'task_id' => $response['task_id'] ?? 'NOT_SET',
+                                'dispatch_traking_url' => $response['dispatch_traking_url'] ?? 'NOT_SET'
+                            ]);
+                            
                             if ($response && $response['task_id'] > 0) {
                                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
 
@@ -613,6 +620,21 @@ trait OrderTrait
                                 $dispatch_route->dispatcher_status_option_id    = 1 ;
                                 $dispatch_route->order_status_option_id         = 1 ;
                                 $dispatch_route->save();
+                                
+                                // Also update OrderVendor table with dispatch_traking_url
+                                OrderVendor::where([
+                                    'order_id' => $request->order_id,
+                                    'vendor_id' => $request->vendor_id
+                                ])->update([
+                                    'web_hook_code' => $dynamic,
+                                    'dispatch_traking_url' => $dispatch_traking_url
+                                ]);
+                                
+                                \Log::info("placeRequestToDispatchSingleProduct - Updated OrderVendor for Order ID: " . $request->order_id, [
+                                    'vendor_id' => $request->vendor_id,
+                                    'web_hook_code' => $dynamic,
+                                    'dispatch_traking_url' => $dispatch_traking_url
+                                ]);
 
                                 $update = VendorOrderProductDispatcherStatus::updateOrCreate([
                                     'dispatcher_id' => null,
