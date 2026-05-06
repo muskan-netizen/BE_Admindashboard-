@@ -373,9 +373,7 @@ Route::group(['middleware' => ['domain']], function () {
 
 
 	Route::post('payment/yoco/app', 'Front\YocoGatewayController@yocoPurchaseApp')->name('payment.yocoPurchaseApp');
-	Route::get('/payment/yoco-webview', function () {
-		return View::make('frontend.yoco_webview');
-	});
+	Route::get('/test', 'Front\UserhomeController@homeTemplateTruelysell')->name('homeTest');
 
 	//Khalti payment gateway
 	Route::post('payment/khalti/verification', 'Front\KhaltiGatewayController@khaltiVerification')->name('payment.khaltiVerification');

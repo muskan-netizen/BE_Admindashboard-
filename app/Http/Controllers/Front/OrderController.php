@@ -1791,7 +1791,9 @@ class OrderController extends FrontController
 
     public function placeOrder(Request $request, $domain = '')
     {
-
+        \Log::info("placeOrder", [
+            'request' => $request->all()
+        ]);
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         if ($request->payment_option_id == '52') {
             if ($primaryCurrency->currency->iso_code != 'QAR') {
@@ -3146,6 +3148,7 @@ class OrderController extends FrontController
                 $order->payable_amount = $request->total_amount;
                 $order->total_amount = $request->total_amount;
             }
+            $order->driver_share_otp = generateUniqueOrderDriverOtp($order->id);
             $order->save();
             if (isset($datesInRange)) {
 
@@ -4066,6 +4069,18 @@ class OrderController extends FrontController
                 $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
                 $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
             }
+            $dispatchRequestUrl = rtrim($dispatch_domain->delivery_service_key_url, '/') . '/api/task/create';
+                            $dispatchFormBody = http_build_query($postdata);
+                            \Log::info('placeRequestToDispatch - dispatch task/create curl (Postman: Import → Raw text)', [
+                                'curl' => sprintf(
+                                    'curl -X POST %s -H %s -H %s -H %s -d %s',
+                                    escapeshellarg($dispatchRequestUrl),
+                                    escapeshellarg('personaltoken: ' . $dispatch_domain->delivery_service_key),
+                                    escapeshellarg('shortcode: ' . $dispatch_domain->delivery_service_key_code),
+                                    escapeshellarg('Content-Type: application/x-www-form-urlencoded'),
+                                    escapeshellarg($dispatchFormBody)
+                                )
+                            ]);
 
             $client = new GCLIENT([
                 'headers' => [

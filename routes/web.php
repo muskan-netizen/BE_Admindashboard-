@@ -64,3 +64,22 @@ Route::get('/manifest', function () {
     return response()->json(config('manifest'));
 });
 
+
+Route::get('/partner', function () {
+    return view('becomeServicePartner');
+})->name('partner');
+
+
+
+Route::get('/refund-policy', function () {
+    return view('refundPolicy');
+})->name("refund-policy");
+
+
+Route::get('/aman-test', function () {
+    return view('amanTest');
+})->name("aman-test");
+
+Route::get('/aman', function () {
+    return view('aman');
+})->name("aman");

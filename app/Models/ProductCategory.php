@@ -6,6 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProductCategory extends Model
 {
+	/**
+	 * Table has no surrogate `id` column (see migration create_product_categories_table).
+	 * Using product_id as the key fixes updateOrCreate / updates (otherwise SQL uses `where id is null`).
+	 */
+	protected $primaryKey = 'product_id';
+
+	public $incrementing = false;
+
+	protected $keyType = 'int';
+
 	protected $fillable = ['category_id','product_id'];
 
 	public function product(){

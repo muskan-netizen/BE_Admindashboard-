@@ -365,7 +365,7 @@ window.initializeSlider = function initializeSlider() {
       },
     ],
   });
-  $(".al_mobile_banner").slick({
+  $(".al_mobile_banner").not("[data-banner-carousel]").slick({
     dots: !1,
     infinite: !0,
     speed: 300,

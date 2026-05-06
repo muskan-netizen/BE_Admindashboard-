@@ -175,6 +175,25 @@ class CartController extends BaseController
 
 
             }
+
+            $CHEF_CATEGORY_ID = [90, 86];
+            $productCategoryId = optional(optional($product->category)->categoryDetail)->id;
+            $isChefProduct = in_array($productCategoryId, $CHEF_CATEGORY_ID);
+            if ($isChefProduct) {
+                $existingChefInCart = CartProduct::where('cart_id', $cart_detail->id)
+                    ->whereHas('product.category.categoryDetail', function ($q) use ($productCategoryId) {
+                        $q->where('id', $productCategoryId);
+                    })
+                    ->exists();
+
+                if ($existingChefInCart) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Only one service can be added at a time.'
+                    ], 400);
+                }
+            }
+
             $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
             $already_added_product_variant_in_cart = CartProduct::where(["variant_id" => $request->product_variant_id, 'cart_id' => $cart_detail->id])->first();
             $totalQuantity = (!empty($already_added_product_variant_in_cart) ? $already_added_product_variant_in_cart->quantity : 0) + $request->quantity;
@@ -308,19 +327,13 @@ class CartController extends BaseController
                 }
                 if ($luxury_option->id == 2 || $luxury_option->id == 3) {
                     if ($checkVendorId) {
-                        return $this->errorResponse(['error' => __('Your cart has existing items from another vendor'), 'alert' => '1'], 404);
+                        CartProduct::where('cart_id', $cart_detail->id)->delete();
                     }
                 }
             }
 
 
             if ( (isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1) ) {
-                if ($checkVendorId) {
-                    return $this->errorResponse(['error' => __('Your cart has existing items from another vendor'), 'alert' => '1'], 400);
-                }
-            }
-
-            if ((isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1)) {
                 if ($checkVendorId) {
                     CartProduct::where('cart_id', $cart_detail->id)->delete();
                 }

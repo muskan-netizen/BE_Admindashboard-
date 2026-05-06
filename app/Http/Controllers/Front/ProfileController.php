@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\UserDevice;
-use App\Models\{UserWishlist, User, Product, UserAddress, UserRefferal, ClientPreference, Client, Order, Transaction,UserDocs,UserRegistrationDocuments, UserVendor};
+use App\Models\{UserWishlist, User, Product, UserAddress, UserRefferal, ClientPreference, Client, Order, Transaction,UserDocs,UserRegistrationDocuments, UserVendor, BlockedToken};
 
 class ProfileController extends FrontController
 {
@@ -260,42 +260,44 @@ class ProfileController extends FrontController
         return redirect()->route('user.profile')->with('success', __('Your Password has been changed successfully'));
     }
 
-    public function deleteAccount(Request $request, $domain = ''){
-        $user = User::where('id', Auth::id())->first();
+    public function deleteAccount(Request $request)
+    {
+        $user = Auth::user();
 
         if (!$user) {
             return redirect()->route('customer.login');
         }
 
-        try {
-            DB::transaction(function () use ($user) {
-                UserDevice::where('user_id', $user->id)->delete();
+        DB::transaction(function () use ($request, $user) {
 
-                $user->email = null;
-                $user->phone_number = null;
-                $user->dial_code = null;
-                $user->description = null;
-                $user->image = null;
-                $user->auth_token = null;
-                $user->remember_token = null;
-                $user->system_id = null;
-                $user->status = 3;
-                $user->save();
+            $token = $request->bearerToken();
 
-                $user->delete();
-            });
-        } catch (\Exception $e) {
-            return redirect()->back()->withErrors([
-                'error' => __('Unable to delete your account right now. Please try again.'),
+            if ($token) {
+                BlockedToken::create([
+                    'token' => $token,
+                    'expired' => 1
+                ]);
+
+                UserDevice::where('access_token', $token)->delete();
+            }
+
+            UserDevice::where('user_id', $user->id)->delete();
+
+            $user->update([
+                'status' => 3,
+                'auth_token' => null,
+                'remember_token' => null,
             ]);
-        }
+
+            $user->delete();
+        });
 
         Auth::logout();
-        Session::forget('current_fcm_token');
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        Session::flush();
 
-        return redirect()->route('customer.login')->with('success', __('Your account has been deleted successfully.'));
+        return redirect()
+            ->route('customer.login')
+            ->with('success', __('Your account has been deleted successfully.'));
     }
 
     public function save_fcm(Request $request){

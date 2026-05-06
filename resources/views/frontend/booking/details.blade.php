@@ -181,6 +181,8 @@
 
                     <div class="col-6 mb-2">{{__('Status')}}</div>
                     <div class="col-6 mb-2 text-right" id="dispatcher_status_show"></div>
+                    <div class="col-6 mb-2 driver-share-otp-wrap" style="display: none;">{{__('Otp')}}</div>
+                    <div class="col-6 mb-2 text-right font-weight-bold driver-share-otp-wrap" style="display: none;"><span id="driver_share_otp_value"><%= result.driver_share_otp || '' %></span></div>
                 </div>
             </div>
         </script>

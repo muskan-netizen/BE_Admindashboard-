@@ -187,6 +187,16 @@ $applocale = session()->get('applocale');
                      <h4 class="mt-0">{{ __('Quick Links') }}</h4>
                   </div>
                   <div class="footer-contant">
+                  <a href="{{ route('partner') }}" target="_blank">
+                    Become Our Partner
+                  </a>
+                  <br>
+                  <a href="{{ route('refund-policy') }}" target="_blank">
+                    Refund & Cancellation Policy
+                  <!-- </a>
+                     <a href="{{ route('aman-test') }}" target="_blank">
+                    Aman
+                  </a> -->
                      <ul>
                         @foreach($pages as $page)
                         @if(isset($page->primary->type_of_form) && ($page->primary->type_of_form == 2))
@@ -211,8 +221,10 @@ $applocale = session()->get('applocale');
                            @endif
                            </a>
                         </li>
+                       
                         @endif
                         @endforeach
+                        
                      </ul>
                   </div>
                </div>

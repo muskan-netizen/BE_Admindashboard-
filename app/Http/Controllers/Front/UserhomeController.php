@@ -22,6 +22,7 @@ use Illuminate\Http\Response;
 use Cookie;
 use App\Http\Traits\{OrderTrait,ProductActionTrait,VendorTrait, RedisCacheTrait};
 use App\Http\Traits\HomePage\{HomePageTrait};
+use Grimzy\LaravelMysqlSpatial\Types\Point;
 
 class UserhomeController extends FrontController
 {
@@ -1354,6 +1355,130 @@ class UserhomeController extends FrontController
 
     public function confirmation(){
         return view('confirmatin');
+    }
+
+    public function homeTemplateTruelysell(Request $request)
+    {
+        // Match Api\v1\v2\HomeController@homepage: default type is "delivery", session stores active vendor mode.
+        $type = $request->filled('type') ? $request->type : (Session::get('vendorType') ?: 'delivery');
+        Session::put('vendorType', $type);
+        $request->merge(['type' => $type]);
+
+        $langId = Session::get('customerLanguage');
+        if (empty($langId)) {
+            $langId = $request->header('language', 1);
+            Session::put('customerLanguage', $langId);
+        }
+
+        $navCategories = $this->categoryNav($langId);
+        Session::put('navCategories', $navCategories);
+
+        $preferences = $this->client_preferences;
+
+        $currency_id = $this->setCurrencyInSesion();
+
+        $latitude = Session::get('latitude');
+        $longitude = Session::get('longitude');
+        if ($request->has('latitude')) {
+            $latitude = $request->latitude;
+            Session::put('latitude', $latitude);
+        }
+        if ($request->has('longitude')) {
+            $longitude = $request->longitude;
+            Session::put('longitude', $longitude);
+        }
+        if (empty($latitude) && empty($longitude)) {
+            $latitude = $preferences->Default_latitude ?? null;
+            $longitude = $preferences->Default_longitude ?? null;
+        }
+
+        $enable_layout = CabBookingLayout::web()->where('is_active', 1)->orderBy('order_by', 'asc')->pluck('slug')->toArray();
+        $vendor_ids = $this->getRandomVendorIdsForHomePage(
+            $preferences,
+            $type,
+            $this->additionalPreference['is_admin_vendor_rating'] ?? 0,
+            $latitude,
+            $longitude,
+            $request->input('momo')
+        );
+
+        $featured_products_title = '';
+        $cabFeatured = CabBookingLayoutTranslation::where('language_id', $langId)
+            ->whereHas('layout', function ($q) {
+                $q->where('slug', 'featured_products');
+            })->first();
+        if ($cabFeatured) {
+            $featured_products_title = $cabFeatured->title;
+        }
+
+        $p_dim = '600/600';
+        $feature_products = [];
+        $popular_products = [];
+        if (count($vendor_ids) > 0) {
+            $getSubCatIds = '';
+            if (in_array('featured_products', $enable_layout)) {
+                $feature_products = $this->vendorProducts($vendor_ids, $langId, $currency_id, 'is_featured', $type, $featured_products_title, $p_dim, $getSubCatIds, $preferences);
+            }
+            $popular_products = $this->vendorProducts($vendor_ids, $langId, $currency_id, 'popular_products', $type, $featured_products_title, $p_dim, $getSubCatIds, $preferences);
+        }
+
+        $homePageData = [
+            'featured_products' => is_array($feature_products) ? $feature_products : [],
+            'most_popular_products' => is_array($popular_products) ? $popular_products : [],
+        ];
+
+        $labelRows = HomePageLabel::with(['translations' => function ($q) use ($langId) {
+            $q->where('language_id', $langId);
+        }])->whereIn('slug', ['most_popular_products', 'featured_products'])->get()->keyBy('slug');
+
+        $popularSectionTitle = optional(optional($labelRows->get('most_popular_products'))->translations->first())->title ?: __('Popular Services');
+        $featuredSectionTitle = optional(optional($labelRows->get('featured_products'))->translations->first())->title ?: __('Featured Services');
+
+        $vendorQuery = Vendor::query()
+            ->byVendorSubscriptionRule($preferences)
+            ->where('status', 1)
+            ->where($type, 1);
+
+        if (@getAdditionalPreference(['vendor_online_status'])['vendor_online_status'] == 1) {
+            $vendorQuery->where('is_online', 1);
+        }
+
+        if (($preferences->is_hyperlocal ?? 0) == 1) {
+            $latitude = Session::get('latitude') ?? $preferences->Default_latitude ?? null;
+            $longitude = Session::get('longitude') ?? $preferences->Default_longitude ?? null;
+            if (!empty($latitude) && !empty($longitude)) {
+                $point = new Point($longitude, $latitude);
+                $vendorQuery->whereHas('serviceArea', function ($query) use ($point) {
+                    $query->whereRaw('ST_Contains(service_areas.polygon, ST_GeomFromText(?))', [$point->toWKT()]);
+                });
+            }
+        }
+
+        $topProvidersVendors = $vendorQuery
+            ->orderByRaw('(CASE WHEN COALESCE(`rating`, 0) > 0 THEN 0 ELSE 1 END) ASC')
+            ->orderByDesc('rating')
+            ->orderByDesc('id')
+            ->get(['id', 'name', 'slug', 'short_desc', 'desc', 'banner', 'rating']);
+
+        $reviewCounts = [];
+        if ($topProvidersVendors->isNotEmpty()) {
+            $reviewCounts = DB::table('order_product_ratings')
+                ->join('products', 'products.id', '=', 'order_product_ratings.product_id')
+                ->whereIn('products.vendor_id', $topProvidersVendors->pluck('id'))
+                ->groupBy('products.vendor_id')
+                ->selectRaw('products.vendor_id as vendor_id, COUNT(*) as cnt')
+                ->pluck('cnt', 'vendor_id')
+                ->toArray();
+        }
+
+        return view('frontend.home-template-truelysell')->with([
+            'navCategories' => $navCategories,
+            'topProvidersVendors' => $topProvidersVendors,
+            'topProvidersReviewCounts' => $reviewCounts,
+            'homePageData' => $homePageData,
+            'popularSectionTitle' => $popularSectionTitle,
+            'featuredSectionTitle' => $featuredSectionTitle,
+        ]);
     }
 
     public function setSessionIndex(Request $request, $domain='')

@@ -206,6 +206,78 @@ if (!function_exists('getAdditionalPreference')) {
     }
 }
 
+if (!function_exists('getSingleProductPerCartCategoryIds')) {
+    /**
+     * Category IDs where only one cart line is allowed per category (user can swap by removing first).
+     * Configure via ClientPreferenceAdditional key: single_product_per_cart_category_ids
+     * Value: comma-separated IDs, e.g. "89,90". Use "none" or "disabled" to turn off.
+     */
+    function getSingleProductPerCartCategoryIds(): array
+    {
+        $pref = getAdditionalPreference(['single_product_per_cart_category_ids'])['single_product_per_cart_category_ids'] ?? '';
+        $str = trim((string) $pref);
+        if (strtolower($str) === 'none' || strtolower($str) === 'disabled') {
+            return [];
+        }
+        if ($str === '' || $str === '0') {
+            return [89, 90];
+        }
+        $ids = array_values(array_unique(array_filter(array_map('intval', preg_split('/\s*,\s*/', $str)))));
+
+        return count($ids) ? $ids : [89, 90];
+    }
+}
+
+if (!function_exists('validateSingleProductPerCartCategoryForNewLine')) {
+    /**
+     * Block adding a new cart line if the cart already has any product in the same restricted category.
+     */
+    function validateSingleProductPerCartCategoryForNewLine(int $cartId, $newCategoryId): ?string
+    {
+        if ($newCategoryId === null || $newCategoryId === '') {
+            return null;
+        }
+        $newCategoryId = (int) $newCategoryId;
+        $restricted = getSingleProductPerCartCategoryIds();
+        if (!count($restricted) || !in_array($newCategoryId, $restricted, true)) {
+            return null;
+        }
+        $exists = CartProduct::where('cart_id', $cartId)
+            ->whereHas('product.category', function ($q) use ($newCategoryId) {
+                $q->where('category_id', $newCategoryId);
+            })
+            ->exists();
+        if ($exists) {
+            return __('Only one product is allowed from this category in the cart. Remove the existing item to add a different one.');
+        }
+
+        return null;
+    }
+}
+
+if (!function_exists('validateCartRestrictedSingleCategoryForCheckout')) {
+    /**
+     * Ensures at most one checked cart line per restricted category (matches order placement query).
+     */
+    function validateCartRestrictedSingleCategoryForCheckout(int $cartId): ?string
+    {
+        foreach (getSingleProductPerCartCategoryIds() as $catId) {
+            $lineCount = CartProduct::where('cart_id', $cartId)
+                ->where('is_cart_checked', 1)
+                ->whereIn('status', [0, 1])
+                ->whereHas('product.category', function ($q) use ($catId) {
+                    $q->where('category_id', $catId);
+                })
+                ->count();
+            if ($lineCount > 1) {
+                return __('Only one product is allowed per category for these items. Please leave a single item checked or remove extras before checkout.');
+            }
+        }
+
+        return null;
+    }
+}
+
 if (!function_exists('getMapConfigrationPreference')) {
     /**
      * getMapConfigrationPreference
@@ -625,6 +697,24 @@ if (!function_exists('generateOrderNo')) {
             }
         } while (!empty(\DB::table('orders')->where('order_number', $number)->first(['order_number'])));
         return $number;
+    }
+}
+
+if (!function_exists('generateUniqueOrderDriverOtp')) {
+    /**
+     * Unique numeric OTP for the customer to share with the driver at pickup/delivery.
+     */
+    function generateUniqueOrderDriverOtp(?int $excludeOrderId = null): string
+    {
+        do {
+            $otp = (string) random_int(100000, 999999);
+            $query = Order::where('driver_share_otp', $otp);
+            if ($excludeOrderId !== null) {
+                $query->where('id', '!=', $excludeOrderId);
+            }
+        } while ($query->exists());
+
+        return $otp;
     }
 }
 
