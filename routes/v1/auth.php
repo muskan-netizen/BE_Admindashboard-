@@ -24,7 +24,7 @@ Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], funct
         Route::post('register', 'Api\v1\AuthController@signup');
         Route::post('resetPassword', 'Api\v1\AuthController@resetPassword');
         Route::post('forgotPassword', 'Api\v1\AuthController@forgotPassword');
-        Route::post('vendor-login', 'Api\v1\c@vendorlogin');
+        Route::post('vendor-login', 'Api\v1\AuthController@vendorlogin');
 
     });
 });
@@ -196,7 +196,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('delete-card', 'Api\v1\CardController@deleteCard');
 
         // Stripe Customer Card Saved Routes
-        Route::post('save-card', 'Api\v1\StripeController@saveCardStripe');
+        // Route::post('save-card', 'Api\v1\StripeController@saveCardStripe');
         Route::post('payment-intent', 'Api\v1\StripeGatewayController@createPaymentIntent');
 
 

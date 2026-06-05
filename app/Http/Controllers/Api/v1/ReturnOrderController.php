@@ -530,15 +530,64 @@ class ReturnOrderController extends BaseController{
                         }
                     }
 
-                    //if($currentOrderStatus->payment_option_id != 1){
-                    if ($return_response['vendor_return_amount'] > 0) {
-                        $user = User::find(Auth::id());
-                        $wallet = $user->wallet;
-                        $credit_amount = $return_response['vendor_return_amount']; //$currentOrderStatus->payable_amount;
-                        $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $currentOrderStatus->orderDetail->order_number . ' (' . $currentOrderStatus->vendor->name . ')']);
-                        $this->sendWalletNotification($user->id, $currentOrderStatus->orderDetail->order_number);
+                    // Always credit refund to the customer wallet (not the acting vendor/admin user).
+                    $refundUserId = $currentOrderStatus->user_id ?? $orderData->user_id ?? null;
+                    $refundUser = $refundUserId ? User::find($refundUserId) : null;
+                    if (!$refundUser) {
+                        throw new \Exception(__('Unable to find customer for refund.'));
                     }
-                    // }
+
+                    // For COD/offline orders, only return the wallet contribution.
+                    // For online/prepaid orders, return computed refund amount.
+                    $refundAmount = 0;
+                    $isCodOrOffline = in_array((int) $orderData->payment_option_id, [1, 38]);
+                    if ($isCodOrOffline) {
+                        $refundAmount = (float) ($return_response['vendor_wallet_amount'] ?? 0);
+                    } else {
+                        $refundAmount = (float) ($return_response['vendor_return_amount'] ?? 0);
+                    }
+
+                    // Fallback: if return calculator gives zero, derive refund from remaining order wallet usage.
+                    if ($refundAmount <= 0 && (float) ($orderData->wallet_amount_used ?? 0) > 0) {
+                        $alreadyRefundedWallet = (float) VendorOrderCancelReturnPayment::where('order_id', $orderData->id)->sum('wallet_amount');
+                        $remainingWalletRefund = max(0, (float) $orderData->wallet_amount_used - $alreadyRefundedWallet);
+
+                        $vendorContribution = (float) ($return_response['vendor_contribution_percentage'] ?? 100);
+                        if ($vendorContribution > 0 && $vendorContribution < 100) {
+                            $refundAmount = ($remainingWalletRefund * $vendorContribution) / 100;
+                        } else {
+                            $refundAmount = $remainingWalletRefund;
+                        }
+                    }
+
+                    if ($refundAmount > 0) {
+                        $wallet = $refundUser->wallet;
+                        if (!$wallet) {
+                            throw new \Exception(__('Customer wallet not found.'));
+                        }
+                        $walletBalanceBefore = (int) $wallet->getRawOriginal('balance');
+                        $walletDecimalPlaces = (int) ($wallet->decimal_places ?? 2);
+                        $expectedWalletCredit = (int) round($refundAmount * (10 ** $walletDecimalPlaces));
+
+                        // Use package-supported credit method; forceDepositFloat is not available in this project.
+                        $wallet->depositFloat($refundAmount, ['Wallet has been <b>Credited</b> for return #' . $currentOrderStatus->orderDetail->order_number . ' (' . $currentOrderStatus->vendor->name . ')']);
+
+                        $wallet->refresh();
+                        $walletBalanceAfter = (int) $wallet->getRawOriginal('balance');
+                        $actualWalletCredit = $walletBalanceAfter - $walletBalanceBefore;
+
+                        // Safety net: if transaction row exists but balance did not increase, sync balance.
+                        if ($expectedWalletCredit > 0 && $actualWalletCredit < $expectedWalletCredit) {
+                            DB::table('wallets')
+                                ->where('id', $wallet->id)
+                                ->update([
+                                    'balance' => $walletBalanceBefore + $expectedWalletCredit
+                                ]);
+                            $wallet->refresh();
+                        }
+
+                        $this->sendWalletNotification($refundUser->id, $currentOrderStatus->orderDetail->order_number);
+                    }
                     // diarise loyalty
                     $orderData->loyalty_points_used = $orderData->loyalty_points_used - $return_response['vendor_loyalty_points'];
                     $orderData->loyalty_amount_saved = $orderData->loyalty_amount_saved - $return_response['vendor_loyalty_amount'];
@@ -547,12 +596,17 @@ class ReturnOrderController extends BaseController{
                     $vendor_return_payment = new VendorOrderCancelReturnPayment();
                     $vendor_return_payment->order_id = $orderData->id;
                     $vendor_return_payment->order_vendor_id = $currentOrderStatus->id;
-                    $vendor_return_payment->wallet_amount = $return_response['vendor_wallet_amount'];
-                    $vendor_return_payment->online_payment_amount = $return_response['vendor_online_payment_amount'];
+                    if ($isCodOrOffline) {
+                        $vendor_return_payment->wallet_amount = $refundAmount;
+                        $vendor_return_payment->online_payment_amount = 0;
+                    } else {
+                        $vendor_return_payment->wallet_amount = $return_response['vendor_wallet_amount'];
+                        $vendor_return_payment->online_payment_amount = $return_response['vendor_online_payment_amount'];
+                    }
                     $vendor_return_payment->loyalty_amount = $return_response['vendor_loyalty_amount'];
                     $vendor_return_payment->loyalty_points = $return_response['vendor_loyalty_points'];
                     $vendor_return_payment->loyalty_points_earned = $return_response['vendor_loyalty_points_earned'];
-                    $vendor_return_payment->total_return_amount = $return_response['vendor_return_amount'];
+                    $vendor_return_payment->total_return_amount = $refundAmount;
                     $vendor_return_payment->save();
                     DB::commit();
                               $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);

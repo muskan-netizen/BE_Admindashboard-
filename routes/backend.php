@@ -484,6 +484,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::resource('inquiry', 'Client\ProductInquiryController');
         Route::get('inquiry/filter', [ProductInquiryController::class, 'show'])->name('inquiry.filter');
 
+        Route::get('contact-us', 'Client\ContactUsController@index')->name('contact-us.index');
+        Route::get('contact-us/data', 'Client\ContactUsController@data')->name('contact-us.data');
+
         Route::get('subscription/plans/user', 'Client\SubscriptionPlansUserController@getSubscriptionPlans')->name('subscription.plans.user');
         Route::post('subscription/plan/save/user/{slug?}', 'Client\SubscriptionPlansUserController@saveSubscriptionPlan')->name('subscription.plan.save.user');
         Route::get('subscription/plan/edit/user/{slug}', 'Client\SubscriptionPlansUserController@editSubscriptionPlan')->name('subscription.plan.edit.user');

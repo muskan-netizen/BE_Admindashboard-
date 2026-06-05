@@ -1086,7 +1086,25 @@ class OrderController extends BaseController
                         $order->wallet_amount_used = $wallet_amount_used;
                         // Deduct wallet amount if payable amount is successfully done on gateway
                         if ( ($wallet_amount_used > 0) && (!in_array($request->payment_option_id, $ex_gateways_wallet)) ) {
-                            $wallet->withdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
+                            $walletBalanceBefore = (int) $wallet->getRawOriginal('balance');
+                            $walletDecimalPlaces = (int) ($wallet->decimal_places ?? 2);
+                            $expectedWalletDebit = (int) round($order->wallet_amount_used * (10 ** $walletDecimalPlaces));
+
+                            $wallet->forceWithdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
+
+                            $wallet->refresh();
+                            $walletBalanceAfter = (int) $wallet->getRawOriginal('balance');
+                            $actualWalletDebit = $walletBalanceBefore - $walletBalanceAfter;
+
+                            // Safety net: keep wallet balance in sync with the debit transaction.
+                            if ($expectedWalletDebit > 0 && $actualWalletDebit < $expectedWalletDebit) {
+                                DB::table('wallets')
+                                    ->where('id', $wallet->id)
+                                    ->update([
+                                        'balance' => max(0, $walletBalanceBefore - $expectedWalletDebit)
+                                    ]);
+                                $wallet->refresh();
+                            }
                         }
                     }
                     $tip_amount = 0;
@@ -1180,6 +1198,7 @@ class OrderController extends BaseController
 
                     }
 
+                    $order->driver_share_otp = generateUniqueOrderDriverOtp($order->id);
 
                     $order->save();
 
@@ -1752,19 +1771,28 @@ class OrderController extends BaseController
                 'email'       => $vendor_details->email ?? null,
                 'phone_number' => $vendor_details->phone_no ?? null,
             );
-
             $tasks[] = array(
                 'task_type_id' => 2,
-                'latitude'    => $cus_address->latitude ?? '',
-                'longitude'   => $cus_address->longitude ?? '',
-                'short_name'  => '',
-                'address'     => $cus_address->address ?? '',
-                'post_code'   => $cus_address->pincode ?? '',
-                'barcode'     => '',
-                'flat_no'     => $cus_address->house_number ?? null,
-                'email'       => $customer->email ?? null,
-                'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
+                'latitude' => $cus_address->latitude ?? $customer->defaultAddress->latitude,
+                'longitude' => $cus_address->longitude ?? $customer->defaultAddress->longitude,
+                'short_name' => '',
+                'address' => $cus_address->address ?? $customer->defaultAddress->address,
+                'post_code' => $cus_address->pincode ?? $customer->defaultAddress->pincode,
+                'barcode' => '',
+                'flat_no' => $cus_address->house_number ?? null,
+                'email' => $customer->email ?? null,
+                'phone_number' => ($customer->dial_code . $customer->phone_number) ?? null,
             );
+            \Log::info("tasks", [
+                'tasks' => $tasks,
+                'latitude' => $cus_address->latitude ?? $customer->defaultAddress->latitude,
+                'longitude' => $cus_address->longitude ?? $customer->defaultAddress->longitude,
+                'address' => $cus_address->address ?? $customer->defaultAddress->address,
+                'pincode' => $cus_address->pincode ?? $customer->defaultAddress->pincode,
+                'house_number' => $cus_address->house_number ?? null,
+                'email' => $customer->email ?? null,
+                'phone_number' => ($customer->dial_code . $customer->phone_number) ?? null,
+            ]);
 
             if ($customer->dial_code == "971") {
                 // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
@@ -3554,7 +3582,24 @@ class OrderController extends BaseController
                                     // }
                                     $order->wallet_amount_used = $wallet_amount_used;
                                     if ($wallet_amount_used > 0) {
-                                        $wallet->withdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
+                                        $walletBalanceBefore = (int) $wallet->getRawOriginal('balance');
+                                        $walletDecimalPlaces = (int) ($wallet->decimal_places ?? 2);
+                                        $expectedWalletDebit = (int) round($order->wallet_amount_used * (10 ** $walletDecimalPlaces));
+
+                                        $wallet->forceWithdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
+
+                                        $wallet->refresh();
+                                        $walletBalanceAfter = (int) $wallet->getRawOriginal('balance');
+                                        $actualWalletDebit = $walletBalanceBefore - $walletBalanceAfter;
+
+                                        if ($expectedWalletDebit > 0 && $actualWalletDebit < $expectedWalletDebit) {
+                                            DB::table('wallets')
+                                                ->where('id', $wallet->id)
+                                                ->update([
+                                                    'balance' => max(0, $walletBalanceBefore - $expectedWalletDebit)
+                                                ]);
+                                            $wallet->refresh();
+                                        }
                                     }
                                 }
                                 // $payable_amount = $payable_amount - $wallet_amount_used;

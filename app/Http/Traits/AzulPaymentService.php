@@ -18,6 +18,7 @@ trait AzulPaymentService
     public function __construct()
     {
         $this->creds = PaymentOption::where('code', 'azul')->where('status', 1)->first();
+        if(!$this->creds || !$this->creds->status) return;
         if(@$this->creds->status)
         {
             $this->creds_arr = json_decode($this->creds->credentials);

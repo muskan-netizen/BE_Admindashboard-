@@ -476,7 +476,13 @@ $(document).ready(async function () {
                         $(".al_mobile_banner").append(mobile_banners_template({ banners: response.data.mobile_banners }));
                     }
 
-                    $('.carousel').carousel();
+                    if (typeof window.initHomeTemplateSixBanners === 'function') {
+                        window.initHomeTemplateSixBanners();
+                    }
+
+                    if ($('.carousel').length) {
+                        $('.carousel').carousel();
+                    }
                 }
             },
             complete: function (data) {

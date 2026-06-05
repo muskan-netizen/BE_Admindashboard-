@@ -133,7 +133,7 @@ class FacebookController extends FrontController
             $customer->status = 1;
             $customer->role_id = 1;
             $customer->is_email_verified = 1;
-            $customer->is_phone_verified = 1;
+            $customer->is_phone_verified = 0;
             $customer->save();
             if($customer->id > 0){
                 $user_device[] = [

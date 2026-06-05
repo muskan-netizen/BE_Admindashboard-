@@ -1535,7 +1535,8 @@ class HomeController extends BaseController
         // Ensure type has a default value
         $type = $request->has('type') && !empty($request->type) ? $request->type : 'delivery';
         
-        $vendor_ids = $this->getRandomVendorIdsForHomePage($preferences, $type, $preferences['is_admin_vendor_rating'], $latitude, $longitude,@$request->momo);
+        $vendor_ids = $this->getRandomVendorIdsForHomePage($preferences, $type,
+        $preferences['is_admin_vendor_rating'], $latitude, $longitude,@$request->momo);
         $home_page_labels = HomePageLabel::with('translations')->get();
         if (in_array('brands', $enable_layout)) {     # if enable brands section in
             $brands = $this->getBrandsForHomePage($language_id, $this->field_status);

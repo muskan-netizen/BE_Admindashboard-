@@ -23,7 +23,216 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 @endsection
 @section('cssnew')
 <style>
-.menu-slider .slick-slide{margin:0 10px;}
+/* ── Banner wrapper ── */
+.home-slider-wrapper {
+    position: relative;
+    z-index: 1;        /* always below navbar */
+    width: 100%;
+    /* padding-top: 50px; */
+}
+#home-slider-id{
+  padding-top: 50px;
+}
+ 
+.home-slider-wrapper .home-slider-banner-shell {
+    width: 100%;
+}
+ 
+/* ── Each carousel (desktop / mobile) ── */
+.home-slider-wrapper .home-banner-carousel {
+    position: relative;
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    background: #fff;
+}
+ 
+/* Mobile carousel hidden on desktop by default */
+.home-slider-wrapper .home-banner-carousel.is-mobile {
+    display: none !important;
+}
+ 
+/* Force-hide utility used by JS */
+.home-slider-wrapper .home-banner-carousel.is-hidden-force {
+    display: none !important;
+}
+ 
+/* ── Slide track ── */
+.home-slider-wrapper .home-banner-track {
+    display: flex;
+    width: 100%;
+    transition: transform 0.45s ease;
+    will-change: transform;
+}
+ 
+.home-slider-wrapper .home-banner-slide {
+    flex: 0 0 100%;
+    min-width: 100%;
+}
+ 
+/* ── Image container — aspect-ratio drives the height ── */
+.home-slider-wrapper .banner-img-outer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    overflow: hidden;
+    background: #f5f5f5;
+    text-decoration: none;
+}
+ 
+/* Desktop banner: 1920 × 500 */
+.home-slider-wrapper .home-banner-carousel.is-desktop .banner-img-outer {
+    aspect-ratio: 1920 / 500;
+}
+ 
+/* Mobile banner: 400 × 150 */
+.home-slider-wrapper .home-banner-carousel.is-mobile .banner-img-outer {
+    aspect-ratio: 400 / 150;
+}
+ 
+/* ── Banner image ── */
+.home-slider-wrapper .banner-img-outer img,
+.home-slider-wrapper .banner-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 100% !important;
+    max-height: none !important;
+    object-fit: cover;           /* fills edge-to-edge, no white gaps */
+    object-position: center;
+}
+ 
+/* ── Prev / Next buttons ── */
+.home-slider-wrapper .home-banner-nav {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(17, 24, 39, 0.52);
+    color: #fff;
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: background 0.2s ease;
+    line-height: 1;
+}
+ 
+.home-slider-wrapper .home-banner-nav:hover {
+    background: rgba(17, 24, 39, 0.80);
+}
+ 
+.home-slider-wrapper .home-banner-nav.prev { left: 14px; }
+.home-slider-wrapper .home-banner-nav.next { right: 14px; }
+ 
+.home-slider-wrapper .home-banner-nav span {
+    font-size: 30px;
+    line-height: 1;
+    display: block;
+    margin-top: -2px; /* optical centering of ‹ › glyphs */
+}
+ 
+/* ── Dot indicators ── */
+.home-slider-wrapper .home-banner-dots {
+    position: absolute;
+    left: 50%;
+    bottom: 12px;
+    z-index: 2;
+    display: flex;
+    gap: 7px;
+    transform: translateX(-50%);
+}
+ 
+.home-slider-wrapper .home-banner-dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.50);
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+ 
+.home-slider-wrapper .home-banner-dot.is-active {
+    background: #fff;
+    transform: scale(1.35);
+}
+ 
+/* hidden attribute support */
+.home-slider-wrapper .home-banner-nav[hidden],
+.home-slider-wrapper .home-banner-dots[hidden] {
+    display: none !important;
+}
+ 
+/* ══════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+══════════════════════════════════════ */
+ 
+/* Large tablet */
+@media (max-width: 1199px) {
+    .home-slider-wrapper .home-banner-carousel.is-desktop .banner-img-outer {
+        aspect-ratio: 1280 / 420;
+    }
+}
+ 
+/* Tablet */
+@media (max-width: 991px) {
+    .home-slider-wrapper .home-banner-carousel.is-desktop .banner-img-outer {
+        aspect-ratio: 1024 / 380;
+    }
+    .home-slider-wrapper .home-banner-nav {
+        width: 36px;
+        height: 36px;
+    }
+    .home-slider-wrapper .home-banner-nav span {
+        font-size: 24px;
+    }
+}
+ 
+/* Mobile — swap to mobile carousel */
+@media (max-width: 767px) {
+    .home-slider-wrapper .home-banner-carousel.is-desktop {
+        display: none !important;
+    }
+    .home-slider-wrapper .home-banner-carousel.is-mobile {
+        display: block !important;
+    }
+    .home-slider-wrapper .home-banner-carousel.is-hidden-force {
+        display: none !important;
+    }
+    .home-slider-wrapper .home-banner-carousel.is-mobile .banner-img-outer {
+        aspect-ratio: 400 / 150;
+    }
+    .home-slider-wrapper .home-banner-nav {
+        width: 30px;
+        height: 30px;
+    }
+    .home-slider-wrapper .home-banner-nav span {
+        font-size: 20px;
+    }
+    .home-slider-wrapper .home-banner-nav.prev { left: 8px; }
+    .home-slider-wrapper .home-banner-nav.next { right: 8px; }
+    .home-slider-wrapper .home-banner-dots    { bottom: 7px; }
+    .home-slider-wrapper .home-banner-dot     { width: 6px; height: 6px; }
+}
+ 
+/* Small mobile */
+@media (max-width: 479px) {
+    .home-slider-wrapper .home-banner-nav {
+        width: 26px;
+        height: 26px;
+    }
+    .home-slider-wrapper .home-banner-nav span {
+        font-size: 17px;
+    }
+}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.5/swiper-bundle.min.css">
 @endsection
@@ -131,62 +340,55 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 
 
 
-<section class="home-slider-wrapper">
+<section class="home-slider-wrapper" id="home-slider-id">
 
-	<div class="container-fulid">
-		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
-			<div class="carousel-inner">
+	<div class="home-slider-banner-shell">
+		<div id="myCarousel" class="home-banner-carousel is-desktop al_desktop_banner" data-banner-carousel>
+			<div class="home-banner-track" data-banner-track>
 				@foreach($banners as $key => $banner)
 					@php $url=''; if($banner->link=='category'){if(!empty($banner->category_slug)){$url=route('categoryDetail', $banner->category_slug);}}else if($banner->link=='vendor'){if(!empty($banner->vendor_slug)){$url=route('vendorDetail', $banner->vendor_slug);}}else if($banner->link=='url'){if($banner->link_url !=null){$url=$banner->link_url;}}@endphp
-					<div class="carousel-item @if($key == 0) active @endif">
-					 <a class="banner-img-outer" href="{{$url??'#'}}" target="_blank">
+					<div class="home-banner-slide">
+					 <a class="banner-img-outer" href="{{$url??'#'}}" target="_blank" rel="noopener noreferrer">
                         <link rel="preload" as="image" href="{{ get_file_path($banner->image,'IMG_URL1','1920','500') }}" />
-						<img alt="" title="" class="lazyload w-100" data-src="{{ get_file_path($banner->image,'IMG_URL1','1920','500') }}">
+						<img alt="" title="" class="lazyload banner-img" src="{{ get_file_path($banner->image,'IMG_URL1','1920','500') }}" data-src="{{ get_file_path($banner->image,'IMG_URL1','1920','500') }}">
 					</a>
 					</div>
 				@endforeach
 
 			</div>
-			<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
-				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-				<span class="sr-only">{{__('Previous')}}</span>
-			</a>
-			<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
-				<span class="carousel-control-next-icon" aria-hidden="true"></span>
-				<span class="sr-only">{{__('Next')}}</span>
-			</a>
+			@if(count($banners) > 1)
+			<button type="button" class="home-banner-nav prev" data-banner-prev aria-label="{{__('Previous')}}">
+				<span aria-hidden="true">&#8249;</span>
+			</button>
+			<button type="button" class="home-banner-nav next" data-banner-next aria-label="{{__('Next')}}">
+				<span aria-hidden="true">&#8250;</span>
+			</button>
+			<div class="home-banner-dots" data-banner-dots></div>
+			@endif
 		</div>
 
-		<div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;">
-			<div class="carousel-inner">
+		<div id="myMobileCarousel" class="home-banner-carousel is-mobile al_mobile_banner" data-banner-carousel data-no-slick="true">
+			<div class="home-banner-track" data-banner-track>
 				@foreach($mobile_banners as $key => $banner)
-					@php $url=''; if($banner->link=='category'){if(!empty($banner->category_slug)){$url=route('categoryDetail', $banner->category_slug);}}else if($banner->link=='vendor'){if(!empty($banner->vendor_slug)){$url=route('vendorDetail', $banner->vendor_slug);}}@endphp
-					<div class="carousel-item @if($key == 0) active @endif">
-					 <a class="banner-img-outer" style = "" href="{{$url??'#'}}">
+					@php $url=''; if($banner->link=='category'){if(!empty($banner->category_slug)){$url=route('categoryDetail', $banner->category_slug);}}else if($banner->link=='vendor'){if(!empty($banner->vendor_slug)){$url=route('vendorDetail', $banner->vendor_slug);}}else if($banner->link=='url'){if($banner->link_url !=null){$url=$banner->link_url;}}@endphp
+					<div class="home-banner-slide">
+					 <a class="banner-img-outer" href="{{$url??'#'}}">
                         <link rel="preload" as="image" href="{{ get_file_path($banner->image,'IMG_URL1','400','150') }}" />
-						<img alt="" title="" class=" lazyload w-100" data-src="{{ get_file_path($banner->image,'IMG_URL1','400','150') }}">
+						<img alt="" title="" class="lazyload banner-img" src="{{ get_file_path($banner->image,'IMG_URL1','400','150') }}" data-src="{{ get_file_path($banner->image,'IMG_URL1','400','150') }}">
 					</a>
-          <a class="banner-img-outer" href="{{$url??'#'}}">
-    <link rel="preload" as="image" href="{{ get_file_path($banner->image,'IMG_URL1','400','150') }}" />
-    <img 
-        alt="" 
-        title="" 
-        class="lazyload w-100 banner-img"
-        data-src="{{ get_file_path($banner->image,'IMG_URL1','400','150') }}"
-    >
-</a>
 					</div>
 				@endforeach
 
 			</div>
-			<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
-				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-				<span class="sr-only">{{__('Previous')}}</span>
-			</a>
-			<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
-				<span class="carousel-control-next-icon" aria-hidden="true"></span>
-				<span class="sr-only">{{__('Next')}}</span>
-			</a>
+			@if(count($mobile_banners) > 1)
+			<button type="button" class="home-banner-nav prev" data-banner-prev aria-label="{{__('Previous')}}">
+				<span aria-hidden="true">&#8249;</span>
+			</button>
+			<button type="button" class="home-banner-nav next" data-banner-next aria-label="{{__('Next')}}">
+				<span aria-hidden="true">&#8250;</span>
+			</button>
+			<div class="home-banner-dots" data-banner-dots></div>
+			@endif
    </div>
 
 	</div>
@@ -194,40 +396,148 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 
 
 @else
-<section class="home-slider-wrapper bg-primary" style="min-height: 150px">
-   <div class="container-fulid">
-		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel"></div>
-      <div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;"></div>
+<section class="home-slider-wrapper" style="min-height: 150px" id="home-slider-id">
+
+   <div class="home-slider-banner-shell">
+		<div id="myCarousel" class="home-banner-carousel is-desktop al_desktop_banner" data-banner-carousel></div>
+      <div id="myMobileCarousel" class="home-banner-carousel is-mobile al_mobile_banner" data-banner-carousel data-no-slick="true"></div>
    </div>
 </section>
 @endif
 @if(count($navCategories))
 
 <!-- Category section start -->
- <section class="alSixMainMenu my-menu" style="width: 100%; background: white; margin: 0; padding: 0;">
+ <section id="premiumCategoryUI" class="alSixMainMenu my-menu" style="width: 100%; background: white; margin: 0; padding: 0;">
       <div class="menu-navigation_al" style="width: 100%; background: white; margin: 0px; padding: 0;">
          <!-- testing -->
 
 <style>
-  .banner-img-outer {
-    display: block;
-    width: 100%;
-    height: 150px; /* Set your desired height */
-    overflow: hidden;
+/* ===============================
+   PREMIUM CATEGORY UI
+=============================== */
+#premiumCategoryUI {
+  width: 100%;
+  background: #ffffff;
+  padding: 12px 10px;
 }
 
-.banner-img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain; /* Makes image fully fill container */
+/* Grid Layout */
+#premiumCategoryUI .cat-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 14px 10px;
 }
 
-</style>
+/* Category Card */
+#premiumCategoryUI .al_main_category {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Clickable Area */
+#premiumCategoryUI .al_main_category > a {
+  width: 100%;
+  padding: 10px 6px;
+  border-radius: 14px;
+  background: #fff;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+/* Hover Effect (Professional Feel) */
+#premiumCategoryUI .al_main_category > a:hover {
+  background: #f9fbff;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  transform: translateY(-4px);
+}
+
+/* Circle Icon */
+#premiumCategoryUI .nav-cate-img {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #f0f2f5, #ffffff);
+  box-shadow: inset 2px 2px 6px rgba(0,0,0,0.05),
+              inset -2px -2px 6px rgba(255,255,255,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  transition: all 0.25s ease;
+}
+
+/* Icon Hover Animation */
+#premiumCategoryUI .al_main_category > a:hover .nav-cate-img {
+  transform: scale(1.08);
+}
+
+/* Image */
+#premiumCategoryUI .nav-cate-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 12px;
+}
+
+/* Category Name */
+#premiumCategoryUI .alCategoryName {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2d2d2d;
+  line-height: 1.3;
+}
+
+/* Active Category */
+#premiumCategoryUI a.current_category {
+  background: #eef5ff;
+  box-shadow: 0 4px 12px rgba(74,144,217,0.2);
+}
+
+#premiumCategoryUI a.current_category .nav-cate-img {
+  border: 2px solid #4a90d9;
+}
+
+#premiumCategoryUI a.current_category .alCategoryName {
+  color: #4a90d9;
+}
+
+/* ===============================
+   RESPONSIVE
+=============================== */
+
+/* Tablet */
+@media (max-width: 991px) {
+  #premiumCategoryUI .cat-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  #premiumCategoryUI {
+    padding: 10px 6px;
+  }
+
+  #premiumCategoryUI .nav-cate-img {
+    width: 54px;
+    height: 54px;
+  }
+
+  #premiumCategoryUI .alCategoryName {
+    font-size: 10px;
+  }
+}
+
+
+#premiumCategoryUI .al_main_category > a {
+  backdrop-filter: blur(6px);
+}
 
 
 
-<style>
-  #banner-img-border{
+#banner-img-border{
     border-radius: 0px;
   }
   /* ── Outer section ── */
@@ -488,10 +798,18 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 
   /* prakash */
  /* Main Container */
-#videoContainerX9a72 {
+
+
+
+
+ #videoContainerX9a72 {
   width: 100%;
   overflow: hidden;
 }
+
+
+
+
 
 /* Desktop + Laptop */
 #videoSectionX9a72 {
@@ -722,6 +1040,15 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
    </section>  -->
 @endif
 
+
+
+
+
+
+
+
+
+
 <div id="videoContainerX9a72" class="pb-2">
   <section id="videoSectionX9a72">
     <video
@@ -734,6 +1061,21 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
     </video>
   </section>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <!-- no-store-wrapper start -->
@@ -983,6 +1325,11 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 @include('frontend.prakash.image')
 
 
+
+
+
+
+
 <div id="videoContainerX9a72" class="pb-2">
   <section id="videoSectionX9a72">
     <video
@@ -995,6 +1342,21 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
     </video>
   </section>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <section class="how-it-works how-it-works-padding-class" id= "how-it-works-section-id">
 
@@ -1813,7 +2175,7 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 
 
 <script type="text/template" id="desktop_banners_template">
-	<div class="carousel-inner">
+	<div class="home-banner-track" data-banner-track>
 	   <% _.each(banners, function(banner, k){%>
 		  <%
 		  var url='#';
@@ -1827,27 +2189,33 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 				url = "{{route('vendorDetail')}}" + "/" + banner.vendor.slug;
 			 }
 		  }
+		  else if(banner.link == 'url'){
+			 if(banner.link_url != null){
+				url = banner.link_url;
+			 }
+		  }
 		  %>
-		  <div class="carousel-item <% if(k == 0) { %> active <% } %>">
+		  <div class="home-banner-slide">
 			 <a class="banner-img-outer" href="<%= url %>">
-				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>sw/300<%= banner.image.image_path %>" />
-				<img alt="" title="" class="blur-up lazyload w-100" data-src="<%= banner.image.proxy_url %>1370/300<%= banner.image.image_path %>">
+				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>1920/500<%= banner.image.image_path %>" />
+				<img alt="" title="" class="blur-up lazyload banner-img" src="<%= banner.image.proxy_url %>1920/500<%= banner.image.image_path %>" data-src="<%= banner.image.proxy_url %>1920/500<%= banner.image.image_path %>">
 			 </a>
 		  </div>
 	   <% }); %>
 	</div>
-	<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
-		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-		<span class="sr-only">{{__('Previous')}}</span>
-	</a>
-	<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
-		<span class="carousel-control-next-icon" aria-hidden="true"></span>
-		<span class="sr-only">{{__('Next')}}</span>
-	</a>
+	<% if (banners.length > 1) { %>
+	<button type="button" class="home-banner-nav prev" data-banner-prev aria-label="{{__('Previous')}}">
+		<span aria-hidden="true">&#8249;</span>
+	</button>
+	<button type="button" class="home-banner-nav next" data-banner-next aria-label="{{__('Next')}}">
+		<span aria-hidden="true">&#8250;</span>
+	</button>
+	<div class="home-banner-dots" data-banner-dots></div>
+	<% } %>
 </script>
 
 <script type="text/template" id="mobile_banners_template">
-	<div class="carousel-inner">
+	<div class="home-banner-track" data-banner-track>
 	   <% _.each(banners, function(banner, k){%>
 		  <%
 		  var url='#';
@@ -1861,23 +2229,29 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 				url = "{{route('vendorDetail')}}" + "/" + banner.vendor.slug;
 			 }
 		  }
+		  else if(banner.link == 'url'){
+			 if(banner.link_url != null){
+				url = banner.link_url;
+			 }
+		  }
 		  %>
-		  <div class="carousel-item <% if(k == 0) { %> active <% } %>">
+		  <div class="home-banner-slide">
 			 <a class="banner-img-outer" href="<%= url %>">
 				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>400/150<%= banner.image.image_path %>" />
-				<img alt="" title="" class="blur-up lazyload w-100" data-src="<%= banner.image.proxy_url %>400/150<%= banner.image.image_path %>">
+				<img alt="" title="" class="blur-up lazyload banner-img" src="<%= banner.image.proxy_url %>400/150<%= banner.image.image_path %>" data-src="<%= banner.image.proxy_url %>400/150<%= banner.image.image_path %>">
 			 </a>
 		  </div>
 	   <% }); %>
 	</div>
-	<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
-		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-		<span class="sr-only">{{__('Previous')}}</span>
-	</a>
-	<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
-		<span class="carousel-control-next-icon" aria-hidden="true"></span>
-		<span class="sr-only">{{__('Next')}}</span>
-	</a>
+	<% if (banners.length > 1) { %>
+	<button type="button" class="home-banner-nav prev" data-banner-prev aria-label="{{__('Previous')}}">
+		<span aria-hidden="true">&#8249;</span>
+	</button>
+	<button type="button" class="home-banner-nav next" data-banner-next aria-label="{{__('Next')}}">
+		<span aria-hidden="true">&#8250;</span>
+	</button>
+	<div class="home-banner-dots" data-banner-dots></div>
+	<% } %>
 </script>
 
 
@@ -2090,122 +2464,229 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
  <script type="text/javascript" src="{{asset('assets/js/template/commonFunction.js')}}"></script>
  <script type="text/javascript" src="{{asset('assets/js/template/template-six/templateFunction.js')}}"></script>
 <script>
-function initSlider({ trackId, dotsId, wrapper }) {
+(() => {
+  const mobileBreakpoint = window.matchMedia('(max-width: 767px)');
+  let refreshQueued = false;
 
-  if (!wrapper) return;
-
-  const track  = document.getElementById(trackId);
-  const dotsEl = document.getElementById(dotsId);
-
-  if (!track || !dotsEl) return;
-
-  const slides = track.querySelectorAll('.slide');
-  const total  = slides.length;
-
-  if (!total) return;
-
-  let current = 0;
-  let timer   = null;
-
-  // ---------- Build dots ----------
-  slides.forEach((_, i) => {
-    const d = document.createElement('button');
-    d.className = 'dot' + (i === 0 ? ' active' : '');
-    d.setAttribute('aria-label', `Slide ${i + 1}`);
-    d.addEventListener('click', () => {
-      reset();
-      goTo(i);
+  function ensureBannerImageSources(carousel) {
+    carousel.querySelectorAll('img[data-src]').forEach(image => {
+      if (!image.getAttribute('src')) {
+        image.setAttribute('src', image.getAttribute('data-src'));
+      }
     });
-    dotsEl.appendChild(d);
-  });
 
-  const dots = dotsEl.querySelectorAll('.dot');
-
-  // ---------- Slide logic ----------
-  function goTo(index) {
-    dots[current].classList.remove('active');
-    current = (index + total) % total;
-    track.style.transform = `translateX(-${current * 100}%)`;
-    dots[current].classList.add('active');
-  }
-
-  function next() {
-    goTo(current + 1);
-  }
-
-  function prev() {
-    goTo(current - 1);
-  }
-
-  function start() {
-    timer = setInterval(next, 3800);
-  }
-
-  function reset() {
-    clearInterval(timer);
-    start();
-  }
-
-  // ---------- Optional Buttons (safe) ----------
-  const nextBtn = wrapper.querySelector('.btn-next');
-  const prevBtn = wrapper.querySelector('.btn-prev');
-
-  if (nextBtn) {
-    nextBtn.addEventListener('click', () => {
-      reset();
-      next();
-    });
-  }
-
-  if (prevBtn) {
-    prevBtn.addEventListener('click', () => {
-      reset();
-      prev();
-    });
-  }
-
-  // ---------- Touch swipe ----------
-  let tx = 0;
-
-  track.addEventListener('touchstart', e => {
-    tx = e.changedTouches[0].screenX;
-  }, { passive: true });
-
-  track.addEventListener('touchend', e => {
-    const diff = tx - e.changedTouches[0].screenX;
-
-    if (Math.abs(diff) > 40) {
-      reset();
-      diff > 0 ? next() : prev();
+    if (window.lazySizes && window.lazySizes.autoSizer) {
+      window.lazySizes.autoSizer.checkElems();
     }
-  }, { passive: true });
+  }
 
-  // ---------- Pause on hover ----------
-  wrapper.addEventListener('mouseenter', () => {
-    clearInterval(timer);
-  });
+  function syncBannerVisibility() {
+    document.querySelectorAll('.home-slider-wrapper .home-slider-banner-shell').forEach(shell => {
+      const desktopCarousel = shell.querySelector('.home-banner-carousel.is-desktop[data-banner-carousel]');
+      const mobileCarousel = shell.querySelector('.home-banner-carousel.is-mobile[data-banner-carousel]');
 
-  wrapper.addEventListener('mouseleave', start);
+      if (!desktopCarousel || !mobileCarousel) {
+        return;
+      }
 
-  // ---------- Start autoplay ----------
-  start();
-}
+      const mobileHasSlides = mobileCarousel.querySelectorAll('.home-banner-slide').length > 0;
+      const shouldShowMobile = mobileBreakpoint.matches && mobileHasSlides;
 
+      desktopCarousel.classList.toggle('is-hidden-force', shouldShowMobile);
+      mobileCarousel.classList.toggle('is-hidden-force', !shouldShowMobile);
+    });
+  }
 
-// Desktop
-initSlider({
-  trackId: 'desktopTrack',
-  dotsId:  'desktopDots',
-  wrapper: document.getElementById('desktopSlider'),
-});
+  function queueBannerRefresh() {
+    if (refreshQueued) {
+      return;
+    }
 
-// Mobile
-initSlider({
-  trackId: 'mobileTrack',
-  dotsId:  'mobileDots',
-  wrapper: document.getElementById('mobileSlider'),
-});
+    refreshQueued = true;
+    window.requestAnimationFrame(() => {
+      refreshQueued = false;
+      window.initHomeTemplateSixBanners();
+    });
+  }
 
+  function attachBannerObservers() {
+    document.querySelectorAll('.home-slider-wrapper [data-banner-carousel]').forEach(carousel => {
+      if (carousel._bannerObserver) {
+        return;
+      }
+
+      const observer = new MutationObserver(queueBannerRefresh);
+      observer.observe(carousel, { childList: true });
+      carousel._bannerObserver = observer;
+    });
+  }
+
+  function initBannerCarousel(carousel) {
+    if (!carousel) {
+      return;
+    }
+
+    if (typeof carousel._bannerCleanup === 'function') {
+      carousel._bannerCleanup();
+    }
+
+    const track = carousel.querySelector('[data-banner-track]');
+    const slides = track ? Array.from(track.children) : [];
+    const prevBtn = carousel.querySelector('[data-banner-prev]');
+    const nextBtn = carousel.querySelector('[data-banner-next]');
+    const dotsWrap = carousel.querySelector('[data-banner-dots]');
+    const listeners = [];
+    let current = 0;
+    let autoplayTimer = null;
+    let touchStartX = 0;
+
+    if (!track || !slides.length) {
+      syncBannerVisibility();
+      return;
+    }
+
+    ensureBannerImageSources(carousel);
+
+    function listen(target, eventName, handler, options) {
+      target.addEventListener(eventName, handler, options);
+      listeners.push(() => target.removeEventListener(eventName, handler, options));
+    }
+
+    function stopAutoplay() {
+      if (autoplayTimer) {
+        window.clearInterval(autoplayTimer);
+        autoplayTimer = null;
+      }
+    }
+
+    function update() {
+      track.style.transform = `translateX(-${current * 100}%)`;
+      slides.forEach((slide, index) => {
+        slide.setAttribute('aria-hidden', index === current ? 'false' : 'true');
+      });
+
+      if (dotsWrap) {
+        Array.from(dotsWrap.children).forEach((dot, index) => {
+          dot.classList.toggle('is-active', index === current);
+          dot.setAttribute('aria-current', index === current ? 'true' : 'false');
+        });
+      }
+    }
+
+    function goTo(index) {
+      current = (index + slides.length) % slides.length;
+      update();
+    }
+
+    function startAutoplay() {
+      if (slides.length <= 1) {
+        return;
+      }
+
+      stopAutoplay();
+      autoplayTimer = window.setInterval(() => {
+        goTo(current + 1);
+      }, 4500);
+    }
+
+    function restartAutoplay() {
+      stopAutoplay();
+      startAutoplay();
+    }
+
+    if (dotsWrap) {
+      dotsWrap.innerHTML = '';
+      slides.forEach((_, index) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = `home-banner-dot${index === 0 ? ' is-active' : ''}`;
+        dot.setAttribute('aria-label', `Slide ${index + 1}`);
+        listen(dot, 'click', () => {
+          goTo(index);
+          restartAutoplay();
+        });
+        dotsWrap.appendChild(dot);
+      });
+    }
+
+    if (slides.length <= 1) {
+      if (prevBtn) {
+        prevBtn.hidden = true;
+      }
+      if (nextBtn) {
+        nextBtn.hidden = true;
+      }
+      if (dotsWrap) {
+        dotsWrap.hidden = true;
+      }
+    } else {
+      if (prevBtn) {
+        prevBtn.hidden = false;
+        listen(prevBtn, 'click', () => {
+          goTo(current - 1);
+          restartAutoplay();
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.hidden = false;
+        listen(nextBtn, 'click', () => {
+          goTo(current + 1);
+          restartAutoplay();
+        });
+      }
+
+      if (dotsWrap) {
+        dotsWrap.hidden = false;
+      }
+
+      listen(track, 'touchstart', event => {
+        touchStartX = event.changedTouches[0].screenX;
+      }, { passive: true });
+
+      listen(track, 'touchend', event => {
+        const diff = touchStartX - event.changedTouches[0].screenX;
+
+        if (Math.abs(diff) > 40) {
+          goTo(diff > 0 ? current + 1 : current - 1);
+          restartAutoplay();
+        }
+      }, { passive: true });
+
+      listen(carousel, 'mouseenter', stopAutoplay);
+      listen(carousel, 'mouseleave', startAutoplay);
+      startAutoplay();
+    }
+
+    update();
+    syncBannerVisibility();
+
+    carousel._bannerCleanup = () => {
+      stopAutoplay();
+      listeners.forEach(removeListener => removeListener());
+      delete carousel._bannerCleanup;
+    };
+  }
+
+  window.initHomeTemplateSixBanners = function initHomeTemplateSixBanners() {
+    document.querySelectorAll('.home-slider-wrapper [data-banner-carousel]').forEach(initBannerCarousel);
+    syncBannerVisibility();
+    attachBannerObservers();
+  };
+
+  window.addEventListener('resize', queueBannerRefresh);
+  if (typeof mobileBreakpoint.addEventListener === 'function') {
+    mobileBreakpoint.addEventListener('change', queueBannerRefresh);
+  } else if (typeof mobileBreakpoint.addListener === 'function') {
+    mobileBreakpoint.addListener(queueBannerRefresh);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', window.initHomeTemplateSixBanners, { once: true });
+  } else {
+    window.initHomeTemplateSixBanners();
+  }
+})();
 </script>
 
 <script>

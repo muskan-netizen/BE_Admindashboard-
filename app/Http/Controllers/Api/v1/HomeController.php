@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\UserRegistrationDocuments;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{UserVendorWishlist,User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption, ShowSubscriptionPlanOnSignup, ClientCountries, VendorType};
+use App\Models\{UserVendorWishlist,User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption, ShowSubscriptionPlanOnSignup, ClientCountries, VendorType, ContactUs};
 use DateTime;
 use DateInterval;
 use DateTimeZone;
@@ -1291,6 +1291,14 @@ class HomeController extends BaseController
                 return $this->errorResponse($error_value[0], 400);
             }
         }
+
+        ContactUs::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone_number' => $request->phone_number,
+            'message' => $request->message,
+        ]);
+
         $client = Client::select('id', 'name', 'email', 'phone_number','contact_email', 'logo')->where('id', '>', 0)->first();
         $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
         $superAdmin = User::where('is_superadmin', 1)->first();
@@ -1299,7 +1307,7 @@ class HomeController extends BaseController
                 if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
                     $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
                 } else {
-                    return $this->errorResponse('SMTP not configured.', 400);
+                    return $this->successResponse('', __('Thank you for contacting us. We will get to you shortly'));
                 }
                 $mail_from = $request->email;
                 $sender = $data->mail_from;
@@ -1326,7 +1334,7 @@ class HomeController extends BaseController
                 return $this->errorResponse($e->getMessage(), $e->getCode());
             }
         } else {
-            return $this->errorResponse('We are sorry for inconvenience. Please contact us later', 400);
+            return $this->successResponse('', __('Thank you for contacting us. We will get to you shortly'));
         }
     }
     public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption)

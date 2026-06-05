@@ -35,11 +35,22 @@ class AppServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot(Request $request){
-        if (config('app.env') != 'local') {
+        if (env('APP_ENV') != 'local') {
             \URL::forceScheme('https');
         }
-       $this->connectDynamicDb($request);
+
+        // Skip dynamic DB connection for local environment during bootstrap
+        if (env('APP_ENV') !== 'local') {
+            $this->connectDynamicDb($request);
+        }
+
         Paginator::useBootstrap();
+
+        // Skip database operations for local environment during bootstrap
+        if (env('APP_ENV') === 'local') {
+            return;
+        }
+
         $social_media_details = '';
         if(Schema::hasTable('social_media'))
         $social_media_details = SocialMedia::get();

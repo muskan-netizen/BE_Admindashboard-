@@ -87,7 +87,7 @@
                 <div class="row mt-3">
                     <div class="offset-xl-3 col-xl-6 text-left">
                         <div class="verify_id input-group mb-3 radius-flag">
-                            <input type="tel" class="form-control" id="phone_number" value="{{'+'.Auth::user()->dial_code.Auth::user()->phone_number}}" disabled="">
+                            <input type="tel" class="form-control" maxlength="10" id="phone_number" value="{{Auth::user()->dial_code.Auth::user()->phone_number}}">
                             <input type="hidden" id="dial_code" value="{{Auth::user()->dial_code ?? (Session::get('default_country_phonecode','1'))}}">
                             <div class="input-group-append position-absolute position-right">
                                 <a class="input-group-text" id="edit_phone" href="javascript:void(0)">{{__('Edit')}}</a>

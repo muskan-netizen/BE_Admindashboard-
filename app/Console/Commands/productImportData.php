@@ -47,6 +47,12 @@ class productImportData extends Command{
     public function __construct()
     {
         parent::__construct();
+
+        // Skip database operations for local environment
+        if (env('APP_ENV') === 'local') {
+            return;
+        }
+
         $code = Client::orderBy('id','asc')->value('code');
         $this->folderName = '/'.$code.'/prods';
     }

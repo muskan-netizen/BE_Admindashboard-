@@ -24,6 +24,7 @@ trait ProductActionTrait{
             if (empty($type) || !in_array($type, ['delivery', 'pickup', 'dine_in', 'takeaway'])) {
                 $type = 'delivery';
             }
+            $type = 'on_demand';
             
             $vendors = Vendor::vendorOnline()->select('id')->where('status', 1)->where($type, 1);
             
@@ -384,7 +385,7 @@ trait ProductActionTrait{
                 $most_sold = OrderVendorProduct::selectRaw('id, product_id, count(product_id) as total')->whereHas('statusDelievered')->groupBy('product_id')->orderBy('total', 'DESC')->take(5)->get()->pluck('product_id')->toArray();
                 $most_viewed = ProductRecentlyViewed::selectRaw('id, product_id, count(product_id) as total')->groupBy('product_id')->orderBy('total', 'DESC')->take(5)->get()->pluck('product_id')->toArray();
                 //$product_ids = $most_sold->merge($most_viewed);
-                $product_ids = array_merge($most_sold, $most_viewed);
+                $product_ids = array_values(array_unique(array_merge($most_sold, $most_viewed)));
             } elseif($type == 'top_rated_products'){
                 $product_ids = OrderProductRating::selectRaw('id, product_id, count(product_id) as total')->groupBy('product_id')->orderBy('total', 'DESC')->take(10)->get()->pluck('product_id')->toArray();
             } elseif($type == 'recent_viewed'){
@@ -447,6 +448,7 @@ trait ProductActionTrait{
             $getSubCatIdsIn = ' ';
             $completeWhere = ' ';
             $whereProductType = ' ';
+            $orderByPopularIds = null;
             if(!empty($venderIds)){
                 $venid = implode(',',$venderIds);
                 $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
@@ -497,14 +499,27 @@ trait ProductActionTrait{
             $single_category_product_ids = $this->getProductsId($where, $vendorWhereIN, $whereProductType);
 
             if(count($single_category_product_ids) > 0 && $where!=='recent_viewed'){
-                shuffle($single_category_product_ids);
-                $random_numbers = array_slice($single_category_product_ids, 0, 6);
-                $single_category_product_ids = @implode(',',$random_numbers);
+                if (in_array($where, ['popular_products', 'top_rated_products'], true)) {
+                    $single_category_product_ids = array_values(array_unique($single_category_product_ids));
+                    $single_category_product_ids = array_slice($single_category_product_ids, 0, 6);
+                    $orderByPopularIds = $single_category_product_ids;
+                } else {
+                    shuffle($single_category_product_ids);
+                    $single_category_product_ids = array_slice($single_category_product_ids, 0, 6);
+                }
+                $single_category_product_ids = @implode(',',$single_category_product_ids);
                 if($single_category_product_ids){
                     $completeWhere .= ' AND  `products`.`id` IN  ('.$single_category_product_ids.')';
                 }
             }
 
+            $orderByClause = '';
+            if (!empty($orderByPopularIds) && is_array($orderByPopularIds)) {
+                $safeOrderIds = array_values(array_filter(array_map('intval', $orderByPopularIds)));
+                if (count($safeOrderIds) > 0) {
+                    $orderByClause = ' ORDER BY FIELD(`products`.`id`, '.implode(',', $safeOrderIds).')';
+                }
+            }
 
             $raw_query = "SELECT
             `products`.`id`,
@@ -583,6 +598,7 @@ trait ProductActionTrait{
             $getSubCatIdsIn
             $whereProductType
             GROUP BY `products`.`id`
+            $orderByClause
             LIMIT 6";
 
 
@@ -675,7 +691,7 @@ trait ProductActionTrait{
             $mainQuery = "SELECT $selectQuery FROM `vendors` $joinQuery $whereQuery $whereInQuery";
 
             $mainQuery .= " GROUP BY `vendors`.`id` ORDER BY `lineOfSightDistance` ASC ";
-
+            
             if ($vendor_title == "best_sellers") {
                 $mainQuery.= " ORDER BY `selling_count` DESC";
             }

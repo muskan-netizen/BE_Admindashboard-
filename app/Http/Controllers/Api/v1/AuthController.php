@@ -1986,31 +1986,35 @@ class AuthController extends BaseController
 
                 UserDevice::where('user_id', $user->id)->delete();
 
-                $user->email = null;
-                $user->phone_number = null;
-                $user->dial_code = null;
-                $user->description = null;
-                $user->image = null;
-                $user->auth_token = '';
-                $user->system_id = '';
-                $user->remember_token = '';
-                $user->facebook_auth_id = '';
-                $user->twitter_auth_id = '';
-                $user->google_auth_id = '';
-                $user->apple_auth_id = '';
-                $user->status = 3;
-                $user->save();
+                // $user->email = null;
+                // $user->phone_number = null;
+                // $user->dial_code = null;
+                // $user->description = null;
+                // $user->image = null;
+                // $user->auth_token = '';
+                // $user->system_id = '';
+                // $user->remember_token = '';
+                // $user->facebook_auth_id = '';
+                // $user->twitter_auth_id = '';
+                // $user->google_auth_id = '';
+                // $user->apple_auth_id = '';
+                // $user->status = 3;
+                // $user->save();
 
                 $user->delete();
                 DB::commit(); //Commit transaction after all the operations
                 return response()->json(['massage' => __('User Deleted Successfully')], 200);
                 //code...
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['massage' => __('Something went wrong!')], 400);
-
         }
+        catch (\Exception $e) {
+    DB::rollBack();
+    return response()->json([
+        'message' => $e->getMessage(),
+        'line' => $e->getLine(),
+        'file' => $e->getFile()
+    ], 500);
+}
 
     }
     /**

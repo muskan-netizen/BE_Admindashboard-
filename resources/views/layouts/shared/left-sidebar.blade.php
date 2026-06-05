@@ -358,6 +358,11 @@
                                     </div>
                                 </li>
                             @endif
+                            @if(@auth()->user()->can('cms-pages-view') || Auth::user()->is_superadmin == 1)
+                                <li>
+                                    <a href="{{ route('contact-us.index') }}">{{ __('Contact Us') }}</a>
+                                </li>
+                            @endif
                         </ul>
                 </li>
                 @endif

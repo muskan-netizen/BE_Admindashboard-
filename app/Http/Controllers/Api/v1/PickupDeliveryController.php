@@ -1658,6 +1658,7 @@ class PickupDeliveryController extends BaseController{
             }
             $response['order_details'] = $order->toArray();
             $response['order_driver_rating'] = $order_driver_rating;
+            // \Log::info('getOrderTrackingDetails - response', ['response' => $response]);
             return $this->successResponse($response);
         }else{
             return $this->errorResponse('', 400, $response);

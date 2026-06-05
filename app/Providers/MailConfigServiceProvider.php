@@ -19,6 +19,11 @@ class MailConfigServiceProvider extends ServiceProvider
 */
 public function boot(Request $request)
 {
+	// Skip database operations for local environment during bootstrap
+	if (env('APP_ENV') === 'local') {
+		return;
+	}
+
 	// $mail = ClientPreference::where('id', '>', 0)->first(['id', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from']);
 	$mail = Cache::remember('client_preference', 60 * 60, function () {
 		return ClientPreference::where('id', '>', 0)->first(['id', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from']);

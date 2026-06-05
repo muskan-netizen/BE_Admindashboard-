@@ -497,16 +497,23 @@ trait OrderTrait
                         {
                             $tasks[] = array(
                                 'task_type_id' => 2,
-                                'latitude' => $cus_address->latitude ?? '',
-                                'longitude' => $cus_address->longitude ?? '',
+                                'latitude' => $cus_address->latitude ?? $user->defaultAddress->latitude,
+                                'longitude' => $cus_address->longitude ?? $user->defaultAddress->longitude,
                                 'short_name' => '',
-                                'address' => $cus_address->address ?? '',
-                                'post_code' => $cus_address->pincode ?? '',
+                                'address' => $cus_address->address ?? $user->defaultAddress->address,
+                                'post_code' => $cus_address->pincode ?? $user->defaultAddress->pincode,
                                 'barcode' => '',
                                 'flat_no' => $cus_address->house_number ?? null,
                                 'email' => $customer->email ?? null,
                                 'phone_number' => ($customer->dial_code . $customer->phone_number) ?? null,
                             );
+                            \Log::info("user default address", [
+                                'latitude' => $cus_address->latitude ?? $user->defaultAddress->latitude,
+                                'longitude' => $cus_address->longitude ?? $user->defaultAddress->longitude,
+                                'address' => $cus_address->address ?? $user->defaultAddress->address,
+                                'pincode' => $cus_address->pincode ?? $user->defaultAddress->pincode,
+                                'house_number' => $cus_address->house_number ?? null,
+                            ]);
                         }
 
                         if ($customer->dial_code == "971") {
@@ -586,8 +593,6 @@ trait OrderTrait
                                 $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
                                 $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
                             }
-
-
                             $client = new Client([
                                 'headers' => [
                                     'personaltoken' => $dispatch_domain['service_key'],

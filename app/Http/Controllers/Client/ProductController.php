@@ -1375,17 +1375,34 @@ class ProductController extends BaseController
             $fileModel->status = 1;
             $fileModel->save();
             if (File::exists($fileModel->storage_url)) {
-                $csv = file($fileModel->storage_url);
-                $chunks = array_chunk($csv, 2000);
-                $header = [];
+                // Use fgetcsv so quoted fields may contain newlines (e.g. HTML in Description).
+                // file()+str_getcsv per physical line breaks those rows and shifts column indices.
+                $handle = fopen($fileModel->storage_url, 'r');
+                if ($handle === false) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Could not read the uploaded CSV file.',
+                    ], 422);
+                }
+                $allRows = [];
+                while (($row = fgetcsv($handle, 0, ',', '"')) !== false) {
+                    $allRows[] = $row;
+                }
+                fclose($handle);
+                if ($allRows === []) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'The CSV file is empty.',
+                    ], 422);
+                }
+                if (isset($allRows[0][0])) {
+                    $allRows[0][0] = preg_replace('/^\xEF\xBB\xBF/', '', (string) $allRows[0][0]);
+                }
+                $header = array_shift($allRows);
+                $chunks = array_chunk($allRows, 2000);
                 $flag = 0;
-                foreach ($chunks as $key => $chunk) {
-                    $data = array_map('str_getcsv', $chunk);
-                    if ($key == 0) {
-                        $header = $data[0];
-                        unset($data[0]);
-                    }
-                    $flag = ProductImportCsvJob::dispatch($fileModel->vendor_id, $fileModel->id, $data, $header)->onQueue('csv_import');
+                foreach ($chunks as $chunk) {
+                    $flag = ProductImportCsvJob::dispatch($fileModel->vendor_id, $fileModel->id, $chunk, $header)->onQueue('csv_import');
                 }
                 if ($flag) {
                     unlink($fileModel->storage_url);

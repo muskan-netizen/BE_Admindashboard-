@@ -23,8 +23,11 @@
 
                             <div class="mt-4">
                                 @if(auth()->check())
-                                    <form action="{{ route('user.deleteAccount') }}" method="POST"
-                                          onsubmit='return confirm(@json(__("Are you sure you want to delete your account? This action cannot be undone.")));'>
+                                    <form id="deleteAccountForm" action="{{ route('user.deleteAccount') }}" method="POST"
+                                        data-swal-title="{{ __('Delete account?') }}"
+                                        data-swal-text="{{ __('Are you sure you want to delete your account? This action cannot be undone.') }}"
+                                        data-swal-confirm="{{ __('Yes, delete it') }}"
+                                        data-swal-cancel="{{ __('Cancel') }}">
                                         @csrf
                                         <button type="submit" class="btn btn-solid">
                                             {{ __('Delete My Account') }}
@@ -64,4 +67,31 @@
         </div>
     </div>
 </section>
+@endsection
+
+@section('script')
+<script type="text/javascript">
+    $(document).on('submit', '#deleteAccountForm', function(e) {
+        e.preventDefault();
+        var form = this;
+        var swalTitle = $(form).data('swal-title');
+        var swalText = $(form).data('swal-text');
+        var confirmText = $(form).data('swal-confirm');
+        var cancelText = $(form).data('swal-cancel');
+
+        Swal.fire({
+            title: swalTitle,
+            text: swalText,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: confirmText,
+            cancelButtonText: cancelText,
+            reverseButtons: true
+        }).then(function(result) {
+            if (result && (result.isConfirmed || result.value === true)) {
+                form.submit();
+            }
+        });
+    });
+</script>
 @endsection
