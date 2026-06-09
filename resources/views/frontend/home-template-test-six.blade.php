@@ -23,16 +23,6 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 @endsection
 @section('cssnew')
 <style>
-<<<<<<< HEAD
-/* ── Banner wrapper ── */
-.home-slider-wrapper {
-    position: relative;
-    z-index: 1;        /* always below navbar */
-    width: 100%;
-    /* padding-top: 50px; */
-}
-#home-slider-id{
-=======
 /* ====================================================
    URBAN COMPANY STYLE — GLOBAL DESIGN SYSTEM
    ==================================================== */
@@ -200,7 +190,6 @@ section.container.mb-0 {
 }
 
 #home-slider-id {
->>>>>>> origin/demo_production_onboard
   padding-top: 50px;
 }
  
@@ -251,16 +240,6 @@ section.container.mb-0 {
     text-decoration: none;
 }
  
-<<<<<<< HEAD
-/* Desktop banner: 1920 × 500 */
-.home-slider-wrapper .home-banner-carousel.is-desktop .banner-img-outer {
-    aspect-ratio: 1920 / 500;
-}
- 
-/* Mobile banner: 400 × 150 */
-.home-slider-wrapper .home-banner-carousel.is-mobile .banner-img-outer {
-    aspect-ratio: 400 / 150;
-=======
 /* Desktop banner: 1920 × 700 */
 .home-slider-wrapper .home-banner-carousel.is-desktop .banner-img-outer {
     aspect-ratio: 1920 / 700;
@@ -269,7 +248,6 @@ section.container.mb-0 {
 /* Mobile banner: 400 × 250 */
 .home-slider-wrapper .home-banner-carousel.is-mobile .banner-img-outer {
     aspect-ratio: 400 / 250;
->>>>>>> origin/demo_production_onboard
 }
  
 /* ── Banner image ── */
@@ -523,26 +501,12 @@ section.container.mb-0 {
 
 <section class="home-slider-wrapper" id="home-slider-id">
 
-<<<<<<< HEAD
-<section class="home-slider-wrapper" id="home-slider-id">
-
-	<div class="home-slider-banner-shell">
-		<div id="myCarousel" class="home-banner-carousel is-desktop al_desktop_banner" data-banner-carousel>
-			<div class="home-banner-track" data-banner-track>
-				@foreach($banners as $key => $banner)
-					@php $url=''; if($banner->link=='category'){if(!empty($banner->category_slug)){$url=route('categoryDetail', $banner->category_slug);}}else if($banner->link=='vendor'){if(!empty($banner->vendor_slug)){$url=route('vendorDetail', $banner->vendor_slug);}}else if($banner->link=='url'){if($banner->link_url !=null){$url=$banner->link_url;}}@endphp
-					<div class="home-banner-slide">
-					 <a class="banner-img-outer" href="{{$url??'#'}}" target="_blank" rel="noopener noreferrer">
-                        <link rel="preload" as="image" href="{{ get_file_path($banner->image,'IMG_URL1','1920','500') }}" />
-						<img alt="" title="" class="lazyload banner-img" src="{{ get_file_path($banner->image,'IMG_URL1','1920','500') }}" data-src="{{ get_file_path($banner->image,'IMG_URL1','1920','500') }}">
-=======
 	<div class="home-slider-banner-shell">
 		<div id="myCarousel" class="home-banner-carousel is-desktop al_desktop_banner" data-banner-carousel>
 			<div class="home-banner-track" data-banner-track>
 				<div class="home-banner-slide">
 					<a class="banner-img-outer" href="#">
 						<img alt="Chef cooking" class="lazyload banner-img" src="https://images.pexels.com/photos/2290753/pexels-photo-2290753.jpeg?auto=compress&cs=tinysrgb&w=1920" data-src="https://images.pexels.com/photos/2290753/pexels-photo-2290753.jpeg?auto=compress&cs=tinysrgb&w=1920">
->>>>>>> origin/demo_production_onboard
 					</a>
 				</div>
 				<div class="home-banner-slide">
@@ -561,10 +525,6 @@ section.container.mb-0 {
 					</a>
 				</div>
 			</div>
-<<<<<<< HEAD
-			@if(count($banners) > 1)
-=======
->>>>>>> origin/demo_production_onboard
 			<button type="button" class="home-banner-nav prev" data-banner-prev aria-label="{{__('Previous')}}">
 				<span aria-hidden="true">&#8249;</span>
 			</button>
@@ -572,28 +532,10 @@ section.container.mb-0 {
 				<span aria-hidden="true">&#8250;</span>
 			</button>
 			<div class="home-banner-dots" data-banner-dots></div>
-<<<<<<< HEAD
-			@endif
-=======
->>>>>>> origin/demo_production_onboard
 		</div>
 
 		<div id="myMobileCarousel" class="home-banner-carousel is-mobile al_mobile_banner" data-banner-carousel data-no-slick="true">
 			<div class="home-banner-track" data-banner-track>
-<<<<<<< HEAD
-				@foreach($mobile_banners as $key => $banner)
-					@php $url=''; if($banner->link=='category'){if(!empty($banner->category_slug)){$url=route('categoryDetail', $banner->category_slug);}}else if($banner->link=='vendor'){if(!empty($banner->vendor_slug)){$url=route('vendorDetail', $banner->vendor_slug);}}else if($banner->link=='url'){if($banner->link_url !=null){$url=$banner->link_url;}}@endphp
-					<div class="home-banner-slide">
-					 <a class="banner-img-outer" href="{{$url??'#'}}">
-                        <link rel="preload" as="image" href="{{ get_file_path($banner->image,'IMG_URL1','400','150') }}" />
-						<img alt="" title="" class="lazyload banner-img" src="{{ get_file_path($banner->image,'IMG_URL1','400','150') }}" data-src="{{ get_file_path($banner->image,'IMG_URL1','400','150') }}">
-					</a>
-					</div>
-				@endforeach
-
-			</div>
-			@if(count($mobile_banners) > 1)
-=======
 				<div class="home-banner-slide">
 					<a class="banner-img-outer" href="#">
 						<img alt="Chef cooking" class="lazyload banner-img" src="https://images.pexels.com/photos/2290753/pexels-photo-2290753.jpeg?auto=compress&cs=tinysrgb&w=800" data-src="https://images.pexels.com/photos/2290753/pexels-photo-2290753.jpeg?auto=compress&cs=tinysrgb&w=800">
@@ -615,7 +557,6 @@ section.container.mb-0 {
 					</a>
 				</div>
 			</div>
->>>>>>> origin/demo_production_onboard
 			<button type="button" class="home-banner-nav prev" data-banner-prev aria-label="{{__('Previous')}}">
 				<span aria-hidden="true">&#8249;</span>
 			</button>
@@ -623,10 +564,6 @@ section.container.mb-0 {
 				<span aria-hidden="true">&#8250;</span>
 			</button>
 			<div class="home-banner-dots" data-banner-dots></div>
-<<<<<<< HEAD
-			@endif
-=======
->>>>>>> origin/demo_production_onboard
    </div>
 
 	</div>
@@ -651,32 +588,11 @@ section.container.mb-0 {
 
 <style>
 /* ===============================
-<<<<<<< HEAD
-   PREMIUM CATEGORY UI
-=======
    URBAN COMPANY — CATEGORY UI
->>>>>>> origin/demo_production_onboard
 =============================== */
 #premiumCategoryUI {
   width: 100%;
   background: #ffffff;
-<<<<<<< HEAD
-  padding: 12px 10px;
-}
-
-/* Grid Layout */
-#premiumCategoryUI .cat-grid {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 14px 10px;
-}
-
-/* Category Card */
-#premiumCategoryUI .al_main_category {
-  display: flex;
-  justify-content: center;
-  text-align: center;
-=======
   padding: 40px 20px 20px;
   border-bottom: 1px solid #f0f0f0;
 }
@@ -716,54 +632,10 @@ section.container.mb-0 {
   display: flex;
   flex-direction: column;
   width: 180px;
->>>>>>> origin/demo_production_onboard
 }
 
 /* Clickable Area */
 #premiumCategoryUI .al_main_category > a {
-<<<<<<< HEAD
-  width: 100%;
-  padding: 10px 6px;
-  border-radius: 14px;
-  background: #fff;
-  transition: all 0.25s ease;
-  position: relative;
-}
-
-/* Hover Effect (Professional Feel) */
-#premiumCategoryUI .al_main_category > a:hover {
-  background: #f9fbff;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-  transform: translateY(-4px);
-}
-
-/* Circle Icon */
-#premiumCategoryUI .nav-cate-img {
-  width: 74px;
-  height: 74px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #f0f2f5, #ffffff);
-  box-shadow: inset 2px 2px 6px rgba(0,0,0,0.05),
-              inset -2px -2px 6px rgba(255,255,255,0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: auto;
-  transition: all 0.25s ease;
-}
-
-/* Icon Hover Animation */
-#premiumCategoryUI .al_main_category > a:hover .nav-cate-img {
-  transform: scale(1.08);
-}
-
-/* Image */
-#premiumCategoryUI .nav-cate-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 12px;
-=======
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -812,32 +684,10 @@ section.container.mb-0 {
   height: 34px !important;
   object-fit: contain;
   padding: 0 !important;
->>>>>>> origin/demo_production_onboard
 }
 
 /* Category Name */
 #premiumCategoryUI .alCategoryName {
-<<<<<<< HEAD
-  margin-top: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #2d2d2d;
-  line-height: 1.3;
-}
-
-/* Active Category */
-#premiumCategoryUI a.current_category {
-  background: #eef5ff;
-  box-shadow: 0 4px 12px rgba(74,144,217,0.2);
-}
-
-#premiumCategoryUI a.current_category .nav-cate-img {
-  border: 2px solid #4a90d9;
-}
-
-#premiumCategoryUI a.current_category .alCategoryName {
-  color: #4a90d9;
-=======
   font-size: 15px !important;
   font-weight: 700;
   color: #111b2b;
@@ -855,310 +705,11 @@ section.container.mb-0 {
 
 #premiumCategoryUI a.current_category .alCategoryName {
   color: var(--uc-purple);
->>>>>>> origin/demo_production_onboard
 }
 
 /* ===============================
    RESPONSIVE
 =============================== */
-<<<<<<< HEAD
-
-/* Tablet */
-@media (max-width: 991px) {
-  #premiumCategoryUI .cat-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/* Mobile */
-@media (max-width: 480px) {
-  #premiumCategoryUI {
-    padding: 10px 6px;
-  }
-
-  #premiumCategoryUI .nav-cate-img {
-    width: 54px;
-    height: 54px;
-  }
-
-  #premiumCategoryUI .alCategoryName {
-    font-size: 10px;
-  }
-}
-
-
-#premiumCategoryUI .al_main_category > a {
-  backdrop-filter: blur(6px);
-}
-
-
-
-#banner-img-border{
-    border-radius: 0px;
-  }
-  /* ── Outer section ── */
-  .space-slider-homeric {
-    width: 100%;
-    background: #fff;
-    margin: 0;
-    border-radius: 0;
-    /* padding: 12px 8px; */
-  }
-
-  /* ── Inner row ── */
-  .space-slider-homeric .cat-row {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    border-radius: 0;
-  }
-
-  /* ── Grid — 8 columns desktop ── */
-  .cat-grid {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 8px 4px;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-  }
-
-  /* ── Each item ── */
-  .cat-grid .al_main_category {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    position: relative;
-    padding: 6px 2px;
-    margin: 0;
-  }
-
-  /* ── Anchor ── */
-  .cat-grid .al_main_category > a {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    /* gap: 6px; */
-    text-decoration: none;
-    color: #222;
-    width: 100%;
-  }
-
-  /* ── White circle ── */
-  .cat-grid .al_main_category .nav-cate-img {
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    background: #f5f5f5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    margin: 0 auto;
-    transition: transform 0.2s ease;
-    flex-shrink: 0;
-  }
-
-  .cat-grid .al_main_category > a:hover .nav-cate-img {
-    transform: translateY(-2px);
-  }
-
-  /* ── Icon image ── */
-  .cat-grid .al_main_category .nav-cate-img img,
-  .cat-grid .al_main_category .nav-cate-img img.blur-up,
-  .cat-grid .al_main_category .nav-cate-img img.lazyload {
-    width: 100% !important;
-    height: 100% !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-    object-fit: contain;
-    display: block;
-    border-radius: 0;
-    padding: 10px;
-    margin: 0;
-  }
-
-  /* ── Category label ── */
-  .cat-grid .al_main_category .alCategoryName {
-    font-size: 11px !important;
-    font-weight: 600;
-    color: #333;
-    line-height: 1.3;
-    width: 100%;
-    max-width: 100%;
-    display: block;
-    text-align: center;
-    word-break: break-word;
-    overflow-wrap: break-word;
-    white-space: normal;
-    padding: 0 2px;
-  }
-
-  /* ── Active category ── */
-  .cat-grid .al_main_category > a.current_category .nav-cate-img {
-    outline: 2px solid #4a90d9;
-    outline-offset: 2px;
-  }
-
-  .cat-grid .al_main_category > a.current_category .alCategoryName {
-    color: #4a90d9;
-  }
-
-  /* ── Hide dropdowns ── */
-  .cat-grid .al_main_category_list,
-  .cat-grid .al_main_category_sub_list {
-    display: none !important;
-    visibility: hidden;
-    pointer-events: none;
-  }
-
-  /* ══════════════════════════════════════
-     RESPONSIVE BREAKPOINTS
-  ══════════════════════════════════════ */
-
-  /* Large desktop — 8 columns */
-  @media (min-width: 1200px) {
-    .cat-grid {
-      grid-template-columns: repeat(8, 1fr);
-      gap: 10px 6px;
-    }
-
-    .cat-grid .al_main_category .nav-cate-img {
-      width: 80px;
-      height: 80px;
-    }
-
-    .cat-grid .al_main_category .alCategoryName {
-      font-size: 12px !important;
-    }
-  }
-
-  /* Standard desktop — 8 columns */
-  @media (min-width: 992px) and (max-width: 1199px) {
-    .cat-grid {
-      grid-template-columns: repeat(8, 1fr);
-      gap: 8px 4px;
-    }
-
-    .cat-grid .al_main_category .nav-cate-img {
-      width: 68px;
-      height: 68px;
-    }
-
-    .cat-grid .al_main_category .alCategoryName {
-      font-size: 11px !important;
-    }
-  }
-
-  /* Tablet landscape — 4 columns */
-  @media (min-width: 768px) and (max-width: 991px) {
-    .cat-grid {
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px 10px;
-    }
-
-    .cat-grid .al_main_category .nav-cate-img {
-      width: 64px;
-      height: 64px;
-    }
-
-    .cat-grid .al_main_category .alCategoryName {
-      font-size: 11px !important;
-    }
-  }
-
-  /* Tablet portrait — 4 columns */
-  @media (min-width: 600px) and (max-width: 767px) {
-    .cat-grid {
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px 8px;
-    }
-
-    .cat-grid .al_main_category .nav-cate-img {
-      width: 58px;
-      height: 58px;
-    }
-
-    .cat-grid .al_main_category .alCategoryName {
-      font-size: 11px !important;
-    }
-  }
-
-  /* Mobile large — 4 columns */
-  @media (min-width: 420px) and (max-width: 599px) {
-    .space-slider-homeric {
-      padding: 10px 8px;
-    }
-
-    .cat-grid {
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px 6px;
-    }
-
-    .cat-grid .al_main_category .nav-cate-img {
-      width: 52px;
-      height: 52px;
-    }
-
-    .cat-grid .al_main_category .alCategoryName {
-      font-size: 10px !important;
-      max-width: 72px;
-    }
-  }
-
-  /* Mobile standard — 4 columns */
-  @media (min-width: 340px) and (max-width: 419px) {
-    .space-slider-homeric {
-      /* padding: 8px 6px; */
-    }
-
-    .cat-grid {
-      grid-template-columns: repeat(4, 1fr);
-      /* gap: 10px 4px; */
-    }
-
-    .cat-grid .al_main_category .nav-cate-img {
-      width: 46px;
-      height: 46px;
-    }
-
-    .cat-grid .al_main_category .alCategoryName {
-      font-size: 9px !important;
-      max-width: 62px;
-    }
-  }
-
-  /* Very small phones — 4 columns */
-  @media (max-width: 339px) {
-    .space-slider-homeric {
-      /* padding: 6px 4px; */
-    }
-
-    .cat-grid {
-      grid-template-columns: repeat(4, 1fr);
-      /* gap: 8px 2px; */
-    }
-
-    .cat-grid .al_main_category .nav-cate-img {
-      width: 40px;
-      height: 40px;
-    }
-
-    .cat-grid .al_main_category .alCategoryName {
-      font-size: 8px !important;
-      max-width: 52px;
-    }
-  }
-
-  /* prakash */
- /* Main Container */
-
-
-
-
-=======
 @media (max-width: 991px) {
   #premiumCategoryUI .cat-grid { gap: 15px 10px; justify-content: center; }
   #premiumCategoryUI .al_main_category { width: 130px; }
@@ -1225,7 +776,6 @@ section.container.mb-0 {
 
 
 
->>>>>>> origin/demo_production_onboard
  #videoContainerX9a72 {
   width: 100%;
   overflow: hidden;
@@ -1441,28 +991,6 @@ section.container.mb-0 {
    </section>  -->
 @endif
 
-<<<<<<< HEAD
-
-
-
-
-
-
-
-
-
-<div id="videoContainerX9a72" class="pb-2">
-  <section id="videoSectionX9a72">
-    <video
-      id="videoPlayerX9a72"
-      autoplay
-      muted
-      loop
-      playsinline>
-      <source src="https://res.cloudinary.com/dpqnudpkj/video/upload/v1772285315/IMG_5947_1_s0qnml.mp4" type="video/mp4">
-    </video>
-  </section>
-=======
 <!-- ===============================
      NEW HOW IT WORKS SECTION
      =============================== -->
@@ -2370,7 +1898,6 @@ document.addEventListener('DOMContentLoaded', function() {
     <h2>RestoCare</h2>
     <p>Premium Restaurant Services & Maintenance</p>
   </div>
->>>>>>> origin/demo_production_onboard
 </div>
 
 <style>
@@ -2658,21 +2185,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <!-- no-store-wrapper start -->
 <section class="no-store-wrapper mb-3 mt-5 pt-5" style="display: none;">
    <div class="container">
@@ -2923,94 +2435,6 @@ document.addEventListener('DOMContentLoaded', function() {
 @include('frontend.prakash.image')
 
 
-<<<<<<< HEAD
-
-
-
-
-
-<div id="videoContainerX9a72" class="pb-2">
-  <section id="videoSectionX9a72">
-    <video
-      id="videoPlayerX9a72"
-      autoplay
-      muted
-      loop
-      playsinline>
-      <source src="https://res.cloudinary.com/dpqnudpkj/video/upload/v1772284042/chef_2_2_zlak1y.mp4" type="video/mp4">
-    </video>
-  </section>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<section class="how-it-works how-it-works-padding-class" id= "how-it-works-section-id">
-
-    <!-- Header -->
-    <div class="how-it-works__header">
-      <h2 class="how-it-works__heading">How It Works</h2>
-      <h3 class="how-it-works__subheading">
-        A simple three-step process to get you started quickly and easily
-      </h3>
-    </div>
-
-    <!-- Cards -->
-    <article class="how-it-works__cards">
-
-      <div class="how-it-works__card">
-        <div class="how-it-works__icon">
-          <img src="https://res.cloudinary.com/ddqdhpdq0/image/upload/v1772534693/lens-svgrepo-com_1_bq1odp.png" alt="Search icon">
-        </div>
-        <div class="how-it-works__text">
-          <h3 class="how-it-works__card-title">Search &amp; Discover</h3>
-          <p class="how-it-works__card-info">
-            Browse through our wide range of services and find exactly what you need with our powerful search tools.
-          </p>
-        </div>
-      </div>
-
-      <div class="how-it-works__card">
-        <div class="how-it-works__icon">
-          <img src="https://res.cloudinary.com/ddqdhpdq0/image/upload/v1772534488/lightning-bolt-black-shape-svgrepo-com_zhc4bb.png" alt="Book icon" style = "z-index: 10;">
-        </div>
-        <div class="how-it-works__text">
-          <h3 class="how-it-works__card-title">Book Instantly</h3>
-          <p class="how-it-works__card-info">
-            Choose your preferred time slot and confirm your booking in just a few clicks with zero hassle.
-          </p>
-        </div>
-      </div>
-
-      <div class="how-it-works__card">
-        <div class="how-it-works__icon">
-          <img src="https://img.icons8.com/ios-filled/50/ffffff/star.png" alt="Enjoy icon">
-        </div>
-        <div class="how-it-works__text">
-          <h3 class="how-it-works__card-title">Enjoy the Service</h3>
-          <p class="how-it-works__card-info">
-            Sit back and relax while our verified professionals take care of everything for you seamlessly.
-          </p>
-        </div>
-      </div>
-
-    </article>
-
-  </section>
-=======
->>>>>>> origin/demo_production_onboard
 
 
 

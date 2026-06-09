@@ -46,8 +46,12 @@ class AppServiceProvider extends ServiceProvider
 
         Paginator::useBootstrap();
 
-        // Skip database operations for local environment during bootstrap
-        if (env('APP_ENV') === 'local') {
+        // Skip the heavy DB-backed view sharing during console/bootstrap (artisan
+        // commands, migrations) where no views render and tables may not yet
+        // exist. HTTP requests still fall through so frontend/store views get the
+        // shared vars (client_preference_detail, client_head, favicon, ...) they
+        // rely on, in every environment including local.
+        if ($this->app->runningInConsole()) {
             return;
         }
 
