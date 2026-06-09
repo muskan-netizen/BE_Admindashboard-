@@ -23,6 +23,7 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 @endsection
 @section('cssnew')
 <style>
+<<<<<<< HEAD
 /* ── Banner wrapper ── */
 .home-slider-wrapper {
     position: relative;
@@ -31,6 +32,175 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
     /* padding-top: 50px; */
 }
 #home-slider-id{
+=======
+/* ====================================================
+   URBAN COMPANY STYLE — GLOBAL DESIGN SYSTEM
+   ==================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --uc-purple:       #663399;
+  --uc-purple-hover: #4e2577;
+  --uc-purple-light: #f5eeff;
+  --uc-dark:         #1a1a1a;
+  --uc-gray:         #717171;
+  --uc-gray-light:   #f7f7f7;
+  --uc-border:       #e8e8e8;
+  --uc-white:        #ffffff;
+  --uc-star:         #f5a623;
+  --uc-green:        #02bd7a;
+  --uc-shadow-sm:    0 2px 8px rgba(0,0,0,.07);
+  --uc-shadow-md:    0 4px 18px rgba(0,0,0,.10);
+  --uc-shadow-hover: 0 8px 30px rgba(0,0,0,.14);
+  --uc-radius:       14px;
+  --uc-radius-sm:    8px;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  background: #fff;
+  color: var(--uc-dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Section wrappers ── */
+.suppliers-section,
+section.container-fluid.mb-0,
+section.container.mb-0 {
+  padding: 28px 20px !important;
+}
+
+/* ── Section headings UC-style ── */
+.h2-heading {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  color: #1a1a1a !important;
+  letter-spacing: -.3px !important;
+  margin: 0 !important;
+  line-height: 1.3 !important;
+}
+
+.top-heading,
+.al_top_heading {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 18px !important;
+  padding: 0 !important;
+}
+
+.top-heading a,
+.al_top_heading a {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--uc-purple) !important;
+  text-decoration: none !important;
+  letter-spacing: .1px !important;
+}
+
+.top-heading a:hover,
+.al_top_heading a:hover {
+  color: var(--uc-purple-hover) !important;
+  text-decoration: underline !important;
+}
+
+/* ── UC Vendor card ── */
+.al_custom_vendors_sec {
+  padding: 6px !important;
+}
+
+.al_custom_vendors_sec .suppliers-box {
+  border-radius: var(--uc-radius) !important;
+  overflow: hidden !important;
+  background: var(--uc-white) !important;
+  box-shadow: var(--uc-shadow-sm) !important;
+  border: 1px solid var(--uc-border) !important;
+  transition: box-shadow .22s ease, transform .22s ease !important;
+  display: block !important;
+}
+
+.al_custom_vendors_sec .suppliers-box:hover {
+  box-shadow: var(--uc-shadow-hover) !important;
+  transform: translateY(-3px) !important;
+  border-color: #d4b3f0 !important;
+}
+
+.al_custom_vendors_sec .suppliers-img-outer {
+  background: var(--uc-gray-light) !important;
+  overflow: hidden !important;
+  border-bottom: 1px solid var(--uc-border) !important;
+}
+
+.al_custom_vendors_sec .supplier-rating h6 {
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  color: #1a1a1a !important;
+  margin: 0 0 2px !important;
+}
+
+/* ── UC Product card ── */
+.product-card-box {
+  border-radius: var(--uc-radius) !important;
+  overflow: hidden !important;
+  background: var(--uc-white) !important;
+  box-shadow: var(--uc-shadow-sm) !important;
+  border: 1px solid var(--uc-border) !important;
+  transition: box-shadow .22s ease, transform .22s ease !important;
+  margin: 6px !important;
+}
+
+.product-card-box:hover {
+  box-shadow: var(--uc-shadow-hover) !important;
+  transform: translateY(-3px) !important;
+  border-color: #d4b3f0 !important;
+}
+
+.card_title,
+.product-card-box h6 {
+  font-weight: 600 !important;
+  color: #1a1a1a !important;
+  font-size: 13.5px !important;
+}
+
+/* ── Rating badge UC-style ── */
+.rating-number {
+  background: #fff8e7 !important;
+  color: #b7791f !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  padding: 2px 7px !important;
+  border-radius: 20px !important;
+  border: 1px solid #f5e4b0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+}
+
+/* ── UC Button style ── */
+.btn-solid {
+  background: var(--uc-purple) !important;
+  border-color: var(--uc-purple) !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  letter-spacing: .2px !important;
+  transition: background .18s, transform .18s !important;
+}
+
+.btn-solid:hover {
+  background: var(--uc-purple-hover) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ── Banner wrapper ── */
+.home-slider-wrapper {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+#home-slider-id {
+>>>>>>> origin/demo_production_onboard
   padding-top: 50px;
 }
  
@@ -81,6 +251,7 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
     text-decoration: none;
 }
  
+<<<<<<< HEAD
 /* Desktop banner: 1920 × 500 */
 .home-slider-wrapper .home-banner-carousel.is-desktop .banner-img-outer {
     aspect-ratio: 1920 / 500;
@@ -89,6 +260,16 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 /* Mobile banner: 400 × 150 */
 .home-slider-wrapper .home-banner-carousel.is-mobile .banner-img-outer {
     aspect-ratio: 400 / 150;
+=======
+/* Desktop banner: 1920 × 700 */
+.home-slider-wrapper .home-banner-carousel.is-desktop .banner-img-outer {
+    aspect-ratio: 1920 / 700;
+}
+ 
+/* Mobile banner: 400 × 250 */
+.home-slider-wrapper .home-banner-carousel.is-mobile .banner-img-outer {
+    aspect-ratio: 400 / 250;
+>>>>>>> origin/demo_production_onboard
 }
  
 /* ── Banner image ── */
@@ -338,8 +519,11 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 
 
 
+<!-- /////////////// hero banner -->
 
+<section class="home-slider-wrapper" id="home-slider-id">
 
+<<<<<<< HEAD
 <section class="home-slider-wrapper" id="home-slider-id">
 
 	<div class="home-slider-banner-shell">
@@ -351,12 +535,36 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 					 <a class="banner-img-outer" href="{{$url??'#'}}" target="_blank" rel="noopener noreferrer">
                         <link rel="preload" as="image" href="{{ get_file_path($banner->image,'IMG_URL1','1920','500') }}" />
 						<img alt="" title="" class="lazyload banner-img" src="{{ get_file_path($banner->image,'IMG_URL1','1920','500') }}" data-src="{{ get_file_path($banner->image,'IMG_URL1','1920','500') }}">
+=======
+	<div class="home-slider-banner-shell">
+		<div id="myCarousel" class="home-banner-carousel is-desktop al_desktop_banner" data-banner-carousel>
+			<div class="home-banner-track" data-banner-track>
+				<div class="home-banner-slide">
+					<a class="banner-img-outer" href="#">
+						<img alt="Chef cooking" class="lazyload banner-img" src="https://images.pexels.com/photos/2290753/pexels-photo-2290753.jpeg?auto=compress&cs=tinysrgb&w=1920" data-src="https://images.pexels.com/photos/2290753/pexels-photo-2290753.jpeg?auto=compress&cs=tinysrgb&w=1920">
+>>>>>>> origin/demo_production_onboard
 					</a>
-					</div>
-				@endforeach
-
+				</div>
+				<div class="home-banner-slide">
+					<a class="banner-img-outer" href="#">
+						<img alt="Restaurant Interior" class="lazyload banner-img" src="https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=1920" data-src="https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=1920">
+					</a>
+				</div>
+				<div class="home-banner-slide">
+					<a class="banner-img-outer" href="#">
+						<img alt="Commercial Kitchen" class="lazyload banner-img" src="https://images.pexels.com/photos/333850/pexels-photo-333850.jpeg?auto=compress&cs=tinysrgb&w=1920" data-src="https://images.pexels.com/photos/333850/pexels-photo-333850.jpeg?auto=compress&cs=tinysrgb&w=1920">
+					</a>
+				</div>
+				<div class="home-banner-slide">
+					<a class="banner-img-outer" href="#">
+						<img alt="Chef Plating" class="lazyload banner-img" src="https://images.pexels.com/photos/887827/pexels-photo-887827.jpeg?auto=compress&cs=tinysrgb&w=1920" data-src="https://images.pexels.com/photos/887827/pexels-photo-887827.jpeg?auto=compress&cs=tinysrgb&w=1920">
+					</a>
+				</div>
 			</div>
+<<<<<<< HEAD
 			@if(count($banners) > 1)
+=======
+>>>>>>> origin/demo_production_onboard
 			<button type="button" class="home-banner-nav prev" data-banner-prev aria-label="{{__('Previous')}}">
 				<span aria-hidden="true">&#8249;</span>
 			</button>
@@ -364,11 +572,15 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 				<span aria-hidden="true">&#8250;</span>
 			</button>
 			<div class="home-banner-dots" data-banner-dots></div>
+<<<<<<< HEAD
 			@endif
+=======
+>>>>>>> origin/demo_production_onboard
 		</div>
 
 		<div id="myMobileCarousel" class="home-banner-carousel is-mobile al_mobile_banner" data-banner-carousel data-no-slick="true">
 			<div class="home-banner-track" data-banner-track>
+<<<<<<< HEAD
 				@foreach($mobile_banners as $key => $banner)
 					@php $url=''; if($banner->link=='category'){if(!empty($banner->category_slug)){$url=route('categoryDetail', $banner->category_slug);}}else if($banner->link=='vendor'){if(!empty($banner->vendor_slug)){$url=route('vendorDetail', $banner->vendor_slug);}}else if($banner->link=='url'){if($banner->link_url !=null){$url=$banner->link_url;}}@endphp
 					<div class="home-banner-slide">
@@ -381,6 +593,29 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 
 			</div>
 			@if(count($mobile_banners) > 1)
+=======
+				<div class="home-banner-slide">
+					<a class="banner-img-outer" href="#">
+						<img alt="Chef cooking" class="lazyload banner-img" src="https://images.pexels.com/photos/2290753/pexels-photo-2290753.jpeg?auto=compress&cs=tinysrgb&w=800" data-src="https://images.pexels.com/photos/2290753/pexels-photo-2290753.jpeg?auto=compress&cs=tinysrgb&w=800">
+					</a>
+				</div>
+				<div class="home-banner-slide">
+					<a class="banner-img-outer" href="#">
+						<img alt="Restaurant Interior" class="lazyload banner-img" src="https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=800" data-src="https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=800">
+					</a>
+				</div>
+				<div class="home-banner-slide">
+					<a class="banner-img-outer" href="#">
+						<img alt="Commercial Kitchen" class="lazyload banner-img" src="https://images.pexels.com/photos/333850/pexels-photo-333850.jpeg?auto=compress&cs=tinysrgb&w=800" data-src="https://images.pexels.com/photos/333850/pexels-photo-333850.jpeg?auto=compress&cs=tinysrgb&w=800">
+					</a>
+				</div>
+				<div class="home-banner-slide">
+					<a class="banner-img-outer" href="#">
+						<img alt="Chef Plating" class="lazyload banner-img" src="https://images.pexels.com/photos/887827/pexels-photo-887827.jpeg?auto=compress&cs=tinysrgb&w=800" data-src="https://images.pexels.com/photos/887827/pexels-photo-887827.jpeg?auto=compress&cs=tinysrgb&w=800">
+					</a>
+				</div>
+			</div>
+>>>>>>> origin/demo_production_onboard
 			<button type="button" class="home-banner-nav prev" data-banner-prev aria-label="{{__('Previous')}}">
 				<span aria-hidden="true">&#8249;</span>
 			</button>
@@ -388,7 +623,10 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 				<span aria-hidden="true">&#8250;</span>
 			</button>
 			<div class="home-banner-dots" data-banner-dots></div>
+<<<<<<< HEAD
 			@endif
+=======
+>>>>>>> origin/demo_production_onboard
    </div>
 
 	</div>
@@ -413,11 +651,16 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 
 <style>
 /* ===============================
+<<<<<<< HEAD
    PREMIUM CATEGORY UI
+=======
+   URBAN COMPANY — CATEGORY UI
+>>>>>>> origin/demo_production_onboard
 =============================== */
 #premiumCategoryUI {
   width: 100%;
   background: #ffffff;
+<<<<<<< HEAD
   padding: 12px 10px;
 }
 
@@ -433,10 +676,52 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
   display: flex;
   justify-content: center;
   text-align: center;
+=======
+  padding: 40px 20px 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+#premiumCategoryUI .popular-categories-header {
+  margin-bottom: 30px;
+  padding-left: 10px;
+}
+
+#premiumCategoryUI .popular-categories-header h2 {
+  font-weight: 800;
+  font-size: 32px;
+  color: #111b2b;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+}
+
+#premiumCategoryUI .popular-categories-header p {
+  color: #6c757d;
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Grid Layout */
+#premiumCategoryUI .cat-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px 20px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Category Card */
+#premiumCategoryUI .al_main_category {
+  display: flex;
+  flex-direction: column;
+  width: 180px;
+>>>>>>> origin/demo_production_onboard
 }
 
 /* Clickable Area */
 #premiumCategoryUI .al_main_category > a {
+<<<<<<< HEAD
   width: 100%;
   padding: 10px 6px;
   border-radius: 14px;
@@ -478,10 +763,61 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
   height: 100%;
   object-fit: contain;
   padding: 12px;
+=======
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  width: 100%;
+  color: #1a1a1a;
+}
+
+/* White card with border */
+#premiumCategoryUI .nav-cate-img {
+  width: 160px;
+  height: 100px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #eaebf0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  transition: all .2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+/* Hover Effect */
+#premiumCategoryUI .al_main_category > a:hover .nav-cate-img {
+  border-color: #d1d5db;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transform: translateY(-2px);
+}
+
+/* Circle inside white card */
+#premiumCategoryUI .nav-cate-img-inner {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #f4f7fb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Image */
+#premiumCategoryUI .nav-cate-img-inner img {
+  width: 34px !important;
+  height: 34px !important;
+  object-fit: contain;
+  padding: 0 !important;
+>>>>>>> origin/demo_production_onboard
 }
 
 /* Category Name */
 #premiumCategoryUI .alCategoryName {
+<<<<<<< HEAD
   margin-top: 6px;
   font-size: 12px;
   font-weight: 600;
@@ -501,11 +837,31 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 
 #premiumCategoryUI a.current_category .alCategoryName {
   color: #4a90d9;
+=======
+  font-size: 15px !important;
+  font-weight: 700;
+  color: #111b2b;
+  line-height: 1.4;
+  text-align: center;
+  word-break: break-word;
+  margin-top: 6px;
+}
+
+/* Active Category */
+#premiumCategoryUI a.current_category .nav-cate-img {
+  border-color: var(--uc-purple);
+  box-shadow: 0 4px 12px rgba(102, 51, 153, 0.1);
+}
+
+#premiumCategoryUI a.current_category .alCategoryName {
+  color: var(--uc-purple);
+>>>>>>> origin/demo_production_onboard
 }
 
 /* ===============================
    RESPONSIVE
 =============================== */
+<<<<<<< HEAD
 
 /* Tablet */
 @media (max-width: 991px) {
@@ -802,6 +1158,74 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 
 
 
+=======
+@media (max-width: 991px) {
+  #premiumCategoryUI .cat-grid { gap: 15px 10px; justify-content: center; }
+  #premiumCategoryUI .al_main_category { width: 130px; }
+  #premiumCategoryUI .nav-cate-img { width: 120px; height: 70px; }
+  #premiumCategoryUI .nav-cate-img-inner { width: 44px; height: 44px; }
+  #premiumCategoryUI .nav-cate-img-inner img { width: 26px !important; height: 26px !important; }
+}
+
+@media (max-width: 600px) {
+  #premiumCategoryUI { padding: 30px 10px 15px; }
+  #premiumCategoryUI .popular-categories-header h2 { font-size: 22px; }
+  #premiumCategoryUI .popular-categories-header p { font-size: 13px; }
+  #premiumCategoryUI .al_main_category { width: 100px; }
+  #premiumCategoryUI .nav-cate-img { width: 95px; height: 60px; border-radius: 10px; margin-bottom: 8px; }
+  #premiumCategoryUI .nav-cate-img-inner { width: 38px; height: 38px; }
+  #premiumCategoryUI .nav-cate-img-inner img { width: 22px !important; height: 22px !important; }
+  #premiumCategoryUI .alCategoryName { font-size: 11px !important; }
+}
+
+@media (max-width: 380px) {
+  #premiumCategoryUI .al_main_category { width: 85px; }
+  #premiumCategoryUI .nav-cate-img { width: 80px; height: 56px; }
+  #premiumCategoryUI .nav-cate-img-inner { width: 34px; height: 34px; }
+  #premiumCategoryUI .nav-cate-img-inner img { width: 20px !important; height: 20px !important; }
+  #premiumCategoryUI .alCategoryName { font-size: 10px !important; }
+}
+
+/* ── Outer section ── */
+.space-slider-homeric {
+  width: 100%;
+  background: #fff;
+  margin: 0;
+  margin-bottom: 10px;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.space-slider-homeric .cat-row { 
+  width: 100%; 
+  margin: 0 auto; 
+  padding: 0; 
+  max-width: 1200px;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.cat-grid {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.al_main_category {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.al_main_category_list,
+.al_main_category_sub_list { display: none !important; }
+
+/* Main Container */
+
+
+
+
+>>>>>>> origin/demo_production_onboard
  #videoContainerX9a72 {
   width: 100%;
   overflow: hidden;
@@ -847,68 +1271,45 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
     min-height: 200px;
   }
 }
-.space-slider-homeric{
-  margin-bottom: 10px;
-}
-.al_main_category {
-  max-width: 100%;
-  box-sizing: border-box;
-}
-.space-slider-homeric,
-.cat-row,
-.cat-grid {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-  box-sizing: border-box;
-}
-
 </style>
 
 {{-- ── BLADE TEMPLATE — no Bootstrap classes ── --}}
-<div class="space-slider-homeric" style = "padding: 10px 10px;" >
-  <div class="cat-row" >
-    <ul class="cat-grid" >
+<div class="space-slider-homeric" style="padding: 10px 10px;">
+  <div class="cat-row">
+    <div class="popular-categories-header">
+      <h2>POPULAR CATEGORIES</h2>
+      <p>Choose your service category and connect with top-rated professionals near you.</p>
+    </div>
+    <ul class="cat-grid">
 
       @foreach($navCategories as $cate)
         @if($cate['name'])
-          <li class="al_main_category" style = "padding: 0px; margin: 0px; overflow: hidden;">
+          <li class="al_main_category" style="padding: 0px; margin: 0px; overflow: hidden;">
 
             <a href="{{ route('categoryDetail', $cate['slug']) }}"
                class="{{ isset($category) && $category->slug == $cate['slug'] ? 'current_category' : '' }}">
 
               @if($client_preference_detail->show_icons == 1 && (\Request::route()->getName() == 'userHome' || \Request::route()->getName() == 'categoryDetail') || \Request::route()->getName() == 'homeTest')
                 <div class="nav-cate-img {{ \Request::route()->getName() == 'userHome' ? '' : 'activ_nav' }}">
-                  <img
-                    class="lazyload"
-                    src="{{ $cate['icon']['image_fit'] }}78/78{{ $cate['icon']['image_path'] }}"
-                    data-src="{{ $cate['icon']['image_fit'] }}78/78{{ $cate['icon']['image_path'] }}"
-                    data-icon="{{ $cate['icon']['image_fit'] }}200/200{{ $cate['icon']['image_path'] }}"
-                    data-icon_two="{{ !is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path'] }}"
-                    alt="{{ $cate['name'] }}"
-                    width="78"
-                    height="78"
-                    onmouseover="changeImage(this,1)"
-                    onmouseout="changeImage(this,0)"
-                    style="padding: 0px; margin: 0px; background-color: white"
-                  >
-                  <!-- <img
-                    class="blur-up lazyload"
-                    src="https://res.cloudinary.com/ddqdhpdq0/image/upload/v1772695084/png_222_to76ze.png"
-                    data-src="https://res.cloudinary.com/ddqdhpdq0/image/upload/v1772695084/png_222_to76ze.png"
-                    data-icon="https://res.cloudinary.com/ddqdhpdq0/image/upload/v1772695084/png_222_to76ze.png"
-                    data-icon_two="https://res.cloudinary.com/ddqdhpdq0/image/upload/v1772695084/png_222_to76ze.png"
-                    alt="{{ $cate['name'] }}" 
-                    width="78"
-                    height="78"
-                    onmouseover="changeImage(this,1)"
-                    onmouseout="changeImage(this,0)"
-                    style="padding: 0px; margin: 0px;"
-                  > -->
+                  <div class="nav-cate-img-inner">
+                    <img
+                      class="lazyload"
+                      src="{{ $cate['icon']['image_fit'] }}78/78{{ $cate['icon']['image_path'] }}"
+                      data-src="{{ $cate['icon']['image_fit'] }}78/78{{ $cate['icon']['image_path'] }}"
+                      data-icon="{{ $cate['icon']['image_fit'] }}200/200{{ $cate['icon']['image_path'] }}"
+                      data-icon_two="{{ !is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path'] }}"
+                      alt="{{ $cate['name'] }}"
+                      width="78"
+                      height="78"
+                      onmouseover="changeImage(this,1)"
+                      onmouseout="changeImage(this,0)"
+                      style="padding: 0px; margin: 0px; background-color: transparent;"
+                    >
+                  </div>
                 </div>
               @endif
 
-              <span class="alCategoryName" style= "width: 100%; padding: 0px; margin: 0px;">
+              <span class="alCategoryName" style="width: 100%; padding: 0px; margin: 0px;">
                 {{ $cate['name'] }}
               </span>
 
@@ -1040,6 +1441,7 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
    </section>  -->
 @endif
 
+<<<<<<< HEAD
 
 
 
@@ -1060,7 +1462,1200 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
       <source src="https://res.cloudinary.com/dpqnudpkj/video/upload/v1772285315/IMG_5947_1_s0qnml.mp4" type="video/mp4">
     </video>
   </section>
+=======
+<!-- ===============================
+     NEW HOW IT WORKS SECTION
+     =============================== -->
+<section class="how-it-works-new-section">
+  <div class="how-it-works-container">
+    <div class="how-it-works-header">
+      <h2>HOW IT WORKS</h2>
+      <p>A simple and reliable process from discovery to service completion.</p>
+    </div>
+    
+    <div class="how-it-works-grid">
+      <!-- Card 1 -->
+      <div class="hiw-card">
+        <div class="hiw-icon">
+          <img src="https://res.cloudinary.com/ddqdhpdq0/image/upload/v1772534693/lens-svgrepo-com_1_bq1odp.png" alt="Search icon">
+        </div>
+        <h3>Search & Discover</h3>
+        <p>Browse through a wide range of professional services and filter by category, rating, and location.</p>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="hiw-card">
+        <div class="hiw-icon">
+          <img src="https://res.cloudinary.com/ddqdhpdq0/image/upload/v1772534488/lightning-bolt-black-shape-svgrepo-com_zhc4bb.png" alt="Book icon">
+        </div>
+        <h3>Book Instantly</h3>
+        <p>Select your preferred date and time, then confirm your booking with transparent pricing.</p>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="hiw-card">
+        <div class="hiw-icon">
+          <img src="https://photos.app.goo.gl/3y7L1TdzkQ8jHPgL9" alt="Enjoy icon">
+        </div>
+        <h3>Enjoy & Review</h3>
+        <p>Relax while verified professionals handle the work and share your rating after completion.</p>
+      </div>
+    </div>
+    
+    <!-- Big Card -->
+    <div class="hiw-big-card">
+      <div class="hiw-bc-left"></div>
+      <div class="hiw-bc-right">
+        <h3>See how on-demand service works in real life</h3>
+        <p>From instant booking to doorstep delivery, our on-demand workflow keeps everything simple, transparent, and fast. Watch how professionals are assigned, tracked, and completed with quality checks at every step.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.how-it-works-new-section {
+  width: 100%;
+  background-color: #f8f9fa;
+  padding: 60px 20px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+.how-it-works-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.how-it-works-header {
+  margin-bottom: 40px;
+}
+
+.how-it-works-header h2 {
+  font-weight: 800;
+  font-size: 32px;
+  color: #111b2b;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+}
+
+.how-it-works-header p {
+  color: #6c757d;
+  font-size: 16px;
+  margin: 0;
+}
+
+.how-it-works-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.hiw-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+  border: 1px solid #eaebf0;
+}
+
+.hiw-icon {
+  width: 48px;
+  height: 48px;
+  background-color: #111b2b;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.hiw-icon img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+}
+
+.hiw-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111b2b;
+  margin-bottom: 12px;
+}
+
+.hiw-card p {
+  font-size: 15px;
+  color: #6c757d;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Big Card */
+.hiw-big-card {
+  display: flex;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+  border: 1px solid #eaebf0;
+  min-height: 300px;
+}
+
+.hiw-bc-left {
+  flex: 0 0 50%;
+  background-color: #111b2b;
+}
+
+.hiw-bc-right {
+  flex: 0 0 50%;
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hiw-bc-right h3 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #111b2b;
+  margin-bottom: 16px;
+  line-height: 1.3;
+}
+
+.hiw-bc-right p {
+  font-size: 16px;
+  color: #6c757d;
+  line-height: 1.6;
+  margin: 0;
+}
+
+@media (max-width: 991px) {
+  .how-it-works-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .hiw-big-card {
+    flex-direction: column;
+  }
+  .hiw-bc-left {
+    height: 250px;
+  }
+  .hiw-bc-right {
+    padding: 32px;
+  }
+}
+
+@media (max-width: 767px) {
+  .how-it-works-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<!-- ===============================
+     WHY CUSTOMERS CHOOSE US
+     =============================== -->
+<section class="why-choose-us-section">
+  <div class="why-choose-us-container">
+    <div class="wcu-left">
+      <h2>WHY CUSTOMERS CHOOSE US</h2>
+      <p class="wcu-subtitle">We combine trusted professionals, verified reviews, transparent pricing, and premium customer support.</p>
+      
+      <ul class="wcu-list">
+        <li>
+          <span class="wcu-check">✓</span>
+          <span>Verified providers with quality checks</span>
+        </li>
+        <li>
+          <span class="wcu-check">✓</span>
+          <span>Real-time order and booking updates</span>
+        </li>
+        <li>
+          <span class="wcu-check">✓</span>
+          <span>Secure checkout and easy support</span>
+        </li>
+        <li>
+          <span class="wcu-check">✓</span>
+          <span>Fast reschedule and cancellation options</span>
+        </li>
+      </ul>
+    </div>
+    <div class="wcu-right">
+      <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Customer Service">
+    </div>
+  </div>
+</section>
+
+<style>
+.why-choose-us-section {
+  width: 100%;
+  background-color: #ffffff;
+  padding: 80px 20px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+.why-choose-us-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+
+.wcu-left {
+  flex: 1;
+}
+
+.wcu-left h2 {
+  font-weight: 800;
+  font-size: 32px;
+  color: #111b2b;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+}
+
+.wcu-subtitle {
+  color: #6c757d;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.wcu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.wcu-list li {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.wcu-check {
+  color: #10b981;
+  font-weight: 800;
+  margin-right: 12px;
+  font-size: 16px;
+}
+
+.wcu-right {
+  flex: 1;
+}
+
+.wcu-right img {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 991px) {
+  .why-choose-us-container {
+    flex-direction: column;
+    gap: 40px;
+  }
+  .wcu-left, .wcu-right {
+    width: 100%;
+  }
+}
+</style>
+
+<!-- ===============================
+     TOP PROVIDERS SECTION
+     =============================== -->
+<section class="top-providers-section">
+  <div class="top-providers-container">
+    <div class="tp-header">
+      <h2>TOP PROVIDERS</h2>
+      <p>Highly rated professionals delivering quality service at your doorstep.</p>
+    </div>
+
+    <div class="tp-grid" id="providersGrid">
+      @php
+        $dummyProviders = [
+          [
+            'image' => 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80',
+            'category' => 'Electrician',
+            'title' => 'PowerPro Electric',
+            'description' => 'Certified electricians handling wiring, repairs, and installations with safety and efficiency guaranteed.',
+            'rating' => '4.5',
+            'reviews' => '220'
+          ],
+          [
+            'image' => 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=600&q=80',
+            'category' => 'Deep Cleaning',
+            'title' => 'CleanHub Pro',
+            'description' => 'Deep home and apartment cleaning with trained professionals and eco-safe products for hygiene.',
+            'rating' => '4.0',
+            'reviews' => '184'
+          ],
+          [
+            'image' => 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=600&q=80',
+            'category' => 'Technician',
+            'title' => 'FixPro Technicians',
+            'description' => 'Expert repair and maintenance services delivered by skilled professionals with precision and care.',
+            'rating' => '4.8',
+            'reviews' => '161'
+          ],
+          [
+            'image' => 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80',
+            'category' => 'Pest Control',
+            'title' => 'SafeGuard Pest Control',
+            'description' => 'Effective pest removal solutions using safe methods to protect your home and ensure hygiene.',
+            'rating' => '4.8',
+            'reviews' => '195'
+          ],
+          [
+            'image' => 'https://images.unsplash.com/photo-1585435421671-0c16764628ce?auto=format&fit=crop&w=600&q=80',
+            'category' => 'Plumber',
+            'title' => 'Prime Plumbers',
+            'description' => 'Reliable plumbing services for leak repairs, pipe installations, and general maintenance.',
+            'rating' => '4.6',
+            'reviews' => '142'
+          ],
+          [
+            'image' => 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80',
+            'category' => 'Painter',
+            'title' => 'Pro Paint Services',
+            'description' => 'Transform your space with high-quality interior and exterior painting services by experts.',
+            'rating' => '4.9',
+            'reviews' => '88'
+          ]
+        ];
+        
+        // If a real variable from the backend is provided, use it instead.
+        $topProviders = isset($top_providers_data) && count($top_providers_data) > 0 ? $top_providers_data : $dummyProviders;
+      @endphp
+
+      @foreach($topProviders as $index => $provider)
+      <div class="tp-card provider-item" {!! $index >= 3 ? 'style="display: none;"' : '' !!}>
+        <div class="tp-img-wrapper">
+          <img src="{{ $provider['image'] }}" alt="{{ $provider['title'] }}">
+        </div>
+        <div class="tp-content">
+          <span class="tp-category">{{ $provider['category'] }}</span>
+          <h3>{{ $provider['title'] }}</h3>
+          <p>{{ $provider['description'] }}</p>
+          <div class="tp-rating">
+            <span class="stars">
+              @for($i = 1; $i <= 5; $i++)
+                @if($i <= (int)$provider['rating'])
+                  ★
+                @else
+                  ☆
+                @endif
+              @endfor
+            </span> 
+            <span class="rating-text">{{ $provider['rating'] }} ({{ $provider['reviews'] }} reviews)</span>
+          </div>
+        </div>
+      </div>
+      @endforeach
+
+    </div>
+
+    <div class="tp-action">
+      <button id="showMoreProvidersBtn" class="tp-btn">Show More <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+    </div>
+  </div>
+</section>
+
+<style>
+.top-providers-section {
+  width: 100%;
+  background-color: #f8f9fa;
+  padding: 80px 20px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+.top-providers-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tp-header {
+  margin-bottom: 40px;
+}
+
+.tp-header h2 {
+  font-weight: 800;
+  font-size: 32px;
+  color: #111b2b;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+}
+
+.tp-header p {
+  color: #6c757d;
+  font-size: 16px;
+  margin: 0;
+}
+
+.tp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.tp-card {
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+  border: 1px solid #eaebf0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tp-img-wrapper {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+}
+
+.tp-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.tp-card:hover .tp-img-wrapper img {
+  transform: scale(1.05);
+}
+
+.tp-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.tp-category {
+  font-size: 12px;
+  color: #6c757d;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.tp-content h3 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #111b2b;
+  margin-bottom: 12px;
+}
+
+.tp-content p {
+  font-size: 14px;
+  color: #6c757d;
+  line-height: 1.6;
+  margin: 0 0 20px 0;
+  flex: 1;
+}
+
+.tp-rating {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+}
+
+.tp-rating .stars {
+  color: #f59e0b;
+  margin-right: 8px;
+  letter-spacing: 2px;
+}
+
+.tp-rating .rating-text {
+  color: #6c757d;
+  font-weight: 600;
+}
+
+.tp-action {
+  text-align: center;
+}
+
+.tp-btn {
+  background-color: #e5e7eb;
+  color: #4b5563;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 24px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.tp-btn:hover {
+  background-color: #d1d5db;
+}
+
+@media (max-width: 991px) {
+  .tp-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .tp-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const showMoreBtn = document.getElementById('showMoreProvidersBtn');
+  const providerItems = document.querySelectorAll('.provider-item');
+  
+  if(showMoreBtn) {
+    showMoreBtn.addEventListener('click', function() {
+      providerItems.forEach(function(item) {
+        item.style.display = 'flex';
+      });
+      showMoreBtn.style.display = 'none';
+    });
+  }
+});
+</script>
+
+<!-- ===============================
+     RESTAURANT REPAIR & INSTALLATION
+     =============================== -->
+<section class="rest-repair-section">
+  <div class="rest-repair-container">
+    <div class="rr-header">
+      <h2>Restaurant repair & installation</h2>
+      <!-- <a href="#" class="rr-see-all">See all</a> -->
+    </div>
+
+    <div class="rr-carousel-wrapper">
+      <button class="rr-nav rr-prev" aria-label="Previous">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      
+      <div class="rr-track" id="rrTrack">
+        <!-- Card 1 -->
+        <div class="rr-card">
+          <div class="rr-img">
+            <img src="https://images.pexels.com/photos/2290753/pexels-photo-2290753.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Kitchen equipment repair">
+          </div>
+          <div class="rr-info">
+            <h4>Kitchen equipment repair</h4>
+            <p class="rr-meta"><span class="rr-star">★</span> 4.73 <span class="rr-dot">•</span> <span class="rr-instant">⚡ Instant</span></p>
+            <p class="rr-price">₹149</p>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="rr-card">
+          <div class="rr-img">
+            <img src="https://images.pexels.com/photos/333850/pexels-photo-333850.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Exhaust fan repair">
+          </div>
+          <div class="rr-info">
+            <h4>Exhaust fan repair</h4>
+            <p class="rr-meta"><span class="rr-star">★</span> 4.74</p>
+            <p class="rr-price">₹99</p>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="rr-card">
+          <div class="rr-img">
+            <img src="https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Commercial plumbing">
+          </div>
+          <div class="rr-info">
+            <h4>Commercial plumbing</h4>
+            <p class="rr-meta"><span class="rr-star">★</span> 4.79</p>
+            <p class="rr-price">₹199</p>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="rr-card">
+          <div class="rr-img">
+            <img src="https://images.pexels.com/photos/1036857/pexels-photo-1036857.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Switchboard repair & replacement">
+          </div>
+          <div class="rr-info">
+            <h4>Switchboard repair & replacement</h4>
+            <p class="rr-meta"><span class="rr-star">★</span> 4.83 <span class="rr-dot">•</span> <span class="rr-instant">⚡ Instant</span></p>
+            <p class="rr-price">₹99</p>
+          </div>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="rr-card">
+          <div class="rr-img">
+            <img src="https://images.pexels.com/photos/1402407/pexels-photo-1402407.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Cold storage repair">
+          </div>
+          <div class="rr-info">
+            <h4>Cold storage repair</h4>
+            <p class="rr-meta"><span class="rr-star">★</span> 4.76</p>
+            <p class="rr-price">₹249</p>
+          </div>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="rr-card">
+          <div class="rr-img">
+            <img src="https://images.pexels.com/photos/3773194/pexels-photo-3773194.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Gas pipeline service">
+          </div>
+          <div class="rr-info">
+            <h4>Gas pipeline service</h4>
+            <p class="rr-meta"><span class="rr-star">★</span> 4.88 <span class="rr-dot">•</span> <span class="rr-instant">⚡ Instant</span></p>
+            <p class="rr-price">₹199</p>
+          </div>
+        </div>
+
+      </div>
+
+      <button class="rr-nav rr-next" aria-label="Next">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<style>
+.rest-repair-section {
+  width: 100%;
+  background-color: #ffffff;
+  padding: 30px 20px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+.rest-repair-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.rr-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.rr-header h2 {
+  font-weight: 800;
+  font-size: 24px;
+  color: #111b2b;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.rr-see-all {
+  padding: 6px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  color: #663399;
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.rr-see-all:hover {
+  background-color: #f8f9fa;
+  border-color: #cbd5e1;
+  color: #4e2577;
+}
+
+.rr-carousel-wrapper {
+  position: relative;
+}
+
+.rr-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 4px 4px 12px 4px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.rr-track::-webkit-scrollbar {
+  display: none;
+}
+
+.rr-card {
+  flex: 0 0 calc(25% - 12px);
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  background: #ffffff;
+  border: 1px solid #eaebf0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rr-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+  border-color: #d4b3f0;
+}
+
+.rr-img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background-color: #f4f5f7;
+}
+
+.rr-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.rr-card:hover .rr-img img {
+  transform: scale(1.05);
+}
+
+.rr-info {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.rr-info h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 6px 0;
+  line-height: 1.3;
+}
+
+.rr-meta {
+  font-size: 13px;
+  color: #6c757d;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rr-star {
+  color: #f5a623;
+}
+
+.rr-instant {
+  color: #02bd7a;
+  font-weight: 600;
+  background: #e6f9f2;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.rr-price {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111b2b;
+  margin: auto 0 0 0;
+}
+
+.rr-nav {
+  position: absolute;
+  top: 35%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  color: #111b2b;
+  transition: all 0.2s ease;
+}
+
+.rr-nav:hover {
+  background: #f8f9fa;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.rr-nav svg {
+  width: 18px;
+  height: 18px;
+}
+
+.rr-prev {
+  left: -18px;
+}
+
+.rr-next {
+  right: -18px;
+}
+
+@media (max-width: 991px) {
+  .rr-card {
+    flex: 0 0 calc(33.333% - 11px);
+  }
+}
+
+@media (max-width: 767px) {
+  .rr-card {
+    flex: 0 0 calc(50% - 8px);
+  }
+  .rr-prev, .rr-next {
+    display: none;
+  }
+  .rr-header h2 {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .rr-card {
+    flex: 0 0 calc(85% - 10px);
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const track = document.getElementById('rrTrack');
+  const prevBtn = document.querySelector('.rr-prev');
+  const nextBtn = document.querySelector('.rr-next');
+
+  if(track && prevBtn && nextBtn) {
+    const scrollAmount = 300; // Adjust based on card width + gap
+
+    prevBtn.addEventListener('click', () => {
+      track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+
+    nextBtn.addEventListener('click', () => {
+      track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+  }
+});
+</script>
+
+<!-- ===============================
+     FULL WIDTH VIDEO SECTION
+     =============================== -->
+<div class="full-width-video-container">
+  <video autoplay muted loop playsinline class="restocare-chef-video">
+    <source src="https://videos.pexels.com/video-files/3205712/3205712-hd_1920_1080_25fps.mp4" type="video/mp4">
+  </video>
+  <div class="video-overlay">
+    <h2>RestoCare</h2>
+    <p>Premium Restaurant Services & Maintenance</p>
+  </div>
+>>>>>>> origin/demo_production_onboard
 </div>
+
+<style>
+.full-width-video-container {
+  position: relative;
+  width: 100%;
+  height: 60vh;
+  min-height: 400px;
+  overflow: hidden;
+  background-color: #000;
+  margin-bottom: 0;
+}
+
+.restocare-chef-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.6;
+}
+
+.video-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #fff;
+  z-index: 2;
+  width: 100%;
+  padding: 0 20px;
+}
+
+.video-overlay h2 {
+  font-size: 48px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  color: #ffffff;
+}
+
+.video-overlay p {
+  font-size: 20px;
+  font-weight: 500;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  color: #f8f9fa;
+}
+
+@media (max-width: 767px) {
+  .full-width-video-container {
+    height: 40vh;
+  }
+  .video-overlay h2 {
+    font-size: 32px;
+  }
+  .video-overlay p {
+    font-size: 16px;
+  }
+}
+</style>
+
+<!-- ===============================
+     BECOME A SERVICE PARTNER BANNER
+     =============================== -->
+<section class="partner-banner-section">
+  <div class="partner-banner-container">
+    <div class="partner-content">
+      <h2>BECOME A SERVICE PARTNER</h2>
+      <p>Grow your business by listing your services and receiving quality bookings daily.</p>
+    </div>
+    <div class="partner-action">
+      <a href="#" class="partner-btn">Get Started</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===============================
+     TESTIMONIALS SECTION
+     =============================== -->
+<section class="testimonials-section">
+  <div class="testimonials-container">
+    <div class="testimonials-header">
+      <h2>WHAT OUR CUSTOMERS SAY</h2>
+      <p>Real feedback from users who book services daily on our platform.</p>
+    </div>
+    
+    <div class="testimonials-grid">
+      <!-- Card 1 -->
+      <div class="testimonial-card">
+        <div class="testimonial-author">
+          <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Author">
+        </div>
+        <h4>"Excellent Experience"</h4>
+        <p>Booking was smooth and the professional arrived on time. Highly recommended for busy families.</p>
+      </div>
+      <!-- Card 2 -->
+      <div class="testimonial-card">
+        <div class="testimonial-author">
+          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Author">
+        </div>
+        <h4>"Very Convenient"</h4>
+        <p>I found and booked an electrician in under five minutes. The app flow is fast and very clear.</p>
+      </div>
+      <!-- Card 3 -->
+      <div class="testimonial-card">
+        <div class="testimonial-author">
+          <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Author">
+        </div>
+        <h4>"Best Service Quality"</h4>
+        <p>The quality of work was top-notch and support team was quick to respond throughout the process.</p>
+      </div>
+      <!-- Card 4 -->
+      <div class="testimonial-card">
+        <div class="testimonial-author">
+          <img src="https://randomuser.me/api/portraits/men/46.jpg" alt="Author">
+        </div>
+        <h4>"Will Book Again"</h4>
+        <p>Transparent pricing, clean UI, and reliable providers. I already booked my second service.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+/* Partner Banner */
+.partner-banner-section {
+  padding: 40px 20px;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+}
+
+.partner-banner-container {
+  max-width: 1200px;
+  width: 100%;
+  background: linear-gradient(rgba(17, 27, 43, 0.85), rgba(17, 27, 43, 0.95)), url('https://images.unsplash.com/photo-1556761175-5973dc0f32d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+  border-radius: 12px;
+  padding: 40px 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.partner-content h2 {
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.partner-content p {
+  color: #e2e8f0;
+  font-size: 16px;
+  margin-bottom: 0;
+}
+
+.partner-action .partner-btn {
+  background-color: #ff4b68;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 14px 32px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.partner-action .partner-btn:hover {
+  background-color: #e63953;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 75, 104, 0.3);
+  color: #ffffff;
+}
+
+/* Testimonials */
+.testimonials-section {
+  padding: 60px 20px 20px;
+  background-color: #ffffff;
+}
+
+.testimonials-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.testimonials-header {
+  margin-bottom: 40px;
+}
+
+.testimonials-header h2 {
+  font-weight: 800;
+  font-size: 32px;
+  color: #111b2b;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+}
+
+.testimonials-header p {
+  color: #64748b;
+  font-size: 16px;
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.testimonial-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+}
+
+.testimonial-author img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 16px;
+  border: 2px solid #f8f9fa;
+}
+
+.testimonial-card h4 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111b2b;
+  margin-bottom: 12px;
+}
+
+.testimonial-card p {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+@media (max-width: 991px) {
+  .partner-banner-container {
+    flex-direction: column;
+    text-align: center;
+    padding: 30px;
+  }
+  
+  .partner-content {
+    margin-bottom: 24px;
+  }
+  
+  .testimonials-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 575px) {
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .partner-content h2 {
+    font-size: 24px;
+  }
+}
+</style>
+
+
+
+
+
+
+
+
 
 
 
@@ -1163,6 +2758,9 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
       </div>
    @endforeach
    @foreach($homePageLabels as $key => $homePageLabel)
+      @if($homePageLabel->slug == 'featured_products')
+         @continue
+      @endif
       @if($homePageLabel->slug == 'pickup_delivery') @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) @include('frontend.booking.cabbooking-single-module') @endif
       @elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page')
       @elseif($homePageLabel->slug == 'brands')
@@ -1325,6 +2923,7 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
 @include('frontend.prakash.image')
 
 
+<<<<<<< HEAD
 
 
 
@@ -1410,174 +3009,31 @@ src="https://www.facebook.com/tr?id=1150346783738431&ev=PageView&noscript=1"
     </article>
 
   </section>
+=======
+>>>>>>> origin/demo_production_onboard
 
 
 
-<style>
- 
-  #how-it-works-section-id{
-    padding-bottom: 10px;
-  }
 
-    /* ── Section ── */
-    .how-it-works {
-      background-color: #F5F6F6;
-      color: #000000;
-      padding: 12px 16px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      gap: 20px;
-    }
-    
 
-    /* ── Header block ── */
-    .how-it-works__header {
-      /* padding-bottom: 20px; */
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+<!-- Broken video container removed to avoid huge black gap -->
 
-    .how-it-works__heading {
-      text-align: center;
-      font-weight: 600;
-      font-size: 18px;
-      line-height: 1.3;
-    }
 
-    .how-it-works__subheading {
-      color: #616060;
-      text-align: center;
-      max-width: 80%;
-      font-size: 15px;
-      font-weight: 400;
-      margin-top: 6px;
-      line-height: 1.5;
-    }
 
-    /* ── Cards wrapper ── */
-    .how-it-works__cards {
-      width: 100%;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 40px;
-      padding-top: 20px;
-    }
 
-    /* ── Single card ── */
-    .how-it-works__card {
-      position: relative;
-      width: 87%;
-      background: #ffffff;
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      padding: 24px 24px 0px 24px;
-      transition: box-shadow 0.2s ease;
-    }
 
-    .how-it-works__card:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    }
 
-    /* ── Icon block ── */
-    .how-it-works__icon {
-      position: absolute;
-      top: -24px;
-      left: 24px;
-      width: 56px;
-      height: 56px;
-      border-radius: 4px;
-      background-color: #000000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-    }
 
-    .how-it-works__icon img {
-      width: 28px;
-      height: 28px;
-      object-fit: contain;
-      display: block;
-      /* invert so dark icons show on black bg */
-      /* filter: invert(1) brightness(2); */
-    }
 
-    /* ── Text block ── */
-    .how-it-works__text {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 12px;
-      margin-top: 16px;
-    }
 
-    .how-it-works__card-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: #000;
-    }
 
-    .how-it-works__card-info {
-      font-size: 15px;
-      color: #4b5563;
-      line-height: 1.65;
-    }
-    .how-it-works{
-      padding-bottom: 50px;
-    }
 
-    /* ══════════════════════
-       RESPONSIVE
-    ══════════════════════ */
 
-    /* Small tablets and up — 2 columns */
-    @media (min-width: 540px) {
-      .how-it-works__heading {
-        font-size: 20px;
-      }
 
-      .how-it-works__card {
-        width: 45%;
-      }
-       .how-it-works{
-      padding-bottom: 50px;
-    }
-    }
 
-    /* Desktop — 3 columns */
-    @media (min-width: 1024px) {
-      .how-it-works__heading {
-        font-size: 24px;
-        
-      }
-       .how-it-works{
-      padding-bottom: 50px;
-    }
 
-      .how-it-works__card {
-        width: 30%;
-      }
-    }
-    .how-it-works{
-      /* padding-bottom: 200px; */
-    }
-    .how-it-works-padding-class{
-      /* padding-bottom: 200px; */
-    }
-      @media (max-width: 768px) {
-  .how-it-works-padding-class {
-    padding: 16px; /* Adjust value as needed */
-    /* margin-bottom: 30px;  */
-  }
-} 
- .how-it-works__icon {
-  /* background: transparent; */
-}
-  </style>
+
+
 
 
 
